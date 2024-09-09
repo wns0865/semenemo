@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.chill.data"
+    namespace = "com.semonemo.data"
     compileSdk = 34
 
     defaultConfig {
