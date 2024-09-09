@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("kotlin-kapt")
     alias(libs.plugins.hilt)
@@ -7,20 +7,14 @@ plugins {
 }
 
 android {
-    namespace = "com.ssafy.semonemo"
+    namespace = "com.semonemo.presentation"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.ssafy.semonemo"
         minSdk = 26
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
@@ -32,13 +26,7 @@ android {
             )
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
+
     buildFeatures {
         compose = true
     }
@@ -49,6 +37,14 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 }
 
@@ -72,16 +68,8 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
     kapt(libs.hilt.compiler)
-    // retrofit, okhttp, gson
-    implementation(libs.bundles.network)
     // coroutines
     implementation(libs.bundles.coroutines)
-    // preference datastore
-    implementation(libs.datastore.preferences)
     // lottie
     implementation(libs.lottie)
-
-    implementation(project(":domain"))
-    implementation(project(":data"))
-    implementation(project(":presentation"))
 }

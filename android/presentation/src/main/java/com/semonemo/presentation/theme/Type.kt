@@ -1,4 +1,4 @@
-package com.ssafy.semonemo.ui.theme
+package com.semonemo.presentation.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
@@ -6,7 +6,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import com.ssafy.semonemo.R
+import com.semonemo.presentation.R
 
 val letterSpacing = (-0.06).em
 val Typography =
