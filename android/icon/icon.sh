@@ -16,7 +16,7 @@ fi
 MODULE_NAME=$1
 if [[ $MODULE_NAME = "" ]]
 then
-  MODULE_NAME="app"
+  MODULE_NAME="presentation"
 fi
 echo "[Info] 모듈 이름은 $MODULE_NAME 입니다"
 MODULE_PATH="../$MODULE_NAME"

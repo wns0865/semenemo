@@ -1,25 +1,19 @@
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("kotlin-kapt")
     alias(libs.plugins.hilt)
+    id("kotlin-kapt")
 }
 
 android {
-    namespace = "com.ssafy.semonemo"
+    namespace = "com.semonemo.data"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.ssafy.semonemo"
         minSdk = 26
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
@@ -38,25 +32,13 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
-    }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
 }
 
 dependencies {
-    // hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
-    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.bundles.network)
+    implementation(libs.datastore.preferences)
+    implementation(libs.junit)
     implementation(project(":domain"))
-    implementation(project(":data"))
-    implementation(project(":presentation"))
 }
