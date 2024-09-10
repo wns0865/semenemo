@@ -3,6 +3,7 @@ package com.semonemo.presentation.component
 import androidx.compose.material3.Text
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -20,6 +21,7 @@ import com.semonemo.presentation.ui.theme.Main02
  */
 @Composable
 fun BoldTextWithKeywords(
+    modifier: Modifier = Modifier,
     fullText: String,
     keywords: List<String>,
     brushFlag: List<Boolean>,
@@ -48,7 +50,7 @@ fun BoldTextWithKeywords(
                 append(fullText.substring(currentIndex))
             }
         }
-    Text(text = annotatedText, style = style)
+    Text(modifier = modifier, text = annotatedText, style = style)
 }
 
 @Preview(showBackground = true)
@@ -58,6 +60,7 @@ fun PreviewBoldTextWithKeywords() {
     val boldKeywords = listOf("추억", "프레임", "담다")
     val brushFlag = listOf(true, true, true)
     BoldTextWithKeywords(
+        modifier = Modifier,
         fullText = text,
         keywords = boldKeywords,
         brushFlag,
