@@ -22,7 +22,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.semonemo.presentation.R
-import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.ui.theme.Main02
 import com.semonemo.presentation.ui.theme.White
@@ -43,6 +42,7 @@ fun LongBlackButton(
         shape = RoundedCornerShape(14.dp),
         modifier =
             modifier
+                .fillMaxWidth(0.88f)
                 .height(53.dp),
     ) {
         Box(
