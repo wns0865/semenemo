@@ -14,8 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
-import com.semonemo.presentation.ui.theme.Main01
-import com.semonemo.presentation.ui.theme.Main02
+import com.semonemo.presentation.theme.Main01
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
