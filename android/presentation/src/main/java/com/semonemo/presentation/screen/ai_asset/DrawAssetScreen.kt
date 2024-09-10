@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -99,8 +98,7 @@ fun DrawAssetScreen(modifier: Modifier = Modifier) {
                 Modifier
                     .fillMaxSize()
                     .statusBarsPadding()
-                    .navigationBarsPadding()
-                    .padding(horizontal = 18.dp),
+                    .navigationBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(modifier = Modifier.height(15.dp))
@@ -116,6 +114,7 @@ fun DrawAssetScreen(modifier: Modifier = Modifier) {
                         .fillMaxWidth()
                         .fillMaxHeight(0.48f)
                         .background(color = White)
+                        .padding(horizontal = 17.dp)
                         .border(width = 1.dp, color = Gray02, shape = RoundedCornerShape(15.dp))
                         .pointerInput(Unit) {
                             detectDragGestures(
@@ -162,7 +161,10 @@ fun DrawAssetScreen(modifier: Modifier = Modifier) {
             }
             Spacer(modifier = Modifier.height(25.dp))
             Box(
-                modifier = Modifier.fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 17.dp),
                 contentAlignment = Alignment.CenterStart,
             ) {
                 Text(
@@ -175,7 +177,8 @@ fun DrawAssetScreen(modifier: Modifier = Modifier) {
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .height(35.dp),
+                        .height(35.dp)
+                        .padding(horizontal = 17.dp),
                 contentAlignment = Alignment.CenterStart,
             ) {
                 ColorPalette(
@@ -186,7 +189,10 @@ fun DrawAssetScreen(modifier: Modifier = Modifier) {
             }
             Spacer(modifier = Modifier.height(25.dp))
             Box(
-                modifier = Modifier.fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 17.dp),
                 contentAlignment = Alignment.CenterStart,
             ) {
                 Text(
@@ -199,7 +205,8 @@ fun DrawAssetScreen(modifier: Modifier = Modifier) {
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .height(35.dp),
+                        .height(35.dp)
+                        .padding(horizontal = 17.dp),
                 contentAlignment = Alignment.CenterStart,
             ) {
                 PenPalette(
@@ -210,7 +217,10 @@ fun DrawAssetScreen(modifier: Modifier = Modifier) {
             }
             Spacer(modifier = Modifier.height(25.dp))
             Box(
-                modifier = Modifier.fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 17.dp),
                 contentAlignment = Alignment.CenterStart,
             ) {
                 Text(
@@ -219,11 +229,19 @@ fun DrawAssetScreen(modifier: Modifier = Modifier) {
                 )
             }
             Spacer(modifier = Modifier.height(10.dp))
-            AssetButtonList(
-                titles = titles,
-                selectedBtn = selectedBtn,
-                onBtnSelected = { selectedBtn = it },
-            )
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 17.dp),
+                contentAlignment = Alignment.CenterStart,
+            ) {
+                AssetButtonList(
+                    titles = titles,
+                    selectedBtn = selectedBtn,
+                    onBtnSelected = { selectedBtn = it },
+                )
+            }
             Spacer(modifier = Modifier.fillMaxHeight(0.3f))
             LongBlackButton(icon = null, text = "이대로 제작할래요")
         }
