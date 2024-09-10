@@ -22,7 +22,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.semonemo.presentation.R
-import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.ui.theme.Main02
 import com.semonemo.presentation.ui.theme.White
@@ -43,8 +42,8 @@ fun LongBlackButton(
         shape = RoundedCornerShape(14.dp),
         modifier =
             modifier
-                .padding(20.dp)
-                .height(60.dp),
+                .fillMaxWidth(0.88f)
+                .height(53.dp),
     ) {
         Box(
             modifier = modifier.background(brush = Main02).padding(16.dp),
@@ -66,7 +65,7 @@ fun LongBlackButton(
                 Text(
                     modifier = Modifier.wrapContentSize(),
                     text = text,
-                    style = Typography.bodyMedium.copy(color = White),
+                    style = Typography.bodySmall.copy(color = White),
                     textAlign = TextAlign.Center,
                 )
             }
@@ -75,9 +74,7 @@ fun LongBlackButton(
 }
 
 @Composable
-@Preview()
+@Preview(showBackground = true, showSystemUi = true)
 fun PreviewLongBlackButton() {
-    SemonemoTheme {
-        LongBlackButton(icon = R.drawable.img_fire, text = "검정 버튼입니다.")
-    }
+    LongBlackButton(icon = R.drawable.img_fire, text = "검정 버튼입니다.")
 }
