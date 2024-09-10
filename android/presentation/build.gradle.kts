@@ -72,4 +72,6 @@ dependencies {
     implementation(libs.bundles.coroutines)
     // lottie
     implementation(libs.lottie)
+    // glide with landscapist
+    implementation(libs.landscapist.glide)
 }
