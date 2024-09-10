@@ -43,8 +43,7 @@ fun LongBlackButton(
         shape = RoundedCornerShape(14.dp),
         modifier =
             modifier
-                .padding(20.dp)
-                .height(60.dp),
+                .height(53.dp),
     ) {
         Box(
             modifier = modifier.background(brush = Main02).padding(16.dp),
@@ -66,7 +65,7 @@ fun LongBlackButton(
                 Text(
                     modifier = Modifier.wrapContentSize(),
                     text = text,
-                    style = Typography.bodyMedium.copy(color = White),
+                    style = Typography.bodySmall.copy(color = White),
                     textAlign = TextAlign.Center,
                 )
             }
@@ -75,9 +74,7 @@ fun LongBlackButton(
 }
 
 @Composable
-@Preview()
+@Preview(showBackground = true, showSystemUi = true)
 fun PreviewLongBlackButton() {
-    SemonemoTheme {
-        LongBlackButton(icon = R.drawable.img_fire, text = "검정 버튼입니다.")
-    }
+    LongBlackButton(icon = R.drawable.img_fire, text = "검정 버튼입니다.")
 }

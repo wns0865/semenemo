@@ -43,7 +43,7 @@ fun LongWhiteButton(
         shape = RoundedCornerShape(14.dp), // 모서리 반경 10dp
         color = Color.White,
         border = BorderStroke(width = 2.dp, color = Gray03),
-        modifier = modifier.padding(20.dp).height(60.dp),
+        modifier = modifier.height(50.dp),
     ) {
         Box(
             modifier = Modifier.padding(16.dp),
@@ -65,7 +65,7 @@ fun LongWhiteButton(
                 Text(
                     modifier = Modifier.wrapContentSize(),
                     text = text,
-                    style = Typography.bodyMedium,
+                    style = Typography.bodySmall,
                     textAlign = TextAlign.Center,
                 )
             }
