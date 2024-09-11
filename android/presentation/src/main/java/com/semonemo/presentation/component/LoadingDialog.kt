@@ -83,7 +83,7 @@ fun LoadingDialog(
 fun LoadingDialogPreview() {
     SemonemoTheme {
         LoadingDialog(
-            lottieRes = R.raw.asset_load,
+            lottieRes = R.raw.normal_load,
             loadingMessage = "AI가 열심히 에셋을 제작하고 있어요...",
             subMessage = "조금만 기다려 주세요  (。＾▽＾)",
         )

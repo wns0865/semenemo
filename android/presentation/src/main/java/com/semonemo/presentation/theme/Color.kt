@@ -23,13 +23,21 @@ val Gray03 = Color(0xFFD9D9D9)
 val WhiteGray = Color(0xFFEEEEEE)
 val Main01 =
     Brush.linearGradient(
-        colors = listOf(Color.White, Color(0xFFEBF0FF)),
+        colors =
+            listOf(
+                White,
+                Color(0xFFEBF0FF),
+            ),
         start = Offset(0f, 0f),
         end = Offset(1000f, 1000f),
     )
 val Main02 =
-    Brush.linearGradient(
-        colors = listOf(Color(0xFF273B71), Color(0xFF535353)),
-        start = Offset(0f, 0f),
-        end = Offset(1000f, 1000f),
+    Brush.horizontalGradient(
+        colors =
+            listOf(
+                Color(0xFF535353),
+                Color(0xFF273B71),
+            ),
+        startX = 0f,
+        endX = Float.POSITIVE_INFINITY,
     )

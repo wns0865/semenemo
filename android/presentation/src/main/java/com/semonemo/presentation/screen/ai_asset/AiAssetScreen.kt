@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,6 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.semonemo.presentation.R
+import com.semonemo.presentation.component.LongWhiteButton
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.ui.theme.Main01
 import com.semonemo.presentation.ui.theme.Main02
@@ -72,9 +72,7 @@ fun AiAssetScreen(modifier: Modifier = Modifier) {
                 style = Typography.labelLarge.copy(fontSize = 20.sp),
             )
             Spacer(modifier = Modifier.fillMaxHeight(0.35f))
-            Button(onClick = { /*TODO*/ }) {
-                Text(text = "AI 에셋 제작하러 가기")
-            }
+            LongWhiteButton(icon = null, text = "AI 에셋 제작하러 가기")
             Spacer(modifier = Modifier.weight(1f))
         }
     }
