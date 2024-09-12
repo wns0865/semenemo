@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">세모내모</string>
+    <string name="coin_unit_name">SN</string>
+    <string name="coin_name">세네코인</string>
+    <string name="coin">코인</string>
+    <string name="frame">프레임</string>
+    <string name="exchange">환전</string>
+    <string name="recharge">충전</string>
+    <string name="sell">판매</string>
+    <string name="buy">구매</string>
 </resources>
