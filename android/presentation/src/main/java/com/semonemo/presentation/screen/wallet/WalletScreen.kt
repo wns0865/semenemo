@@ -45,6 +45,7 @@ import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.ui.theme.Blue1
 import com.semonemo.presentation.ui.theme.Blue2
 import com.semonemo.presentation.ui.theme.Blue3
+import com.semonemo.presentation.ui.theme.Gray02
 import com.semonemo.presentation.ui.theme.Main02
 import com.semonemo.presentation.ui.theme.White
 import com.semonemo.presentation.util.noRippleClickable
@@ -233,7 +234,7 @@ fun WalltetCardBox(
                         style = Typography.bodyLarge,
                     )
                     Row(
-                        verticalAlignment = Alignment.Bottom,
+                        verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(5.dp),
                     ) {
                         Image(
@@ -440,17 +441,12 @@ fun transactionHistoryBox(
             Spacer(modifier = Modifier.weight(0.1f))
             Column(
                 verticalArrangement = Arrangement.spacedBy(3.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
+                horizontalAlignment = Alignment.Start,
             ) {
-                Text(text = date, style = Typography.labelSmall)
+                Text(text = date, style = Typography.labelSmall.copy(color = Gray02))
                 Text(text = "$product ${productInfo.message}", style = Typography.bodyLarge)
             }
             Spacer(modifier = Modifier.weight(0.5f))
-            Image(
-                modifier = Modifier.size(30.dp),
-                painter = painterResource(id = R.drawable.ic_color_sene_coin),
-                contentDescription = null,
-            )
             Text(
                 text =
                     if (price > 0) {
@@ -463,7 +459,7 @@ fun transactionHistoryBox(
             )
 
             Text(text = stringResource(R.string.coin_unit_name), style = Typography.labelLarge)
-            Spacer(modifier = Modifier.weight(0.1f))
+            Spacer(modifier = Modifier.width(10.dp))
         }
     }
 }
