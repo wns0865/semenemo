@@ -70,7 +70,8 @@ fun LoginScreen(
                     stringResource(R.string.brush_frame),
                 ),
             brushFlag = listOf(true, true),
-            style = Typography.bodyLarge,
+            boldStyle = Typography.titleSmall.copy(fontSize = 16.sp),
+            normalStyle = Typography.labelLarge,
         )
         Spacer(modifier = Modifier.weight(0.1f))
         Text(

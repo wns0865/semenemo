@@ -80,7 +80,8 @@ fun RegisterScreen(
                     stringResource(R.string.brush_persenal_info),
                 ),
             brushFlag = listOf(false, false),
-            style = Typography.labelLarge.copy(fontSize = 25.sp),
+            boldStyle = Typography.titleSmall.copy(fontSize = 25.sp),
+            normalStyle = Typography.labelLarge.copy(fontSize = 25.sp),
         )
 
         Spacer(modifier = Modifier.weight(0.1f))

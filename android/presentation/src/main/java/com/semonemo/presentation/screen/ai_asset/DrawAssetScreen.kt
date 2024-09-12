@@ -36,10 +36,12 @@ import androidx.compose.ui.graphics.PaintingStyle.Companion.Stroke
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.semonemo.presentation.R
 import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
@@ -103,7 +105,7 @@ fun DrawAssetScreen(modifier: Modifier = Modifier) {
         ) {
             Spacer(modifier = Modifier.height(15.dp))
             Text(
-                text = "캔버스 위에 원하는 그림을 그려 보세요",
+                text = stringResource(R.string.canvas_script),
                 style = Typography.labelMedium,
                 color = Gray02,
             )
@@ -243,7 +245,7 @@ fun DrawAssetScreen(modifier: Modifier = Modifier) {
                 )
             }
             Spacer(modifier = Modifier.fillMaxHeight(0.3f))
-            LongBlackButton(icon = null, text = "이대로 제작할래요")
+            LongBlackButton(icon = null, text = stringResource(R.string.draw_done))
         }
     }
 }

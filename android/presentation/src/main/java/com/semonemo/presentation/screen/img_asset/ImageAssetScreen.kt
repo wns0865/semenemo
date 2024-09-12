@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,10 +49,13 @@ fun ImageAssetScreen(modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(modifier = Modifier.fillMaxHeight(0.15f))
-            Text(text = "갤러리 속 사진으로 만드는", style = Typography.labelLarge.copy(fontSize = 24.sp))
+            Text(
+                text = stringResource(R.string.img_asset_title1),
+                style = Typography.labelLarge.copy(fontSize = 24.sp),
+            )
             Spacer(modifier = Modifier.height(7.dp))
             Text(
-                text = "이미지 에셋",
+                text = stringResource(R.string.img_asset_title2),
                 style = Typography.titleLarge.copy(brush = Main02, fontSize = 40.sp),
             )
             Spacer(modifier = Modifier.fillMaxHeight(0.1f))
@@ -67,18 +71,18 @@ fun ImageAssetScreen(modifier: Modifier = Modifier) {
             }
             Spacer(modifier = Modifier.fillMaxHeight(0.18f))
             Text(
-                text = "스티커로 만들고 싶은 이미지를 고르면",
+                text = stringResource(R.string.img_asset_script1),
                 style = Typography.labelLarge.copy(fontSize = 20.sp),
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "AI가 배경을 제거해 에셋으로 만들어 줘요!",
+                text = stringResource(R.string.img_asset_script2),
                 style = Typography.labelLarge.copy(fontSize = 20.sp),
             )
             Spacer(modifier = Modifier.fillMaxHeight(0.3f))
             LongWhiteButton(
                 icon = null,
-                text = "앨범에서 이미지 선택하기",
+                text = stringResource(R.string.img_asset_btn_title),
             )
             Spacer(modifier = Modifier.weight(1f))
         }
