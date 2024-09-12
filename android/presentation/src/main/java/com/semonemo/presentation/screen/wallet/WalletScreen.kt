@@ -231,7 +231,8 @@ fun WalltetCardBox(
                         fullText = "$userName 님의 지갑",
                         keywords = listOf(userName),
                         brushFlag = listOf(true),
-                        style = Typography.bodyLarge,
+                        boldStyle = Typography.titleSmall.copy(fontSize = 20.sp),
+                        normalStyle = Typography.labelLarge.copy(fontSize = 20.sp),
                     )
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -295,12 +296,14 @@ fun WalletCoinBox(
                     Modifier
                         .wrapContentSize()
                         .weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Image(
                     modifier = Modifier.size(50.dp),
                     painter = painterResource(id = R.drawable.ic_color_sene_coin),
                     contentDescription = "",
                 )
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = stringResource(R.string.coin_name),
                     style = Typography.bodyLarge.copy(fontSize = 15.sp),
