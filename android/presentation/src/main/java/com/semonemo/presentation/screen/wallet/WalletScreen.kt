@@ -5,24 +5,23 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -89,11 +88,18 @@ fun WalletScreen(
     changePercent: Double = 8.7,
     changePrice: Double = 8300.0,
 ) {
+    val scrollState = rememberScrollState()
+
     Column(
-        modifier = modifier.padding(horizontal = 20.dp),
+        modifier =
+            modifier
+                .padding(horizontal = 20.dp)
+                .verticalScroll(state = scrollState)
+                .statusBarsPadding()
+                .navigationBarsPadding(),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(20.dp))
         WalltetCardBox(modifier = modifier, userName = userName, userCoin = userCoin)
         Spacer(modifier = Modifier.height(10.dp))
         WalletCoinBox(
@@ -104,16 +110,11 @@ fun WalletScreen(
         )
         Spacer(modifier = Modifier.height(30.dp))
         Text(text = stringResource(R.string.recent_transaction_history))
-        LazyVerticalGrid(
-            modifier = modifier,
-            columns = GridCells.Fixed(1),
-            state = rememberLazyGridState(),
-            contentPadding = PaddingValues(5.dp),
+        Column(
+            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            items(testData.size, span = { _ ->
-                GridItemSpan(1)
-            }) { index ->
+            repeat(testData.size) { index ->
                 val item = testData[index]
                 transactionHistoryBox(
                     modifier = modifier,
@@ -124,6 +125,7 @@ fun WalletScreen(
                 )
             }
         }
+        Spacer(modifier = Modifier.height(20.dp))
     }
 }
 
@@ -231,7 +233,8 @@ fun WalltetCardBox(
                         fullText = "$userName 님의 지갑",
                         keywords = listOf(userName),
                         brushFlag = listOf(true),
-                        style = Typography.bodyLarge,
+                        boldStyle = Typography.titleSmall.copy(fontSize = 20.sp),
+                        normalStyle = Typography.labelLarge.copy(fontSize = 20.sp),
                     )
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -286,21 +289,26 @@ fun WalletCoinBox(
         Row(
             modifier =
                 Modifier
+                    .fillMaxWidth()
                     .background(White)
-                    .padding(horizontal = 10.dp, vertical = 20.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    .padding(horizontal = 30.dp, vertical = 20.dp),
+            horizontalArrangement =
+                Arrangement
+                    .SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(
                 modifier =
                     Modifier
-                        .wrapContentSize()
-                        .weight(1f),
+                        .wrapContentSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Image(
                     modifier = Modifier.size(50.dp),
                     painter = painterResource(id = R.drawable.ic_color_sene_coin),
                     contentDescription = "",
                 )
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = stringResource(R.string.coin_name),
                     style = Typography.bodyLarge.copy(fontSize = 15.sp),
@@ -311,39 +319,47 @@ fun WalletCoinBox(
                 painter = painterResource(id = R.drawable.img_graph),
                 contentDescription = null,
             )
-            Column(
-                verticalArrangement = Arrangement.spacedBy(3.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
+            Row(
+                modifier = Modifier.wrapContentSize(),
+                verticalAlignment = Alignment.Top,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = stringResource(R.string.current_price), style = Typography.labelLarge)
-                Text(text = String.format(Locale.KOREAN, "%,.0f", coinPrice))
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(3.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(
+                        text = stringResource(R.string.current_price),
+                        style = Typography.labelLarge,
+                    )
+                    Text(text = String.format(Locale.KOREAN, "%,.0f", coinPrice))
+                }
+                Spacer(modifier = Modifier.width(24.dp))
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(3.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(
+                        text = stringResource(R.string.fluctuation_rate),
+                        style = Typography.labelLarge,
+                    )
+                    Text(
+                        text =
+                            if (changePrice > 0) {
+                                "+$changePercent%"
+                            } else {
+                                "-$changePercent%"
+                            },
+                        color = if (changePercent > 0) Color.Red else Color.Blue,
+                        style = Typography.bodyMedium,
+                    )
+                    Text(
+                        text = String.format(Locale.KOREAN, "%,.0f", changePrice),
+                        color = if (changePercent > 0) Color.Red else Color.Blue,
+                        style = Typography.labelSmall,
+                    )
+                }
             }
-            Spacer(modifier = Modifier.weight(0.1f))
-            Column(
-                verticalArrangement = Arrangement.spacedBy(3.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(
-                    text = stringResource(R.string.fluctuation_rate),
-                    style = Typography.labelLarge,
-                )
-                Text(
-                    text =
-                        if (changePrice > 0) {
-                            "+$changePercent%"
-                        } else {
-                            "-$changePercent%"
-                        },
-                    color = if (changePercent > 0) Color.Red else Color.Blue,
-                    style = Typography.bodyMedium,
-                )
-                Text(
-                    text = String.format(Locale.KOREAN, "%,.0f", changePrice),
-                    color = if (changePercent > 0) Color.Red else Color.Blue,
-                    style = Typography.labelSmall,
-                )
-            }
-            Spacer(modifier = Modifier.weight(0.1f))
         }
     }
 }
