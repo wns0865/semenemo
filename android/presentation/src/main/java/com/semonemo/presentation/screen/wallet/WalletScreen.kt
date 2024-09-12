@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -101,7 +102,7 @@ fun WalletScreen(
             changePrice = changePrice,
         )
         Spacer(modifier = Modifier.height(30.dp))
-        Text(text = "최근 거래내역이에요")
+        Text(text = stringResource(R.string.recent_transaction_history))
         LazyVerticalGrid(
             modifier = modifier,
             columns = GridCells.Fixed(1),
@@ -172,7 +173,10 @@ fun WalltetCardBox(
                         painter = painterResource(id = R.drawable.ic_coin_exchange),
                         contentDescription = null,
                     )
-                    Text(text = "환전", style = Typography.labelMedium.copy(color = White))
+                    Text(
+                        text = stringResource(id = R.string.exchange),
+                        style = Typography.labelMedium.copy(color = White),
+                    )
                     Spacer(modifier = Modifier.weight(1f))
                     HorizontalDivider(
                         modifier =
@@ -190,7 +194,10 @@ fun WalltetCardBox(
                         painter = painterResource(id = R.drawable.ic_coin_plus),
                         contentDescription = null,
                     )
-                    Text(text = "충전", style = Typography.labelMedium.copy(color = White))
+                    Text(
+                        text = stringResource(id = R.string.recharge),
+                        style = Typography.labelMedium.copy(color = White),
+                    )
                     Spacer(modifier = Modifier.weight(1f))
                 }
             }
@@ -239,7 +246,10 @@ fun WalltetCardBox(
                             fontSize = 20.sp,
                         )
 
-                        Text(text = "SN", style = Typography.labelMedium)
+                        Text(
+                            text = stringResource(R.string.coin_unit_name),
+                            style = Typography.labelMedium,
+                        )
                     }
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
@@ -290,7 +300,10 @@ fun WalletCoinBox(
                     painter = painterResource(id = R.drawable.ic_color_sene_coin),
                     contentDescription = "",
                 )
-                Text(text = "세네코인", style = Typography.bodyLarge.copy(fontSize = 15.sp))
+                Text(
+                    text = stringResource(R.string.coin_name),
+                    style = Typography.bodyLarge.copy(fontSize = 15.sp),
+                )
             }
             Image(
                 modifier = Modifier.size(50.dp),
@@ -301,7 +314,7 @@ fun WalletCoinBox(
                 verticalArrangement = Arrangement.spacedBy(3.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(text = "현재가", style = Typography.labelLarge)
+                Text(text = stringResource(R.string.current_price), style = Typography.labelLarge)
                 Text(text = String.format(Locale.KOREAN, "%,.0f", coinPrice))
             }
             Spacer(modifier = Modifier.weight(0.1f))
@@ -309,7 +322,10 @@ fun WalletCoinBox(
                 verticalArrangement = Arrangement.spacedBy(3.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(text = "등락율", style = Typography.labelLarge)
+                Text(
+                    text = stringResource(R.string.fluctuation_rate),
+                    style = Typography.labelLarge,
+                )
                 Text(
                     text =
                         if (changePrice > 0) {
@@ -341,27 +357,51 @@ fun transactionHistoryBox(
 ) {
     val productInfo =
         when (product) {
-            "코인" -> {
+            stringResource(R.string.coin) -> {
                 if (isSell) {
-                    ProductInfo("환전", R.drawable.ic_outline_coin, color = Blue3)
+                    ProductInfo(
+                        stringResource(R.string.exchange),
+                        R.drawable.ic_outline_coin,
+                        color = Blue3,
+                    )
                 } else {
-                    ProductInfo("충전", R.drawable.ic_outline_coin, color = Blue3)
+                    ProductInfo(
+                        stringResource(R.string.recharge),
+                        R.drawable.ic_outline_coin,
+                        color = Blue3,
+                    )
                 }
             }
 
-            "프레임" -> {
+            stringResource(R.string.frame) -> {
                 if (isSell) {
-                    ProductInfo("판매", R.drawable.ic_fab_frame, color = Blue2)
+                    ProductInfo(
+                        stringResource(R.string.sell),
+                        R.drawable.ic_fab_frame,
+                        color = Blue2,
+                    )
                 } else {
-                    ProductInfo("구매", R.drawable.ic_fab_frame, color = Blue2)
+                    ProductInfo(
+                        stringResource(R.string.buy),
+                        R.drawable.ic_fab_frame,
+                        color = Blue2,
+                    )
                 }
             }
 
             else -> {
                 if (isSell) {
-                    ProductInfo("판매", R.drawable.ic_fab_asset, color = Blue1)
+                    ProductInfo(
+                        stringResource(R.string.sell),
+                        R.drawable.ic_fab_asset,
+                        color = Blue1,
+                    )
                 } else {
-                    ProductInfo("구매", R.drawable.ic_fab_asset, color = Blue1)
+                    ProductInfo(
+                        stringResource(R.string.buy),
+                        R.drawable.ic_fab_asset,
+                        color = Blue1,
+                    )
                 }
             }
         }
@@ -422,7 +462,7 @@ fun transactionHistoryBox(
                 style = Typography.bodyLarge,
             )
 
-            Text(text = "SN", style = Typography.labelLarge)
+            Text(text = stringResource(R.string.coin_unit_name), style = Typography.labelLarge)
             Spacer(modifier = Modifier.weight(0.1f))
         }
     }
