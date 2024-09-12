@@ -322,7 +322,7 @@ fun WalletCoinBox(
             Row(
                 modifier = Modifier.wrapContentSize(),
                 verticalAlignment = Alignment.Top,
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(3.dp),
@@ -454,7 +454,7 @@ fun transactionHistoryBox(
                     modifier = Modifier.size(24.dp),
                 )
             }
-            Spacer(modifier = Modifier.weight(0.1f))
+            Spacer(modifier = Modifier.fillMaxWidth(0.02f))
             Column(
                 verticalArrangement = Arrangement.spacedBy(3.dp),
                 horizontalAlignment = Alignment.Start,
@@ -462,7 +462,7 @@ fun transactionHistoryBox(
                 Text(text = date, style = Typography.labelSmall.copy(color = Gray02))
                 Text(text = "$product ${productInfo.message}", style = Typography.bodyLarge)
             }
-            Spacer(modifier = Modifier.weight(0.5f))
+            Spacer(modifier = Modifier.weight(1f))
             Text(
                 text =
                     if (price > 0) {
