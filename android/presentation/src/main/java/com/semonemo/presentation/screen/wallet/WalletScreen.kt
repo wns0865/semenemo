@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -15,6 +16,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -24,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -80,7 +88,15 @@ fun WalletScreen(
         modifier = modifier.padding(horizontal = 20.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
+        Spacer(modifier = Modifier.height(30.dp))
         WalltetCardBox(modifier = modifier, userName = userName, userCoin = userCoin)
+        Spacer(modifier = Modifier.height(10.dp))
+        WalletCoinBox(
+            modifier = modifier,
+            coinPrice = coinPrice,
+            changePercent = changePercent,
+            changePrice = changePrice,
+        )
     }
 }
 
@@ -212,6 +228,80 @@ fun WalltetCardBox(
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun WalletCoinBox(
+    modifier: Modifier = Modifier,
+    coinPrice: Double,
+    changePercent: Double,
+    changePrice: Double,
+) {
+    Card(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+        shape = RoundedCornerShape(10.dp),
+        elevation = CardDefaults.cardElevation(2.dp),
+    ) {
+        Row(
+            modifier =
+                Modifier
+                    .background(White)
+                    .padding(horizontal = 10.dp, vertical = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Column(
+                modifier =
+                    Modifier
+                        .wrapContentSize()
+                        .weight(1f),
+            ) {
+                Image(
+                    modifier = Modifier.size(50.dp),
+                    painter = painterResource(id = R.drawable.ic_color_sene_coin),
+                    contentDescription = "",
+                )
+                Text(text = "세네코인", style = Typography.bodyLarge.copy(fontSize = 15.sp))
+            }
+            Image(
+                modifier = Modifier.size(50.dp),
+                painter = painterResource(id = R.drawable.img_graph),
+                contentDescription = null,
+            )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(3.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(text = "현재가", style = Typography.labelLarge)
+                Text(text = String.format(Locale.KOREAN, "%,.0f", coinPrice))
+            }
+            Spacer(modifier = Modifier.weight(0.1f))
+            Column(
+                verticalArrangement = Arrangement.spacedBy(3.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(text = "등락율", style = Typography.labelLarge)
+                Text(
+                    text =
+                        if (changePrice > 0) {
+                            "+$changePercent%"
+                        } else {
+                            "-$changePercent%"
+                        },
+                    color = if (changePercent > 0) Color.Red else Color.Blue,
+                    style = Typography.bodyMedium,
+                )
+                Text(
+                    text = String.format(Locale.KOREAN, "%,.0f", changePrice),
+                    color = if (changePercent > 0) Color.Red else Color.Blue,
+                    style = Typography.labelSmall,
+                )
+            }
+            Spacer(modifier = Modifier.weight(0.1f))
         }
     }
 }
