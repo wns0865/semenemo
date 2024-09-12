@@ -41,6 +41,9 @@ import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BoldTextWithKeywords
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
+import com.semonemo.presentation.ui.theme.Blue1
+import com.semonemo.presentation.ui.theme.Blue2
+import com.semonemo.presentation.ui.theme.Blue3
 import com.semonemo.presentation.ui.theme.Main02
 import com.semonemo.presentation.ui.theme.White
 import com.semonemo.presentation.util.noRippleClickable
@@ -97,6 +100,28 @@ fun WalletScreen(
             changePercent = changePercent,
             changePrice = changePrice,
         )
+        Spacer(modifier = Modifier.height(30.dp))
+        Text(text = "최근 거래내역이에요")
+        LazyVerticalGrid(
+            modifier = modifier,
+            columns = GridCells.Fixed(1),
+            state = rememberLazyGridState(),
+            contentPadding = PaddingValues(5.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            items(testData.size, span = { _ ->
+                GridItemSpan(1)
+            }) { index ->
+                val item = testData[index]
+                transactionHistoryBox(
+                    modifier = modifier,
+                    date = item.date,
+                    isSell = item.isSell,
+                    product = item.product,
+                    price = item.price,
+                )
+            }
+        }
     }
 }
 
@@ -301,6 +326,103 @@ fun WalletCoinBox(
                     style = Typography.labelSmall,
                 )
             }
+            Spacer(modifier = Modifier.weight(0.1f))
+        }
+    }
+}
+
+@Composable
+fun transactionHistoryBox(
+    modifier: Modifier = Modifier,
+    isSell: Boolean = true,
+    date: String = "2024.09.09",
+    price: Double = +100000.0,
+    product: String = "프레임",
+) {
+    val productInfo =
+        when (product) {
+            "코인" -> {
+                if (isSell) {
+                    ProductInfo("환전", R.drawable.ic_outline_coin, color = Blue3)
+                } else {
+                    ProductInfo("충전", R.drawable.ic_outline_coin, color = Blue3)
+                }
+            }
+
+            "프레임" -> {
+                if (isSell) {
+                    ProductInfo("판매", R.drawable.ic_fab_frame, color = Blue2)
+                } else {
+                    ProductInfo("구매", R.drawable.ic_fab_frame, color = Blue2)
+                }
+            }
+
+            else -> {
+                if (isSell) {
+                    ProductInfo("판매", R.drawable.ic_fab_asset, color = Blue1)
+                } else {
+                    ProductInfo("구매", R.drawable.ic_fab_asset, color = Blue1)
+                }
+            }
+        }
+
+    Card(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+        shape = RoundedCornerShape(10.dp),
+        elevation = CardDefaults.cardElevation(2.dp),
+    ) {
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .background(White)
+                    .padding(horizontal = 10.dp, vertical = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(5.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(
+                modifier =
+                    Modifier
+                        .size(50.dp)
+                        .clip(CircleShape)
+                        .background(productInfo.color),
+                contentAlignment = Alignment.Center,
+            ) {
+                Image(
+                    painter = painterResource(id = productInfo.imageRes),
+                    contentDescription = "",
+                    modifier = Modifier.size(24.dp),
+                )
+            }
+            Spacer(modifier = Modifier.weight(0.1f))
+            Column(
+                verticalArrangement = Arrangement.spacedBy(3.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(text = date, style = Typography.labelSmall)
+                Text(text = "$product ${productInfo.message}", style = Typography.bodyLarge)
+            }
+            Spacer(modifier = Modifier.weight(0.5f))
+            Image(
+                modifier = Modifier.size(30.dp),
+                painter = painterResource(id = R.drawable.ic_color_sene_coin),
+                contentDescription = null,
+            )
+            Text(
+                text =
+                    if (price > 0) {
+                        String.format(Locale.KOREAN, "%,.0f", price)
+                    } else {
+                        String.format(Locale.KOREAN, "%,.0f", price)
+                    },
+                color = if (price > 0) Color.Red else Color.Blue,
+                style = Typography.bodyLarge,
+            )
+
+            Text(text = "SN", style = Typography.labelLarge)
             Spacer(modifier = Modifier.weight(0.1f))
         }
     }
