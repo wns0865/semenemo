@@ -1,0 +1,67 @@
+package com.semonemo.presentation
+
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.semonemo.presentation.navigation.ScreenDestinations
+import com.semonemo.presentation.screen.login.LoginRoute
+import com.semonemo.presentation.screen.login.RegisterRoute
+
+@Composable
+fun MainScreen(modifier: Modifier = Modifier) {
+    val coroutineScope = rememberCoroutineScope()
+    val navController = rememberNavController()
+    val snackBarHostState =
+        remember {
+            SnackbarHostState()
+        }
+
+    Scaffold(
+        modifier = Modifier,
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
+    ) { innerPadding ->
+        MainNavHost(
+            modifier = Modifier.padding(innerPadding),
+            navController = navController,
+            startDestination = ScreenDestinations.Login.route,
+        )
+    }
+}
+
+@Composable
+fun MainNavHost(
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    startDestination: String,
+) {
+    NavHost(navController = navController, startDestination = startDestination) {
+        composable(
+            route = ScreenDestinations.Login.route,
+        ) {
+            LoginRoute(
+                modifier = modifier,
+                popUpBackStack = navController::popBackStack,
+                navigateToSignUp = {
+                    navController.navigate(ScreenDestinations.Register.route)
+                },
+            )
+        }
+        composable(
+            route = ScreenDestinations.Register.route,
+        ) {
+            RegisterRoute(
+                modifier = modifier,
+                popUpBackStack = navController::popBackStack,
+            )
+        }
+    }
+}
