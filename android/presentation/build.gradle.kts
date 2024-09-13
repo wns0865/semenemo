@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -6,13 +8,20 @@ plugins {
     alias(libs.plugins.kotlinx.serialization)
 }
 
+val properties = Properties()
+properties.load(rootProject.file("local.properties").inputStream())
+
 android {
     namespace = "com.semonemo.presentation"
     compileSdk = 34
 
     defaultConfig {
         minSdk = 26
-
+        buildConfigField("int", "CHAIN_ID", properties["CHAIN_ID"] as String)
+        buildConfigField("String", "CHAIN_NAME", properties["CHAIN_NAME"] as String)
+        buildConfigField("String", "RPC_URLS", properties["RPC_URLS"] as String)
+        buildConfigField("String", "SEVER_URL", properties["SEVER_URL"] as String)
+        buildConfigField("int", "PORT_NUMBER", properties["PORT_NUMBER"] as String)
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
@@ -29,6 +38,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -72,4 +82,11 @@ dependencies {
     implementation(libs.bundles.coroutines)
     // lottie
     implementation(libs.lottie)
+    // MetaMask
+    implementation(libs.metamask.android.sdk)
+
+    // wallet connect
+    implementation(libs.wallet.android.core)
+    implementation(libs.web3wallet)
+
 }
