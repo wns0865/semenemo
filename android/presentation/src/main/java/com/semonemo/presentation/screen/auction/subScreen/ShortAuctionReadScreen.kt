@@ -1,4 +1,4 @@
-package com.semonemo.presentation.screen.auction
+package com.semonemo.presentation.screen.auction.subScreen
 
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.gestures.detectTapGestures
