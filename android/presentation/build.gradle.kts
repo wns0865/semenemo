@@ -17,11 +17,13 @@ android {
 
     defaultConfig {
         minSdk = 26
-        buildConfigField("int", "CHAIN_ID", properties["CHAIN_ID"] as String)
+        buildConfigField("String", "CHAIN_ID", properties["CHAIN_ID"] as String)
         buildConfigField("String", "CHAIN_NAME", properties["CHAIN_NAME"] as String)
         buildConfigField("String", "RPC_URLS", properties["RPC_URLS"] as String)
         buildConfigField("String", "SEVER_URL", properties["SEVER_URL"] as String)
-        buildConfigField("int", "PORT_NUMBER", properties["PORT_NUMBER"] as String)
+        buildConfigField("String", "PORT_NUMBER", properties["PORT_NUMBER"] as String)
+        buildConfigField("String", "METAMASK_PACKAGE_NAME", properties["METAMASK_PACKAGE_NAME"] as String)
+        buildConfigField("String", "METAMASK_PLAY_STORE_PATH", properties["METAMASK_PLAY_STORE_PATH"] as String)
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
