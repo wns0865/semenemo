@@ -1,13 +1,15 @@
 package com.semonemo.presentation.screen.auction
 
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -31,9 +33,15 @@ import kotlinx.coroutines.launch
 
 @Preview(showBackground = true, name = "AuctionReadScreen")
 @Composable
-fun AuctionReadScreen() {
+fun ShortAuctionReadScreen() {
     SemonemoTheme {
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(bottom = 16.dp),
+        ) {
             // 상단 제목
             Text(
                 text = "진행 중인 단기 경매",
@@ -58,17 +66,32 @@ fun AuctionReadScreen() {
                 while (true) {
                     if (System.currentTimeMillis() - lastInteractionTime > 1000) {
                         coroutineScope.launch {
-                            val currentIndex = listState.firstVisibleItemIndex
+                            val itemWidth =
+                                listState.layoutInfo.visibleItemsInfo
+                                    .firstOrNull()
+                                    ?.size
+                                    ?: 160 // 기본 너비 (픽셀)
+                            val viewportWidth = listState.layoutInfo.viewportSize.width
+                            val totalScrollDistance =
+                                itemWidth * auctionDataList.size - viewportWidth
+                            val scrollDurationMillis = 100L // 전체 스크롤 시간 (밀리초)
 
-                            // 리스트의 끝에 도달하면 처음으로 돌아가기
-                            if (currentIndex == auctionDataList.size - 1) {
-                                listState.scrollToItem(0) // 애니메이션 없이 즉시 첫 번째로 스크롤
-                            } else {
-                                listState.animateScrollToItem(currentIndex + 1) // 부드럽게 다음 아이템으로 스크롤
+                            // 애니메이션의 속도를 조절합니다.
+                            val scrollSteps = (scrollDurationMillis / 10).toInt()
+                            val stepDistance = totalScrollDistance / scrollSteps
+
+                            var scrolledDistance = 0
+                            while (scrolledDistance < totalScrollDistance) {
+                                listState.animateScrollBy(stepDistance.toFloat())
+                                scrolledDistance += stepDistance
+                                delay(scrollDurationMillis / scrollSteps) // 스크롤 간의 간격 조정
                             }
+
+                            // 스크롤이 끝나면 첫 번째 항목으로 돌아가기
+                            listState.scrollToItem(0)
                         }
                     }
-                    delay(2000L) // 2초마다 스크롤
+                    delay(2000L) // 스크롤 간의 간격 조정
                 }
             }
 
