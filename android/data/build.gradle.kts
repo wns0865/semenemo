@@ -32,6 +32,10 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
@@ -41,4 +45,6 @@ dependencies {
     implementation(libs.datastore.preferences)
     implementation(libs.junit)
     implementation(project(":domain"))
+    // metamask
+    implementation(libs.metamask.android.sdk)
 }
