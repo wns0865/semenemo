@@ -19,8 +19,8 @@ import com.semonemo.presentation.component.BoldTextWithKeywords
 import com.semonemo.presentation.component.LongWhiteButton
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
-import com.semonemo.presentation.ui.theme.Main01
-import com.semonemo.presentation.ui.theme.Main02
+import com.semonemo.presentation.theme.Main01
+import com.semonemo.presentation.theme.Main02
 
 @Composable
 fun LoginRoute(

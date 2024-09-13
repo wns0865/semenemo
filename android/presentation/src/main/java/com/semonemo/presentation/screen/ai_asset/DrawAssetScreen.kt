@@ -45,11 +45,11 @@ import com.semonemo.presentation.R
 import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
-import com.semonemo.presentation.ui.theme.Gray01
-import com.semonemo.presentation.ui.theme.Gray02
-import com.semonemo.presentation.ui.theme.GunMetal
-import com.semonemo.presentation.ui.theme.Main02
-import com.semonemo.presentation.ui.theme.White
+import com.semonemo.presentation.theme.Gray01
+import com.semonemo.presentation.theme.Gray02
+import com.semonemo.presentation.theme.GunMetal
+import com.semonemo.presentation.theme.Main02
+import com.semonemo.presentation.theme.White
 
 @Composable
 fun DrawAssetScreen(modifier: Modifier = Modifier) {

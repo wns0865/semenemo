@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.semonemo.presentation.R
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
-import com.semonemo.presentation.ui.theme.Gray03
+import com.semonemo.presentation.theme.Gray03
 
 /*
 @Param  icon : 버튼에 들어갈 아이콘. 없다면 null

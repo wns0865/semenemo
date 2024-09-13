@@ -24,7 +24,7 @@ import com.semonemo.presentation.component.CustomTextField
 import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
-import com.semonemo.presentation.ui.theme.Main01
+import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.util.addFocusCleaner
 
 @Composable

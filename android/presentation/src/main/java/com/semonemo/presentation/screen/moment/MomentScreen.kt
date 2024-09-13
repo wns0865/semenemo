@@ -27,7 +27,7 @@ import com.semonemo.presentation.component.MomentBox
 import com.semonemo.presentation.component.MomentLongBox
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
-import com.semonemo.presentation.ui.theme.Main01
+import com.semonemo.presentation.theme.Main01
 
 @Composable
 fun MomentScreen(modifier: Modifier = Modifier) {
