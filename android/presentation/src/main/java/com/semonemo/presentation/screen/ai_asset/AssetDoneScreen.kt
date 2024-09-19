@@ -28,7 +28,7 @@ import com.semonemo.presentation.component.BoldTextWithKeywords
 import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.component.LongWhiteButton
 import com.semonemo.presentation.theme.Typography
-import com.semonemo.presentation.ui.theme.Gray02
+import com.semonemo.presentation.theme.Gray02
 
 @Composable
 fun AssetDoneScreen(modifier: Modifier = Modifier) {

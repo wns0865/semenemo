@@ -41,12 +41,12 @@ import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BoldTextWithKeywords
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
-import com.semonemo.presentation.ui.theme.Blue1
-import com.semonemo.presentation.ui.theme.Blue2
-import com.semonemo.presentation.ui.theme.Blue3
-import com.semonemo.presentation.ui.theme.Gray02
-import com.semonemo.presentation.ui.theme.Main02
-import com.semonemo.presentation.ui.theme.White
+import com.semonemo.presentation.theme.Blue1
+import com.semonemo.presentation.theme.Blue2
+import com.semonemo.presentation.theme.Blue3
+import com.semonemo.presentation.theme.Gray02
+import com.semonemo.presentation.theme.Main02
+import com.semonemo.presentation.theme.White
 import com.semonemo.presentation.util.noRippleClickable
 import java.util.Locale
 
