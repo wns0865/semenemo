@@ -21,7 +21,7 @@ android {
         buildConfigField("String", "CHAIN_NAME", properties["CHAIN_NAME"] as String)
         buildConfigField("String", "RPC_URLS", properties["RPC_URLS"] as String)
         buildConfigField("String", "SEVER_URL", properties["SEVER_URL"] as String)
-        buildConfigField("String", "PORT_NUMBER", properties["PORT_NUMBER"] as String)
+        buildConfigField("String", "SPRING_PORT_NUMBER", properties["SPRING_PORT_NUMBER"] as String)
         buildConfigField("String", "METAMASK_PACKAGE_NAME", properties["METAMASK_PACKAGE_NAME"] as String)
         buildConfigField("String", "METAMASK_PLAY_STORE_PATH", properties["METAMASK_PLAY_STORE_PATH"] as String)
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -61,6 +61,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":domain"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -90,7 +91,6 @@ dependencies {
     // wallet connect
     implementation(libs.wallet.android.core)
     implementation(libs.web3wallet)
-
     // glide with landscapist
     implementation(libs.landscapist.glide)
 }
