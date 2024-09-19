@@ -95,6 +95,9 @@ dependencies {
     implementation(libs.wallet.android.core)
     implementation(libs.web3wallet)
 
+    // glide with landscapist
+    implementation(libs.landscapist.glide)
+
     // immutable dependency
     implementation(libs.jetbrains.kotlinx.collections.immutable)
 
