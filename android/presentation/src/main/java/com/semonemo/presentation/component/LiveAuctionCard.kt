@@ -1,7 +1,6 @@
 package com.semonemo.presentation.component
 
 import android.util.Log
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,9 +42,8 @@ fun LiveAuctionCard(
 ) {
     Card(
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(0.6.dp, GunMetal),
         modifier = modifier, // 여기에 modifier를 적용합니다
     ) {
         Log.d(TAG, "LiveAuctionCard: $imageUrl")

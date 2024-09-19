@@ -7,14 +7,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -39,25 +36,14 @@ fun ShortAuctionReadScreen() {
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight()
-                    .padding(bottom = 16.dp),
+                    .wrapContentHeight(),
         ) {
-            // 상단 제목
-            Text(
-                text = "진행 중인 단기 경매",
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.padding(16.dp),
-            )
-
             // LazyRow의 스크롤 상태를 저장
             val listState = rememberLazyListState()
-
             // CoroutineScope를 기억
             val coroutineScope = rememberCoroutineScope()
-
             // 사용자가 마지막으로 스크롤한 시간을 추적
             var lastInteractionTime by remember { mutableStateOf(System.currentTimeMillis()) }
-
             // 경매 데이터
             val auctionDataList = getSampleAuctionData()
 
