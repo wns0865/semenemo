@@ -25,6 +25,7 @@ lottie = "5.2.0"
 ksp = "1.9.22-1.0.16"
 kotlinxSerializationCore = "1.5.1"
 web3walletVersion = "1.35.1"
+kotlinxCollectionsImmutableVersion = "0.3.5"
 [libraries]
 wallet-android-core = { module = "com.walletconnect:android-core", version.ref = "androidCoreVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -58,6 +59,7 @@ gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 web3wallet = { module = "com.walletconnect:web3wallet", version.ref = "web3walletVersion" }
+jetbrains-kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutableVersion" }
 [bundles]
 network = ["retrofit", "okhttp-logging-interceptor", "gson", "kotlinx-serialization-json", "kotlinx-serialization-converter", "kotlinx-serialization-core"] #"converter-gson"
 coroutines = ["coroutines-android", "coroutines-core"]

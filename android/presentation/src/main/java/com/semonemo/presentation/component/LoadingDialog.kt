@@ -1,6 +1,5 @@
 package com.semonemo.presentation.component
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,7 +27,6 @@ import com.semonemo.presentation.R
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LoadingDialog(
     modifier: Modifier = Modifier,

@@ -78,14 +78,18 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
     // hilt
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
     kapt(libs.hilt.compiler)
+
     // coroutines
     implementation(libs.bundles.coroutines)
+
     // lottie
     implementation(libs.lottie)
+
     // MetaMask
     implementation(libs.metamask.android.sdk)
 
@@ -94,4 +98,8 @@ dependencies {
     implementation(libs.web3wallet)
     // glide with landscapist
     implementation(libs.landscapist.glide)
+
+    // immutable dependency
+    implementation(libs.jetbrains.kotlinx.collections.immutable)
+
 }
