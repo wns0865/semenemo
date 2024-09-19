@@ -49,10 +49,10 @@ import com.semonemo.presentation.component.CustomDropdownMenu
 import com.semonemo.presentation.component.CustomDropdownMenuStyles
 import com.semonemo.presentation.component.CustomTab
 import com.semonemo.presentation.component.NameWithBadge
+import com.semonemo.presentation.theme.Gray03
+import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
-import com.semonemo.presentation.ui.theme.Gray03
-import com.semonemo.presentation.ui.theme.Main01
 
 @Composable
 fun MyPageScreen() {
