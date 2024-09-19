@@ -10,8 +10,13 @@ import androidx.compose.ui.unit.sp
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Typography
 
+/**
+ * 섹션을 구분하는 타이틀.
+ * @param modifier
+ * @param text 타이틀
+ */
 @Composable
-fun TextLabel(
+fun SectionHeader(
     modifier: Modifier = Modifier,
     text: String,
 ) {
@@ -24,6 +29,6 @@ fun TextLabel(
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewTextLabel() {
-    TextLabel(text = "텍스트 라벨")
+fun PreviewSectionHeader() {
+    SectionHeader(text = "텍스트 라벨")
 }
