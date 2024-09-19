@@ -12,11 +12,15 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import java.util.concurrent.TimeUnit
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+    @Singleton
+    @Provides
+    @Named("Spring")
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         val json =
             Json {
@@ -28,7 +32,26 @@ object NetworkModule {
         return Retrofit
             .Builder()
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
-            .baseUrl(BuildConfig.SEVER_URL + BuildConfig.PORT_NUMBER)
+            .baseUrl(BuildConfig.SEVER_URL + BuildConfig.SPRING_PORT_NUMBER)
+            .client(okHttpClient)
+            .build()
+    }
+
+    @Singleton
+    @Provides
+    @Named("Node")
+    fun provideNFTRetrofit(okHttpClient: OkHttpClient): Retrofit {
+        val json =
+            Json {
+                isLenient = true
+                prettyPrint = true
+                ignoreUnknownKeys = true
+                coerceInputValues = true
+            }
+        return Retrofit
+            .Builder()
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+            .baseUrl(BuildConfig.TEST_URL + BuildConfig.NODE_PORT_NUMBER)
             .client(okHttpClient)
             .build()
     }
