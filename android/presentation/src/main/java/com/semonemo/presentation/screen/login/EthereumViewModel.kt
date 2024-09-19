@@ -126,4 +126,20 @@ class EthereumViewModel
                     }
             }
         }
+
+        fun sendTransaction() {
+            val params: MutableMap<String, Any> =
+                mutableMapOf(
+                    "from" to _transaction.value.from,
+                    "to" to _transaction.value.to,
+                    "data" to _transaction.value.data,
+                )
+
+            val transactionRequest =
+                EthereumRequest(
+                    method = EthereumMethod.ETH_SEND_TRANSACTION.value,
+                    params = listOf(params),
+                )
+            ethereum.run { sendRequest(transactionRequest) }
+        }
     }
