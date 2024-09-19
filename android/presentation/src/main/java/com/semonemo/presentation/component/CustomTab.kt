@@ -8,8 +8,6 @@ import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,17 +20,21 @@ import com.semonemo.presentation.ui.theme.GunMetal
 import kotlinx.collections.immutable.toPersistentList
 
 /**
- * CustomTab
- * tabList에 메뉴 이름들을 List 형태로 넣어 주면 됨.
- * 사용 예시는 프리뷰에
+ * CustomTab component
+ *
+ * @param modifier
+ * @param tabList : 탭 목록 작성
+ * @param selectedIndex : 선택된 탭 index
+ * @param onTabSelected : 탭 선택 시 동작
  */
 
 @Composable
 fun CustomTab(
     modifier: Modifier = Modifier,
     tabList: List<String> = listOf(),
+    selectedIndex: Int = 0,
+    onTabSelected: (Int) -> Unit,
 ) {
-    var selectedIndex by remember { mutableIntStateOf(0) }
     val tabItems = tabList.toPersistentList()
 
     TabRow(
@@ -50,7 +52,7 @@ fun CustomTab(
         tabItems.forEachIndexed { index, title ->
             Tab(
                 selected = selectedIndex == index,
-                onClick = { selectedIndex = index },
+                onClick = { onTabSelected(index) },
                 selectedContentColor = GunMetal,
                 unselectedContentColor = Gray02,
             ) {
@@ -76,5 +78,7 @@ fun CustomTab(
 fun CustomTabPreview() {
     CustomTab(
         tabList = listOf("내 프레임", "에셋"),
+        selectedIndex = 0,
+        onTabSelected = { },
     )
 }
