@@ -18,8 +18,10 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,15 +36,21 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PaintingStyle.Companion.Stroke
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.semonemo.presentation.R
+import com.semonemo.presentation.component.ColorCircle
+import com.semonemo.presentation.component.ColorPalette
 import com.semonemo.presentation.component.LongBlackButton
+import com.semonemo.presentation.component.PenCircle
+import com.semonemo.presentation.component.PenPalette
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.Gray01
@@ -51,14 +59,26 @@ import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Main02
 import com.semonemo.presentation.theme.White
 
+// 펜 스타일 데이터 클래스
+data class PathStyle(
+    var color: Color = Color.Black,
+    var width: Float = 4.dp.value,
+)
+
+// PathStyle 넘겨 주면 매핑해 주는 함수 선언
+internal fun DrawScope.drawPath(
+    path: Path,
+    style: PathStyle,
+) {
+    drawPath(
+        path = path,
+        color = style.color,
+        style = Stroke(width = style.width),
+    )
+}
+
 @Composable
 fun DrawAssetScreen(modifier: Modifier = Modifier) {
-    var point by remember { mutableStateOf(Offset.Zero) } // point 위치 추척 state
-    val points = remember { mutableListOf<Offset>() } // 새로 그려지는 path 표시하기 위한 points State
-
-    var path by remember { mutableStateOf(Path()) } // 새로 그려지고 있는 중인 획 state
-    val paths = remember { mutableStateListOf<Path>() } // 다 그려진 획 리스트
-
     // 색상 팔레트
     val colors =
         listOf(
@@ -89,9 +109,17 @@ fun DrawAssetScreen(modifier: Modifier = Modifier) {
         )
     var selectedBtn by remember { mutableStateOf("픽셀") }
 
+    var point by remember { mutableStateOf(Offset.Zero) } // point 위치 추척 state
+    val points = remember { mutableListOf<Offset>() } // 새로 그려지는 path 표시하기 위한 points State
+
+    var path by remember { mutableStateOf(Path()) }
+    val paths = remember { mutableStateListOf<Pair<Path, PathStyle>>() } // 다 그려진 획 리스트
+    val removedPaths = remember { mutableStateListOf<Pair<Path, PathStyle>>() } // undo, redo 위한 리스트
+    val pathStyle by remember { mutableStateOf(PathStyle()) }
+
     Box(
         modifier =
-            Modifier
+            modifier
                 .fillMaxSize()
                 .background(color = White),
     ) {
@@ -124,44 +152,72 @@ fun DrawAssetScreen(modifier: Modifier = Modifier) {
                                     point = offset
                                     points.add(point)
                                 },
-                                onDrag = { _, dragAMount ->
-                                    point += dragAMount
-                                    points.add(point)
+                                onDrag = { _, dragAmount ->
+                                    val newPoint = point + dragAmount // 새로운 포인트 위치 계산
+                                    val canvasBounds = size // 범위 내인지 확인
 
-                                    // onDrag 호출될 때마다 현재 그리는 획을 새로 보여줌
-                                    path = Path()
-                                    points.forEachIndexed { index, point ->
-                                        if (index == 0) {
-                                            path.moveTo(point.x, point.y)
-                                        } else {
-                                            path.lineTo(point.x, point.y)
+                                    if (newPoint.x in 0f..canvasBounds.width.toFloat() && newPoint.y in 0f..canvasBounds.height.toFloat()) {
+                                        point = newPoint
+                                        points.add(point)
+
+                                        path = Path()
+
+                                        points.forEachIndexed { index, point ->
+                                            if (index == 0) {
+                                                path.moveTo(point.x, point.y)
+                                            } else {
+                                                path.lineTo(point.x, point.y)
+                                            }
                                         }
                                     }
                                 },
                                 onDragEnd = {
-                                    paths.add(path)
+                                    paths.add(Pair(path, pathStyle.copy()))
                                     points.clear()
+                                    path = Path()
                                 },
                             )
                         },
             ) {
                 // 이미 완성된 획들
-                paths.forEach { path ->
+                paths.forEach { pair ->
                     drawPath(
-                        path = path,
-                        color = Color.Black,
-                        style = Stroke(width = 2f),
+                        path = pair.first,
+                        style = pair.second,
                     )
                 }
 
                 // 현재 그려지고 있는 획
                 drawPath(
                     path = path,
-                    color = Color.Black,
-                    style = Stroke(width = 2f),
+                    style = pathStyle,
                 )
             }
-            Spacer(modifier = Modifier.height(25.dp))
+            Spacer(modifier = Modifier.height(5.dp))
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 17.dp),
+                contentAlignment = Alignment.CenterEnd,
+            ) {
+                DrawNavigateBar(
+                    onUndoClicked = {
+                        if (paths.isNotEmpty()) {
+                            val lastPath = paths.removeLast()
+                            removedPaths.add(lastPath)
+                        }
+                    },
+                    onRedoClicked = {
+                        val lastRemovedPath = removedPaths.removeLast()
+                        paths.add(lastRemovedPath)
+                    },
+                    onClearClicked = {
+                        paths.clear()
+                        removedPaths.clear()
+                    },
+                )
+            }
             Box(
                 modifier =
                     Modifier
@@ -186,7 +242,10 @@ fun DrawAssetScreen(modifier: Modifier = Modifier) {
                 ColorPalette(
                     colors = colors,
                     selectedColor = selectedColor,
-                    onColorSelected = { selectedColor = it },
+                    onColorSelected = {
+                        selectedColor = it
+                        pathStyle.color = it
+                    },
                 )
             }
             Spacer(modifier = Modifier.height(25.dp))
@@ -214,7 +273,10 @@ fun DrawAssetScreen(modifier: Modifier = Modifier) {
                 PenPalette(
                     sizes = sizes,
                     selectedSize = selectedSize,
-                    onSizeSelected = { selectedSize = it },
+                    onSizeSelected = {
+                        selectedSize = it
+                        pathStyle.width = it.value
+                    },
                 )
             }
             Spacer(modifier = Modifier.height(25.dp))
@@ -247,6 +309,48 @@ fun DrawAssetScreen(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.fillMaxHeight(0.3f))
             LongBlackButton(icon = null, text = stringResource(R.string.draw_done))
         }
+    }
+}
+
+// 뒤로가기, 앞으로가기, 초기화하기
+@Composable
+fun DrawNavigateBar(
+    onUndoClicked: () -> Unit,
+    onRedoClicked: () -> Unit,
+    onClearClicked: () -> Unit,
+) {
+    Row(
+        modifier = Modifier.wrapContentWidth(),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.img_undo),
+            contentDescription = null,
+            modifier =
+                Modifier
+                    .size(30.dp)
+                    .clickable { onUndoClicked() },
+            tint = Color.Unspecified,
+        )
+        Icon(
+            painter = painterResource(id = R.drawable.img_redo),
+            contentDescription = null,
+            modifier =
+                Modifier
+                    .size(30.dp)
+                    .clickable { onRedoClicked() },
+            tint = Color.Unspecified,
+        )
+        Icon(
+            painter = painterResource(id = R.drawable.img_reset),
+            contentDescription = null,
+            modifier =
+                Modifier
+                    .size(30.dp)
+                    .clickable { onClearClicked() },
+            tint = Color.Unspecified,
+        )
     }
 }
 

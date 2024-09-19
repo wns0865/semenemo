@@ -37,9 +37,10 @@ fun LongWhiteButton(
     modifier: Modifier = Modifier,
     icon: Int?,
     text: String,
+    onClick: () -> Unit = {},
 ) {
     Surface(
-        onClick = { /*TODO: Add your click action here*/ },
+        onClick = onClick,
         shape = RoundedCornerShape(14.dp), // 모서리 반경 10dp
         color = Color.White,
         border = BorderStroke(width = 2.dp, color = Gray03),

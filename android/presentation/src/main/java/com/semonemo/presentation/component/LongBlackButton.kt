@@ -36,9 +36,10 @@ fun LongBlackButton(
     modifier: Modifier = Modifier,
     icon: Int?,
     text: String,
+    onClick: () -> Unit = {},
 ) {
     Surface(
-        onClick = {},
+        onClick = onClick,
         shape = RoundedCornerShape(14.dp),
         modifier =
             modifier

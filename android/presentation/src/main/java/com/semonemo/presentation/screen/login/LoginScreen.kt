@@ -1,19 +1,28 @@
 package com.semonemo.presentation.screen.login
 
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.semonemo.presentation.BuildConfig
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BoldTextWithKeywords
 import com.semonemo.presentation.component.LongWhiteButton
@@ -27,11 +36,13 @@ fun LoginRoute(
     modifier: Modifier = Modifier,
     popUpBackStack: () -> Unit = {},
     navigateToSignUp: () -> Unit = {},
+    viewModel: EthereumViewModel = hiltViewModel(),
 ) {
     LoginContent(
         modifier = modifier,
         popUpBackStack = popUpBackStack,
         navigateToSignUp = navigateToSignUp,
+        viewModel = viewModel,
     )
 }
 
@@ -40,11 +51,55 @@ fun LoginContent(
     modifier: Modifier = Modifier,
     popUpBackStack: () -> Unit,
     navigateToSignUp: () -> Unit,
+    viewModel: EthereumViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
+    val packageManager = context.packageManager
+    val packageName = BuildConfig.METAMASK_PACKAGE_NAME
+    val isInstalled: Boolean =
+        try {
+            packageManager.getPackageInfo(packageName, 0)
+            true
+        } catch (e: PackageManager.NameNotFoundException) {
+            false
+        }
+
+    if (isInstalled.not()) {
+        val intent =
+            Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse(BuildConfig.METAMASK_PLAY_STORE_PATH),
+            )
+        context.startActivity(intent)
+    }
+
     LoginScreen(
         modifier = modifier,
         popUpBackStack,
         navigateToSignUp,
+        onClicked = {
+            viewModel.connect { result ->
+                if (result.contains("Error")) {
+                } else {
+                    viewModel.switchChain(
+                        BuildConfig.CHAIN_ID,
+                        BuildConfig.CHAIN_NAME,
+                        BuildConfig.RPC_URLS,
+                        onSuccess = { message ->
+                            Log.d("jaehan", "addSuccess : $message")
+                        },
+                        onError = { message, action ->
+                            action?.let {
+                                Log.d("jaehan", "error success?")
+                                action()
+                            } ?: run {
+                                Log.d("jaehan", "그냥 에러, $message")
+                            }
+                        },
+                    )
+                }
+            }
+        },
     )
 }
 
@@ -53,6 +108,7 @@ fun LoginScreen(
     modifier: Modifier = Modifier,
     popUpBackStack: () -> Unit = {},
     navigateToSignUp: () -> Unit = {},
+    onClicked: () -> Unit = {},
 ) {
     Column(
         modifier =
@@ -85,9 +141,13 @@ fun LoginScreen(
         )
 
         LongWhiteButton(
-            modifier = modifier.fillMaxWidth(),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
             icon = R.drawable.img_metamask,
             text = stringResource(R.string.login_message),
+            onClick = onClicked,
         )
         Spacer(modifier = Modifier.weight(0.3f))
     }

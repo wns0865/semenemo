@@ -1,5 +1,6 @@
 [versions]
 agp = "8.5.2"
+androidCoreVersion = "1.35.1"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -13,6 +14,7 @@ hiltNavigationCompose = "1.2.0"
 hilt = "2.48"
 androidxDataStore = "1.1.1"
 gson = "2.10.1"
+metamaskAndroidSdk = "0.2.1"
 retrofit = "2.9.0"
 okhttp = "4.11.0"
 kotlinx-serialization = "1.6.0"
@@ -25,7 +27,10 @@ ksp = "1.9.22-1.0.16"
 kotlinxSerializationCore = "1.5.1"
 appcompat = "1.7.0"
 material = "1.12.0"
+web3wallet = "1.4.1"
+web3walletVersion = "1.35.1"
 [libraries]
+wallet-android-core = { module = "com.walletconnect:android-core", version.ref = "androidCoreVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -47,6 +52,7 @@ androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-com
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
 datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidxDataStore" }
+metamask-android-sdk = { module = "io.metamask.androidsdk:metamask-android-sdk", version.ref = "metamaskAndroidSdk" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", name = "retrofit", version.ref = "retrofit" }
 okhttp-logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", name = "okhttp", version.ref = "okhttp" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
@@ -55,8 +61,7 @@ kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+web3wallet = { module = "com.walletconnect:web3wallet", version.ref = "web3walletVersion" }
 [bundles]
 network = ["retrofit", "okhttp-logging-interceptor", "gson", "kotlinx-serialization-json", "kotlinx-serialization-converter", "kotlinx-serialization-core"] #"converter-gson"
 coroutines = ["coroutines-android", "coroutines-core"]

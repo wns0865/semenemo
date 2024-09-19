@@ -15,7 +15,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Semonemo"
         android:usesCleartextTraffic="true"
-        tools:targetApi="31">
+        tools:targetApi="31"
+        tools:replace="android:dataExtractionRules"
+        >
         <activity
             android:name="com.semonemo.presentation.MainActivity"
             android:exported="true">
