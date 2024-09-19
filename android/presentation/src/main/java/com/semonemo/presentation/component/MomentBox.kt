@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.semonemo.presentation.R
 import com.semonemo.presentation.theme.Typography
-import com.semonemo.presentation.ui.theme.White
+import com.semonemo.presentation.theme.White
 
 @Composable
 fun MomentBox(

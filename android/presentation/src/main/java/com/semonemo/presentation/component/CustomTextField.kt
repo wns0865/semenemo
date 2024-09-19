@@ -21,8 +21,8 @@ import androidx.compose.ui.unit.dp
 import com.semonemo.presentation.R
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
-import com.semonemo.presentation.ui.theme.Gray02
-import com.semonemo.presentation.ui.theme.WhiteGray
+import com.semonemo.presentation.theme.Gray02
+import com.semonemo.presentation.theme.WhiteGray
 
 @Composable
 fun CustomTextField(

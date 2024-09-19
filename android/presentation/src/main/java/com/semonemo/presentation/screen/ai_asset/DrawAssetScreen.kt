@@ -53,11 +53,11 @@ import com.semonemo.presentation.component.PenCircle
 import com.semonemo.presentation.component.PenPalette
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
-import com.semonemo.presentation.ui.theme.Gray01
-import com.semonemo.presentation.ui.theme.Gray02
-import com.semonemo.presentation.ui.theme.GunMetal
-import com.semonemo.presentation.ui.theme.Main02
-import com.semonemo.presentation.ui.theme.White
+import com.semonemo.presentation.theme.Gray01
+import com.semonemo.presentation.theme.Gray02
+import com.semonemo.presentation.theme.GunMetal
+import com.semonemo.presentation.theme.Main02
+import com.semonemo.presentation.theme.White
 
 // 펜 스타일 데이터 클래스
 data class PathStyle(

@@ -15,7 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.semonemo.presentation.R
 import com.semonemo.presentation.theme.Typography
-import com.semonemo.presentation.ui.theme.Main02
+import com.semonemo.presentation.theme.Main02
 
 /*
 @Param  fullText : 전체 텍스트
