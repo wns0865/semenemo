@@ -15,12 +15,14 @@ import com.semonemo.presentation.component.AuctionCard
 
 @Preview(showBackground = true, name = "AuctionItemGrid")
 @Composable
-fun LongAuctionReadScreen() {
+fun LongAuctionReadScreen(
+    modifier: Modifier = Modifier
+) {
     val auctionDataList = getSampleAuctionItems()
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(8.dp),
+        contentPadding = PaddingValues(8.dp, 0.dp, 8.dp, 0.dp,),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
@@ -34,7 +36,7 @@ fun LongAuctionReadScreen() {
                 price = auctionItem.price,
                 isLiked = auctionItem.isLiked,
                 modifier =
-                    Modifier
+                modifier
                         .fillMaxWidth()
                         .aspectRatio(0.6f),
             )

@@ -51,8 +51,7 @@ fun LiveAuctionCard(
         Column(
             modifier =
                 Modifier
-                    .fillMaxWidth()
-                    .padding(0.dp),
+                    .fillMaxWidth(),
         ) {
             Spacer(modifier = Modifier.height(4.dp))
             // Top row
