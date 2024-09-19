@@ -93,4 +93,6 @@ dependencies {
 
     // glide with landscapist
     implementation(libs.landscapist.glide)
+    // MultiFloatActionButton
+    implementation(libs.multifab)
 }
