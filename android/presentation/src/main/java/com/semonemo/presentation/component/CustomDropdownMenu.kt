@@ -2,7 +2,6 @@ package com.semonemo.presentation.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -30,12 +29,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.semonemo.presentation.R
+import com.semonemo.presentation.theme.Gray01
+import com.semonemo.presentation.theme.Gray03
+import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Typography
-import com.semonemo.presentation.ui.theme.Gray01
-import com.semonemo.presentation.ui.theme.Gray03
-import com.semonemo.presentation.ui.theme.GunMetal
-import com.semonemo.presentation.ui.theme.White
-import com.semonemo.presentation.ui.theme.WhiteGray
+import com.semonemo.presentation.theme.White
+import com.semonemo.presentation.theme.WhiteGray
 
 /**
  * CustomDropDownMenu
