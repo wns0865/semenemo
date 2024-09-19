@@ -26,6 +26,7 @@ class EthereumViewModel
     constructor(
         private val ethereum: Ethereum,
         private val dApp: Dapp,
+        private val nftRepository: NFTRepository,
     ) : ViewModel() {
         private val walletAddress = mutableStateOf("")
         private val _transaction = MutableStateFlow<Transaction>(Transaction("", "", "", "", "", ""))
@@ -76,7 +77,6 @@ class EthereumViewModel
             chainId: String,
             chainName: String,
             rpcUrls: String,
-            onSuccess: (message: String) -> Unit,
             onError: (message: String, action: (() -> Unit)?) -> Unit,
         ) {
             val hexChainId = "0x" + chainId.toLong().toString(16)
@@ -96,7 +96,6 @@ class EthereumViewModel
                                 hexChainId,
                                 chainName,
                                 rpcUrls,
-                                onSuccess = { result -> onSuccess(result) },
                                 onError = { error -> onError(error, null) },
                             )
                         }
@@ -104,9 +103,27 @@ class EthereumViewModel
                     } else {
                         onError("Switch 성공 에러", null)
                     }
-                } else {
-                    onSuccess("Switch 성공")
                 }
+            }
+        }
+
+        fun transfer(
+            toAddress: String,
+            amount: String,
+        ) {
+            viewModelScope.launch {
+                nftRepository
+                    .transfer(
+                        TransferRequest(
+                            fromAddress = walletAddress.value,
+                            toAddress = toAddress,
+                            amount = amount,
+                        ),
+                    ).collectLatest {
+                        it?.let { transaction ->
+                            _transaction.value = transaction
+                        }
+                    }
             }
         }
     }
