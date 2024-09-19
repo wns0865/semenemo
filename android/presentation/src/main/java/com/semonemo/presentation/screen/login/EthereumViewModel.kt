@@ -1,7 +1,12 @@
 package com.semonemo.presentation.screen.login
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.semonemo.domain.model.Transaction
+import com.semonemo.domain.repository.NFTRepository
+import com.semonemo.domain.request.TransferRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.metamask.androidsdk.Dapp
 import io.metamask.androidsdk.ErrorType
@@ -9,8 +14,10 @@ import io.metamask.androidsdk.Ethereum
 import io.metamask.androidsdk.EthereumMethod
 import io.metamask.androidsdk.EthereumRequest
 import io.metamask.androidsdk.EthereumState
-import io.metamask.androidsdk.Network
 import io.metamask.androidsdk.RequestError
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,6 +27,8 @@ class EthereumViewModel
         private val ethereum: Ethereum,
         private val dApp: Dapp,
     ) : ViewModel() {
+        private val walletAddress = mutableStateOf("")
+        private val _transaction = MutableStateFlow<Transaction>(Transaction("", "", "", "", "", ""))
         val ethereumState =
             MediatorLiveData<EthereumState>().apply {
                 addSource(ethereum.ethereumState) { newEthereumState ->
@@ -32,6 +41,7 @@ class EthereumViewModel
                 if (result is RequestError) {
                     callback(result.message)
                 } else {
+                    walletAddress.value = ethereum.selectedAddress
                     callback(ethereum.selectedAddress)
                 }
             }
@@ -41,7 +51,6 @@ class EthereumViewModel
             chainId: String,
             chainName: String,
             rpcUrls: String,
-            onSuccess: (message: String) -> Unit,
             onError: (message: String) -> Unit,
         ) {
             val addChainParams: Map<String, Any> =
@@ -59,12 +68,6 @@ class EthereumViewModel
             ethereum.sendRequest(addChainRequest) { result ->
                 if (result is RequestError) {
                     onError("Add chain error: ${result.message}")
-                } else {
-                    if (chainId == ethereum.chainId) {
-                        onSuccess("Successfully switched to ${Network.chainNameFor(chainId)} ($chainId)")
-                    } else {
-                        onSuccess("Successfully added ${Network.chainNameFor(chainId)} ($chainId)")
-                    }
                 }
             }
         }
