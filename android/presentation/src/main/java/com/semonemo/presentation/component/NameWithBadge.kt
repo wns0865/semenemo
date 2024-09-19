@@ -16,8 +16,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.semonemo.presentation.R
+import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Typography
-import com.semonemo.presentation.ui.theme.GunMetal
 
 /**
  * 닉네임 + 뱃지 component

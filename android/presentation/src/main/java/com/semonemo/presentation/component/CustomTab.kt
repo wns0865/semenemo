@@ -14,9 +14,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.semonemo.presentation.theme.Gray02
+import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Typography
-import com.semonemo.presentation.ui.theme.Gray02
-import com.semonemo.presentation.ui.theme.GunMetal
 import kotlinx.collections.immutable.toPersistentList
 
 /**
