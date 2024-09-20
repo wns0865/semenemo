@@ -36,6 +36,7 @@ import com.semonemo.presentation.R
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.WhiteGray
+import com.semonemo.presentation.util.noRippleClickable
 import kotlinx.coroutines.delay
 
 /**
@@ -76,7 +77,8 @@ fun CustomStoreFAB(modifier: Modifier = Modifier) {
             ) {
                 Icon(
                     painter =
-                        painterResource( // FAB 상태에 따라 아이콘 변경
+                        painterResource(
+                            // FAB 상태에 따라 아이콘 변경
                             if (expanded) {
                                 R.drawable.ic_fab_sell_off
                             } else {
@@ -100,7 +102,9 @@ fun CustomStoreSubFAB(
     imgRes: Int,
 ) {
     var isVisible by remember { mutableStateOf(false) }
-
+    var test by remember {
+        mutableStateOf(false)
+    }
     // 애니메이션 지연
     LaunchedEffect(visible) {
         if (visible) {
@@ -111,14 +115,23 @@ fun CustomStoreSubFAB(
         }
     }
 
+    if (test) {
+        Text(textLabel)
+    }
+
     AnimatedVisibility(
         visible = isVisible,
         enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
         exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
     ) {
         Row(
+            modifier =
+                modifier
+                    .padding(end = 10.dp)
+                    .noRippleClickable {
+                        test = true
+                    },
             verticalAlignment = Alignment.CenterVertically,
-            modifier = modifier.padding(end = 10.dp),
         ) {
             Text(
                 text = textLabel,
