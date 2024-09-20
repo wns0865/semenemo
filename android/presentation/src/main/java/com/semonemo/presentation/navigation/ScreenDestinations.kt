@@ -23,4 +23,12 @@ sealed class ScreenDestinations(
     data object Register : ScreenDestinations(route = "register")
 
     data object Shop : ScreenDestinations(route = "shop")
+
+    data object Auction : ScreenDestinations(route = "auction")
+
+    data object Moment : ScreenDestinations(route = "moment")
+
+    data object Coin : ScreenDestinations(route = "coin")
+
+    data object MyPage : ScreenDestinations(route = "mypage")
 }
