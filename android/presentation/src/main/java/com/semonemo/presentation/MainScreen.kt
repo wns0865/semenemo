@@ -13,8 +13,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.semonemo.presentation.navigation.ScreenDestinations
+import com.semonemo.presentation.screen.ai_asset.DrawAssetScreen
+import com.semonemo.presentation.screen.auction.AuctionScreen
 import com.semonemo.presentation.screen.login.LoginRoute
 import com.semonemo.presentation.screen.login.RegisterRoute
+import com.semonemo.presentation.screen.moment.MomentScreen
+import com.semonemo.presentation.screen.mypage.MyPageScreen
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
@@ -55,6 +59,7 @@ fun MainNavHost(
                 },
             )
         }
+
         composable(
             route = ScreenDestinations.Register.route,
         ) {
@@ -62,6 +67,40 @@ fun MainNavHost(
                 modifier = modifier,
                 popUpBackStack = navController::popBackStack,
             )
+        }
+
+        composable(
+            route = ScreenDestinations.Shop.route,
+        ) {
+            // 상점 스크린
+            // 일단 임시로 아무 스크린이나
+            DrawAssetScreen()
+        }
+
+        composable(
+            route = ScreenDestinations.Auction.route,
+        ) {
+            AuctionScreen()
+        }
+
+        composable(
+            route = ScreenDestinations.Moment.route,
+        ) {
+            MomentScreen()
+        }
+
+        composable(
+            route = ScreenDestinations.Coin.route,
+        ) {
+            // 코인 스크린
+            // 임시
+            DrawAssetScreen()
+        }
+
+        composable(
+            route = ScreenDestinations.MyPage.route,
+        ) {
+            MyPageScreen()
         }
     }
 }
