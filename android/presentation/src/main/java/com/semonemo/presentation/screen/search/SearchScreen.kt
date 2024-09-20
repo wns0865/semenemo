@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.semonemo.presentation.R
@@ -55,11 +56,13 @@ fun SearchScreen(
         }
     Column(
         modifier =
-            modifier.padding(horizontal = 10.dp).pointerInput(Unit) {
-                detectTapGestures(onTap = {
-                    focusManager.clearFocus()
-                })
-            },
+            modifier
+                .padding(horizontal = 10.dp)
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = {
+                        focusManager.clearFocus()
+                    })
+                },
     ) {
         Row(modifier = Modifier) {
             BackButton(popUpBackStack = popUpBackStack)
@@ -112,20 +115,26 @@ private fun RecentSearchSection(
     setEdit: (Boolean) -> Unit,
     isEdit: Boolean,
 ) {
+    val mode =
+        if (isEdit) {
+            stringResource(id = R.string.edit_true_text)
+        } else {
+            stringResource(id = R.string.edit_false_text)
+        }
     Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically) {
         Image(
             modifier = Modifier.size(32.dp),
             painter = painterResource(id = R.drawable.img_clock),
             contentDescription = null,
         )
-        SectionHeader(modifier = Modifier, text = "최근 검색")
+        SectionHeader(modifier = Modifier, text = stringResource(R.string.recent_search_text))
         Spacer(modifier = Modifier.weight(1f))
         Text(
             modifier =
                 Modifier.noRippleClickable {
                     setEdit(isEdit.not())
                 },
-            text = "편집",
+            text = mode,
             style = Typography.labelLarge.copy(color = Gray01),
         )
         Spacer(modifier = Modifier.weight(0.1f))
@@ -140,7 +149,7 @@ fun HotKeywordSection(modifier: Modifier = Modifier) {
             painter = painterResource(id = R.drawable.img_fire),
             contentDescription = null,
         )
-        SectionHeader(modifier = Modifier, text = "사람들이 많이 찾아요")
+        SectionHeader(modifier = Modifier, text = stringResource(R.string.hot_section_text))
     }
 }
 

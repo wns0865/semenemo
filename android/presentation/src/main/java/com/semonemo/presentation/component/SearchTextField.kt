@@ -19,6 +19,7 @@ import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,14 +40,14 @@ import com.semonemo.presentation.util.noRippleClickable
  * @param onValueChanged : 값 변화할 때 람다식 -> 검색어 자동 반영
  * @param onSearchAction : 검색 버튼 누를 경우
  * @param placeHolder : 초기 텍스트 값
- * @param focusManage : 포커스 매니저
+ * @param focusManager : 포커스 매니저
  */
 @Composable
 fun SearchTextField(
     modifier: Modifier = Modifier,
     onValueChanged: (String) -> Unit = {},
     onSearchAction: () -> Unit = {},
-    placeHolder: String = "검색어를 입력해주세요.",
+    placeHolder: String = stringResource(R.string.search_placeholder),
     focusManager: FocusManager,
 ) {
     val (keyword, setKeyword) =
@@ -122,7 +123,9 @@ fun SearchTextField(
 fun SearchTextFieldPreview() {
     SemonemoTheme {
         SearchTextField(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 10.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp, vertical = 10.dp),
             focusManager = LocalFocusManager.current,
         )
     }
