@@ -96,10 +96,13 @@ dependencies {
     // wallet connect
     implementation(libs.wallet.android.core)
     implementation(libs.web3wallet)
+
     // glide with landscapist
     implementation(libs.landscapist.glide)
 
     // immutable dependency
     implementation(libs.jetbrains.kotlinx.collections.immutable)
 
+    // bottom navigation
+    implementation(libs.androidx.navigation.compose.v275)
 }
