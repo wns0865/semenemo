@@ -1,7 +1,12 @@
 package com.semonemo.presentation.screen.login
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.semonemo.domain.model.Transaction
+import com.semonemo.domain.repository.NFTRepository
+import com.semonemo.domain.request.TransferRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.metamask.androidsdk.Dapp
 import io.metamask.androidsdk.ErrorType
@@ -9,8 +14,10 @@ import io.metamask.androidsdk.Ethereum
 import io.metamask.androidsdk.EthereumMethod
 import io.metamask.androidsdk.EthereumRequest
 import io.metamask.androidsdk.EthereumState
-import io.metamask.androidsdk.Network
 import io.metamask.androidsdk.RequestError
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -19,7 +26,10 @@ class EthereumViewModel
     constructor(
         private val ethereum: Ethereum,
         private val dApp: Dapp,
+        private val nftRepository: NFTRepository,
     ) : ViewModel() {
+        private val walletAddress = mutableStateOf("")
+        private val _transaction = MutableStateFlow<Transaction>(Transaction("", "", "", "", "", ""))
         val ethereumState =
             MediatorLiveData<EthereumState>().apply {
                 addSource(ethereum.ethereumState) { newEthereumState ->
@@ -32,6 +42,7 @@ class EthereumViewModel
                 if (result is RequestError) {
                     callback(result.message)
                 } else {
+                    walletAddress.value = ethereum.selectedAddress
                     callback(ethereum.selectedAddress)
                 }
             }
@@ -41,7 +52,6 @@ class EthereumViewModel
             chainId: String,
             chainName: String,
             rpcUrls: String,
-            onSuccess: (message: String) -> Unit,
             onError: (message: String) -> Unit,
         ) {
             val addChainParams: Map<String, Any> =
@@ -59,12 +69,6 @@ class EthereumViewModel
             ethereum.sendRequest(addChainRequest) { result ->
                 if (result is RequestError) {
                     onError("Add chain error: ${result.message}")
-                } else {
-                    if (chainId == ethereum.chainId) {
-                        onSuccess("Successfully switched to ${Network.chainNameFor(chainId)} ($chainId)")
-                    } else {
-                        onSuccess("Successfully added ${Network.chainNameFor(chainId)} ($chainId)")
-                    }
                 }
             }
         }
@@ -73,7 +77,6 @@ class EthereumViewModel
             chainId: String,
             chainName: String,
             rpcUrls: String,
-            onSuccess: (message: String) -> Unit,
             onError: (message: String, action: (() -> Unit)?) -> Unit,
         ) {
             val hexChainId = "0x" + chainId.toLong().toString(16)
@@ -93,7 +96,6 @@ class EthereumViewModel
                                 hexChainId,
                                 chainName,
                                 rpcUrls,
-                                onSuccess = { result -> onSuccess(result) },
                                 onError = { error -> onError(error, null) },
                             )
                         }
@@ -101,9 +103,43 @@ class EthereumViewModel
                     } else {
                         onError("Switch 성공 에러", null)
                     }
-                } else {
-                    onSuccess("Switch 성공")
                 }
             }
+        }
+
+        fun transfer(
+            toAddress: String,
+            amount: String,
+        ) {
+            viewModelScope.launch {
+                nftRepository
+                    .transfer(
+                        TransferRequest(
+                            fromAddress = walletAddress.value,
+                            toAddress = toAddress,
+                            amount = amount,
+                        ),
+                    ).collectLatest {
+                        it?.let { transaction ->
+                            _transaction.value = transaction
+                        }
+                    }
+            }
+        }
+
+        fun sendTransaction() {
+            val params: MutableMap<String, Any> =
+                mutableMapOf(
+                    "from" to _transaction.value.from,
+                    "to" to _transaction.value.to,
+                    "data" to _transaction.value.data,
+                )
+
+            val transactionRequest =
+                EthereumRequest(
+                    method = EthereumMethod.ETH_SEND_TRANSACTION.value,
+                    params = listOf(params),
+                )
+            ethereum.run { sendRequest(transactionRequest) }
         }
     }

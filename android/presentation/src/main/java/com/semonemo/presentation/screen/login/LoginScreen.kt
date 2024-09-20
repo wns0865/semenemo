@@ -3,7 +3,6 @@ package com.semonemo.presentation.screen.login
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -26,10 +25,10 @@ import com.semonemo.presentation.BuildConfig
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BoldTextWithKeywords
 import com.semonemo.presentation.component.LongWhiteButton
-import com.semonemo.presentation.theme.SemonemoTheme
-import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.theme.Main02
+import com.semonemo.presentation.theme.SemonemoTheme
+import com.semonemo.presentation.theme.Typography
 
 @Composable
 fun LoginRoute(
@@ -80,26 +79,25 @@ fun LoginContent(
         onClicked = {
             viewModel.connect { result ->
                 if (result.contains("Error")) {
+                    // 에러 처리
                 } else {
                     viewModel.switchChain(
                         BuildConfig.CHAIN_ID,
                         BuildConfig.CHAIN_NAME,
                         BuildConfig.RPC_URLS,
-                        onSuccess = { message ->
-                            Log.d("jaehan", "addSuccess : $message")
-                        },
                         onError = { message, action ->
                             action?.let {
-                                Log.d("jaehan", "error success?")
                                 action()
                             } ?: run {
-                                Log.d("jaehan", "그냥 에러, $message")
+                                // 에러 처리
                             }
                         },
                     )
                 }
             }
         },
+        transfer = { viewModel.transfer(BuildConfig.CONTRACT_ADDRESS, "1") },
+        onSigned = viewModel::sendTransaction,
     )
 }
 
@@ -109,10 +107,12 @@ fun LoginScreen(
     popUpBackStack: () -> Unit = {},
     navigateToSignUp: () -> Unit = {},
     onClicked: () -> Unit = {},
+    transfer: () -> Unit = {},
+    onSigned: () -> Unit = {},
 ) {
     Column(
         modifier =
-            Modifier
+            modifier
                 .fillMaxSize()
                 .background(brush = Main01),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -134,7 +134,7 @@ fun LoginScreen(
             text = stringResource(id = R.string.app_name),
             style = Typography.titleLarge.copy(brush = Main02, fontSize = 40.sp),
         )
-        Spacer(modifier = Modifier.weight(0.3f))
+        Spacer(modifier = Modifier.weight(0.25f))
         Image(
             painter = painterResource(id = R.drawable.img_start_background),
             contentDescription = "",
