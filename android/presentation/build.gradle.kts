@@ -104,5 +104,5 @@ dependencies {
     implementation(libs.jetbrains.kotlinx.collections.immutable)
 
     // bottom navigation
-    implementation(libs.androidx.navigation.compose.v275)
+    implementation(libs.androidx.navigation.compose)
 }
