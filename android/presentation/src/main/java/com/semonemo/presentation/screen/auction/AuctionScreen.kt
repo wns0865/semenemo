@@ -13,12 +13,12 @@ import com.semonemo.presentation.screen.auction.subScreen.LongAuctionReadScreen
 import com.semonemo.presentation.screen.auction.subScreen.ShortAuctionReadScreen
 
 @Composable
-fun AuctionScreen() {
+fun AuctionScreen(modifier: Modifier = Modifier) {
     Column {
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = modifier.height(30.dp))
         SectionHeader(text = stringResource(R.string.in_progress_short_action))
         ShortAuctionReadScreen()
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = modifier.height(30.dp))
         SectionHeader(text = stringResource(R.string.in_progress_long_action))
         LongAuctionReadScreen()
     }
