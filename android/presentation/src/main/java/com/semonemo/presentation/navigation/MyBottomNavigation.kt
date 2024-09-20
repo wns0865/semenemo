@@ -43,7 +43,7 @@ fun MyBottomNavigation(
         listOf(
             BottomNavItem.Shop,
             BottomNavItem.Auction,
-            BottomNavItem.Coin,
+            BottomNavItem.Wallet,
             BottomNavItem.MyPage,
         )
 
@@ -137,7 +137,7 @@ fun MyBottomNavigation(
         MainNavHost(
             modifier = Modifier.padding(innerPadding),
             navController = navController,
-            startDestination = ScreenDestinations.Shop.route,
+            startDestination = ScreenDestinations.Login.route,
         )
     }
 }

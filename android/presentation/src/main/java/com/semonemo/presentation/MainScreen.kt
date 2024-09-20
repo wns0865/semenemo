@@ -90,7 +90,7 @@ fun MainNavHost(
         }
 
         composable(
-            route = ScreenDestinations.Coin.route,
+            route = ScreenDestinations.Wallet.route,
         ) {
             // 코인 스크린
             // 임시

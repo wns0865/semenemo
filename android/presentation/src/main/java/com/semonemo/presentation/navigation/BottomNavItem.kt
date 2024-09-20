@@ -24,11 +24,11 @@ sealed class BottomNavItem(
         route = ScreenDestinations.Auction.route,
     )
 
-    data object Coin : BottomNavItem(
-        title = R.string.coin_title,
+    data object Wallet : BottomNavItem(
+        title = R.string.wallet_title,
         icon = R.drawable.ic_bot_nav_outline_coin,
         iconSelected = R.drawable.ic_bot_nav_fill_coin,
-        route = ScreenDestinations.Coin.route,
+        route = ScreenDestinations.Wallet.route,
     )
 
     data object MyPage : BottomNavItem(

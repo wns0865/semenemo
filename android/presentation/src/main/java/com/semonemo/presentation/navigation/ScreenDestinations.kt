@@ -28,7 +28,7 @@ sealed class ScreenDestinations(
 
     data object Moment : ScreenDestinations(route = "moment")
 
-    data object Coin : ScreenDestinations(route = "coin")
+    data object Wallet : ScreenDestinations(route = "wallet")
 
     data object MyPage : ScreenDestinations(route = "mypage")
 }
