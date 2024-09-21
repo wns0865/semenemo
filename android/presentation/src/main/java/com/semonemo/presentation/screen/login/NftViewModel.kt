@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class EthereumViewModel
+class NftViewModel
     @Inject
     constructor(
         private val ethereum: Ethereum,
@@ -78,6 +78,7 @@ class EthereumViewModel
             chainName: String,
             rpcUrls: String,
             onError: (message: String, action: (() -> Unit)?) -> Unit,
+            onSuccess: (String) -> Unit,
         ) {
             val hexChainId = "0x" + chainId.toLong().toString(16)
             val switchChainParams: Map<String, String> = mapOf("chainId" to hexChainId)
@@ -103,6 +104,8 @@ class EthereumViewModel
                     } else {
                         onError("Switch 성공 에러", null)
                     }
+                } else {
+                    onSuccess(result.toString())
                 }
             }
         }
