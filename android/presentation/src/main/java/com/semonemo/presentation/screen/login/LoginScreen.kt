@@ -39,13 +39,11 @@ fun LoginRoute(
     modifier: Modifier = Modifier,
     popUpBackStack: () -> Unit = {},
     navigateToSignUp: () -> Unit = {},
-    viewModel: EthereumViewModel = hiltViewModel(),
 ) {
     LoginContent(
         modifier = modifier,
         popUpBackStack = popUpBackStack,
         navigateToSignUp = navigateToSignUp,
-        viewModel = viewModel,
     )
 }
 
@@ -54,7 +52,8 @@ fun LoginContent(
     modifier: Modifier = Modifier,
     popUpBackStack: () -> Unit,
     navigateToSignUp: () -> Unit,
-    viewModel: EthereumViewModel = hiltViewModel(),
+    nftViewModel: NftViewModel = hiltViewModel(),
+    loginViewModel: LoginViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
     val isInstalled = checkIfMetaMaskInstalled(context)
@@ -89,11 +88,11 @@ fun LoginContent(
             if (isInstalled.not()) { // 설치 안된 경우
                 setShowDialog(true) //
             } else {
-                viewModel.connect { result ->
+                nftViewModel.connect { result ->
                     if (result.contains("Error")) {
                         // 에러 처리
                     } else {
-                        viewModel.switchChain(
+                        nftViewModel.switchChain(
                             BuildConfig.CHAIN_ID,
                             BuildConfig.CHAIN_NAME,
                             BuildConfig.RPC_URLS,
@@ -104,13 +103,14 @@ fun LoginContent(
                                     // 에러 처리
                                 }
                             },
+                            onSuccess = { address -> loginViewModel.existUser(result) },
                         )
                     }
                 }
             }
         },
-        transfer = { viewModel.transfer(BuildConfig.CONTRACT_ADDRESS, "1") },
-        onSigned = viewModel::sendTransaction,
+        transfer = { nftViewModel.transfer(BuildConfig.CONTRACT_ADDRESS, "1") },
+        onSigned = nftViewModel::sendTransaction,
     )
 }
 
