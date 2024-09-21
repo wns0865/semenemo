@@ -1,4 +1,4 @@
-package com.semonemo.data.network
+package com.semonemo.data.network.interceptor
 
 import com.google.gson.Gson
 import com.semonemo.data.network.response.ApiException
@@ -23,6 +23,7 @@ class ErrorHandlingInterceptor : Interceptor {
                 is IOException,
                 is SSLHandshakeException,
                 -> throw IOException(e)
+
                 else -> throw e
             }
         }

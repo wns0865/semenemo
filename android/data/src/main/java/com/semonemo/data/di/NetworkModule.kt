@@ -3,7 +3,7 @@ package com.semonemo.data.di
 import com.google.gson.GsonBuilder
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.semonemo.data.BuildConfig
-import com.semonemo.data.network.ErrorHandlingInterceptor
+import com.semonemo.data.network.interceptor.ErrorHandlingInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
