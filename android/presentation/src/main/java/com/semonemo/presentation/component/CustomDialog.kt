@@ -81,8 +81,8 @@ fun CustomDialog(
                         fullText = title,
                         keywords = titleKeywords,
                         brushFlag = titleBrushFlag,
-                        boldStyle = Typography.titleSmall.copy(fontSize = 18.sp),
-                        normalStyle = Typography.labelSmall.copy(fontSize = 16.sp),
+                        boldStyle = Typography.bodyLarge.copy(fontSize = 20.sp),
+                        normalStyle = Typography.labelSmall.copy(fontSize = 18.sp),
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     BoldTextWithKeywords(
@@ -90,8 +90,8 @@ fun CustomDialog(
                         fullText = content,
                         keywords = contentKeywords,
                         brushFlag = contentBrushFlag,
-                        boldStyle = Typography.titleSmall.copy(fontSize = 16.sp),
-                        normalStyle = Typography.labelSmall.copy(fontSize = 14.sp),
+                        boldStyle = Typography.bodyLarge.copy(fontSize = 18.sp),
+                        normalStyle = Typography.labelSmall.copy(fontSize = 16.sp),
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Row {
