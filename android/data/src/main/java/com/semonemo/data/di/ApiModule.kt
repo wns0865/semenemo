@@ -1,5 +1,6 @@
 package com.semonemo.data.di
 
+import com.semonemo.data.network.api.AuthApi
 import com.semonemo.data.network.api.NFTApi
 import dagger.Module
 import dagger.Provides
@@ -18,4 +19,10 @@ object ApiModule {
     fun provideNFTApi(
         @Named("Node") retrofit: Retrofit,
     ): NFTApi = retrofit.create()
+
+    @Provides
+    @Singleton
+    fun provideAuthApi(
+        @Named("Spring") retrofit: Retrofit,
+    ): AuthApi = retrofit.create()
 }
