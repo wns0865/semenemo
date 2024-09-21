@@ -1,7 +1,9 @@
 package com.semonemo.data.di
 
+import com.google.gson.GsonBuilder
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.semonemo.data.BuildConfig
+import com.semonemo.data.network.ErrorHandlingInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -11,6 +13,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Named
 import javax.inject.Singleton
@@ -31,7 +34,7 @@ object NetworkModule {
             }
         return Retrofit
             .Builder()
-            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+            .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
             .baseUrl(BuildConfig.SEVER_URL + BuildConfig.SPRING_PORT_NUMBER)
             .client(okHttpClient)
             .build()
@@ -61,6 +64,7 @@ object NetworkModule {
     fun provideOkHttpClient() =
         OkHttpClient.Builder().run {
             addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+            addInterceptor(ErrorHandlingInterceptor())
             connectTimeout(10, TimeUnit.SECONDS)
             readTimeout(10, TimeUnit.SECONDS)
             writeTimeout(10, TimeUnit.SECONDS)
