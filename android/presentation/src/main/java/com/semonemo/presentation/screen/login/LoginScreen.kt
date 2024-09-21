@@ -101,6 +101,14 @@ fun LoginContent(
     )
 }
 
+fun checkIfMetaMaskInstalled(context: Context): Boolean =
+    try {
+        context.packageManager.getPackageInfo("io.metamask", 0)
+        true
+    } catch (e: PackageManager.NameNotFoundException) {
+        false
+    }
+
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
