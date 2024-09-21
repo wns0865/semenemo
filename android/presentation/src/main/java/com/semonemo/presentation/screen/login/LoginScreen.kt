@@ -1,5 +1,6 @@
 package com.semonemo.presentation.screen.login
 
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -12,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -24,6 +27,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.semonemo.presentation.BuildConfig
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BoldTextWithKeywords
+import com.semonemo.presentation.component.CustomDialog
 import com.semonemo.presentation.component.LongWhiteButton
 import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.theme.Main02
@@ -53,46 +57,55 @@ fun LoginContent(
     viewModel: EthereumViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
-    val packageManager = context.packageManager
-    val packageName = BuildConfig.METAMASK_PACKAGE_NAME
-    val isInstalled: Boolean =
-        try {
-            packageManager.getPackageInfo(packageName, 0)
-            true
-        } catch (e: PackageManager.NameNotFoundException) {
-            false
-        }
-
-    if (isInstalled.not()) {
-        val intent =
-            Intent(
-                Intent.ACTION_VIEW,
-                Uri.parse(BuildConfig.METAMASK_PLAY_STORE_PATH),
-            )
-        context.startActivity(intent)
+    val isInstalled = checkIfMetaMaskInstalled(context)
+    val (showDialog, setShowDialog) = remember { mutableStateOf(false) }
+    if (showDialog) {
+        CustomDialog(
+            title = "MetaMask를 설치하러가시겠습니까?",
+            content =
+                "세모네모를 이용하기 위해서는\n MetaMask 연동이 필수적이에요.",
+            onConfirmMessage = "네",
+            onDismissMessage = "취소",
+            titleKeywords = listOf("MetaMask"),
+            contentKeywords = listOf("필수적"),
+            titleBrushFlag = listOf(false),
+            contentBrushFlag = listOf(false),
+            onDismiss = { setShowDialog(false) },
+            onConfirm = {
+                val intent =
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse(BuildConfig.METAMASK_PLAY_STORE_PATH),
+                    )
+                context.startActivity(intent)
+            },
+        )
     }
-
     LoginScreen(
         modifier = modifier,
         popUpBackStack,
         navigateToSignUp,
         onClicked = {
-            viewModel.connect { result ->
-                if (result.contains("Error")) {
-                    // 에러 처리
-                } else {
-                    viewModel.switchChain(
-                        BuildConfig.CHAIN_ID,
-                        BuildConfig.CHAIN_NAME,
-                        BuildConfig.RPC_URLS,
-                        onError = { message, action ->
-                            action?.let {
-                                action()
-                            } ?: run {
-                                // 에러 처리
-                            }
-                        },
-                    )
+            if (isInstalled.not()) { // 설치 안된 경우
+                setShowDialog(true) //
+            } else {
+                viewModel.connect { result ->
+                    if (result.contains("Error")) {
+                        // 에러 처리
+                    } else {
+                        viewModel.switchChain(
+                            BuildConfig.CHAIN_ID,
+                            BuildConfig.CHAIN_NAME,
+                            BuildConfig.RPC_URLS,
+                            onError = { message, action ->
+                                action?.let {
+                                    action()
+                                } ?: run {
+                                    // 에러 처리
+                                }
+                            },
+                        )
+                    }
                 }
             }
         },
