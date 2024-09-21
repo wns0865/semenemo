@@ -81,6 +81,7 @@ fun HashTagTextField(
             KeyboardActions(onDone = {
                 focusManager.clearFocus()
                 onTagAddAction(keyword)
+                setKeyword("")
             }),
         textStyle = Typography.labelSmall.copy(fontSize = 14.sp, fontWeight = FontWeight.SemiBold),
         leadingIcon = {
