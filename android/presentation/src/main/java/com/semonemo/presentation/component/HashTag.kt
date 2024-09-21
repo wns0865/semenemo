@@ -1,22 +1,27 @@
 package com.semonemo.presentation.component
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.semonemo.presentation.theme.Gray02
+import com.semonemo.presentation.theme.Gray01
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.SemonemoTheme
+import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.WhiteGray
 import com.semonemo.presentation.util.noRippleClickable
 
@@ -36,32 +41,42 @@ fun HashTag(
     isEdit: Boolean = false,
     onCloseClicked: () -> Unit = {},
 ) {
-    AssistChip(
-        modifier = modifier.wrapContentHeight(),
-        border = null,
-        onClick = onTagClicked,
+    Surface(
+        modifier =
+            modifier
+                .wrapContentSize()
+                .clickable(
+                    onClick = onTagClicked,
+                ),
         shape = RoundedCornerShape(8.dp),
-        label = { Text(text = "# $keyword") },
-        trailingIcon = {
+        color = WhiteGray,
+    ) {
+        Row(
+            modifier =
+                Modifier
+                    .wrapContentSize()
+                    .padding(horizontal = 10.dp, vertical = 5.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "# $keyword",
+                style = Typography.labelMedium,
+                color = GunMetal,
+            )
             if (isEdit) {
+                Spacer(modifier = Modifier.width(3.dp))
                 Icon(
-                    modifier = Modifier.size(15.dp).noRippleClickable { onCloseClicked() },
+                    modifier =
+                        Modifier
+                            .size(12.dp)
+                            .noRippleClickable { onCloseClicked() },
                     imageVector = Icons.Default.Close,
                     contentDescription = null,
+                    tint = Gray01,
                 )
             }
-        },
-        colors =
-            AssistChipDefaults.assistChipColors(
-                containerColor = WhiteGray,
-                labelColor = GunMetal,
-                leadingIconContentColor = Color.Transparent,
-                trailingIconContentColor = Gray02,
-                disabledContainerColor = Color.Transparent,
-                disabledLabelColor = Color.Transparent,
-                disabledLeadingIconContentColor = Color.Transparent,
-            ),
-    )
+        }
+    }
 }
 
 @Composable
