@@ -61,7 +61,7 @@ val Typography =
             ),
         labelSmall =
             TextStyle(
-                fontFamily = FontFamily(Font(R.font.pretendard_regular)),
+                fontFamily = FontFamily(Font(R.font.pretendard_medium)),
                 fontSize = 12.sp,
                 letterSpacing = letterSpacing,
             ),
