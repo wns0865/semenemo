@@ -31,7 +31,6 @@ import com.semonemo.presentation.theme.White
 /**
  * TODO
  *
- * @param modifier
  * @param content  : 내용
  * @param title   : 제목
  * @param onConfirmMessage : 확인 버튼 메시지
@@ -81,8 +80,8 @@ fun CustomDialog(
                         fullText = title,
                         keywords = titleKeywords,
                         brushFlag = titleBrushFlag,
-                        boldStyle = Typography.bodyLarge.copy(fontSize = 20.sp),
-                        normalStyle = Typography.labelSmall.copy(fontSize = 18.sp),
+                        boldStyle = Typography.bodyMedium.copy(fontSize = 18.sp),
+                        normalStyle = Typography.labelMedium.copy(fontSize = 18.sp),
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     BoldTextWithKeywords(
@@ -90,8 +89,8 @@ fun CustomDialog(
                         fullText = content,
                         keywords = contentKeywords,
                         brushFlag = contentBrushFlag,
-                        boldStyle = Typography.bodyLarge.copy(fontSize = 18.sp),
-                        normalStyle = Typography.labelSmall.copy(fontSize = 16.sp),
+                        boldStyle = Typography.bodyMedium.copy(fontSize = 14.sp),
+                        normalStyle = Typography.labelMedium.copy(fontSize = 14.sp),
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Row {
@@ -110,10 +109,10 @@ fun CustomDialog(
                         ) {
                             Text(
                                 text = onConfirmMessage,
-                                style = Typography.bodySmall,
+                                style = Typography.bodySmall.copy(fontSize = 14.sp),
                             )
                         }
-                        Spacer(modifier = Modifier.weight(0.1f))
+                        Spacer(modifier = Modifier.width(10.dp))
                         Button(
                             modifier =
                                 Modifier
@@ -130,7 +129,7 @@ fun CustomDialog(
                         ) {
                             Text(
                                 text = onDismissMessage,
-                                style = Typography.bodySmall,
+                                style = Typography.bodySmall.copy(fontSize = 14.sp),
                             )
                         }
                     }
