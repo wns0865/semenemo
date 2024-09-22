@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -91,6 +92,7 @@ fun CustomDialog(
                         brushFlag = contentBrushFlag,
                         boldStyle = Typography.bodyMedium.copy(fontSize = 14.sp),
                         normalStyle = Typography.labelMedium.copy(fontSize = 14.sp),
+                        alignStyle = TextAlign.Center,
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Row {
@@ -145,7 +147,8 @@ fun CustomDialogPreview() {
     SemonemoTheme {
         CustomDialog(
             title = "해당 NFT를 공개로 변경하시겠습니까?",
-            content = "NFT 공개 변경 시 사용자들에게 판매할 수 있으며,\n" +
+            content =
+                "NFT 공개 변경 시 사용자들에게 판매할 수 있으며,\n" +
                     "원할 때 언제든 다시 비공개로 변경할 수 있어요.",
             onDismissMessage = "취소",
             onConfirmMessage = "변경",
