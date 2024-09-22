@@ -21,9 +21,10 @@ android {
         buildConfigField("String", "CHAIN_NAME", properties["CHAIN_NAME"] as String)
         buildConfigField("String", "RPC_URLS", properties["RPC_URLS"] as String)
         buildConfigField("String", "SEVER_URL", properties["SEVER_URL"] as String)
-        buildConfigField("String", "PORT_NUMBER", properties["PORT_NUMBER"] as String)
+        buildConfigField("String", "SPRING_PORT_NUMBER", properties["SPRING_PORT_NUMBER"] as String)
         buildConfigField("String", "METAMASK_PACKAGE_NAME", properties["METAMASK_PACKAGE_NAME"] as String)
         buildConfigField("String", "METAMASK_PLAY_STORE_PATH", properties["METAMASK_PLAY_STORE_PATH"] as String)
+        buildConfigField("String", "CONTRACT_ADDRESS", properties["CONTRACT_ADDRESS"] as String)
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
@@ -61,6 +62,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":domain"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -76,14 +78,18 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
     // hilt
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
     kapt(libs.hilt.compiler)
+
     // coroutines
     implementation(libs.bundles.coroutines)
+
     // lottie
     implementation(libs.lottie)
+
     // MetaMask
     implementation(libs.metamask.android.sdk)
 
@@ -93,6 +99,12 @@ dependencies {
 
     // glide with landscapist
     implementation(libs.landscapist.glide)
+
+    // immutable dependency
+    implementation(libs.jetbrains.kotlinx.collections.immutable)
+
+    // bottom navigation
+    implementation(libs.androidx.navigation.compose)
     // MultiFloatActionButton
     implementation(libs.multifab)
 }

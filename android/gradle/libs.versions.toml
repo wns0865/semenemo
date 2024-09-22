@@ -21,15 +21,12 @@ okhttp = "4.11.0"
 kotlinx-serialization = "1.6.0"
 kotlinx-serialization-converter = "1.0.0"
 coroutines = "1.8.0"
-navigationCompose = "2.8.0"
+navigationCompose = "2.8.1"
 lottie = "5.2.0"
-lifecycleRuntimeComposeAndroid = "2.8.5"
 ksp = "1.9.22-1.0.16"
 kotlinxSerializationCore = "1.5.1"
-appcompat = "1.7.0"
-material = "1.12.0"
-web3wallet = "1.4.1"
 web3walletVersion = "1.35.1"
+kotlinxCollectionsImmutableVersion = "0.3.5"
 [libraries]
 multifab = { module = "com.github.iamageo:MultiFab", version.ref = "multifab" }
 wallet-android-core = { module = "com.walletconnect:android-core", version.ref = "androidCoreVersion" }
@@ -64,8 +61,10 @@ gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 web3wallet = { module = "com.walletconnect:web3wallet", version.ref = "web3walletVersion" }
+jetbrains-kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutableVersion" }
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 [bundles]
-network = ["retrofit", "okhttp-logging-interceptor", "gson", "kotlinx-serialization-json", "kotlinx-serialization-converter", "kotlinx-serialization-core"] #"converter-gson"
+network = ["retrofit", "okhttp-logging-interceptor", "gson", "kotlinx-serialization-json", "kotlinx-serialization-converter", "kotlinx-serialization-core","converter-gson"]
 coroutines = ["coroutines-android", "coroutines-core"]
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
