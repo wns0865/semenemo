@@ -9,13 +9,13 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.semonemo.presentation.R
-import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.Main02
-import com.semonemo.presentation.theme.SemonemoTheme
+import com.semonemo.presentation.theme.Typography
 
 /*
 @Param  fullText : 전체 텍스트
@@ -81,7 +81,11 @@ fun BoldTextWithKeywords(
             }
         }
 
-    Text(modifier = modifier, text = annotatedText)
+    Text(
+        modifier = modifier,
+        text = annotatedText,
+        textAlign = TextAlign.Center,
+    )
 }
 
 @Preview(showBackground = true)
