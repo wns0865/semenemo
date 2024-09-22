@@ -19,6 +19,7 @@ import com.semonemo.presentation.screen.login.LoginRoute
 import com.semonemo.presentation.screen.login.RegisterRoute
 import com.semonemo.presentation.screen.moment.MomentScreen
 import com.semonemo.presentation.screen.mypage.MyPageScreen
+import com.semonemo.presentation.screen.wallet.WalletScreen
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
@@ -92,9 +93,7 @@ fun MainNavHost(
         composable(
             route = ScreenDestinations.Wallet.route,
         ) {
-            // 코인 스크린
-            // 임시
-            DrawAssetScreen()
+            WalletScreen()
         }
 
         composable(
