@@ -1,6 +1,7 @@
 package com.semonemo.presentation.screen.ai_asset
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -59,6 +60,7 @@ fun AssetDoneScreen(modifier: Modifier = Modifier) {
                 .fillMaxSize()
                 .statusBarsPadding()
                 .navigationBarsPadding()
+                .background(color = Color.White)
                 .addFocusCleaner(
                     focusManager = focusManager,
                 ),

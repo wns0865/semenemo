@@ -9,20 +9,26 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.semonemo.presentation.R
-import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.Main02
-import com.semonemo.presentation.theme.SemonemoTheme
+import com.semonemo.presentation.theme.Typography
 
-/*
-@Param  fullText : 전체 텍스트
-        keywords : 강조할 키워드
-        brushFlag : brush 여부 , true -> brush on | false -> brush off
-        style : TextStyle
+/**
+ * TODO
+ *
+ * @param modifier
+ * @param fullText : 전체 텍스트
+ * @param keywords : 강조 키워드
+ * @param brushFlag : brush 여부, true -> brush on | false -> brush off
+ * @param boldStyle : 키워드에 적용될 스타일
+ * @param normalStyle : 일반 텍스트에 적용될 스타일
+ * @param alignStyle : 정렬 방식
  */
+
 @Composable
 fun BoldTextWithKeywords(
     modifier: Modifier = Modifier,
@@ -30,7 +36,8 @@ fun BoldTextWithKeywords(
     keywords: List<String>,
     brushFlag: List<Boolean>,
     boldStyle: TextStyle, // 키워드에 적용될 스타일
-    normalStyle: TextStyle, // 일반 텍스트에 적용될 스타일
+    normalStyle: TextStyle, // 일반 텍스트에 적용될 스타일,
+    alignStyle: TextAlign? = TextAlign.Start,
 ) {
     val annotatedText =
         buildAnnotatedString {
@@ -81,7 +88,11 @@ fun BoldTextWithKeywords(
             }
         }
 
-    Text(modifier = modifier, text = annotatedText)
+    Text(
+        modifier = modifier,
+        text = annotatedText,
+        textAlign = alignStyle,
+    )
 }
 
 @Preview(showBackground = true)
