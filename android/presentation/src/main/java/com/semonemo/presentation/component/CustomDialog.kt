@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,7 +32,6 @@ import com.semonemo.presentation.theme.White
 /**
  * TODO
  *
- * @param modifier
  * @param content  : 내용
  * @param title   : 제목
  * @param onConfirmMessage : 확인 버튼 메시지
@@ -81,8 +81,8 @@ fun CustomDialog(
                         fullText = title,
                         keywords = titleKeywords,
                         brushFlag = titleBrushFlag,
-                        boldStyle = Typography.bodyLarge.copy(fontSize = 20.sp),
-                        normalStyle = Typography.labelSmall.copy(fontSize = 18.sp),
+                        boldStyle = Typography.bodyMedium.copy(fontSize = 18.sp),
+                        normalStyle = Typography.labelMedium.copy(fontSize = 18.sp),
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     BoldTextWithKeywords(
@@ -90,8 +90,9 @@ fun CustomDialog(
                         fullText = content,
                         keywords = contentKeywords,
                         brushFlag = contentBrushFlag,
-                        boldStyle = Typography.bodyLarge.copy(fontSize = 18.sp),
-                        normalStyle = Typography.labelSmall.copy(fontSize = 16.sp),
+                        boldStyle = Typography.bodyMedium.copy(fontSize = 14.sp),
+                        normalStyle = Typography.labelMedium.copy(fontSize = 14.sp),
+                        alignStyle = TextAlign.Center,
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Row {
@@ -110,10 +111,10 @@ fun CustomDialog(
                         ) {
                             Text(
                                 text = onConfirmMessage,
-                                style = Typography.bodySmall,
+                                style = Typography.bodySmall.copy(fontSize = 14.sp),
                             )
                         }
-                        Spacer(modifier = Modifier.weight(0.1f))
+                        Spacer(modifier = Modifier.width(10.dp))
                         Button(
                             modifier =
                                 Modifier
@@ -130,7 +131,7 @@ fun CustomDialog(
                         ) {
                             Text(
                                 text = onDismissMessage,
-                                style = Typography.bodySmall,
+                                style = Typography.bodySmall.copy(fontSize = 14.sp),
                             )
                         }
                     }
@@ -146,7 +147,8 @@ fun CustomDialogPreview() {
     SemonemoTheme {
         CustomDialog(
             title = "해당 NFT를 공개로 변경하시겠습니까?",
-            content = "NFT 공개 변경 시 사용자들에게 판매할 수 있으며,\n" +
+            content =
+                "NFT 공개 변경 시 사용자들에게 판매할 수 있으며,\n" +
                     "원할 때 언제든 다시 비공개로 변경할 수 있어요.",
             onDismissMessage = "취소",
             onConfirmMessage = "변경",

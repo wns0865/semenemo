@@ -111,17 +111,14 @@ fun MyPageScreen() {
                 size = 18,
             )
             Spacer(modifier = Modifier.fillMaxHeight(0.04f))
-            Box(
+            Image(
                 modifier =
                     Modifier
                         .size(120.dp)
                         .clip(shape = CircleShape),
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.img_example),
-                    contentDescription = null,
-                )
-            }
+                painter = painterResource(id = R.drawable.img_example),
+                contentDescription = null,
+            )
             Spacer(modifier = Modifier.fillMaxHeight(0.05f))
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -277,7 +274,7 @@ fun MyPageScreen() {
 }
 
 @Composable
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = true)
 fun MyPageScreenPreview() {
     SemonemoTheme {
         MyPageScreen()
