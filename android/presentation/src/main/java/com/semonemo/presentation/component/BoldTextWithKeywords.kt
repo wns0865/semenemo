@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.semonemo.presentation.R
 import com.semonemo.presentation.theme.Main02
+import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 
 /**
@@ -49,6 +50,7 @@ fun BoldTextWithKeywords(
                     withStyle(
                         style =
                             SpanStyle(
+                                fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                                 fontWeight = normalStyle.fontWeight ?: FontWeight.Normal,
                                 fontSize = normalStyle.fontSize,
                                 color = normalStyle.color,
@@ -77,6 +79,7 @@ fun BoldTextWithKeywords(
                 withStyle(
                     style =
                         SpanStyle(
+                            fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                             fontWeight = normalStyle.fontWeight ?: FontWeight.Normal,
                             fontSize = normalStyle.fontSize,
                             color = normalStyle.color,
@@ -98,15 +101,17 @@ fun BoldTextWithKeywords(
 @Preview(showBackground = true)
 @Composable
 fun PreviewBoldTextWithKeywords() {
-    val text = "오늘의 추억을 프레임 속에 담다"
-    val boldKeywords = listOf("추억", "프레임")
-    val brushFlag = listOf(true, true)
-    BoldTextWithKeywords(
-        modifier = Modifier,
-        fullText = text,
-        keywords = boldKeywords,
-        brushFlag,
-        boldStyle = Typography.titleSmall.copy(fontSize = 17.sp),
-        normalStyle = Typography.labelLarge,
-    )
+    SemonemoTheme {
+        val text = "오늘의 추억을 프레임 속에 담다"
+        val boldKeywords = listOf("추억", "프레임")
+        val brushFlag = listOf(true, true)
+        BoldTextWithKeywords(
+            modifier = Modifier,
+            fullText = text,
+            keywords = boldKeywords,
+            brushFlag,
+            boldStyle = Typography.titleSmall.copy(fontSize = 16.sp),
+            normalStyle = Typography.labelMedium.copy(fontSize = 16.sp),
+        )
+    }
 }
