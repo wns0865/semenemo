@@ -22,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.semonemo.presentation.R
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
@@ -70,7 +71,7 @@ fun LongWhiteButton(
                 Text(
                     modifier = Modifier.wrapContentSize(),
                     text = text,
-                    style = Typography.bodySmall,
+                    style = Typography.bodySmall.copy(fontSize = 15.sp),
                     textAlign = TextAlign.Center,
                 )
             }
