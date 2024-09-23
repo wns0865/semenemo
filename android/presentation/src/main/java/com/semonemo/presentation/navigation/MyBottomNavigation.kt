@@ -4,12 +4,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemColors
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +30,7 @@ import com.semonemo.presentation.MainNavHost
 import com.semonemo.presentation.R
 import com.semonemo.presentation.theme.Gray01
 import com.semonemo.presentation.theme.GunMetal
+import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 
 @Composable
@@ -48,7 +50,6 @@ fun MyBottomNavigation(
         )
 
     Scaffold(
-        modifier = modifier.navigationBarsPadding(),
         bottomBar = {
             BottomAppBar(
                 modifier =
@@ -70,14 +71,12 @@ fun MyBottomNavigation(
 
                     NavigationBarItem(
                         colors =
-                            NavigationBarItemColors(
+                            NavigationBarItemDefaults.colors(
+                                indicatorColor = Color.Transparent,
                                 selectedIconColor = GunMetal,
                                 unselectedIconColor = Gray01,
-                                selectedIndicatorColor = Color.Unspecified,
                                 selectedTextColor = GunMetal,
                                 unselectedTextColor = Gray01,
-                                disabledIconColor = Color.Unspecified,
-                                disabledTextColor = Color.Unspecified,
                             ),
                         selected = currentRoute == item.route,
                         label = {
@@ -145,5 +144,8 @@ fun MyBottomNavigation(
 @Preview(showBackground = true)
 @Composable
 fun MyBottomNavigationPreview() {
-    MyBottomNavigation(navController = rememberNavController())
+    SemonemoTheme {
+        val navController = rememberNavController()
+        MyBottomNavigation(navController = navController)
+    }
 }
