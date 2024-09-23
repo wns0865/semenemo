@@ -23,7 +23,7 @@ import com.semonemo.presentation.screen.login.LoginRoute
 import com.semonemo.presentation.screen.login.LoginViewModel
 import com.semonemo.presentation.screen.moment.MomentScreen
 import com.semonemo.presentation.screen.mypage.MyPageScreen
-import com.semonemo.presentation.screen.register.RegisterRoute
+import com.semonemo.presentation.screen.signup.SignUpRoute
 import com.semonemo.presentation.screen.wallet.WalletScreen
 
 @Composable
@@ -71,7 +71,7 @@ fun MainNavHost(
             arguments = ScreenDestinations.Register.arguments,
         ) { navBackStackEntry ->
             val viewModel = navBackStackEntry.sharedViewModel<LoginViewModel>(navController)
-            RegisterRoute(
+            SignUpRoute(
                 modifier = modifier,
                 popUpBackStack = navController::popBackStack,
             )

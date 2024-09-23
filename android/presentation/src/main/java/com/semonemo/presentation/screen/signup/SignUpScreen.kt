@@ -1,4 +1,4 @@
-package com.semonemo.presentation.screen.register
+package com.semonemo.presentation.screen.signup
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -19,22 +20,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BoldTextWithKeywords
+import com.semonemo.presentation.component.CustomPasswordTextField
 import com.semonemo.presentation.component.CustomTextField
 import com.semonemo.presentation.component.LongBlackButton
+import com.semonemo.presentation.component.LongUnableButton
 import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
+import com.semonemo.presentation.util.Validator
 import com.semonemo.presentation.util.addFocusCleaner
 
 @Composable
-fun RegisterRoute(
+fun SignUpRoute(
     modifier: Modifier = Modifier,
     popUpBackStack: () -> Unit = {},
     navigateToMain: () -> Unit = {},
 ) {
-    RegisterContent(
+    SignUpContent(
         modifier = modifier,
         popUpBackStack = popUpBackStack,
         navigateToMain = navigateToMain,
@@ -42,24 +47,37 @@ fun RegisterRoute(
 }
 
 @Composable
-fun RegisterContent(
+fun SignUpContent(
     modifier: Modifier,
     popUpBackStack: () -> Unit,
     navigateToMain: () -> Unit,
-    registerViewModel: RegisterViewModel = hiltViewModel(),
+    signUpViewModel: SignUpViewModel = hiltViewModel(),
 ) {
-    RegisterScreen(
+    val uiState by signUpViewModel.uiState.collectAsStateWithLifecycle()
+    SignUpScreen(
         modifier = modifier,
         popUpBackStack = popUpBackStack,
         navigateToMain = navigateToMain,
+        nickname = uiState.nickname,
+        password = uiState.password,
+        profile = uiState.profileImageUrl,
+        updateNickname = { signUpViewModel.updateNickname(it) },
+        updatePassword = { signUpViewModel.updatePassword(it) },
+        updateProfile = { signUpViewModel.updateProfileImageUrl(it) },
     )
 }
 
 @Composable
-fun RegisterScreen(
+fun SignUpScreen(
     modifier: Modifier = Modifier,
     popUpBackStack: () -> Unit = {},
     navigateToMain: () -> Unit = {},
+    nickname: String = "",
+    password: String = "",
+    profile: String = "",
+    updateNickname: (String) -> Unit = {},
+    updatePassword: (String) -> Unit = {},
+    updateProfile: (String) -> Unit = {},
 ) {
     val focusManager = LocalFocusManager.current
     Column(
@@ -101,27 +119,42 @@ fun RegisterScreen(
         CustomTextField(
             modifier = Modifier.fillMaxWidth(0.88f),
             focusManager = focusManager,
-            errorMessage = "",
-            nickName = "",
-            onClearPressed = {},
-            onValueChange = {},
+            errorMessage = Validator.validationNickname(nickname),
+            input = nickname,
+            onClearPressed = { updateNickname("") },
+            onValueChange = { updateNickname(it) },
             placeholder = stringResource(R.string.input_nickname_message),
         )
-        Spacer(modifier = Modifier.weight(0.1f))
-        CustomTextField(
+        Spacer(modifier = Modifier.weight(0.3f))
+        CustomPasswordTextField(
             modifier = Modifier.fillMaxWidth(0.88f),
             focusManager = focusManager,
-            errorMessage = "",
-            nickName = "",
-            onClearPressed = {},
-            onValueChange = {},
+            errorMessage = Validator.validationPassword(password),
+            input = password,
+            onClearPressed = { updatePassword("") },
+            onValueChange = { updatePassword(it) },
             placeholder = stringResource(R.string.input_password_message),
+            isPasswordField = true,
         )
         Spacer(modifier = Modifier.weight(0.3f))
-        LongBlackButton(
-            icon = null,
-            text = stringResource(R.string.register_message),
-        )
+        if (nickname.isNotBlank() &&
+            password.isNotBlank() &&
+            Validator.validationNickname(nickname).isEmpty() &&
+            Validator
+                .validationPassword(
+                    password,
+                ).isEmpty()
+        ) {
+            LongBlackButton(
+                icon = null,
+                text = stringResource(R.string.register_message),
+            )
+        } else {
+            LongUnableButton(
+                modifier = Modifier.fillMaxWidth(0.88f),
+                text = stringResource(id = R.string.register_message),
+            )
+        }
         Spacer(modifier = Modifier.weight(1f))
     }
 }
@@ -130,6 +163,6 @@ fun RegisterScreen(
 @Preview(showSystemUi = true)
 fun RegisterScreenPreview() {
     SemonemoTheme {
-        RegisterScreen(modifier = Modifier.fillMaxSize())
+        SignUpScreen(modifier = Modifier.fillMaxSize())
     }
 }
