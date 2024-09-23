@@ -26,6 +26,7 @@ import com.semonemo.presentation.R
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.Gray03
+import com.semonemo.presentation.theme.White
 
 /*
 @Param  icon : 버튼에 들어갈 아이콘. 없다면 null
@@ -42,7 +43,7 @@ fun LongWhiteButton(
     Surface(
         onClick = onClick,
         shape = RoundedCornerShape(14.dp), // 모서리 반경 10dp
-        color = Color.White,
+        color = White,
         border = BorderStroke(width = 2.dp, color = Gray03),
         modifier =
             modifier

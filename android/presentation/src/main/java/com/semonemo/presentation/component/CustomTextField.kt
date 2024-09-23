@@ -1,5 +1,6 @@
 package com.semonemo.presentation.component
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,9 +20,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.semonemo.presentation.R
+import com.semonemo.presentation.theme.Gray02
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
-import com.semonemo.presentation.theme.Gray02
 import com.semonemo.presentation.theme.WhiteGray
 
 @Composable
@@ -33,6 +34,9 @@ fun CustomTextField(
     focusManager: FocusManager,
     errorMessage: String = "",
     onClearPressed: () -> Unit = {},
+    containColor: Color = WhiteGray,
+    borderColor: Color = Color.Transparent,
+    roundDp: Int = 10,
 ) {
     OutlinedTextField(
         value = nickName,
@@ -49,8 +53,9 @@ fun CustomTextField(
         },
         modifier =
             modifier
-                .wrapContentHeight(),
-        shape = RoundedCornerShape(10.dp),
+                .wrapContentHeight()
+                .border(2.dp, borderColor, RoundedCornerShape(roundDp.dp)),
+        shape = RoundedCornerShape(roundDp.dp),
         singleLine = true,
         keyboardActions =
             KeyboardActions(onDone = {
@@ -72,10 +77,10 @@ fun CustomTextField(
         isError = errorMessage != "",
         colors =
             OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color.Transparent,
-                unfocusedBorderColor = Color.Transparent,
-                focusedContainerColor = WhiteGray,
-                unfocusedContainerColor = WhiteGray,
+                focusedBorderColor = borderColor,
+                unfocusedBorderColor = borderColor,
+                focusedContainerColor = containColor,
+                unfocusedContainerColor = containColor,
                 errorContainerColor = Color.Red,
                 focusedTextColor = Gray02,
                 unfocusedTextColor = Gray02,
