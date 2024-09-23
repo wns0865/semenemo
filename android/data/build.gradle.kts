@@ -19,7 +19,6 @@ android {
         buildConfigField("String", "CHAIN_NAME", properties["CHAIN_NAME"] as String)
         buildConfigField("String", "RPC_URLS", properties["RPC_URLS"] as String)
         buildConfigField("String", "SEVER_URL", properties["SEVER_URL"] as String)
-        buildConfigField("String", "SPRING_PORT_NUMBER", properties["SPRING_PORT_NUMBER"] as String)
         buildConfigField("String", "NODE_PORT_NUMBER", properties["NODE_PORT_NUMBER"] as String)
         buildConfigField("String", "TEST_URL", properties["TEST_URL"] as String)
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

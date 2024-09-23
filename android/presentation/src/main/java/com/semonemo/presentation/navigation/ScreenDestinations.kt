@@ -1,5 +1,8 @@
 package com.semonemo.presentation.navigation
 
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+
 /*
  추가 하는 방법
     data object sample : ScreenDestination(route = "화면이름"){
@@ -16,11 +19,20 @@ package com.semonemo.presentation.navigation
  */
 
 sealed class ScreenDestinations(
-    val route: String,
+    open val route: String,
 ) {
     data object Login : ScreenDestinations(route = "login")
 
-    data object Register : ScreenDestinations(route = "register")
+    data object Register : ScreenDestinations(route = "register") {
+        override val route: String
+            get() = "register/{walletAddress}"
+        val arguments =
+            listOf(
+                navArgument(name = "walletAddress") { type = NavType.StringType },
+            )
+
+        fun createRoute(walletAddress: String) = "register/$walletAddress"
+    }
 
     data object Shop : ScreenDestinations(route = "shop")
 

@@ -1,7 +1,6 @@
 package com.semonemo.data.network.response
 
 import com.semonemo.domain.model.ApiResponse
-import com.semonemo.domain.model.ErrorResponse
 import java.io.IOException
 
 data class BaseResponse<T>(
@@ -19,13 +18,23 @@ suspend fun <T> emitApiResponse(apiResponse: suspend () -> BaseResponse<T>): Api
         },
         onFailure = { e ->
             when (e) {
-                is ApiException -> ApiResponse.Error(e.error)
-                is IOException ->
+                is ApiException ->
                     ApiResponse.Error(
-                        ErrorResponse("Network Error", e.message ?: ""),
+                        errorCode = e.error.errorCode,
+                        errorMessage = e.error.message,
                     )
 
-                else -> ApiResponse.Error(ErrorResponse("Unhandled Error", e.message ?: ""))
+                is IOException ->
+                    ApiResponse.Error(
+                        errorCode = "E001",
+                        errorMessage = e.message ?: "",
+                    )
+
+                else ->
+                    ApiResponse.Error(
+                        errorCode = "E002",
+                        errorMessage = e.message ?: "",
+                    )
             }
         },
     )

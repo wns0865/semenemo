@@ -1,0 +1,28 @@
+package com.semonemo.presentation.screen.login
+
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
+
+@Stable
+sealed interface LoginUiState {
+    @Immutable
+    data object Init : LoginUiState
+
+    @Immutable
+    data class Loading(
+        val isWalletLoading: Boolean = false,
+        val walletAddress: String = "",
+    ) : LoginUiState
+
+    @Immutable
+    data class Success(
+        val walletAddress: String = "",
+        val passWord: String = "",
+    ) : LoginUiState
+
+    @Immutable
+    data class Error(
+        val errorCode: String = "",
+        val errorMessage: String = "",
+    ) : LoginUiState
+}

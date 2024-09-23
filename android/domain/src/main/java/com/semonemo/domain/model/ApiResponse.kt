@@ -6,6 +6,7 @@ sealed class ApiResponse<out D> {
     ) : ApiResponse<D>()
 
     data class Error(
-        val error: ErrorResponse,
+        val errorCode: String,
+        val errorMessage: String,
     ) : ApiResponse<Nothing>()
 }
