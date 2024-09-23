@@ -4,46 +4,66 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.semonemo.presentation.BuildConfig
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BoldTextWithKeywords
 import com.semonemo.presentation.component.CustomDialog
+import com.semonemo.presentation.component.CustomTextField
 import com.semonemo.presentation.component.LongWhiteButton
+import com.semonemo.presentation.theme.Gray03
 import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.theme.Main02
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
+import com.semonemo.presentation.theme.White
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun LoginRoute(
     modifier: Modifier = Modifier,
     popUpBackStack: () -> Unit = {},
-    navigateToSignUp: () -> Unit = {},
+    navigateToRegister: (String) -> Unit = {},
+    loginViewModel: LoginViewModel = hiltViewModel(),
 ) {
     LoginContent(
         modifier = modifier,
         popUpBackStack = popUpBackStack,
-        navigateToSignUp = navigateToSignUp,
+        navigateToRegister = navigateToRegister,
+        loginViewModel = loginViewModel,
     )
 }
 
@@ -51,22 +71,24 @@ fun LoginRoute(
 fun LoginContent(
     modifier: Modifier = Modifier,
     popUpBackStack: () -> Unit,
-    navigateToSignUp: () -> Unit,
+    navigateToRegister: (String) -> Unit,
     nftViewModel: NftViewModel = hiltViewModel(),
     loginViewModel: LoginViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
     val isInstalled = checkIfMetaMaskInstalled(context)
     val (showDialog, setShowDialog) = remember { mutableStateOf(false) }
+    val (isConnect, setIsConnect) = remember { mutableStateOf(false) }
+    val uiState by loginViewModel.uiState.collectAsStateWithLifecycle()
     if (showDialog) {
         CustomDialog(
-            title = "MetaMask를 설치하러가시겠습니까?",
+            title = stringResource(R.string.login_dialog_title),
             content =
-                "세모네모를 이용하기 위해서는\n MetaMask 연동이 필수적이에요.",
-            onConfirmMessage = "네",
-            onDismissMessage = "취소",
-            titleKeywords = listOf("MetaMask"),
-            contentKeywords = listOf("필수적"),
+                stringResource(R.string.login_dialog_content),
+            onConfirmMessage = stringResource(R.string.login_dialog_confirm_message),
+            onDismissMessage = stringResource(R.string.login_dialog_dismiss_message),
+            titleKeywords = listOf(stringResource(R.string.login_title_keywords)),
+            contentKeywords = listOf(stringResource(R.string.login_content_keywords)),
             titleBrushFlag = listOf(false),
             contentBrushFlag = listOf(false),
             onDismiss = { setShowDialog(false) },
@@ -80,10 +102,23 @@ fun LoginContent(
             },
         )
     }
+
+    HandleLoginUiState(
+        uiState = uiState,
+        onErrorSnackBar = { message ->
+        },
+        navigateToMain = {},
+        uiEvent = loginViewModel.uiEvent,
+        navigateToRegister = navigateToRegister,
+        onConnectSuccess = {
+            setIsConnect(it)
+        },
+    )
+
     LoginScreen(
         modifier = modifier,
-        popUpBackStack,
-        navigateToSignUp,
+        popUpBackStack = popUpBackStack,
+        navigateToRegister = navigateToRegister,
         onClicked = {
             if (isInstalled.not()) { // 설치 안된 경우
                 setShowDialog(true) //
@@ -109,9 +144,39 @@ fun LoginContent(
                 }
             }
         },
-        transfer = { nftViewModel.transfer(BuildConfig.CONTRACT_ADDRESS, "1") },
-        onSigned = nftViewModel::sendTransaction,
+        isConnect = isConnect,
+//        transfer = { nftViewModel.transfer(BuildConfig.CONTRACT_ADDRESS, "1") },
+//        onSigned = nftViewModel::sendTransaction,
     )
+}
+
+@Composable
+fun HandleLoginUiState(
+    uiState: LoginUiState,
+    uiEvent: SharedFlow<LoginUiEvent>,
+    onErrorSnackBar: (String) -> Unit,
+    navigateToMain: () -> Unit,
+    navigateToRegister: (String) -> Unit,
+    onConnectSuccess: (Boolean) -> Unit,
+) {
+    LaunchedEffect(uiEvent) {
+        uiEvent.collectLatest { event ->
+            when (event) {
+                LoginUiEvent.AutoLogin -> navigateToMain()
+                is LoginUiEvent.RequiredRegister -> {
+                    navigateToRegister(event.walletAddress)
+                }
+            }
+        }
+    }
+    LaunchedEffect(uiState) {
+        when (uiState) {
+            is LoginUiState.Error -> onErrorSnackBar(uiState.errorMessage) // 에러
+            is LoginUiState.Success -> navigateToMain() // 로그인 성공 ->
+            LoginUiState.Init -> {}
+            is LoginUiState.Loading -> onConnectSuccess(uiState.isWalletLoading)
+        }
+    }
 }
 
 fun checkIfMetaMaskInstalled(context: Context): Boolean =
@@ -125,12 +190,20 @@ fun checkIfMetaMaskInstalled(context: Context): Boolean =
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
+    focusManager: FocusManager = LocalFocusManager.current,
     popUpBackStack: () -> Unit = {},
-    navigateToSignUp: () -> Unit = {},
+    navigateToRegister: (String) -> Unit = {},
     onClicked: () -> Unit = {},
-    transfer: () -> Unit = {},
-    onSigned: () -> Unit = {},
+    isConnect: Boolean = false,
 ) {
+    val offsetY by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(isConnect) {
+        if (isConnect) {
+            delay(700)
+        }
+    }
+
     Column(
         modifier =
             modifier
@@ -170,6 +243,34 @@ fun LoginScreen(
             text = stringResource(R.string.login_message),
             onClick = onClicked,
         )
+        Spacer(modifier = Modifier.weight(0.05f))
+
+        AnimatedVisibility(
+            visible = isConnect,
+            enter =
+                slideInVertically(
+                    initialOffsetY = { it },
+                    animationSpec = tween(durationMillis = 300),
+                ),
+        ) {
+            CustomTextField(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp)
+                        .offset { IntOffset(0, offsetY) },
+                focusManager = focusManager,
+                errorMessage = "",
+                nickName = "",
+                onClearPressed = {},
+                onValueChange = {},
+                placeholder = stringResource(R.string.input_password_message),
+                containColor = White,
+                borderColor = Gray03,
+                roundDp = 14,
+            )
+        }
+
         Spacer(modifier = Modifier.weight(0.3f))
     }
 }
