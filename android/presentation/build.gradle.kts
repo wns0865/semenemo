@@ -105,4 +105,6 @@ dependencies {
 
     // bottom navigation
     implementation(libs.androidx.navigation.compose)
+    // MultiFloatActionButton
+    implementation(libs.multifab)
 }

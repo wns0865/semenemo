@@ -27,77 +27,54 @@ import com.semonemo.presentation.R
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Red
 import com.semonemo.presentation.theme.Typography
+import com.semonemo.presentation.theme.White
 import com.skydoves.landscapist.glide.GlideImage
-import java.time.LocalDateTime
 
 @Composable
-fun AuctionCard(
+fun StoreItemCard(
+    modifier: Modifier = Modifier,
     title: String,
     author: String,
-    imageUrl: String,
-    remainingTime: String,
+    imgUrl: String,
     price: Int,
     isLiked: Boolean = false,
-    modifier: Modifier = Modifier,
 ) {
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = White),
     ) {
         Column(
             modifier =
-                Modifier
+                modifier
                     .fillMaxWidth()
                     .padding(16.dp),
         ) {
-            Text(
-                text = title,
-                style = Typography.bodyMedium,
-                fontWeight = FontWeight.Bold,
-            )
             Row(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(text = author, style = Typography.labelMedium)
-                Spacer(modifier = modifier.width(4.dp))
+                Spacer(modifier = Modifier.width(4.dp))
                 Icon(
                     painter = painterResource(id = R.drawable.ic_user_certified),
                     contentDescription = "Verified",
                     tint = Color.Unspecified,
-                    modifier = modifier.size(16.dp),
+                    modifier = Modifier.size(16.dp),
                 )
             }
-            Spacer(modifier = modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             GlideImage(
-                imageModel = imageUrl,
+                imageModel = imgUrl,
                 contentScale = ContentScale.Crop,
                 modifier =
-                modifier
-                        .fillMaxWidth()
-                        .weight(1f),
+                Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
             )
-            Spacer(modifier = modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             Row(
-                modifier = modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_auction_time),
-                        contentDescription = "Remaining Time",
-                        tint = Color.Unspecified,
-                        modifier = modifier.size(20.dp),
-                    )
-                    Spacer(modifier = modifier.width(0.dp))
-                    CountdownTimer(deadline = LocalDateTime.now().plusDays(2))
-                }
-            }
-            Spacer(modifier = modifier.height(4.dp))
-            Row(
-                modifier = modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -106,9 +83,9 @@ fun AuctionCard(
                         painter = painterResource(id = R.drawable.ic_color_sene_coin),
                         contentDescription = "Price",
                         tint = Color.Unspecified,
-                        modifier = modifier.size(20.dp),
+                        modifier = Modifier.size(20.dp),
                     )
-                    Spacer(modifier = modifier.width(4.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = "${price}AHO",
                         fontWeight = FontWeight.Bold,
@@ -128,12 +105,11 @@ fun AuctionCard(
 
 @Preview(showBackground = true)
 @Composable
-fun AuctionCardPreview() {
-    AuctionCard(
+fun StoreItemCardPreview() {
+    StoreItemCard(
         title = "Sample Title",
         author = "Sample Author",
-        imageUrl = "https://example.com/sample_image.jpg",
-        remainingTime = "00:30:00",
+        imgUrl = "https://example.com/sample_image.jpg",
         price = 100,
         isLiked = true,
     )
