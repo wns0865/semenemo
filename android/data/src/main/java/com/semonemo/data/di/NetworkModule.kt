@@ -35,7 +35,7 @@ object NetworkModule {
         return Retrofit
             .Builder()
             .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
-            .baseUrl(BuildConfig.SEVER_URL + BuildConfig.SPRING_PORT_NUMBER)
+            .baseUrl(BuildConfig.SEVER_URL)
             .client(okHttpClient)
             .build()
     }
