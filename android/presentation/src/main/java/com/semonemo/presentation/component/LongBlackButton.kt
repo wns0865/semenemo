@@ -21,6 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.semonemo.presentation.R
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.Main02
@@ -66,7 +67,7 @@ fun LongBlackButton(
                 Text(
                     modifier = Modifier.wrapContentSize(),
                     text = text,
-                    style = Typography.bodySmall.copy(color = White),
+                    style = Typography.bodySmall.copy(fontSize = 15.sp, color = White),
                     textAlign = TextAlign.Center,
                 )
             }
