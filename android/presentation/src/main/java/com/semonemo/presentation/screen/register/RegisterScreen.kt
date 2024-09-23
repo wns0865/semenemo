@@ -1,4 +1,4 @@
-package com.semonemo.presentation.screen.login
+package com.semonemo.presentation.screen.register
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,13 +18,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BoldTextWithKeywords
 import com.semonemo.presentation.component.CustomTextField
 import com.semonemo.presentation.component.LongBlackButton
+import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
-import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.util.addFocusCleaner
 
 @Composable
@@ -45,6 +46,7 @@ fun RegisterContent(
     modifier: Modifier,
     popUpBackStack: () -> Unit,
     navigateToMain: () -> Unit,
+    registerViewModel: RegisterViewModel = hiltViewModel(),
 ) {
     RegisterScreen(
         modifier = modifier,
@@ -64,6 +66,7 @@ fun RegisterScreen(
         modifier =
             modifier
                 .background(brush = Main01)
+                .padding(top = 65.dp)
                 .addFocusCleaner(focusManager),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -96,7 +99,7 @@ fun RegisterScreen(
         }
         Spacer(modifier = Modifier.weight(0.3f))
         CustomTextField(
-            modifier = Modifier.fillMaxWidth(0.8f),
+            modifier = Modifier.fillMaxWidth(0.88f),
             focusManager = focusManager,
             errorMessage = "",
             nickName = "",
@@ -106,7 +109,7 @@ fun RegisterScreen(
         )
         Spacer(modifier = Modifier.weight(0.1f))
         CustomTextField(
-            modifier = Modifier.fillMaxWidth(0.8f),
+            modifier = Modifier.fillMaxWidth(0.88f),
             focusManager = focusManager,
             errorMessage = "",
             nickName = "",
