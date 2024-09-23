@@ -133,7 +133,7 @@ fun SignUpScreen(
                 contentScale = ContentScale.Crop,
                 modifier =
                     Modifier
-                        .size(120.dp)
+                        .size(140.dp)
                         .clip(shape = CircleShape),
             )
         } else {
@@ -151,7 +151,7 @@ fun SignUpScreen(
                 contentDescription = "",
             )
         }
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.weight(1f))
         CustomTextField(
             modifier = Modifier.fillMaxWidth(0.88f),
             focusManager = focusManager,
@@ -184,7 +184,7 @@ fun SignUpScreen(
                 text = stringResource(id = R.string.register_message),
             )
         }
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(30.dp))
     }
 }
 
