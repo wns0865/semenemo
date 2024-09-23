@@ -8,6 +8,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,9 +20,10 @@ import com.semonemo.presentation.navigation.ScreenDestinations
 import com.semonemo.presentation.screen.ai_asset.DrawAssetScreen
 import com.semonemo.presentation.screen.auction.AuctionScreen
 import com.semonemo.presentation.screen.login.LoginRoute
-import com.semonemo.presentation.screen.login.RegisterRoute
+import com.semonemo.presentation.screen.login.LoginViewModel
 import com.semonemo.presentation.screen.moment.MomentScreen
 import com.semonemo.presentation.screen.mypage.MyPageScreen
+import com.semonemo.presentation.screen.register.RegisterRoute
 import com.semonemo.presentation.screen.wallet.WalletScreen
 
 @Composable
@@ -55,15 +60,17 @@ fun MainNavHost(
             LoginRoute(
                 modifier = modifier,
                 popUpBackStack = navController::popBackStack,
-                navigateToSignUp = {
-                    navController.navigate(ScreenDestinations.Register.route)
+                navigateToRegister = { walletAddress ->
+                    navController.navigate(ScreenDestinations.Register.createRoute(walletAddress))
                 },
             )
         }
 
         composable(
             route = ScreenDestinations.Register.route,
-        ) {
+            arguments = ScreenDestinations.Register.arguments,
+        ) { navBackStackEntry ->
+            val viewModel = navBackStackEntry.sharedViewModel<LoginViewModel>(navController)
             RegisterRoute(
                 modifier = modifier,
                 popUpBackStack = navController::popBackStack,
@@ -102,4 +109,14 @@ fun MainNavHost(
             MyPageScreen()
         }
     }
+}
+
+@Composable
+inline fun <reified T : ViewModel> NavBackStackEntry.sharedViewModel(navController: NavController): T {
+    val navGraphRoute = destination.parent?.route ?: return hiltViewModel()
+    val parentEntry =
+        remember(this) {
+            navController.getBackStackEntry(navGraphRoute)
+        }
+    return hiltViewModel(parentEntry)
 }
