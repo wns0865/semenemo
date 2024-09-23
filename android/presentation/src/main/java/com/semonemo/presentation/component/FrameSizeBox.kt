@@ -117,13 +117,6 @@ fun FrameSizeBox(
 @Composable
 fun FrameSizeBoxPreview() {
     SemonemoTheme {
-//        FrameSizeBox(
-//            modifier = Modifier.padding(10.dp),
-//            title = "1x4 사이즈",
-//            script = "가장 기본적인 크기",
-//            frameImg = R.drawable.img_frame_size_one_by_four,
-//        )
-
         FrameSizeBox(
             modifier = Modifier.padding(10.dp),
             title = "2x2 사이즈",
