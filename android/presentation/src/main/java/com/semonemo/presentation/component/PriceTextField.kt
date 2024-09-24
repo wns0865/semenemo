@@ -17,10 +17,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.semonemo.presentation.R
 import com.semonemo.presentation.theme.Gray02
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Typography
@@ -58,7 +60,7 @@ fun PriceTextField(
                     focusedBorderColor = Color.Transparent,
                     unfocusedBorderColor = Color.Transparent,
                     focusedTextColor = GunMetal,
-                    unfocusedTextColor = Gray02,
+                    unfocusedTextColor = GunMetal,
                     focusedContainerColor = WhiteGray,
                     unfocusedContainerColor = WhiteGray,
                 ),
@@ -69,7 +71,7 @@ fun PriceTextField(
                 Modifier
                     .align(Alignment.CenterEnd)
                     .padding(end = 13.dp),
-            text = "백구",
+            text = stringResource(R.string.coin_price_unit),
             style = Typography.bodySmall.copy(fontSize = 13.sp),
             color = Gray02,
         )
