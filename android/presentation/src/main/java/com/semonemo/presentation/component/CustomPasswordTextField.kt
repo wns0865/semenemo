@@ -13,12 +13,16 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.semonemo.presentation.R
@@ -29,7 +33,7 @@ import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.WhiteGray
 
 @Composable
-fun CustomTextField(
+fun CustomPasswordTextField(
     modifier: Modifier = Modifier,
     onValueChange: (String) -> Unit,
     placeholder: String = "",
@@ -40,7 +44,12 @@ fun CustomTextField(
     containColor: Color = WhiteGray,
     borderColor: Color = Color.Transparent,
     roundDp: Int = 10,
+    isPasswordField: Boolean = false,
 ) {
+    val (passwordVisible, setPasswordVisible) =
+        remember {
+            mutableStateOf(false)
+        }
     Column(modifier = modifier) {
         OutlinedTextField(
             value = input,
@@ -92,21 +101,42 @@ fun CustomTextField(
                     unfocusedPlaceholderColor = Gray02,
                     focusedPlaceholderColor = Gray02,
                 ),
+            visualTransformation =
+                if (isPasswordField &&
+                    passwordVisible.not()
+                ) {
+                    PasswordVisualTransformation()
+                } else {
+                    VisualTransformation.None
+                },
+            leadingIcon = {
+                if (isPasswordField) {
+                    IconButton(onClick = { setPasswordVisible(passwordVisible.not()) }) {
+                        Icon(
+                            painter =
+                                painterResource(
+                                    id = if (passwordVisible) R.drawable.ic_visibility_on else R.drawable.ic_visibility_off,
+                                ),
+                            contentDescription = null,
+                        )
+                    }
+                }
+            },
         )
         Text(
             text = errorMessage,
             color = Red,
             style = Typography.labelMedium,
-            modifier = Modifier.padding(top = 4.dp),
+            modifier = Modifier.padding(top = 4.dp), // 간격 조절
         )
     }
 }
 
 @Composable
 @Preview()
-fun CustomTextFieldPreview() {
+fun CustomPasswordTextFieldPreview() {
     SemonemoTheme {
-        CustomTextField(
+        CustomPasswordTextField(
             modifier = Modifier.fillMaxWidth(),
             focusManager = LocalFocusManager.current,
             onValueChange = {},

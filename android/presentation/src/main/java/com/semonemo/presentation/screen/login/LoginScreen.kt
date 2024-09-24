@@ -22,7 +22,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
@@ -261,7 +260,7 @@ fun LoginScreen(
                         .offset { IntOffset(0, offsetY) },
                 focusManager = focusManager,
                 errorMessage = "",
-                nickName = "",
+                input = "",
                 onClearPressed = {},
                 onValueChange = {},
                 placeholder = stringResource(R.string.input_password_message),
