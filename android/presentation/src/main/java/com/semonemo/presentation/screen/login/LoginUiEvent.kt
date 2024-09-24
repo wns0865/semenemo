@@ -18,4 +18,7 @@ sealed interface LoginUiEvent {
         val errorCode: String = "",
         val errorMessage: String = "",
     ) : LoginUiEvent
+
+    @Immutable
+    data object LoginSuccess : LoginUiEvent
 }
