@@ -9,7 +9,7 @@ object Validator {
             nickname.isEmpty() -> ""
             nickname.isBlank() -> ErrorMessage.EMPTY_MESSAGE
             nickname.length < 2 -> ErrorMessage.NICK_TOO_SHORT
-            nickname.length > 10 -> ErrorMessage.NICK_TOO_LONG
+            nickname.length > 15 -> ErrorMessage.NICK_TOO_LONG
             !nickNameRegex.matches(nickname) -> ErrorMessage.NICK_NOT_MATCH
             else -> ""
         }
