@@ -3,6 +3,7 @@ package com.semonemo.data.di
 import com.google.gson.GsonBuilder
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.semonemo.data.BuildConfig
+import com.semonemo.data.network.interceptor.AccessTokenInterceptor
 import com.semonemo.data.network.interceptor.ErrorHandlingInterceptor
 import dagger.Module
 import dagger.Provides
@@ -61,10 +62,11 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideOkHttpClient() =
+    fun provideOkHttpClient(accessTokenInterceptor: AccessTokenInterceptor) =
         OkHttpClient.Builder().run {
             addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             addInterceptor(ErrorHandlingInterceptor())
+            addInterceptor(accessTokenInterceptor)
             connectTimeout(10, TimeUnit.SECONDS)
             readTimeout(10, TimeUnit.SECONDS)
             writeTimeout(10, TimeUnit.SECONDS)
