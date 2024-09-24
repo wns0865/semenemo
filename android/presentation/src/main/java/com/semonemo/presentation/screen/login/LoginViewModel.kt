@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.semonemo.domain.model.ApiResponse
 import com.semonemo.domain.repository.AuthRepository
+import com.semonemo.domain.request.LoginRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -56,6 +57,34 @@ class LoginViewModel
                             )
                         }
                     }
+                }
+            }
+        }
+
+        fun login(password: String) {
+            val state = uiState.value
+            viewModelScope.launch {
+                if (state is LoginUiState.Loading) {
+                    authRepository
+                        .login(
+                            LoginRequest(
+                                address = state.walletAddress,
+                                password = password,
+                            ),
+                        ).collectLatest { response ->
+                            when (response) {
+                                is ApiResponse.Error -> {
+                                    _uiEvent.emit(
+                                        LoginUiEvent.Error(
+                                            errorCode = response.errorCode,
+                                            errorMessage = response.errorMessage,
+                                        ),
+                                    )
+                                }
+
+                                is ApiResponse.Success -> _uiEvent.emit(LoginUiEvent.LoginSuccess)
+                            }
+                        }
                 }
             }
         }
