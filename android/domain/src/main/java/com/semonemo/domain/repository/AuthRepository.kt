@@ -5,4 +5,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
     suspend fun exists(address: String): Flow<ApiResponse<Boolean>>
+
+    suspend fun validateNickname(nickname: String): Flow<ApiResponse<Boolean>>
 }

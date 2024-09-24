@@ -9,4 +9,9 @@ interface AuthApi {
     suspend fun exists(
         @Query("address") address: String,
     ): BaseResponse<Boolean>
+
+    @GET("api/auth/validate")
+    suspend fun validateNickname(
+        @Query("nickname") nickname: String,
+    ): BaseResponse<Boolean>
 }

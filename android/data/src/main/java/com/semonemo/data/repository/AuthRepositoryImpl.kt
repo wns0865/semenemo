@@ -1,5 +1,6 @@
 package com.semonemo.data.repository
 
+import android.util.Log
 import com.semonemo.data.network.api.AuthApi
 import com.semonemo.data.network.response.emitApiResponse
 import com.semonemo.domain.model.ApiResponse
@@ -19,6 +20,16 @@ class AuthRepositoryImpl
                     emitApiResponse {
                         api.exists(address)
                     }
+                emit(response)
+            }
+
+        override suspend fun validateNickname(nickname: String): Flow<ApiResponse<Boolean>> =
+            flow {
+                val response =
+                    emitApiResponse {
+                        api.validateNickname(nickname)
+                    }
+                Log.d("jaehan", "validate $nickname -> $response")
                 emit(response)
             }
     }
