@@ -1,9 +1,11 @@
 package com.semonemo.presentation.screen.login
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.semonemo.domain.model.ApiResponse
 import com.semonemo.domain.repository.AuthRepository
+import com.semonemo.domain.repository.TokenRepository
 import com.semonemo.domain.request.LoginRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -19,6 +21,7 @@ class LoginViewModel
     @Inject
     constructor(
         private val authRepository: AuthRepository,
+        private val tokenRepository: TokenRepository,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Init)
         val uiState = _uiState.asStateFlow()
@@ -82,7 +85,13 @@ class LoginViewModel
                                     )
                                 }
 
-                                is ApiResponse.Success -> _uiEvent.emit(LoginUiEvent.LoginSuccess)
+                                is ApiResponse.Success -> {
+                                    tokenRepository.saveJwtToken(
+                                        accessToken = response.data.accessToken,
+                                        refreshToken = response.data.refreshToken,
+                                    )
+                                    _uiEvent.emit(LoginUiEvent.LoginSuccess)
+                                }
                             }
                         }
                 }
