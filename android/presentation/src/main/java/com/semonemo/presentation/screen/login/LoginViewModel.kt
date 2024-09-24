@@ -28,11 +28,15 @@ class LoginViewModel
         private val _uiEvent = MutableSharedFlow<LoginUiEvent>()
         val uiEvent = _uiEvent.asSharedFlow()
 
-    /*
-     * TODO
-     * 유저 정보 로딩(지갑주소,비밀번호)
-     */
+        init {
+            loadUserInfo()
+        }
+
         private fun loadUserInfo() {
+            viewModelScope.launch {
+                val jwtToken = tokenRepository.getJwtToken()
+                Log.d("jaehan", "token : $jwtToken")
+            }
         }
 
         fun existUser(address: String) {
