@@ -14,11 +14,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.ProgressGreen
 import com.semonemo.presentation.theme.ProgressRed
 import com.semonemo.presentation.theme.ProgressYellow
@@ -38,7 +38,6 @@ fun CustomAuctionProgressBar(
 ) {
     val startTime = remember { currentTimeMillis() } // 시작 시간
     val endTime = remember { startTime + (initialTime * 1000).toLong() } // 종료 시간
-    // var timeLeft by remember { flowOf(initialTime) } // 남은 시간
     val timeLeftFlow = remember { MutableStateFlow(initialTime) }
     var timeLeft by remember { mutableFloatStateOf(initialTime) }
 
@@ -50,19 +49,11 @@ fun CustomAuctionProgressBar(
             else -> lerp(ProgressYellow, ProgressRed, (0.5f - progress) * 2)
         }
 
-//    LaunchedEffect(timeLeft) {
-//        while (timeLeft > 0) {
-//            delay(100L) // 0.1초마다 남은 시간을 줄임
-//            timeLeft -= 0.1f
-//        }
-//        timeLeft = 0f // -0.0s가 되는 것을 방지.
-//    }
     LaunchedEffect(Unit) {
         launch {
             timeLeftFlow.collectLatest { newTimeLeft ->
                 timeLeft = newTimeLeft
             }
-
         }
     }
 
@@ -71,35 +62,36 @@ fun CustomAuctionProgressBar(
         launch {
             while (timeLeft > 0) {
                 val currentTime = currentTimeMillis()
-                val updatedTime = max(0f, (endTime - currentTime) / 1000f) // 남은 시간 계산
-                timeLeftFlow.emit(updatedTime) // Flow로 값 방출
-                delay(100L) // 100ms마다 갱신
+                val updatedTime = max(0f, (endTime - currentTime) / 1000f)
+                timeLeftFlow.emit(updatedTime)
+                delay(100L)
             }
         }
     }
-
 
     Box(
         contentAlignment = Alignment.CenterEnd,
         modifier =
             modifier
                 .fillMaxWidth()
-                .height(20.dp),
+                .height(30.dp),
     ) {
         // 커스텀 프로그레스바
         Canvas(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .height(20.dp),
+                    .height(30.dp),
         ) {
-            drawRect(
-                color = WhiteGray, // 배경색
+            drawRoundRect(
+                color = WhiteGray,
                 size = size,
+                cornerRadius = CornerRadius(8.dp.toPx()),
             )
-            drawRect(
+            drawRoundRect(
                 color = progressColor, // 남은 진행 바 색상
                 size = size.copy(width = size.width * progress),
+                cornerRadius = CornerRadius(8.dp.toPx()),
             )
         }
 
@@ -111,8 +103,7 @@ fun CustomAuctionProgressBar(
                 Typography.bodyMedium.copy(
                     fontFeatureSettings = "tnum",
                 ),
-            fontSize = 16.sp,
-            color = Color.Black, // 시간이 잘 보이도록 색상 설정
+            color = GunMetal,
         )
     }
 }
