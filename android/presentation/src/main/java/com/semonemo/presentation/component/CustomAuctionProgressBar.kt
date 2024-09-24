@@ -86,12 +86,12 @@ fun CustomAuctionProgressBar(
             drawRoundRect(
                 color = WhiteGray,
                 size = size,
-                cornerRadius = CornerRadius(8.dp.toPx()),
+                cornerRadius = CornerRadius(10.dp.toPx()),
             )
             drawRoundRect(
                 color = progressColor, // 남은 진행 바 색상
                 size = size.copy(width = size.width * progress),
-                cornerRadius = CornerRadius(8.dp.toPx()),
+                cornerRadius = CornerRadius(10.dp.toPx()),
             )
         }
 
