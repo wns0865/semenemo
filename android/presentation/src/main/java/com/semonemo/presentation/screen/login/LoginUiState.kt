@@ -19,10 +19,4 @@ sealed interface LoginUiState {
         val walletAddress: String = "",
         val passWord: String = "",
     ) : LoginUiState
-
-    @Immutable
-    data class Error(
-        val errorCode: String = "",
-        val errorMessage: String = "",
-    ) : LoginUiState
 }

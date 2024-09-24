@@ -48,11 +48,12 @@ class LoginViewModel
                         }
 
                         is ApiResponse.Error -> {
-                            _uiState.value =
-                                LoginUiState.Error(
+                            _uiEvent.emit(
+                                LoginUiEvent.Error(
                                     errorCode = response.errorCode,
                                     errorMessage = response.errorMessage,
-                                )
+                                ),
+                            )
                         }
                     }
                 }
