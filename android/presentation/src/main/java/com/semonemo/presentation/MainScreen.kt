@@ -111,7 +111,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
         MainNavHost(
             modifier = Modifier.padding(innerPadding),
             navController = navController,
-            startDestination = ScreenDestinations.Moment.route,
+            startDestination = ScreenDestinations.Login.route,
             onShowErrorSnackBar = onShowErrorSnackBar,
         )
     }
@@ -135,6 +135,13 @@ fun MainNavHost(
                     navController.navigate(ScreenDestinations.Register.createRoute(walletAddress))
                 },
                 onShowErrorSnackBar = onShowErrorSnackBar,
+                navigateToMoment = {
+                    navController.navigate(ScreenDestinations.Moment.route) {
+                        popUpTo(startDestination) {
+                            inclusive = true
+                        }
+                    }
+                },
             )
         }
 
