@@ -1,4 +1,4 @@
-package com.semonemo.presentation.screen.ai_asset
+package com.semonemo.presentation.screen.aiAsset
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -34,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PaintingStyle.Companion.Stroke
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -51,12 +50,12 @@ import com.semonemo.presentation.component.ColorPalette
 import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.component.PenCircle
 import com.semonemo.presentation.component.PenPalette
-import com.semonemo.presentation.theme.SemonemoTheme
-import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.Gray01
 import com.semonemo.presentation.theme.Gray02
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Main02
+import com.semonemo.presentation.theme.SemonemoTheme
+import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.White
 
 // 펜 스타일 데이터 클래스
