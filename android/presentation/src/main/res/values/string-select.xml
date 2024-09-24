@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="img_select_title">현재 선택한 이미지로 제작하시겠어요?</string>
+    <string name="img_select_confirm">네, 제작할래요!</string>
+    <string name="img_select_again">다시 선택할게요</string>
+</resources>

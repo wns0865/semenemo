@@ -1,4 +1,4 @@
-package com.semonemo.presentation.screen.ai_asset
+package com.semonemo.presentation.screen.aiAsset
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,26 +24,29 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.LongWhiteButton
-import com.semonemo.presentation.theme.SemonemoTheme
-import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.theme.Main02
+import com.semonemo.presentation.theme.SemonemoTheme
+import com.semonemo.presentation.theme.Typography
 
 @Composable
-fun AiAssetScreen(modifier: Modifier = Modifier) {
+fun AiAssetScreen(
+    modifier: Modifier = Modifier,
+    navigateToDraw: () -> Unit = {},
+) {
     Box(
         modifier =
-        modifier
-            .fillMaxSize()
-            .background(brush = Main01),
+            modifier
+                .fillMaxSize()
+                .background(brush = Main01),
     ) {
         Column(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .statusBarsPadding()
-                .navigationBarsPadding(),
+                Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .statusBarsPadding()
+                    .navigationBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(modifier = Modifier.fillMaxHeight(0.15f))
@@ -70,21 +73,25 @@ fun AiAssetScreen(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.fillMaxHeight(0.1f))
             Text(
                 text = stringResource(R.string.ai_asset_script1),
-                style = Typography.labelLarge.copy(fontSize = 20.sp),
+                style = Typography.labelLarge.copy(fontSize = 18.sp),
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = stringResource(R.string.ai_asset_script2),
-                style = Typography.labelLarge.copy(fontSize = 20.sp),
+                style = Typography.labelLarge.copy(fontSize = 18.sp),
             )
             Spacer(modifier = Modifier.fillMaxHeight(0.35f))
-            LongWhiteButton(icon = null, text = stringResource(R.string.ai_asset_btn_title))
+            LongWhiteButton(
+                icon = null,
+                text = stringResource(R.string.ai_asset_btn_title),
+                onClick = navigateToDraw,
+            )
             Spacer(modifier = Modifier.weight(1f))
         }
     }
 }
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun AiAssetPreview() {
     SemonemoTheme {

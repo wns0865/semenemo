@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import com.semonemo.presentation.R
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.White
+import com.semonemo.presentation.util.noRippleClickable
 
 @Composable
 fun MomentBox(
@@ -32,12 +33,14 @@ fun MomentBox(
     title: String,
     subTitle: String,
     icon: Int,
+    onClick: () -> Unit = {},
 ) {
     Card(
         modifier =
             modifier
                 .fillMaxWidth()
-                .wrapContentHeight(),
+                .wrapContentHeight()
+                .noRippleClickable { onClick() },
         shape = RoundedCornerShape(15.dp),
         elevation = CardDefaults.cardElevation(2.dp),
     ) {
@@ -86,12 +89,14 @@ fun MomentLongBox(
     title: String,
     subTitle: String,
     icon: Int,
+    onClick: () -> Unit = {},
 ) {
     Card(
         modifier =
             modifier
                 .fillMaxWidth()
-                .wrapContentHeight(),
+                .wrapContentHeight()
+                .noRippleClickable { onClick() },
         shape = RoundedCornerShape(15.dp),
         elevation = CardDefaults.cardElevation(2.dp),
     ) {

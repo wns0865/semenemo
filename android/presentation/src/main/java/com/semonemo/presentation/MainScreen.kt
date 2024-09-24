@@ -1,9 +1,8 @@
 package com.semonemo.presentation
 
 import BottomNavigationBar
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
+import android.net.Uri
+import android.util.Log
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -27,11 +26,16 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.semonemo.presentation.navigation.CustomFAB
 import com.semonemo.presentation.navigation.ScreenDestinations
-import com.semonemo.presentation.screen.ai_asset.DrawAssetScreen
+import com.semonemo.presentation.screen.aiAsset.AiAssetScreen
+import com.semonemo.presentation.screen.aiAsset.AssetDoneScreen
+import com.semonemo.presentation.screen.aiAsset.DrawAssetScreen
 import com.semonemo.presentation.screen.auction.AuctionScreen
+import com.semonemo.presentation.screen.imgAsset.ImageAssetScreen
+import com.semonemo.presentation.screen.imgAsset.ImageSelectScreen
 import com.semonemo.presentation.screen.login.LoginRoute
 import com.semonemo.presentation.screen.moment.MomentScreen
 import com.semonemo.presentation.screen.mypage.MyPageScreen
+import com.semonemo.presentation.screen.picture.PictureMainScreen
 import com.semonemo.presentation.screen.signup.SignUpRoute
 import com.semonemo.presentation.screen.wallet.WalletScreen
 import com.semonemo.presentation.theme.Gray01
@@ -68,10 +72,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
     }
 
     Scaffold(
-        modifier =
-            Modifier
-                .navigationBarsPadding()
-                .statusBarsPadding(),
+        modifier = Modifier,
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         bottomBar = {
             if (visible) {
@@ -82,15 +83,13 @@ fun MainScreen(modifier: Modifier = Modifier) {
         floatingActionButton = {
             if (visible) {
                 val isSelected = currentRoute == ScreenDestinations.Moment.route
-
                 CustomFAB(
                     onClick = {
                         navController.navigate(ScreenDestinations.Moment.route) {
-                            navController.graph.startDestinationRoute?.let {
-                                popUpTo(it) { saveState = true }
+                            popUpTo(navController.graph.startDestinationId) {
+                                inclusive = true
                             }
                             launchSingleTop = true
-                            restoreState = true
                         }
                     },
                     icon =
@@ -107,11 +106,10 @@ fun MainScreen(modifier: Modifier = Modifier) {
                 )
             }
         },
-    ) { innerPadding ->
+    ) { _ ->
         MainNavHost(
-            modifier = Modifier.padding(innerPadding),
             navController = navController,
-            startDestination = ScreenDestinations.Moment.route,
+            startDestination = ScreenDestinations.Login.route,
             onShowErrorSnackBar = onShowErrorSnackBar,
         )
     }
@@ -167,13 +165,21 @@ fun MainNavHost(
         composable(
             route = ScreenDestinations.Auction.route,
         ) {
-            AuctionScreen()
+            AuctionScreen(
+                modifier = modifier,
+            )
         }
 
         composable(
             route = ScreenDestinations.Moment.route,
         ) {
-            MomentScreen()
+            MomentScreen(
+                modifier = modifier,
+                navigateToAiAsset = { navController.navigate(ScreenDestinations.AiAsset.route) },
+                navigateToImageAsset = { navController.navigate(ScreenDestinations.ImageAsset.route) },
+                navigateToFrame = {},
+                navigateToPicture = { navController.navigate(ScreenDestinations.PictureMain.route) },
+            )
         }
 
         composable(
@@ -186,6 +192,77 @@ fun MainNavHost(
             route = ScreenDestinations.MyPage.route,
         ) {
             MyPageScreen()
+        }
+
+        composable(
+            route = ScreenDestinations.ImageAsset.route,
+        ) {
+            ImageAssetScreen(
+                modifier = modifier,
+                popUpBackStack = navController::popBackStack,
+                navigateToSelect = { selectedImg ->
+                    navController.navigate(ScreenDestinations.Select.createRoute(selectedImg))
+                },
+            )
+        }
+
+        composable(
+            route = ScreenDestinations.Select.route,
+            arguments = ScreenDestinations.Select.arguments,
+        ) { navBackStackEntry ->
+            val imageUriString = navBackStackEntry.arguments?.getString("selectedImg")
+            val imageUri = imageUriString?.let { Uri.decode(it) }?.let { Uri.parse(it) }
+            ImageSelectScreen(
+                modifier = modifier,
+                popUpBackStack = navController::popBackStack,
+                navigateToDone = { assetUrl ->
+                    navController.navigate(ScreenDestinations.AssetDone.createRoute(assetUrl))
+                },
+                imageUri = imageUri,
+            )
+        }
+
+        composable(
+            route = ScreenDestinations.AssetDone.route,
+            arguments = ScreenDestinations.AssetDone.arguments,
+        ) { navBackStackEntry ->
+            val assetUrl = navBackStackEntry.arguments?.getString("assetUrl")
+            AssetDoneScreen(
+                modifier = modifier,
+                assetUrl = assetUrl,
+                popUpBackStack = navController::popBackStack,
+                navigateToMy = {
+                    navController.navigate(ScreenDestinations.MyPage.route)
+                },
+            )
+        }
+
+        composable(
+            route = ScreenDestinations.AiAsset.route,
+        ) {
+            AiAssetScreen(
+                modifier = modifier,
+                navigateToDraw = {
+                    navController.navigate(ScreenDestinations.DrawAsset.route)
+                },
+            )
+        }
+
+        composable(
+            route = ScreenDestinations.PictureMain.route,
+        ) {
+            PictureMainScreen()
+        }
+
+        composable(
+            route = ScreenDestinations.DrawAsset.route,
+        ) {
+            DrawAssetScreen(
+                modifier = modifier,
+                navigateToDone = { assetUrl ->
+                    navController.navigate(ScreenDestinations.AssetDone.createRoute(assetUrl))
+                },
+            )
         }
     }
 }
