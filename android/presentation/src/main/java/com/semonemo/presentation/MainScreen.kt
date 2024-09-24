@@ -85,13 +85,11 @@ fun MainScreen(modifier: Modifier = Modifier) {
                 val isSelected = currentRoute == ScreenDestinations.Moment.route
                 CustomFAB(
                     onClick = {
-                        Log.d("nakyung", "fab click")
                         navController.navigate(ScreenDestinations.Moment.route) {
-                            navController.graph.startDestinationRoute?.let {
-                                popUpTo(it) { saveState = true }
+                            popUpTo(navController.graph.startDestinationId) {
+                                inclusive = true
                             }
                             launchSingleTop = true
-                            restoreState = true
                         }
                     },
                     icon =
