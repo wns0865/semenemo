@@ -5,16 +5,19 @@ import java.io.IOException
 
 data class BaseResponse<T>(
     val code: String,
-    val data: T,
+    val data: T?,
     val message: String,
 )
 
-suspend fun <T> emitApiResponse(apiResponse: suspend () -> BaseResponse<T>): ApiResponse<T> =
+suspend fun <T> emitApiResponse(
+    apiResponse: suspend () -> BaseResponse<T>,
+    default: T,
+): ApiResponse<T> =
     runCatching {
         apiResponse()
     }.fold(
         onSuccess = { result ->
-            ApiResponse.Success(data = result.data)
+            ApiResponse.Success(data = result.data ?: default)
         },
         onFailure = { e ->
             when (e) {
