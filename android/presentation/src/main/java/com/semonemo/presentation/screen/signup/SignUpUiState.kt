@@ -1,14 +1,15 @@
 package com.semonemo.presentation.screen.signup
 
 import com.semonemo.presentation.util.Validator
+import java.io.File
 
 data class SignUpUiState(
     val nickname: String = "",
     val password: String = "",
-    val profileImageUrl: String = "",
+    val profileImage: File? = null,
 ) {
     fun validate(): Boolean =
-        profileImageUrl.isNotBlank() &&
+        profileImage != null &&
             nickname.isNotBlank() &&
             password.isNotBlank() &&
             Validator.validationNickname(nickname).isEmpty() &&
