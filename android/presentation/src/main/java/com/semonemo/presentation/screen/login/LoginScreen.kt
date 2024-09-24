@@ -57,12 +57,14 @@ fun LoginRoute(
     popUpBackStack: () -> Unit = {},
     navigateToRegister: (String) -> Unit = {},
     loginViewModel: LoginViewModel = hiltViewModel(),
+    onShowErrorSnackBar: (String) -> Unit,
 ) {
     LoginContent(
         modifier = modifier,
         popUpBackStack = popUpBackStack,
         navigateToRegister = navigateToRegister,
         loginViewModel = loginViewModel,
+        onShowErrorSnackBar = onShowErrorSnackBar,
     )
 }
 
@@ -73,6 +75,7 @@ fun LoginContent(
     navigateToRegister: (String) -> Unit,
     nftViewModel: NftViewModel = hiltViewModel(),
     loginViewModel: LoginViewModel = hiltViewModel(),
+    onShowErrorSnackBar: (String) -> Unit,
 ) {
     val context = LocalContext.current
     val isInstalled = checkIfMetaMaskInstalled(context)
@@ -165,12 +168,13 @@ fun HandleLoginUiState(
                 is LoginUiEvent.RequiredRegister -> {
                     navigateToRegister(event.walletAddress)
                 }
+
+                is LoginUiEvent.Error -> onErrorSnackBar(event.errorMessage)
             }
         }
     }
     LaunchedEffect(uiState) {
         when (uiState) {
-            is LoginUiState.Error -> onErrorSnackBar(uiState.errorMessage) // 에러
             is LoginUiState.Success -> navigateToMain() // 로그인 성공 ->
             LoginUiState.Init -> {}
             is LoginUiState.Loading -> onConnectSuccess(uiState.isWalletLoading)

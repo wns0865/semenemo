@@ -12,4 +12,10 @@ sealed interface LoginUiEvent {
     data class RequiredRegister(
         val walletAddress: String,
     ) : LoginUiEvent
+
+    @Immutable
+    data class Error(
+        val errorCode: String = "",
+        val errorMessage: String = "",
+    ) : LoginUiEvent
 }

@@ -1,5 +1,7 @@
 package com.semonemo.presentation.screen.signup
 
+import android.content.Context
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -14,11 +16,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -40,18 +46,23 @@ import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.util.Validator
 import com.semonemo.presentation.util.addFocusCleaner
 import com.semonemo.presentation.util.noRippleClickable
+import com.semonemo.presentation.util.toAbsolutePath
 import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.flow.collectLatest
+import java.io.File
 
 @Composable
 fun SignUpRoute(
     modifier: Modifier = Modifier,
     popUpBackStack: () -> Unit = {},
     navigateToMain: () -> Unit = {},
+    onShowErrorSnackBar: (String) -> Unit = {},
 ) {
     SignUpContent(
         modifier = modifier,
         popUpBackStack = popUpBackStack,
         navigateToMain = navigateToMain,
+        onShowErrorSnackBar = onShowErrorSnackBar,
     )
 }
 
@@ -61,19 +72,33 @@ fun SignUpContent(
     popUpBackStack: () -> Unit,
     navigateToMain: () -> Unit,
     signUpViewModel: SignUpViewModel = hiltViewModel(),
+    context: Context = LocalContext.current,
+    onShowErrorSnackBar: (String) -> Unit,
 ) {
     val uiState by signUpViewModel.uiState.collectAsStateWithLifecycle()
+    LaunchedEffect(signUpViewModel.uiEvent) {
+        signUpViewModel.uiEvent.collectLatest { event ->
+            when (event) {
+                is SignUpUiEvent.Error -> onShowErrorSnackBar(event.message)
+                SignUpUiEvent.SignUpSuccess -> navigateToMain()
+            }
+        }
+    }
+
     SignUpScreen(
         modifier = modifier,
         popUpBackStack = popUpBackStack,
         navigateToMain = navigateToMain,
         nickname = uiState.nickname,
         password = uiState.password,
-        profile = uiState.profileImageUrl,
         updateNickname = { signUpViewModel.updateNickname(it) },
         updatePassword = { signUpViewModel.updatePassword(it) },
-        updateProfile = { signUpViewModel.updateProfileImageUrl(it) },
         isFinished = uiState.validate(),
+        onClick = signUpViewModel::signUp,
+        createImage = { uri ->
+            val image = File(uri.toAbsolutePath(context))
+            signUpViewModel.updateProfileImage(image)
+        },
     )
 }
 
@@ -84,19 +109,21 @@ fun SignUpScreen(
     navigateToMain: () -> Unit = {},
     nickname: String = "",
     password: String = "",
-    profile: String = "",
     updateNickname: (String) -> Unit = {},
     updatePassword: (String) -> Unit = {},
-    updateProfile: (String) -> Unit = {},
     isFinished: Boolean = false,
+    onClick: () -> Unit = {},
+    createImage: (Uri) -> Unit = {},
 ) {
+    val (profile, setProfile) = remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
     val singlePhotoPickerLauncher =
         rememberLauncherForActivityResult(
             contract = ActivityResultContracts.PickVisualMedia(),
             onResult = { uri ->
                 uri?.let {
-                    updateProfile(it.toString())
+                    createImage(it)
+                    setProfile(it.toString())
                 }
             },
         )
@@ -139,13 +166,15 @@ fun SignUpScreen(
         } else {
             Image(
                 modifier =
-                    Modifier.size(140.dp).noRippleClickable {
-                        singlePhotoPickerLauncher.launch(
-                            PickVisualMediaRequest(
-                                ActivityResultContracts.PickVisualMedia.ImageOnly,
-                            ),
-                        )
-                    },
+                    Modifier
+                        .size(140.dp)
+                        .noRippleClickable {
+                            singlePhotoPickerLauncher.launch(
+                                PickVisualMediaRequest(
+                                    ActivityResultContracts.PickVisualMedia.ImageOnly,
+                                ),
+                            )
+                        },
                 painter = painterResource(id = R.drawable.img_user_profile_add),
                 contentScale = ContentScale.Crop,
                 contentDescription = "",
@@ -177,6 +206,7 @@ fun SignUpScreen(
             LongBlackButton(
                 icon = null,
                 text = stringResource(R.string.register_message),
+                onClick = onClick,
             )
         } else {
             LongUnableButton(
