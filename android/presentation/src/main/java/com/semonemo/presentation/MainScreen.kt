@@ -133,6 +133,13 @@ fun MainNavHost(
                     navController.navigate(ScreenDestinations.Register.createRoute(walletAddress))
                 },
                 onShowErrorSnackBar = onShowErrorSnackBar,
+                navigateToMoment = {
+                    navController.navigate(ScreenDestinations.Moment.route) {
+                        popUpTo(startDestination) {
+                            inclusive = true
+                        }
+                    }
+                },
             )
         }
 

@@ -13,10 +13,4 @@ sealed interface LoginUiState {
         val isWalletLoading: Boolean = false,
         val walletAddress: String = "",
     ) : LoginUiState
-
-    @Immutable
-    data class Success(
-        val walletAddress: String = "",
-        val passWord: String = "",
-    ) : LoginUiState
 }

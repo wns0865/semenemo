@@ -199,7 +199,6 @@ fun SignUpScreen(
             onClearPressed = { updatePassword("") },
             onValueChange = { updatePassword(it) },
             placeholder = stringResource(R.string.input_password_message),
-            isPasswordField = true,
         )
         Spacer(modifier = Modifier.weight(1f))
         if (isFinished) {

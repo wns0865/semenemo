@@ -44,7 +44,6 @@ fun CustomPasswordTextField(
     containColor: Color = WhiteGray,
     borderColor: Color = Color.Transparent,
     roundDp: Int = 10,
-    isPasswordField: Boolean = false,
 ) {
     val (passwordVisible, setPasswordVisible) =
         remember {
@@ -102,24 +101,20 @@ fun CustomPasswordTextField(
                     focusedPlaceholderColor = Gray02,
                 ),
             visualTransformation =
-                if (isPasswordField &&
-                    passwordVisible.not()
-                ) {
+                if (passwordVisible.not()) {
                     PasswordVisualTransformation()
                 } else {
                     VisualTransformation.None
                 },
             leadingIcon = {
-                if (isPasswordField) {
-                    IconButton(onClick = { setPasswordVisible(passwordVisible.not()) }) {
-                        Icon(
-                            painter =
-                                painterResource(
-                                    id = if (passwordVisible) R.drawable.ic_visibility_on else R.drawable.ic_visibility_off,
-                                ),
-                            contentDescription = null,
-                        )
-                    }
+                IconButton(onClick = { setPasswordVisible(passwordVisible.not()) }) {
+                    Icon(
+                        painter =
+                            painterResource(
+                                id = if (passwordVisible) R.drawable.ic_visibility_on else R.drawable.ic_visibility_off,
+                            ),
+                        contentDescription = null,
+                    )
                 }
             },
         )

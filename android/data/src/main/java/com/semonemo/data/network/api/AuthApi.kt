@@ -1,8 +1,11 @@
 package com.semonemo.data.network.api
 
 import com.semonemo.data.network.response.BaseResponse
+import com.semonemo.domain.model.JwtToken
+import com.semonemo.domain.request.LoginRequest
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -26,4 +29,9 @@ interface AuthApi {
         @Part("data") data: RequestBody,
         @Part image: MultipartBody.Part?,
     ): BaseResponse<Unit>
+
+    @POST("api/auth/login")
+    suspend fun login(
+        @Body request: LoginRequest,
+    ): BaseResponse<JwtToken>
 }

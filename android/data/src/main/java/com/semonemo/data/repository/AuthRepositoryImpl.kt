@@ -4,7 +4,9 @@ import com.google.gson.Gson
 import com.semonemo.data.network.api.AuthApi
 import com.semonemo.data.network.response.emitApiResponse
 import com.semonemo.domain.model.ApiResponse
+import com.semonemo.domain.model.JwtToken
 import com.semonemo.domain.repository.AuthRepository
+import com.semonemo.domain.request.LoginRequest
 import com.semonemo.domain.request.SignUpRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -55,6 +57,13 @@ class AuthRepositoryImpl
                             data = requestBody,
                         )
                     }, default = Unit)
+                emit(response)
+            }
+
+        override suspend fun login(request: LoginRequest): Flow<ApiResponse<JwtToken>> =
+            flow {
+                val response =
+                    emitApiResponse(apiResponse = { api.login(request) }, default = JwtToken())
                 emit(response)
             }
     }
