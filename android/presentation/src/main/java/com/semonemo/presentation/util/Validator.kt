@@ -1,7 +1,7 @@
 package com.semonemo.presentation.util
 
 object Validator {
-    private val nickNameRegex = "^[가-힣a-zA-Z0-9_]{1,15}$".toRegex()
+    private val nickNameRegex = "^[가-힣a-zA-Z0-9_]{2,15}$".toRegex()
     private val passwordRegex = "[a-zA-z0-9]{10,20}$".toRegex()
 
     fun validationNickname(nickname: String): String =
