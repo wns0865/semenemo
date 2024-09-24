@@ -1,6 +1,5 @@
 package com.semonemo.presentation.screen.signup
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -54,6 +53,41 @@ class SignUpViewModel
                 it.copy(
                     profileImage = profileImage,
                 )
+            }
+        }
+
+        fun signUp() {
+            val profileImage = uiState.value.profileImage
+            viewModelScope.launch {
+                validate(uiState.value.nickname).collectLatest { isValidNickname ->
+                    if (isValidNickname && profileImage != null) {
+                        authRepository
+                            .signUp(
+                                data =
+                                    SignUpRequest(
+                                        address = walletAddress,
+                                        password = uiState.value.password,
+                                        nickname = uiState.value.nickname,
+                                    ),
+                                profileImage = profileImage,
+                            ).collectLatest { response ->
+                                when (response) {
+                                    is ApiResponse.Error -> {
+                                        _uiEvent.emit(
+                                            SignUpUiEvent.Error(
+                                                code = response.errorCode,
+                                                message = response.errorMessage,
+                                            ),
+                                        )
+                                    }
+
+                                    is ApiResponse.Success -> {
+                                        _uiEvent.emit(SignUpUiEvent.SignUpSuccess)
+                                    }
+                                }
+                            }
+                    }
+                }
             }
         }
 
