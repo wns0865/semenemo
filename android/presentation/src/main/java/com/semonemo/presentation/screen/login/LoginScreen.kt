@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,7 +30,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -39,7 +37,8 @@ import com.semonemo.presentation.BuildConfig
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BoldTextWithKeywords
 import com.semonemo.presentation.component.CustomDialog
-import com.semonemo.presentation.component.CustomTextField
+import com.semonemo.presentation.component.CustomPasswordTextField
+import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.component.LongWhiteButton
 import com.semonemo.presentation.theme.Gray03
 import com.semonemo.presentation.theme.Main01
@@ -58,6 +57,7 @@ fun LoginRoute(
     navigateToRegister: (String) -> Unit = {},
     loginViewModel: LoginViewModel = hiltViewModel(),
     onShowErrorSnackBar: (String) -> Unit,
+    navigateToMoment: () -> Unit,
 ) {
     LoginContent(
         modifier = modifier,
@@ -65,6 +65,7 @@ fun LoginRoute(
         navigateToRegister = navigateToRegister,
         loginViewModel = loginViewModel,
         onShowErrorSnackBar = onShowErrorSnackBar,
+        navigateToMoment = navigateToMoment,
     )
 }
 
@@ -76,6 +77,7 @@ fun LoginContent(
     nftViewModel: NftViewModel = hiltViewModel(),
     loginViewModel: LoginViewModel = hiltViewModel(),
     onShowErrorSnackBar: (String) -> Unit,
+    navigateToMoment: () -> Unit,
 ) {
     val context = LocalContext.current
     val isInstalled = checkIfMetaMaskInstalled(context)
@@ -107,21 +109,20 @@ fun LoginContent(
 
     HandleLoginUiState(
         uiState = uiState,
-        onErrorSnackBar = { message ->
-        },
-        navigateToMain = {},
+        onErrorSnackBar = onShowErrorSnackBar,
         uiEvent = loginViewModel.uiEvent,
         navigateToRegister = navigateToRegister,
         onConnectSuccess = {
             setIsConnect(it)
         },
+        navigateToMoment = navigateToMoment,
     )
 
     LoginScreen(
         modifier = modifier,
         popUpBackStack = popUpBackStack,
         navigateToRegister = navigateToRegister,
-        onClicked = {
+        onConnect = {
             if (isInstalled.not()) { // 설치 안된 경우
                 setShowDialog(true) //
             } else {
@@ -140,12 +141,13 @@ fun LoginContent(
                                     // 에러 처리
                                 }
                             },
-                            onSuccess = { address -> loginViewModel.existUser(result) },
+                            onSuccess = { loginViewModel.existUser(result) },
                         )
                     }
                 }
             }
         },
+        onClick = { loginViewModel.login(it) },
         isConnect = isConnect,
 //        transfer = { nftViewModel.transfer(BuildConfig.CONTRACT_ADDRESS, "1") },
 //        onSigned = nftViewModel::sendTransaction,
@@ -157,25 +159,25 @@ fun HandleLoginUiState(
     uiState: LoginUiState,
     uiEvent: SharedFlow<LoginUiEvent>,
     onErrorSnackBar: (String) -> Unit,
-    navigateToMain: () -> Unit,
     navigateToRegister: (String) -> Unit,
     onConnectSuccess: (Boolean) -> Unit,
+    navigateToMoment: () -> Unit,
 ) {
     LaunchedEffect(uiEvent) {
         uiEvent.collectLatest { event ->
             when (event) {
-                LoginUiEvent.AutoLogin -> navigateToMain()
+                LoginUiEvent.AutoLogin -> navigateToMoment()
                 is LoginUiEvent.RequiredRegister -> {
                     navigateToRegister(event.walletAddress)
                 }
 
                 is LoginUiEvent.Error -> onErrorSnackBar(event.errorMessage)
+                LoginUiEvent.LoginSuccess -> navigateToMoment()
             }
         }
     }
     LaunchedEffect(uiState) {
         when (uiState) {
-            is LoginUiState.Success -> navigateToMain() // 로그인 성공 ->
             LoginUiState.Init -> {}
             is LoginUiState.Loading -> onConnectSuccess(uiState.isWalletLoading)
         }
@@ -196,11 +198,15 @@ fun LoginScreen(
     focusManager: FocusManager = LocalFocusManager.current,
     popUpBackStack: () -> Unit = {},
     navigateToRegister: (String) -> Unit = {},
-    onClicked: () -> Unit = {},
-    isConnect: Boolean = false,
+    onConnect: () -> Unit = {},
+    isConnect: Boolean = true,
+    onClick: (String) -> Unit = {},
 ) {
     val offsetY by remember { mutableIntStateOf(0) }
-
+    val (password, setPassword) =
+        remember {
+            mutableStateOf("")
+        }
     LaunchedEffect(isConnect) {
         if (isConnect) {
             delay(700)
@@ -240,11 +246,10 @@ fun LoginScreen(
         LongWhiteButton(
             modifier =
                 Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
+                    .fillMaxWidth(0.88f),
             icon = R.drawable.img_metamask,
             text = stringResource(R.string.login_message),
-            onClick = onClicked,
+            onClick = onConnect,
         )
         Spacer(modifier = Modifier.weight(0.05f))
 
@@ -256,22 +261,35 @@ fun LoginScreen(
                     animationSpec = tween(durationMillis = 300),
                 ),
         ) {
-            CustomTextField(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
-                        .offset { IntOffset(0, offsetY) },
-                focusManager = focusManager,
-                errorMessage = "",
-                input = "",
-                onClearPressed = {},
-                onValueChange = {},
-                placeholder = stringResource(R.string.input_password_message),
-                containColor = White,
-                borderColor = Gray03,
-                roundDp = 14,
-            )
+            Column(
+                modifier = Modifier,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                CustomPasswordTextField(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth(0.88f)
+                            .offset { IntOffset(0, offsetY) },
+                    focusManager = focusManager,
+                    errorMessage = "",
+                    input = password,
+                    onClearPressed = { setPassword("") },
+                    onValueChange = { setPassword(it) },
+                    placeholder = stringResource(R.string.input_password_message),
+                    containColor = White,
+                    borderColor = Gray03,
+                    roundDp = 14,
+                )
+
+                LongBlackButton(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth(0.88f),
+                    icon = null,
+                    text = "로그인하기",
+                    onClick = { onClick(password) },
+                )
+            }
         }
 
         Spacer(modifier = Modifier.weight(0.3f))

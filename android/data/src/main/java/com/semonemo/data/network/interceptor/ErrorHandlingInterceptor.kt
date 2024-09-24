@@ -6,7 +6,6 @@ import com.semonemo.domain.model.ErrorResponse
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.io.IOException
-import javax.net.ssl.SSLHandshakeException
 
 class ErrorHandlingInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -20,9 +19,7 @@ class ErrorHandlingInterceptor : Interceptor {
         } catch (e: Throwable) {
             when (e) {
                 is ApiException -> throw e
-                is IOException,
-                is SSLHandshakeException,
-                -> throw IOException(e)
+                is IOException -> throw IOException(e)
 
                 else -> throw e
             }
