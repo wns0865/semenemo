@@ -30,7 +30,10 @@ import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 
 @Composable
-fun AiAssetScreen(modifier: Modifier = Modifier) {
+fun AiAssetScreen(
+    modifier: Modifier = Modifier,
+    navigateToDraw: () -> Unit = {},
+) {
     Box(
         modifier =
             modifier
@@ -78,7 +81,11 @@ fun AiAssetScreen(modifier: Modifier = Modifier) {
                 style = Typography.labelLarge.copy(fontSize = 18.sp),
             )
             Spacer(modifier = Modifier.fillMaxHeight(0.35f))
-            LongWhiteButton(icon = null, text = stringResource(R.string.ai_asset_btn_title))
+            LongWhiteButton(
+                icon = null,
+                text = stringResource(R.string.ai_asset_btn_title),
+                onClick = navigateToDraw,
+            )
             Spacer(modifier = Modifier.weight(1f))
         }
     }

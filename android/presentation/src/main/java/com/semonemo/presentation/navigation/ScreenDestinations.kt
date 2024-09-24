@@ -43,4 +43,34 @@ sealed class ScreenDestinations(
     data object Wallet : ScreenDestinations(route = "wallet")
 
     data object MyPage : ScreenDestinations(route = "mypage")
+
+    data object AiAsset : ScreenDestinations(route = "aiAsset")
+
+    data object ImageAsset : ScreenDestinations(route = "imageAsset")
+
+    data object Select : ScreenDestinations(route = "select") {
+        override val route: String
+            get() = "select/{selectedImg}"
+        val arguments =
+            listOf(
+                navArgument(name = "selectedImg") { type = NavType.StringType },
+            )
+
+        fun createRoute(selectedImg: String) = "select/$selectedImg"
+    }
+
+    data object AssetDone : ScreenDestinations(route = "assetDone") {
+        override val route: String
+            get() = "assetDone/{assetUrl}"
+        val arguments =
+            listOf(
+                navArgument(name = "assetUrl") { type = NavType.StringType },
+            )
+
+        fun createRoute(assetUrl: String) = "assetDone/$assetUrl"
+    }
+
+    data object PictureMain : ScreenDestinations(route = "pictureMain")
+
+    data object DrawAsset : ScreenDestinations(route = "drawAsset")
 }

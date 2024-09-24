@@ -77,7 +77,10 @@ internal fun DrawScope.drawPath(
 }
 
 @Composable
-fun DrawAssetScreen(modifier: Modifier = Modifier) {
+fun DrawAssetScreen(
+    modifier: Modifier = Modifier,
+    navigateToDone: (String) -> Unit = {},
+) {
     // 색상 팔레트
     val colors =
         listOf(
@@ -208,8 +211,10 @@ fun DrawAssetScreen(modifier: Modifier = Modifier) {
                         }
                     },
                     onRedoClicked = {
-                        val lastRemovedPath = removedPaths.removeLast()
-                        paths.add(lastRemovedPath)
+                        if (removedPaths.isNotEmpty()) {
+                            val lastRemovedPath = removedPaths.removeLast()
+                            paths.add(lastRemovedPath)
+                        }
                     },
                     onClearClicked = {
                         paths.clear()
@@ -306,7 +311,14 @@ fun DrawAssetScreen(modifier: Modifier = Modifier) {
                 )
             }
             Spacer(modifier = Modifier.fillMaxHeight(0.3f))
-            LongBlackButton(icon = null, text = stringResource(R.string.draw_done))
+            LongBlackButton(
+                icon = null,
+                text = stringResource(R.string.draw_done),
+                onClick = {
+                    // ai랑 통신해서 결과 얻어오고, 완료 화면으로 이동
+                    navigateToDone("test")
+                },
+            )
         }
     }
 }
