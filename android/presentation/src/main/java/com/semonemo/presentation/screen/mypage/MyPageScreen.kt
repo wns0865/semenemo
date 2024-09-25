@@ -31,6 +31,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -55,9 +56,13 @@ import com.semonemo.presentation.theme.Gray03
 import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
+import com.semonemo.presentation.util.noRippleClickable
 
 @Composable
-fun MyPageScreen() {
+fun MyPageScreen(
+    modifier: Modifier = Modifier,
+    navigateToDetail: (String) -> Unit = {},
+) {
     val tabs = listOf("내 프레임", "에셋", "찜")
     val selectedIndex = remember { mutableIntStateOf(0) }
 
@@ -93,9 +98,9 @@ fun MyPageScreen() {
             R.drawable.img_example,
         )
 
-    Box(
+    Surface(
         modifier =
-            Modifier
+            modifier
                 .fillMaxSize()
                 .background(brush = Main01),
     ) {
@@ -354,7 +359,9 @@ fun MyPageScreen() {
                                     width = 1.dp,
                                     shape = RoundedCornerShape(10.dp),
                                     color = Gray03,
-                                ),
+                                ).noRippleClickable {
+                                    navigateToDetail(images[index].toString())
+                                },
                     )
                 }
             }
