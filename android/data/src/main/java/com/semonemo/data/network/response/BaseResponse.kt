@@ -1,5 +1,7 @@
 package com.semonemo.data.network.response
 
+import com.semonemo.data.exception.ApiException
+import com.semonemo.data.exception.RefreshTokenExpiredException
 import com.semonemo.domain.model.ApiResponse
 import java.io.IOException
 
@@ -22,20 +24,25 @@ suspend fun <T> emitApiResponse(
         onFailure = { e ->
             when (e) {
                 is ApiException ->
-                    ApiResponse.Error(
+                    ApiResponse.Error.ServerError(
                         errorCode = e.error.errorCode,
                         errorMessage = e.error.message,
                     )
 
+                is RefreshTokenExpiredException -> {
+                    ApiResponse.Error.TokenError(
+                        errorMessage = e.error.message,
+                        errorCode = e.error.errorCode,
+                    )
+                }
+
                 is IOException ->
-                    ApiResponse.Error(
-                        errorCode = "E001",
+                    ApiResponse.Error.NetworkError(
                         errorMessage = e.message ?: "",
                     )
 
                 else ->
-                    ApiResponse.Error(
-                        errorCode = "E002",
+                    ApiResponse.Error.UnknownError(
                         errorMessage = e.message ?: "",
                     )
             }
