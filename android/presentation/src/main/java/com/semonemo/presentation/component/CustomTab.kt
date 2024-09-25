@@ -44,7 +44,7 @@ fun CustomTab(
         indicator = { tabPositions ->
             TabRowDefaults.SecondaryIndicator(
                 modifier = modifier.tabIndicatorOffset(tabPositions[selectedIndex]),
-                height = 1.dp,
+                height = 2.dp,
                 color = GunMetal,
             )
         },

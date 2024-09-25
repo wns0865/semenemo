@@ -46,7 +46,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -65,7 +64,6 @@ import androidx.compose.ui.unit.sp
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.CustomTab
 import com.semonemo.presentation.component.HashTag
-import com.semonemo.presentation.component.HashTagTextField
 import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.component.LongUnableButton
 import com.semonemo.presentation.component.PriceTextField
@@ -79,7 +77,7 @@ import com.semonemo.presentation.util.addFocusCleaner
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen() {
+fun FrameSaleScreen() {
     val focusManager = LocalFocusManager.current
     val scrollState = rememberScrollState()
 
@@ -89,7 +87,7 @@ fun RegisterScreen() {
     var selectedFrame by remember { mutableIntStateOf(-1) } // 선택된 프레임
 
     // 더미 데이터
-    val tags = remember { mutableStateListOf<String>() }
+    val tags = listOf("플레이브", "도은호")
     val tabs = listOf("1x1", "1x4", "2x2")
 
     val frames1 =
@@ -126,21 +124,21 @@ fun RegisterScreen() {
 
     Surface(
         modifier =
-        Modifier
-            .fillMaxSize()
-            .background(color = Color.White)
-            .verticalScroll(state = scrollState),
+            Modifier
+                .fillMaxSize()
+                .background(color = Color.White)
+                .verticalScroll(state = scrollState),
     ) {
         Column(
             modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(horizontal = 20.dp, vertical = 15.dp)
-                .statusBarsPadding()
-                .navigationBarsPadding()
-                .addFocusCleaner(
-                    focusManager = focusManager,
-                ),
+                Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 20.dp, vertical = 15.dp)
+                    .statusBarsPadding()
+                    .navigationBarsPadding()
+                    .addFocusCleaner(
+                        focusManager = focusManager,
+                    ),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
@@ -149,19 +147,18 @@ fun RegisterScreen() {
                 style = Typography.bodyMedium.copy(fontSize = 20.sp),
                 textAlign = TextAlign.Center,
             )
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(30.dp))
             Surface(
                 modifier =
-                Modifier
-                    .width(180.dp)
-                    .height(240.dp),
+                    Modifier
+                        .width(180.dp)
+                        .height(240.dp),
                 border = BorderStroke(width = 2.dp, color = Gray01),
                 shape = RoundedCornerShape(10.dp),
                 onClick = {
                     showBottomSheet = true
                 },
             ) {
-                // 실제로는 통신 성공했을 때
                 if (selectedFrame != -1) {
                     Image(
                         painter = painterResource(id = selectedFrame),
@@ -238,7 +235,7 @@ fun RegisterScreen() {
                             )
                         }
                     }
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(15.dp))
                     Box(
                         modifier =
                             Modifier
@@ -274,50 +271,37 @@ fun RegisterScreen() {
                             )
                         }
                     }
-                    Spacer(modifier = Modifier.height(10.dp))
-                }
-            }
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight(),
-                contentAlignment = Alignment.CenterStart,
-            ) {
-                Text(
-                    text = stringResource(R.string.register_tag),
-                    style = Typography.titleMedium.copy(fontSize = 16.sp),
-                )
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            HashTagTextField(
-                onTagAddAction = { keyword ->
-                    if (keyword.isNotEmpty()) {
-                        tags.add(keyword)
-                    }
-                },
-                focusManager = focusManager,
-            )
-            LazyRow(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .padding(top = 10.dp),
-                horizontalArrangement = Arrangement.spacedBy(5.dp),
-                content = {
-                    items(tags.size) { index ->
-                        HashTag(
-                            keyword = tags[index],
-                            isEdit = true,
-                            onCloseClicked = {
-                                tags.remove(tags[index])
-                            },
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Box(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight(),
+                        contentAlignment = Alignment.CenterStart,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.register_tag),
+                            style = Typography.titleMedium.copy(fontSize = 16.sp),
                         )
                     }
-                },
-            )
-            Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
+                    LazyRow(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight(),
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                        content = {
+                            items(tags.size) { index ->
+                                HashTag(
+                                    keyword = tags[index],
+                                )
+                            }
+                        },
+                    )
+                    Spacer(modifier = Modifier.height(15.dp))
+                }
+            }
             Box(
                 modifier =
                     Modifier
@@ -437,6 +421,6 @@ fun RegisterScreen() {
 @Composable
 fun RegisterScreenPreview() {
     SemonemoTheme {
-        RegisterScreen()
+        FrameSaleScreen()
     }
 }
