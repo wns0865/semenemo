@@ -84,7 +84,7 @@ fun FrameSaleScreen() {
     var price by remember { mutableStateOf("") } // 판매가
     var showBottomSheet by remember { mutableStateOf(false) } // bottomSheet 보임 여부
     var selectedIndex by remember { mutableIntStateOf(0) } // bottomSheet 선택된 탭 index
-    var selectedAsset by remember { mutableIntStateOf(-1) } // 선택된 에셋
+    var selectedFrame by remember { mutableIntStateOf(-1) } // 선택된 프레임
 
     // 더미 데이터
     val tags = listOf("플레이브", "도은호")
@@ -159,9 +159,9 @@ fun FrameSaleScreen() {
                     showBottomSheet = true
                 },
             ) {
-                if (selectedAsset != -1) {
+                if (selectedFrame != -1) {
                     Image(
-                        painter = painterResource(id = selectedAsset),
+                        painter = painterResource(id = selectedFrame),
                         contentDescription = "img_example",
                         contentScale = ContentScale.Crop,
                     )
@@ -190,7 +190,7 @@ fun FrameSaleScreen() {
             Spacer(modifier = Modifier.height(30.dp))
             // 통신 성공인 경우
             AnimatedVisibility(
-                visible = selectedAsset != -1,
+                visible = selectedFrame != -1,
                 enter = fadeIn() + expandVertically(),
                 exit = fadeOut() + shrinkVertically(),
             ) {
@@ -328,7 +328,7 @@ fun FrameSaleScreen() {
             // 프레임 불러오기 Success면 LongBlackButton
             // 다른 상태면 LongUnableButton
             Spacer(modifier = Modifier.height(30.dp))
-            if (selectedAsset != -1) {
+            if (selectedFrame != -1) {
                 LongBlackButton(
                     modifier =
                         Modifier
@@ -403,7 +403,7 @@ fun FrameSaleScreen() {
                                                 shape = RoundedCornerShape(10.dp),
                                                 color = Gray03,
                                             ).clickable {
-                                                selectedAsset = frames[targetIndex][index]
+                                                selectedFrame = frames[targetIndex][index]
                                                 showBottomSheet = false
                                             },
                                 )
