@@ -1,12 +1,11 @@
 package com.semonemo.presentation.screen.login
 
 import android.util.Log
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.semonemo.domain.model.ApiResponse
 import com.semonemo.domain.repository.AuthRepository
-import com.semonemo.domain.repository.TokenRepository
 import com.semonemo.domain.request.LoginRequest
+import com.semonemo.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,21 +20,31 @@ class LoginViewModel
     @Inject
     constructor(
         private val authRepository: AuthRepository,
-        private val tokenRepository: TokenRepository,
-    ) : ViewModel() {
+    ) : BaseViewModel() {
         private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Init)
         val uiState = _uiState.asStateFlow()
         private val _uiEvent = MutableSharedFlow<LoginUiEvent>()
         val uiEvent = _uiEvent.asSharedFlow()
 
         init {
-            loadUserInfo()
+            authLogin()
         }
 
-        private fun loadUserInfo() {
+        private fun authLogin() {
             viewModelScope.launch {
-                val jwtToken = tokenRepository.getJwtToken()
-                Log.d("jaehan", "token : $jwtToken")
+                authRepository.login().collectLatest { response ->
+                    when (response) {
+                        is ApiResponse.Error ->
+                            _uiEvent.emit(
+                                LoginUiEvent.Error(
+                                    errorCode = response.errorCode,
+                                    errorMessage = response.errorMessage,
+                                ),
+                            )
+
+                        is ApiResponse.Success -> if (response.data) _uiEvent.emit(LoginUiEvent.AutoLogin)
+                    }
+                }
             }
         }
 
@@ -90,10 +99,6 @@ class LoginViewModel
                                 }
 
                                 is ApiResponse.Success -> {
-                                    tokenRepository.saveJwtToken(
-                                        accessToken = response.data.accessToken,
-                                        refreshToken = response.data.refreshToken,
-                                    )
                                     _uiEvent.emit(LoginUiEvent.LoginSuccess)
                                 }
                             }
