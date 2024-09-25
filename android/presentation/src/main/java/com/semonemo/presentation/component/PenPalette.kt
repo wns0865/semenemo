@@ -21,7 +21,13 @@ import com.semonemo.presentation.theme.Gray02
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.White
 
-// 펜 굵기 팔레트
+/**
+ * TODO
+ *
+ * @param sizes : 펜 굵기 사이즈 리스트
+ * @param selectedSize : 선택된 사이즈
+ * @param onSizeSelected : 사이즈 선택했을 때
+ */
 @Composable
 fun PenPalette(
     sizes: List<Dp>,
@@ -44,6 +50,12 @@ fun PenPalette(
     }
 }
 
+/**
+ * TODO
+ *
+ * @param onClick : 클릭했을 때
+ * @param isSelected : 선택되었을 때
+ */
 @Composable
 fun PenCircle(
     onClick: () -> Unit,

@@ -16,7 +16,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.semonemo.presentation.theme.Gray02
 
-// 색상 팔레트
+/**
+ * TODO
+ *
+ * @param colors : 색상 리스트
+ * @param selectedColor : 선택된 색상
+ * @param onColorSelected : 색상 선택했을 때
+ */
 @Composable
 fun ColorPalette(
     colors: List<Color>,
@@ -37,6 +43,13 @@ fun ColorPalette(
     }
 }
 
+/**
+ * TODO
+ *
+ * @param color : 색상
+ * @param isSelected : 선택되었을 때
+ * @param onClick : 클릭했을 때
+ */
 @Composable
 fun ColorCircle(
     color: Color,
