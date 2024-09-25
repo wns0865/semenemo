@@ -34,4 +34,9 @@ interface AuthApi {
     suspend fun login(
         @Body request: LoginRequest,
     ): BaseResponse<JwtToken>
+
+    @GET("api/auth/refresh-token")
+    suspend fun getNewToken(
+        @Query("refreshToken") refreshToken: String,
+    ): BaseResponse<JwtToken>
 }

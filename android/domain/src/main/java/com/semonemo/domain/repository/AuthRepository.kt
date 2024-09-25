@@ -18,4 +18,6 @@ interface AuthRepository {
     ): Flow<ApiResponse<Unit>>
 
     suspend fun login(request: LoginRequest): Flow<ApiResponse<JwtToken>>
+
+    suspend fun login(): Flow<ApiResponse<Boolean>>
 }
