@@ -2,13 +2,13 @@ package com.semonemo.data.di
 
 import com.semonemo.data.network.api.AuthApi
 import com.semonemo.data.network.api.NFTApi
+import com.semonemo.data.network.api.UserApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.create
-import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -17,12 +17,18 @@ object ApiModule {
     @Provides
     @Singleton
     fun provideNFTApi(
-        @Named("Node") retrofit: Retrofit,
+        @NetworkModule.NftClient retrofit: Retrofit,
     ): NFTApi = retrofit.create()
 
     @Provides
     @Singleton
     fun provideAuthApi(
-        @Named("Spring") retrofit: Retrofit,
+        @NetworkModule.AuthClient retrofit: Retrofit,
     ): AuthApi = retrofit.create()
+
+    @Provides
+    @Singleton
+    fun provideUserApi(
+        @NetworkModule.BaseClient retrofit: Retrofit,
+    ): UserApi = retrofit.create()
 }

@@ -1,6 +1,6 @@
 package com.semonemo.data.network.interceptor
 
-import com.semonemo.domain.repository.TokenRepository
+import com.semonemo.data.datasource.TokenDataSource
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -9,7 +9,7 @@ import javax.inject.Inject
 class AccessTokenInterceptor
     @Inject
     constructor(
-        private val tokenRepository: TokenRepository,
+        private val tokenDataSource: TokenDataSource,
     ) : Interceptor {
         override fun intercept(chain: Interceptor.Chain): Response {
             val originalRequest = chain.request()
@@ -17,17 +17,17 @@ class AccessTokenInterceptor
             val accessToken: String =
                 runBlocking {
                     val token: String =
-                        tokenRepository.getAccessToken()?.let {
-                            it
-                        } ?: run {
+                        tokenDataSource.getAccessToken() ?: run {
                             ""
                         }
                     token
                 }
             val request =
                 requestBuilder
-                    .header("Authorization", accessToken)
-                    .build()
+                    .header(
+                        "Authorization",
+                        accessToken,
+                    ).build()
             return chain.proceed(request)
         }
     }
