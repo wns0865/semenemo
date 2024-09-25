@@ -2,7 +2,6 @@ package com.semonemo.presentation
 
 import BottomNavigationBar
 import android.net.Uri
-import android.util.Log
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -29,6 +28,7 @@ import com.semonemo.presentation.navigation.ScreenDestinations
 import com.semonemo.presentation.screen.aiAsset.AiAssetScreen
 import com.semonemo.presentation.screen.aiAsset.AssetDoneScreen
 import com.semonemo.presentation.screen.aiAsset.DrawAssetScreen
+import com.semonemo.presentation.screen.aiAsset.PromptAssetScreen
 import com.semonemo.presentation.screen.auction.AuctionScreen
 import com.semonemo.presentation.screen.imgAsset.ImageAssetScreen
 import com.semonemo.presentation.screen.imgAsset.ImageSelectScreen
@@ -252,6 +252,9 @@ fun MainNavHost(
                 navigateToDraw = {
                     navController.navigate(ScreenDestinations.DrawAsset.route)
                 },
+                navigateToPrompt = {
+                    navController.navigate(ScreenDestinations.PromptAsset.route)
+                },
             )
         }
 
@@ -265,6 +268,17 @@ fun MainNavHost(
             route = ScreenDestinations.DrawAsset.route,
         ) {
             DrawAssetScreen(
+                modifier = modifier,
+                navigateToDone = { assetUrl ->
+                    navController.navigate(ScreenDestinations.AssetDone.createRoute(assetUrl))
+                },
+            )
+        }
+
+        composable(
+            route = ScreenDestinations.PromptAsset.route,
+        ) {
+            PromptAssetScreen(
                 modifier = modifier,
                 navigateToDone = { assetUrl ->
                     navController.navigate(ScreenDestinations.AssetDone.createRoute(assetUrl))
