@@ -31,11 +31,14 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,10 +56,14 @@ import com.semonemo.presentation.theme.Gray03
 import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
+import com.semonemo.presentation.util.noRippleClickable
 
 @Composable
-fun MyPageScreen() {
-    val tabs = listOf("내 프레임", "에셋")
+fun MyPageScreen(
+    modifier: Modifier = Modifier,
+    navigateToDetail: (String) -> Unit = {},
+) {
+    val tabs = listOf("내 프레임", "에셋", "찜")
     val selectedIndex = remember { mutableIntStateOf(0) }
 
     val images = remember { mutableStateListOf<Int>() }
@@ -91,9 +98,9 @@ fun MyPageScreen() {
             R.drawable.img_example,
         )
 
-    Box(
+    Surface(
         modifier =
-            Modifier
+            modifier
                 .fillMaxSize()
                 .background(brush = Main01),
     ) {
@@ -220,42 +227,112 @@ fun MyPageScreen() {
                 },
                 label = "",
             ) { targetIndex ->
-                if (targetIndex == 0) {
-                    Box(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 15.dp),
-                        contentAlignment = Alignment.CenterEnd,
-                    ) {
+                when (targetIndex) {
+                    0 -> {
                         // 기본 보유중 프레임 불러오기
                         images.clear()
                         images.addAll(frames)
 
-                        CustomDropdownMenu(
-                            menuItems =
-                                listOf(
-                                    "보유중" to {
-                                        // 통신 (보유중인 프레임 불러 오기)
-                                        images.clear()
-                                        images.addAll(frames)
-                                    },
-                                    "판매중" to {
-                                        // 통신 (판매중인 프레임 불러 오기)
-                                        images.clear()
-                                        images.addAll(frames2)
-                                    },
-                                ),
-                            styles =
-                                CustomDropdownMenuStyles(),
-                        )
+                        Box(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 15.dp),
+                            contentAlignment = Alignment.CenterEnd,
+                        ) {
+                            CustomDropdownMenu(
+                                menuItems =
+                                    listOf(
+                                        "보유중" to {
+                                            // 통신 (보유 중인 프레임 불러 오기)
+                                            images.clear()
+                                            images.addAll(frames)
+                                        },
+                                        "판매중" to {
+                                            // 통신 (판매 중인 프레임 불러 오기)
+                                            images.clear()
+                                            images.addAll(frames2)
+                                        },
+                                        "경매중" to {
+                                            // 통신 (경매 중인 프레임 불러 오기)
+                                            images.clear()
+                                            images.addAll(frames)
+                                        },
+                                    ),
+                                styles =
+                                    CustomDropdownMenuStyles(),
+                            )
+                        }
                     }
-                } else {
-                    Spacer(modifier = Modifier.height(8.dp))
 
-                    // 에셋 불러오기
-                    images.clear()
-                    images.addAll(assets)
+                    1 -> {
+                        // 에셋 불러오기
+                        images.clear()
+                        images.addAll(frames)
+
+                        Box(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 15.dp),
+                            contentAlignment = Alignment.CenterEnd,
+                        ) {
+                            CustomDropdownMenu(
+                                menuItems =
+                                    listOf(
+                                        "보유중" to {
+                                            // 통신 (보유 중인 에셋 불러 오기)
+                                            images.clear()
+                                            images.addAll(frames)
+                                        },
+                                        "판매중" to {
+                                            // 통신 (판매 중인 에셋 불러 오기)
+                                            images.clear()
+                                            images.addAll(frames2)
+                                        },
+                                    ),
+                                styles =
+                                    CustomDropdownMenuStyles(),
+                            )
+                        }
+                    }
+
+                    2 -> {
+                        // 에셋 불러오기
+                        images.clear()
+                        images.addAll(frames)
+
+                        Box(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 15.dp),
+                            contentAlignment = Alignment.CenterEnd,
+                        ) {
+                            CustomDropdownMenu(
+                                menuItems =
+                                    listOf(
+                                        "판매중" to {
+                                            // 통신 (판매 중인 찜한 프레임 불러 오기)
+                                            images.clear()
+                                            images.addAll(frames)
+                                        },
+                                        "경매중" to {
+                                            // 통신 (경매 중인 찜한 프레임 불러 오기)
+                                            images.clear()
+                                            images.addAll(frames2)
+                                        },
+                                        "에셋" to {
+                                            // 통신 (찜한 에셋 불러 오기)
+                                            images.clear()
+                                            images.addAll(assets)
+                                        },
+                                    ),
+                                styles =
+                                    CustomDropdownMenuStyles(),
+                            )
+                        }
+                    }
                 }
             }
             LazyVerticalGrid(
@@ -282,7 +359,9 @@ fun MyPageScreen() {
                                     width = 1.dp,
                                     shape = RoundedCornerShape(10.dp),
                                     color = Gray03,
-                                ),
+                                ).noRippleClickable {
+                                    navigateToDetail(images[index].toString())
+                                },
                     )
                 }
             }
