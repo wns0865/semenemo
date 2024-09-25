@@ -55,13 +55,11 @@ import java.io.File
 fun SignUpRoute(
     modifier: Modifier = Modifier,
     popUpBackStack: () -> Unit = {},
-    navigateToMain: () -> Unit = {},
     onShowErrorSnackBar: (String) -> Unit = {},
 ) {
     SignUpContent(
         modifier = modifier,
         popUpBackStack = popUpBackStack,
-        navigateToMain = navigateToMain,
         onShowErrorSnackBar = onShowErrorSnackBar,
     )
 }
@@ -70,7 +68,6 @@ fun SignUpRoute(
 fun SignUpContent(
     modifier: Modifier,
     popUpBackStack: () -> Unit,
-    navigateToMain: () -> Unit,
     signUpViewModel: SignUpViewModel = hiltViewModel(),
     context: Context = LocalContext.current,
     onShowErrorSnackBar: (String) -> Unit,
@@ -80,15 +77,13 @@ fun SignUpContent(
         signUpViewModel.uiEvent.collectLatest { event ->
             when (event) {
                 is SignUpUiEvent.Error -> onShowErrorSnackBar(event.message)
-                SignUpUiEvent.SignUpSuccess -> navigateToMain()
+                SignUpUiEvent.SignUpSuccess -> popUpBackStack()
             }
         }
     }
 
     SignUpScreen(
         modifier = modifier,
-        popUpBackStack = popUpBackStack,
-        navigateToMain = navigateToMain,
         nickname = uiState.nickname,
         password = uiState.password,
         updateNickname = { signUpViewModel.updateNickname(it) },
@@ -105,8 +100,6 @@ fun SignUpContent(
 @Composable
 fun SignUpScreen(
     modifier: Modifier = Modifier,
-    popUpBackStack: () -> Unit = {},
-    navigateToMain: () -> Unit = {},
     nickname: String = "",
     password: String = "",
     updateNickname: (String) -> Unit = {},

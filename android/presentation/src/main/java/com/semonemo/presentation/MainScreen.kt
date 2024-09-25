@@ -151,13 +151,6 @@ fun MainNavHost(
                 modifier = modifier,
                 popUpBackStack = navController::popBackStack,
                 onShowErrorSnackBar = onShowErrorSnackBar,
-                navigateToMain = {
-                    navController.navigate(ScreenDestinations.Moment.route) {
-                        popUpTo(navController.graph.startDestinationId) {
-                            inclusive = true
-                        }
-                    }
-                },
             )
         }
 

@@ -1,6 +1,8 @@
 package com.semonemo.data.repository
 
 import com.google.gson.Gson
+import com.semonemo.data.datasource.AuthDataSource
+import com.semonemo.data.datasource.TokenDataSource
 import com.semonemo.data.network.api.AuthApi
 import com.semonemo.data.network.response.emitApiResponse
 import com.semonemo.domain.model.ApiResponse
@@ -21,6 +23,8 @@ class AuthRepositoryImpl
     @Inject
     constructor(
         private val api: AuthApi,
+        private val tokenDataSource: TokenDataSource,
+        private val authDataSource: AuthDataSource,
     ) : AuthRepository {
         override suspend fun exists(address: String): Flow<ApiResponse<Boolean>> =
             flow {
@@ -57,6 +61,10 @@ class AuthRepositoryImpl
                             data = requestBody,
                         )
                     }, default = Unit)
+                if (response is ApiResponse.Success) {
+                    authDataSource.savePassword(data.password)
+                    authDataSource.saveWalletAddress(data.address)
+                }
                 emit(response)
             }
 
@@ -64,6 +72,24 @@ class AuthRepositoryImpl
             flow {
                 val response =
                     emitApiResponse(apiResponse = { api.login(request) }, default = JwtToken())
+                if (response is ApiResponse.Success) {
+                    tokenDataSource.saveJwtToken(
+                        jwtToken = response.data,
+                    )
+                    authDataSource.savePassword(request.password)
+                    authDataSource.saveWalletAddress(request.address)
+                }
                 emit(response)
+            }
+
+        override suspend fun login(): Flow<ApiResponse<Boolean>> =
+            flow {
+                val address = authDataSource.getWalletAddress()
+                val password = authDataSource.getPassword()
+                if (password != null && address != null) {
+                    emit(ApiResponse.Success(data = true))
+                } else {
+                    emit(ApiResponse.Success(data = false))
+                }
             }
     }
