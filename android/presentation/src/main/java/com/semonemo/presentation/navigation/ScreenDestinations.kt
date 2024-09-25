@@ -73,4 +73,6 @@ sealed class ScreenDestinations(
     data object PictureMain : ScreenDestinations(route = "pictureMain")
 
     data object DrawAsset : ScreenDestinations(route = "drawAsset")
+
+    data object PromptAsset : ScreenDestinations(route = "promptAsset")
 }

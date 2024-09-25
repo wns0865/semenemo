@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.semonemo.presentation.R
+import com.semonemo.presentation.component.AssetButton
 import com.semonemo.presentation.component.ColorCircle
 import com.semonemo.presentation.component.ColorPalette
 import com.semonemo.presentation.component.LongBlackButton
@@ -365,108 +366,6 @@ fun DrawNavigateBar(
     }
 }
 
-// 색상 팔레트
-@Composable
-fun ColorPalette(
-    colors: List<Color>,
-    selectedColor: Color,
-    onColorSelected: (Color) -> Unit,
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        colors.forEach { color ->
-            ColorCircle(
-                color = color,
-                isSelected = color == selectedColor,
-                onClick = { onColorSelected(color) },
-            )
-        }
-    }
-}
-
-@Composable
-fun ColorCircle(
-    color: Color,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-) {
-    val borderColor = if (isSelected) Color.Red else Color.Transparent
-
-    Box(
-        modifier =
-            Modifier
-                .size(30.dp)
-                .clip(CircleShape)
-                .background(color)
-                .border(
-                    width = 1.dp,
-                    color =
-                        if (color == Color.White && !isSelected) {
-                            Gray02
-                        } else {
-                            borderColor
-                        },
-                    shape = CircleShape,
-                ).clickable { onClick() },
-    )
-}
-
-// 펜 굵기 팔레트
-@Composable
-fun PenPalette(
-    sizes: List<Dp>,
-    selectedSize: Dp,
-    onSizeSelected: (Dp) -> Unit,
-) {
-    Row(modifier = Modifier.fillMaxSize()) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            sizes.forEach { size ->
-                PenCircle(
-                    onClick = { onSizeSelected(size) },
-                    isSelected = size == selectedSize,
-                    size = size,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun PenCircle(
-    onClick: () -> Unit,
-    isSelected: Boolean,
-    size: Dp,
-) {
-    val borderColor = if (isSelected) Color.Red else Gray02
-
-    Box(
-        modifier =
-            Modifier
-                .size(30.dp)
-                .clip(CircleShape)
-                .background(White)
-                .border(
-                    width = 1.dp,
-                    color = borderColor,
-                    shape = CircleShape,
-                ).clickable { onClick() },
-        contentAlignment = Alignment.Center,
-    ) {
-        Box(
-            modifier =
-                Modifier
-                    .size(size)
-                    .clip(CircleShape)
-                    .background(GunMetal),
-        )
-    }
-}
-
 // 화풍 버튼 리스트
 @Composable
 fun AssetButtonList(
@@ -483,45 +382,6 @@ fun AssetButtonList(
                 onClick = { onBtnSelected(title) },
                 isSelected = title == selectedBtn,
                 title = title,
-            )
-        }
-    }
-}
-
-@Composable
-fun AssetButton(
-    onClick: () -> Unit,
-    isSelected: Boolean,
-    title: String,
-) {
-    if (isSelected) {
-        Box(
-            modifier =
-                Modifier
-                    .clip(shape = RoundedCornerShape(20.dp))
-                    .background(brush = Main02)
-                    .clickable { onClick() },
-        ) {
-            Text(
-                modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
-                text = title,
-                color = White,
-                style = Typography.bodySmall.copy(fontSize = 14.sp),
-            )
-        }
-    } else {
-        Box(
-            modifier =
-                Modifier
-                    .border(width = 1.dp, color = Gray01, shape = RoundedCornerShape(20.dp))
-                    .clip(shape = RoundedCornerShape(20.dp))
-                    .background(color = White)
-                    .clickable { onClick() },
-        ) {
-            Text(
-                modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
-                text = title,
-                style = Typography.labelMedium,
             )
         }
     }

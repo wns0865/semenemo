@@ -119,7 +119,7 @@ fun MyPageScreen() {
                 painter = painterResource(id = R.drawable.img_example),
                 contentDescription = null,
             )
-            Spacer(modifier = Modifier.fillMaxHeight(0.05f))
+            Spacer(modifier = Modifier.fillMaxHeight(0.07f))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -151,12 +151,12 @@ fun MyPageScreen() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
-                        text = "30",
+                        text = "50",
                         style = Typography.bodyLarge,
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = "구독자",
+                        text = "거래량",
                         style = Typography.labelSmall.copy(fontSize = 13.sp),
                     )
                 }
@@ -168,12 +168,29 @@ fun MyPageScreen() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
-                        text = "50",
+                        text = "30",
                         style = Typography.bodyLarge,
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = "거래량",
+                        text = "팔로워",
+                        style = Typography.labelSmall.copy(fontSize = 13.sp),
+                    )
+                }
+                Column(
+                    modifier =
+                        Modifier
+                            .wrapContentWidth()
+                            .weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(
+                        text = "3",
+                        style = Typography.bodyLarge,
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = "팔로잉",
                         style = Typography.labelSmall.copy(fontSize = 13.sp),
                     )
                 }
