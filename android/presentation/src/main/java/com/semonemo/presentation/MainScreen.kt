@@ -2,7 +2,6 @@ package com.semonemo.presentation
 
 import BottomNavigationBar
 import android.net.Uri
-import android.util.Log
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -151,13 +150,6 @@ fun MainNavHost(
                 modifier = modifier,
                 popUpBackStack = navController::popBackStack,
                 onShowErrorSnackBar = onShowErrorSnackBar,
-                navigateToMain = {
-                    navController.navigate(ScreenDestinations.Moment.route) {
-                        popUpTo(navController.graph.startDestinationId) {
-                            inclusive = true
-                        }
-                    }
-                },
             )
         }
 
