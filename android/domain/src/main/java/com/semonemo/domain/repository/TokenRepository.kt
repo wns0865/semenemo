@@ -15,4 +15,8 @@ interface TokenRepository {
     suspend fun saveWalletAddress(address: String): Unit
 
     suspend fun getWalletAddress(): String?
+
+    suspend fun savePassword(password: String)
+
+    suspend fun getPassword(password: String): String?
 }
