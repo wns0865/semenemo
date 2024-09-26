@@ -37,6 +37,30 @@ class AuthDataSource
                     prefs[PASSWORD_KEY]
                 }.first()
 
+        suspend fun saveNickname(nickname: String) {
+            dataStore.edit { prefs ->
+                prefs[NICKNAME_KEY] = nickname
+            }
+        }
+
+        suspend fun getNickname(): String? =
+            dataStore.data
+                .map { prefs ->
+                    prefs[NICKNAME_KEY]
+                }.first()
+
+        suspend fun saveProfileImage(profileImage: String) {
+            dataStore.edit { prefs ->
+                prefs[PROFILE_IMAGE_KEY] = profileImage
+            }
+        }
+
+        suspend fun getProfileImage(): String? =
+            dataStore.data
+                .map { prefs ->
+                    prefs[PROFILE_IMAGE_KEY]
+                }.first()
+
         companion object {
             val WALLET_ADDRESS_KEY = stringPreferencesKey("WALLET_ADDRESS_KEY")
             val PASSWORD_KEY = stringPreferencesKey("PASSWORD_KEY")
