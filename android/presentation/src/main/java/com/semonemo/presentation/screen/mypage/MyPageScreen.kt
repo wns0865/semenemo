@@ -34,11 +34,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,27 +47,90 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.CustomDropdownMenu
 import com.semonemo.presentation.component.CustomDropdownMenuStyles
 import com.semonemo.presentation.component.CustomTab
+import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.NameWithBadge
+import com.semonemo.presentation.component.TopAppBar
+import com.semonemo.presentation.component.TopAppBarNavigationType
 import com.semonemo.presentation.theme.Gray03
 import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.util.noRippleClickable
+import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collectLatest
+
+@Composable
+fun MyPageRoute(
+    modifier: Modifier = Modifier,
+    navigateToDetail: (String) -> Unit,
+    viewModel: MyPageViewModel = hiltViewModel(),
+    onErrorSnackBar: (String) -> Unit,
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    HandleMyPageEvent(uiEvent = viewModel.uiEvent, onErrorSnackBar = onErrorSnackBar)
+    HandleMyPageUi(modifier = modifier, uiState = uiState, navigateToDetail = navigateToDetail)
+}
+
+@Composable
+fun HandleMyPageEvent(
+    uiEvent: SharedFlow<MyPageUiEvent>,
+    onErrorSnackBar: (String) -> Unit,
+) {
+    LaunchedEffect(uiEvent) {
+        uiEvent.collectLatest { event ->
+            when (event) {
+                is MyPageUiEvent.Error -> onErrorSnackBar(event.errorMessage)
+                MyPageUiEvent.Subscribe -> {}
+            }
+        }
+    }
+}
+
+@Composable
+fun HandleMyPageUi(
+    modifier: Modifier = Modifier,
+    uiState: MyPageUiState,
+    navigateToDetail: (String) -> Unit,
+) {
+    when (uiState) {
+        MyPageUiState.Loading -> LoadingDialog()
+        is MyPageUiState.Success ->
+            MyPageScreen(
+                modifier = modifier,
+                navigateToDetail = navigateToDetail,
+                nickname = uiState.nickname,
+                profileImageUrl = uiState.profileImageUrl,
+                amount = uiState.amount,
+                volume = uiState.volume,
+                follower = uiState.follower,
+                following = uiState.following,
+            )
+    }
+}
 
 @Composable
 fun MyPageScreen(
     modifier: Modifier = Modifier,
     navigateToDetail: (String) -> Unit = {},
+    nickname: String = "짜이한",
+    profileImageUrl: String = "",
+    amount: Int = 0,
+    volume: Int = 0,
+    follower: Int = 0,
+    following: Int = 0,
 ) {
     val tabs = listOf("내 프레임", "에셋", "찜")
     val selectedIndex = remember { mutableIntStateOf(0) }
 
     val images = remember { mutableStateListOf<Int>() }
-
     // 더미 이미지 데이터들
     val frames =
         listOf(
@@ -113,18 +176,25 @@ fun MyPageScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(modifier = Modifier.height(10.dp))
-            NameWithBadge(
-                name = "나갱갱",
-                size = 18,
+            TopAppBar(
+                modifier = Modifier,
+                title = {
+                    NameWithBadge(
+                        name = nickname,
+                        size = 18,
+                    )
+                },
+                navigationType = TopAppBarNavigationType.None,
             )
+
             Spacer(modifier = Modifier.fillMaxHeight(0.04f))
-            Image(
+            GlideImage(
+                imageModel = profileImageUrl.toUri(),
+                contentScale = ContentScale.Crop,
                 modifier =
                     Modifier
                         .size(120.dp)
                         .clip(shape = CircleShape),
-                painter = painterResource(id = R.drawable.img_example),
-                contentDescription = null,
             )
             Spacer(modifier = Modifier.fillMaxHeight(0.07f))
             Row(
@@ -141,7 +211,7 @@ fun MyPageScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
-                        text = "23",
+                        text = "$amount",
                         style = Typography.bodyLarge,
                     )
                     Spacer(modifier = Modifier.height(2.dp))
@@ -158,7 +228,7 @@ fun MyPageScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
-                        text = "50",
+                        text = "$volume",
                         style = Typography.bodyLarge,
                     )
                     Spacer(modifier = Modifier.height(2.dp))
@@ -175,7 +245,7 @@ fun MyPageScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
-                        text = "30",
+                        text = "$follower",
                         style = Typography.bodyLarge,
                     )
                     Spacer(modifier = Modifier.height(2.dp))
@@ -192,7 +262,7 @@ fun MyPageScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
-                        text = "3",
+                        text = "$following",
                         style = Typography.bodyLarge,
                     )
                     Spacer(modifier = Modifier.height(2.dp))
