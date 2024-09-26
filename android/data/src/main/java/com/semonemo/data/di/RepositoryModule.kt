@@ -1,7 +1,9 @@
 package com.semonemo.data.di
 
+import com.semonemo.data.repository.AiRepositoryImpl
 import com.semonemo.data.repository.AuthRepositoryImpl
 import com.semonemo.data.repository.NFTRepositoryImpl
+import com.semonemo.domain.repository.AiRepository
 import com.semonemo.domain.repository.AuthRepository
 import com.semonemo.domain.repository.NFTRepository
 import dagger.Binds
@@ -17,4 +19,7 @@ interface RepositoryModule {
 
     @Binds
     fun provideAuthRepository(authRepositoryImpl: AuthRepositoryImpl): AuthRepository
+
+    @Binds
+    fun provideAiRepository(aiRepositoryImpl: AiRepositoryImpl): AiRepository
 }
