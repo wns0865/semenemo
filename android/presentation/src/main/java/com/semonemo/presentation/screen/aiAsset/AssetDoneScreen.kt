@@ -1,6 +1,5 @@
 package com.semonemo.presentation.screen.aiAsset
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -38,6 +38,7 @@ import com.semonemo.presentation.component.LongWhiteButton
 import com.semonemo.presentation.theme.Gray02
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.util.addFocusCleaner
+import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun AssetDoneScreen(
@@ -70,7 +71,7 @@ fun AssetDoneScreen(
                 ),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Spacer(modifier = Modifier.fillMaxHeight(0.1f))
+        Spacer(modifier = Modifier.fillMaxHeight(0.05f))
         Column(
             modifier = modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -100,21 +101,22 @@ fun AssetDoneScreen(
                 boldStyle = Typography.titleMedium.copy(fontSize = 22.sp),
                 normalStyle = Typography.labelLarge.copy(fontSize = 22.sp),
             )
-            Spacer(modifier = Modifier.fillMaxHeight(0.08f))
+            Spacer(modifier = Modifier.fillMaxHeight(0.05f))
             Text(
                 text = stringResource(R.string.asset_done_script),
                 color = Gray02,
                 style = Typography.labelLarge.copy(fontSize = 16.sp),
             )
             Spacer(modifier = Modifier.height(13.dp))
-            Image(
+            GlideImage(
+                imageModel = assetUrl,
                 modifier =
                     Modifier
-                        .fillMaxWidth(0.4f)
-                        .fillMaxHeight(0.3f),
-                painter = painterResource(id = R.drawable.img_robot),
-                contentDescription = null,
+                        .fillMaxWidth(0.5f)
+                        .fillMaxHeight(0.4f),
+                contentScale = ContentScale.Crop,
             )
+
             Spacer(modifier = Modifier.fillMaxHeight(0.1f))
             HashTagTextField(
                 modifier = Modifier.fillMaxWidth(0.88f),
