@@ -33,6 +33,7 @@ import com.semonemo.presentation.screen.imgAsset.ImageAssetScreen
 import com.semonemo.presentation.screen.imgAsset.ImageSelectRoute
 import com.semonemo.presentation.screen.login.LoginRoute
 import com.semonemo.presentation.screen.moment.MomentScreen
+import com.semonemo.presentation.screen.mypage.DetailScreen
 import com.semonemo.presentation.screen.mypage.MyPageScreen
 import com.semonemo.presentation.screen.picture.PictureMainScreen
 import com.semonemo.presentation.screen.signup.SignUpRoute
@@ -191,7 +192,12 @@ fun MainNavHost(
         composable(
             route = ScreenDestinations.MyPage.route,
         ) {
-            MyPageScreen()
+            MyPageScreen(
+                modifier = modifier,
+                navigateToDetail = { imgUrl ->
+                    navController.navigate(ScreenDestinations.Detail.createRoute(imgUrl))
+                },
+            )
         }
 
         composable(
@@ -275,6 +281,15 @@ fun MainNavHost(
                 navigateToDone = { assetUrl ->
                     navController.navigate(ScreenDestinations.AssetDone.createRoute(assetUrl))
                 },
+            )
+        }
+
+        composable(
+            route = ScreenDestinations.Detail.route,
+        ) {
+            DetailScreen(
+                modifier = modifier,
+                imgUrl = it.arguments?.getString("imgUrl"),
             )
         }
     }

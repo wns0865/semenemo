@@ -22,6 +22,10 @@ val Gray01 = Color(0xFF555555)
 val Gray02 = Color(0xFF949494)
 val Gray03 = Color(0xFFD9D9D9)
 val WhiteGray = Color(0xFFE7E7E7)
+
+val ProgressRed = Color(0xFFFF6961)
+val ProgressYellow = Color(0xFFFDFD96)
+val ProgressGreen = Color(0xFF77DD77)
 val Main01 =
     Brush.linearGradient(
         colors =

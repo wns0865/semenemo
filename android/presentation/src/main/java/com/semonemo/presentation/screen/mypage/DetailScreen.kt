@@ -60,13 +60,16 @@ enum class DialogType {
  */
 @Composable
 fun DetailScreen(
-    isPrivate: Boolean,
-    isNotSale: Boolean,
+    modifier: Modifier = Modifier,
+    imgUrl: String? = null,
     onPublicClicked: () -> Unit = {},
     onSaleClicked: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
     var showDialog by remember { mutableStateOf<DialogType?>(null) }
+
+    val isPrivate = false
+    val isNotSale = true
 
     // 더미 데이터
     val tags = listOf("윈터", "연예인", "에스파", "에스파윈터", "연예인프레임")
@@ -106,7 +109,7 @@ fun DetailScreen(
                 .verticalScroll(state = scrollState)
                 .statusBarsPadding()
                 .navigationBarsPadding()
-                .padding(horizontal = 25.dp, vertical = 18.dp),
+                .padding(horizontal = 25.dp, vertical = 5.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(
@@ -288,9 +291,6 @@ fun DetailScreen(
 @Preview(showBackground = true, showSystemUi = true)
 fun DetailScreenPreview() {
     SemonemoTheme {
-        DetailScreen(
-            isPrivate = false,
-            isNotSale = false,
-        )
+        DetailScreen()
     }
 }

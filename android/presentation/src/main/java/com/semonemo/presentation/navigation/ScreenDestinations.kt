@@ -75,4 +75,15 @@ sealed class ScreenDestinations(
     data object DrawAsset : ScreenDestinations(route = "drawAsset")
 
     data object PromptAsset : ScreenDestinations(route = "promptAsset")
+
+    data object Detail : ScreenDestinations(route = "detail") {
+        override val route: String
+            get() = "detail/{imgUrl}"
+        val arguments =
+            listOf(
+                navArgument(name = "imgUrl") { type = NavType.StringType },
+            )
+
+        fun createRoute(imgUrl: String) = "detail/$imgUrl"
+    }
 }
