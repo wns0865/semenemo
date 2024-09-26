@@ -1,5 +1,6 @@
 package com.semonemo.presentation.component
 
+import androidx.annotation.RawRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,10 +28,18 @@ import com.semonemo.presentation.R
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 
+/**
+ * TODO
+ *
+ * @param modifier
+ * @param lottieRes : 로티 파일
+ * @param loadingMessage : 로딩 메시지
+ * @param subMessage : 서브 메시지 (두 줄인 경우)
+ */
 @Composable
 fun LoadingDialog(
     modifier: Modifier = Modifier,
-    lottieRes: Int = R.raw.normal_load,
+    @RawRes lottieRes: Int = R.raw.normal_load,
     loadingMessage: String = "로딩중입니다...",
     subMessage: String? = null,
 ) {

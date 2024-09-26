@@ -1,5 +1,9 @@
-package com.semonemo.presentation.screen.img_asset
+package com.semonemo.presentation.screen.imgAsset
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -15,8 +19,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -25,14 +27,31 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.semonemo.presentation.R
+import com.semonemo.presentation.component.BoldTextWithKeywords
 import com.semonemo.presentation.component.LongWhiteButton
-import com.semonemo.presentation.theme.SemonemoTheme
-import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.theme.Main02
+import com.semonemo.presentation.theme.SemonemoTheme
+import com.semonemo.presentation.theme.Typography
 
 @Composable
-fun ImageAssetScreen(modifier: Modifier = Modifier) {
+fun ImageAssetScreen(
+    modifier: Modifier = Modifier,
+    popUpBackStack: () -> Unit = {},
+    navigateToSelect: (String) -> Unit = {},
+) {
+    val photoFromAlbumLauncher =
+        rememberLauncherForActivityResult(
+            contract =
+                ActivityResultContracts.PickVisualMedia(),
+            onResult = { uri ->
+                uri?.let {
+                    val encodeUri = Uri.encode(it.toString())
+                    navigateToSelect(encodeUri)
+                }
+            },
+        )
+
     Box(
         modifier =
             modifier
@@ -44,8 +63,8 @@ fun ImageAssetScreen(modifier: Modifier = Modifier) {
                 Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
-                    .statusBarsPadding()
-                    .navigationBarsPadding(),
+                    .navigationBarsPadding()
+                    .statusBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(modifier = Modifier.fillMaxHeight(0.15f))
@@ -75,21 +94,30 @@ fun ImageAssetScreen(modifier: Modifier = Modifier) {
                 style = Typography.labelLarge.copy(fontSize = 20.sp),
             )
             Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = stringResource(R.string.img_asset_script2),
-                style = Typography.labelLarge.copy(fontSize = 20.sp),
+            BoldTextWithKeywords(
+                fullText = stringResource(id = R.string.img_asset_script2),
+                keywords = listOf("배경을 제거"),
+                brushFlag = listOf(false),
+                boldStyle = Typography.titleLarge.copy(fontSize = 20.sp),
+                normalStyle = Typography.labelLarge.copy(fontSize = 20.sp),
             )
             Spacer(modifier = Modifier.fillMaxHeight(0.3f))
             LongWhiteButton(
                 icon = null,
                 text = stringResource(R.string.img_asset_btn_title),
+                onClick = {
+                    photoFromAlbumLauncher.launch(
+                        PickVisualMediaRequest(
+                            ActivityResultContracts.PickVisualMedia.ImageOnly,
+                        ),
+                    )
+                },
             )
-            Spacer(modifier = Modifier.weight(1f))
         }
     }
 }
 
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 fun ImageAssetPreview() {
     SemonemoTheme {

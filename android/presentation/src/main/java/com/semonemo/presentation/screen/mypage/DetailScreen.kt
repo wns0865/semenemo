@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
@@ -58,13 +60,16 @@ enum class DialogType {
  */
 @Composable
 fun DetailScreen(
-    isPrivate: Boolean,
-    isNotSale: Boolean,
+    modifier: Modifier = Modifier,
+    imgUrl: String? = null,
     onPublicClicked: () -> Unit = {},
     onSaleClicked: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
     var showDialog by remember { mutableStateOf<DialogType?>(null) }
+
+    val isPrivate = false
+    val isNotSale = true
 
     // 더미 데이터
     val tags = listOf("윈터", "연예인", "에스파", "에스파윈터", "연예인프레임")
@@ -102,11 +107,16 @@ fun DetailScreen(
                 .fillMaxSize()
                 .background(brush = Main01)
                 .verticalScroll(state = scrollState)
-                .padding(horizontal = 25.dp, vertical = 18.dp),
+                .statusBarsPadding()
+                .navigationBarsPadding()
+                .padding(horizontal = 25.dp, vertical = 5.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(
-            modifier = Modifier.fillMaxWidth(),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp),
             contentAlignment = Alignment.Center,
         ) {
             Text(
@@ -281,9 +291,6 @@ fun DetailScreen(
 @Preview(showBackground = true, showSystemUi = true)
 fun DetailScreenPreview() {
     SemonemoTheme {
-        DetailScreen(
-            isPrivate = false,
-            isNotSale = false,
-        )
+        DetailScreen()
     }
 }

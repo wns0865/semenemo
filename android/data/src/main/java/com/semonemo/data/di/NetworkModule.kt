@@ -1,73 +1,136 @@
 package com.semonemo.data.di
 
 import com.google.gson.GsonBuilder
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.semonemo.data.BuildConfig
+import com.semonemo.data.datasource.TokenDataSource
+import com.semonemo.data.network.api.AuthApi
+import com.semonemo.data.network.interceptor.AccessTokenInterceptor
 import com.semonemo.data.network.interceptor.ErrorHandlingInterceptor
+import com.semonemo.data.network.interceptor.JwtAuthenticator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
-import javax.inject.Named
+import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-    @Singleton
-    @Provides
-    @Named("Spring")
-    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
-        val json =
-            Json {
-                isLenient = true
-                prettyPrint = true
-                ignoreUnknownKeys = true
-                coerceInputValues = true
-            }
-        return Retrofit
-            .Builder()
-            .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
-            .baseUrl(BuildConfig.SEVER_URL + BuildConfig.SPRING_PORT_NUMBER)
-            .client(okHttpClient)
-            .build()
-    }
+    @Qualifier
+    @Retention(AnnotationRetention.BINARY)
+    annotation class AuthClient
+
+    @Qualifier
+    @Retention(AnnotationRetention.BINARY)
+    annotation class BaseClient
+
+    @Qualifier
+    @Retention(AnnotationRetention.BINARY)
+    annotation class NftClient
 
     @Singleton
     @Provides
-    @Named("Node")
-    fun provideNFTRetrofit(okHttpClient: OkHttpClient): Retrofit {
-        val json =
-            Json {
-                isLenient = true
-                prettyPrint = true
-                ignoreUnknownKeys = true
-                coerceInputValues = true
-            }
-        return Retrofit
-            .Builder()
-            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
-            .baseUrl(BuildConfig.TEST_URL + BuildConfig.NODE_PORT_NUMBER)
-            .client(okHttpClient)
-            .build()
+    @BaseClient
+    fun provideOkHttpClient(
+        accessTokenInterceptor: AccessTokenInterceptor,
+        jwtAuthenticator: JwtAuthenticator,
+    ) = OkHttpClient.Builder().run {
+        addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+        addInterceptor(ErrorHandlingInterceptor())
+        addInterceptor(accessTokenInterceptor)
+        authenticator(jwtAuthenticator)
+        connectTimeout(10, TimeUnit.SECONDS)
+        readTimeout(10, TimeUnit.SECONDS)
+        writeTimeout(10, TimeUnit.SECONDS)
+        build()
     }
 
+    @AuthClient
     @Singleton
     @Provides
-    fun provideOkHttpClient() =
+    fun provideAuthClient(accessTokenInterceptor: AccessTokenInterceptor) =
         OkHttpClient.Builder().run {
             addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+            addInterceptor(accessTokenInterceptor)
             addInterceptor(ErrorHandlingInterceptor())
             connectTimeout(10, TimeUnit.SECONDS)
             readTimeout(10, TimeUnit.SECONDS)
             writeTimeout(10, TimeUnit.SECONDS)
             build()
         }
+
+    @NftClient
+    @Singleton
+    @Provides
+    fun provideNftOkHttpClient(
+        accessTokenInterceptor: AccessTokenInterceptor,
+        jwtAuthenticator: JwtAuthenticator,
+    ) = OkHttpClient.Builder().run {
+        addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+        addInterceptor(ErrorHandlingInterceptor())
+        addInterceptor(accessTokenInterceptor)
+        authenticator(jwtAuthenticator)
+        connectTimeout(10, TimeUnit.SECONDS)
+        readTimeout(10, TimeUnit.SECONDS)
+        writeTimeout(10, TimeUnit.SECONDS)
+        build()
+    }
+
+    @Singleton
+    @Provides
+    @AuthClient
+    fun provideAuthRetrofit(
+        @AuthClient
+        okHttpClient: OkHttpClient,
+    ) = Retrofit
+        .Builder()
+        .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
+        .baseUrl(BuildConfig.SEVER_URL)
+        .client(okHttpClient)
+        .build()
+
+    @Singleton
+    @Provides
+    @BaseClient
+    fun provideRetrofit(
+        @BaseClient
+        okHttpClient: OkHttpClient,
+    ): Retrofit =
+        Retrofit
+            .Builder()
+            .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
+            .baseUrl(BuildConfig.SEVER_URL)
+            .client(okHttpClient)
+            .build()
+
+    @Singleton
+    @Provides
+    @NftClient
+    fun provideNFTRetrofit(
+        @NftClient
+        okHttpClient: OkHttpClient,
+    ): Retrofit =
+        Retrofit
+            .Builder()
+            .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
+            .baseUrl(BuildConfig.TEST_URL + BuildConfig.NODE_PORT_NUMBER)
+            .client(okHttpClient)
+            .build()
+
+    @Singleton
+    @Provides
+    fun provideJwtAuthenticator(
+        tokenDataSource: TokenDataSource,
+        authApi: AuthApi,
+    ): JwtAuthenticator = JwtAuthenticator(tokenDataSource, authApi)
+
+    @Singleton
+    @Provides
+    fun provideAccessTokenInterceptor(tokenDataSource: TokenDataSource): AccessTokenInterceptor = AccessTokenInterceptor(tokenDataSource)
 }

@@ -1,4 +1,4 @@
-package com.semonemo.presentation.screen.ai_asset
+package com.semonemo.presentation.screen.aiAsset
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,7 +19,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,7 +40,12 @@ import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.util.addFocusCleaner
 
 @Composable
-fun AssetDoneScreen(modifier: Modifier = Modifier) {
+fun AssetDoneScreen(
+    modifier: Modifier = Modifier,
+    assetUrl: String? = null,
+    popUpBackStack: () -> Unit = {},
+    navigateToMy: () -> Unit = {},
+) {
     // 더미 데이터
     val tags =
         remember {
@@ -135,9 +139,19 @@ fun AssetDoneScreen(modifier: Modifier = Modifier) {
                 },
             )
             Spacer(modifier = Modifier.fillMaxHeight(0.3f))
-            LongBlackButton(icon = null, text = stringResource(R.string.save_asset))
+            LongBlackButton(
+                icon = null,
+                text = stringResource(R.string.save_asset),
+                onClick = navigateToMy,
+            )
             Spacer(modifier = Modifier.height(13.dp))
-            LongWhiteButton(icon = null, text = stringResource(R.string.remake_asset))
+            LongWhiteButton(
+                icon = null,
+                text = stringResource(R.string.remake_asset),
+                onClick = {
+                    // 다시 제작 (통신)
+                },
+            )
         }
     }
 }

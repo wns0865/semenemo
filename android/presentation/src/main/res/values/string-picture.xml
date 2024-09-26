@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="picture_main_title">프레임 사이즈를 선택하고\n사진을 촬영해 보세요!</string>
+    <string name="frame_size1_title">1x4 사이즈</string>
+    <string name="frame_size1_script">가장 기본적인 사이즈</string>
+    <string name="frame_size2_title">2x2 사이즈</string>
+    <string name="frame_size2_script">크게 네 컷을 담고 싶을 때</string>
+    <string name="frame_size3_title">1x1 사이즈</string>
+    <string name="frame_size3_script">오로지 한 컷만!</string>
+</resources>

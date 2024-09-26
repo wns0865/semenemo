@@ -1,5 +1,8 @@
 package com.semonemo.presentation.navigation
 
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+
 /*
  추가 하는 방법
     data object sample : ScreenDestination(route = "화면이름"){
@@ -16,11 +19,20 @@ package com.semonemo.presentation.navigation
  */
 
 sealed class ScreenDestinations(
-    val route: String,
+    open val route: String,
 ) {
     data object Login : ScreenDestinations(route = "login")
 
-    data object Register : ScreenDestinations(route = "register")
+    data object Register : ScreenDestinations(route = "register") {
+        override val route: String
+            get() = "register/{walletAddress}"
+        val arguments =
+            listOf(
+                navArgument(name = "walletAddress") { type = NavType.StringType },
+            )
+
+        fun createRoute(walletAddress: String) = "register/$walletAddress"
+    }
 
     data object Shop : ScreenDestinations(route = "shop")
 
@@ -31,4 +43,47 @@ sealed class ScreenDestinations(
     data object Wallet : ScreenDestinations(route = "wallet")
 
     data object MyPage : ScreenDestinations(route = "mypage")
+
+    data object AiAsset : ScreenDestinations(route = "aiAsset")
+
+    data object ImageAsset : ScreenDestinations(route = "imageAsset")
+
+    data object Select : ScreenDestinations(route = "select") {
+        override val route: String
+            get() = "select/{selectedImg}"
+        val arguments =
+            listOf(
+                navArgument(name = "selectedImg") { type = NavType.StringType },
+            )
+
+        fun createRoute(selectedImg: String) = "select/$selectedImg"
+    }
+
+    data object AssetDone : ScreenDestinations(route = "assetDone") {
+        override val route: String
+            get() = "assetDone/{assetUrl}"
+        val arguments =
+            listOf(
+                navArgument(name = "assetUrl") { type = NavType.StringType },
+            )
+
+        fun createRoute(assetUrl: String) = "assetDone/$assetUrl"
+    }
+
+    data object PictureMain : ScreenDestinations(route = "pictureMain")
+
+    data object DrawAsset : ScreenDestinations(route = "drawAsset")
+
+    data object PromptAsset : ScreenDestinations(route = "promptAsset")
+
+    data object Detail : ScreenDestinations(route = "detail") {
+        override val route: String
+            get() = "detail/{imgUrl}"
+        val arguments =
+            listOf(
+                navArgument(name = "imgUrl") { type = NavType.StringType },
+            )
+
+        fun createRoute(imgUrl: String) = "detail/$imgUrl"
+    }
 }

@@ -5,7 +5,26 @@ sealed class ApiResponse<out D> {
         val data: D,
     ) : ApiResponse<D>()
 
-    data class Error(
-        val error: ErrorResponse,
-    ) : ApiResponse<Nothing>()
+    sealed class Error(
+        open val errorCode: String = "",
+        open val errorMessage: String = "",
+    ) : ApiResponse<Nothing>() {
+        data class ServerError(
+            override val errorCode: String,
+            override val errorMessage: String,
+        ) : Error(errorCode, errorMessage)
+
+        data class TokenError(
+            override val errorCode: String,
+            override val errorMessage: String,
+        ) : Error(errorCode, errorMessage)
+
+        data class NetworkError(
+            override val errorMessage: String,
+        ) : Error(errorMessage = errorMessage)
+
+        data class UnknownError(
+            override val errorMessage: String,
+        ) : Error(errorMessage = errorMessage)
+    }
 }

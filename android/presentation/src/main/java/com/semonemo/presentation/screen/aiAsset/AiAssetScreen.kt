@@ -1,4 +1,4 @@
-package com.semonemo.presentation.screen.ai_asset
+package com.semonemo.presentation.screen.aiAsset
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -8,11 +8,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,30 +21,34 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.semonemo.presentation.R
+import com.semonemo.presentation.component.BoldTextWithKeywords
 import com.semonemo.presentation.component.LongWhiteButton
-import com.semonemo.presentation.theme.SemonemoTheme
-import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.theme.Main02
+import com.semonemo.presentation.theme.SemonemoTheme
+import com.semonemo.presentation.theme.Typography
 
 @Composable
-fun AiAssetScreen(modifier: Modifier = Modifier) {
+fun AiAssetScreen(
+    modifier: Modifier = Modifier,
+    navigateToDraw: () -> Unit = {},
+    navigateToPrompt: () -> Unit = {},
+) {
     Box(
         modifier =
-        modifier
-            .fillMaxSize()
-            .background(brush = Main01),
+            modifier
+                .fillMaxSize()
+                .background(brush = Main01),
     ) {
         Column(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .statusBarsPadding()
-                .navigationBarsPadding(),
+                Modifier
+                    .fillMaxSize()
+                    .statusBarsPadding()
+                    .navigationBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Spacer(modifier = Modifier.fillMaxHeight(0.15f))
+            Spacer(modifier = Modifier.fillMaxHeight(0.1f))
             Text(
                 text = stringResource(R.string.ai_asset_title1),
                 style = Typography.labelLarge.copy(fontSize = 24.sp),
@@ -67,24 +69,36 @@ fun AiAssetScreen(modifier: Modifier = Modifier) {
                     contentDescription = null,
                 )
             }
-            Spacer(modifier = Modifier.fillMaxHeight(0.1f))
+            Spacer(modifier = Modifier.fillMaxHeight(0.15f))
             Text(
                 text = stringResource(R.string.ai_asset_script1),
                 style = Typography.labelLarge.copy(fontSize = 20.sp),
             )
             Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = stringResource(R.string.ai_asset_script2),
-                style = Typography.labelLarge.copy(fontSize = 20.sp),
+            BoldTextWithKeywords(
+                fullText = stringResource(R.string.ai_asset_script2),
+                keywords = listOf("에셋으로 변환"),
+                brushFlag = listOf(false),
+                boldStyle = Typography.titleLarge.copy(fontSize = 20.sp),
+                normalStyle = Typography.labelLarge.copy(fontSize = 20.sp),
             )
-            Spacer(modifier = Modifier.fillMaxHeight(0.35f))
-            LongWhiteButton(icon = null, text = stringResource(R.string.ai_asset_btn_title))
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.fillMaxHeight(0.25f))
+            LongWhiteButton(
+                icon = null,
+                text = stringResource(R.string.ai_asset_draw_btn),
+                onClick = navigateToDraw,
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            LongWhiteButton(
+                icon = null,
+                text = stringResource(id = R.string.ai_asset_prompt_btn),
+                onClick = navigateToPrompt,
+            )
         }
     }
 }
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun AiAssetPreview() {
     SemonemoTheme {

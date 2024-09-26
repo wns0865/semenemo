@@ -1,31 +1,50 @@
 package com.semonemo.data.network.response
 
+import com.semonemo.data.exception.ApiException
+import com.semonemo.data.exception.RefreshTokenExpiredException
 import com.semonemo.domain.model.ApiResponse
-import com.semonemo.domain.model.ErrorResponse
 import java.io.IOException
 
 data class BaseResponse<T>(
     val code: String,
-    val data: T,
+    val data: T?,
     val message: String,
 )
 
-suspend fun <T> emitApiResponse(apiResponse: suspend () -> BaseResponse<T>): ApiResponse<T> =
+suspend fun <T> emitApiResponse(
+    apiResponse: suspend () -> BaseResponse<T>,
+    default: T,
+): ApiResponse<T> =
     runCatching {
         apiResponse()
     }.fold(
         onSuccess = { result ->
-            ApiResponse.Success(data = result.data)
+            ApiResponse.Success(data = result.data ?: default)
         },
         onFailure = { e ->
             when (e) {
-                is ApiException -> ApiResponse.Error(e.error)
-                is IOException ->
-                    ApiResponse.Error(
-                        ErrorResponse("Network Error", e.message ?: ""),
+                is ApiException ->
+                    ApiResponse.Error.ServerError(
+                        errorCode = e.error.errorCode,
+                        errorMessage = e.error.message,
                     )
 
-                else -> ApiResponse.Error(ErrorResponse("Unhandled Error", e.message ?: ""))
+                is RefreshTokenExpiredException -> {
+                    ApiResponse.Error.TokenError(
+                        errorMessage = e.error.message,
+                        errorCode = e.error.errorCode,
+                    )
+                }
+
+                is IOException ->
+                    ApiResponse.Error.NetworkError(
+                        errorMessage = e.message ?: "",
+                    )
+
+                else ->
+                    ApiResponse.Error.UnknownError(
+                        errorMessage = e.message ?: "",
+                    )
             }
         },
     )

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,12 +26,18 @@ import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BoldTextWithKeywords
 import com.semonemo.presentation.component.MomentBox
 import com.semonemo.presentation.component.MomentLongBox
+import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
-import com.semonemo.presentation.theme.Main01
 
 @Composable
-fun MomentScreen(modifier: Modifier = Modifier) {
+fun MomentScreen(
+    modifier: Modifier = Modifier,
+    navigateToAiAsset: () -> Unit = {},
+    navigateToImageAsset: () -> Unit = {},
+    navigateToFrame: () -> Unit = {},
+    navigateToPicture: () -> Unit = {},
+) {
     val userName = "나갱갱"
 
     Box(
@@ -61,7 +68,7 @@ fun MomentScreen(modifier: Modifier = Modifier) {
                     normalStyle = Typography.labelLarge.copy(fontSize = 24.sp),
                 )
             }
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.fillMaxHeight(0.04f))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -71,6 +78,7 @@ fun MomentScreen(modifier: Modifier = Modifier) {
                     title = stringResource(R.string.ai_asset_label),
                     subTitle = stringResource(R.string.make_title),
                     icon = R.drawable.img_robot,
+                    onClick = navigateToAiAsset,
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 MomentBox(
@@ -78,6 +86,7 @@ fun MomentScreen(modifier: Modifier = Modifier) {
                     title = stringResource(R.string.img_asset_label),
                     subTitle = stringResource(R.string.make_title),
                     icon = R.drawable.img_disk,
+                    onClick = navigateToImageAsset,
                 )
             }
             Spacer(modifier = Modifier.height(18.dp))
@@ -86,6 +95,7 @@ fun MomentScreen(modifier: Modifier = Modifier) {
                 title = stringResource(R.string.my_frame_label),
                 subTitle = stringResource(R.string.frame_label_2),
                 icon = R.drawable.img_sparkles,
+                onClick = navigateToFrame,
             )
             Spacer(modifier = Modifier.height(18.dp))
             MomentLongBox(
@@ -93,6 +103,7 @@ fun MomentScreen(modifier: Modifier = Modifier) {
                 title = stringResource(R.string.picture_label),
                 subTitle = stringResource(R.string.picture_label2),
                 icon = R.drawable.img_camera,
+                onClick = navigateToPicture,
             )
         }
     }
