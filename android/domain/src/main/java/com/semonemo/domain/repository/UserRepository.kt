@@ -3,7 +3,13 @@ package com.semonemo.domain.repository
 import com.semonemo.domain.model.ApiResponse
 import com.semonemo.domain.model.User
 import kotlinx.coroutines.flow.Flow
+import java.io.File
 
 interface UserRepository {
+    suspend fun edit(
+        profileImage: File? = null,
+        nickName: String = "",
+    ): Flow<ApiResponse<Unit>>
+
     suspend fun loadUserInfo(): Flow<ApiResponse<User>>
 }
