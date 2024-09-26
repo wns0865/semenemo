@@ -20,13 +20,15 @@ import com.semonemo.presentation.theme.Gray02
  * TODO
  *
  * @param colors : 색상 리스트
+ * @param circleSize : 원형 크기
  * @param selectedColor : 선택된 색상
  * @param onColorSelected : 색상 선택했을 때
  */
 @Composable
 fun ColorPalette(
     colors: List<Color>,
-    selectedColor: Color,
+    circleSize: Int = 30,
+    selectedColor: Color?,
     onColorSelected: (Color) -> Unit,
 ) {
     Row(
@@ -36,6 +38,7 @@ fun ColorPalette(
         colors.forEach { color ->
             ColorCircle(
                 color = color,
+                circleSize = circleSize,
                 isSelected = color == selectedColor,
                 onClick = { onColorSelected(color) },
             )
@@ -47,12 +50,14 @@ fun ColorPalette(
  * TODO
  *
  * @param color : 색상
+ * @param circleSize : 원형 크기
  * @param isSelected : 선택되었을 때
  * @param onClick : 클릭했을 때
  */
 @Composable
 fun ColorCircle(
     color: Color,
+    circleSize: Int = 30,
     isSelected: Boolean,
     onClick: () -> Unit,
 ) {
@@ -61,7 +66,7 @@ fun ColorCircle(
     Box(
         modifier =
             Modifier
-                .size(30.dp)
+                .size(circleSize.dp)
                 .clip(CircleShape)
                 .background(color)
                 .border(
