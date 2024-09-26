@@ -34,6 +34,10 @@ object NetworkModule {
     @Retention(AnnotationRetention.BINARY)
     annotation class NftClient
 
+    @Qualifier
+    @Retention(AnnotationRetention.BINARY)
+    annotation class AiClient
+
     @Singleton
     @Provides
     @BaseClient
@@ -82,18 +86,32 @@ object NetworkModule {
         build()
     }
 
+    @AiClient
+    @Singleton
+    @Provides
+    fun provideAiOkHttpClient() =
+        OkHttpClient.Builder().run {
+            addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+            addInterceptor(ErrorHandlingInterceptor())
+            connectTimeout(5, TimeUnit.MINUTES)
+            readTimeout(5, TimeUnit.MINUTES)
+            writeTimeout(5, TimeUnit.MINUTES)
+            build()
+        }
+
     @Singleton
     @Provides
     @AuthClient
     fun provideAuthRetrofit(
         @AuthClient
         okHttpClient: OkHttpClient,
-    ) = Retrofit
-        .Builder()
-        .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
-        .baseUrl(BuildConfig.SEVER_URL)
-        .client(okHttpClient)
-        .build()
+    ): Retrofit =
+        Retrofit
+            .Builder()
+            .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
+            .baseUrl(BuildConfig.SEVER_URL)
+            .client(okHttpClient)
+            .build()
 
     @Singleton
     @Provides
@@ -120,6 +138,20 @@ object NetworkModule {
             .Builder()
             .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
             .baseUrl(BuildConfig.TEST_URL + BuildConfig.NODE_PORT_NUMBER)
+            .client(okHttpClient)
+            .build()
+
+    @Singleton
+    @Provides
+    @AiClient
+    fun provideAiRetrofit(
+        @AiClient
+        okHttpClient: OkHttpClient,
+    ): Retrofit =
+        Retrofit
+            .Builder()
+            .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
+            .baseUrl(BuildConfig.AI_SERVER_URL)
             .client(okHttpClient)
             .build()
 
