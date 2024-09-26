@@ -4,20 +4,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.semonemo.presentation.R
 import com.semonemo.presentation.theme.SemonemoTheme
+import com.semonemo.presentation.util.noRippleClickable
 
 enum class TopAppBarNavigationType { Back, None }
 
@@ -38,19 +36,6 @@ fun TopAppBar(
     actionButtons: @Composable () -> Unit = {},
     onNavigationClick: () -> Unit = {},
 ) {
-    val icon: @Composable (Modifier, imageVector: ImageVector) -> Unit =
-        { modifier, imageVector ->
-            IconButton(
-                onClick = onNavigationClick,
-                modifier = modifier.size(48.dp),
-            ) {
-                Icon(
-                    imageVector = imageVector,
-                    contentDescription = "",
-                )
-            }
-        }
-
     Box(
         modifier =
             Modifier
@@ -60,15 +45,24 @@ fun TopAppBar(
         contentAlignment = Alignment.Center,
     ) {
         if (navigationType == TopAppBarNavigationType.Back) {
-            icon(
-                Modifier.align(Alignment.CenterStart),
-                Icons.AutoMirrored.Filled.ArrowBack,
+            Icon(
+                modifier =
+                    Modifier
+                        .align(Alignment.CenterStart)
+                        .padding(start = 10.dp)
+                        .noRippleClickable { onNavigationClick() },
+                painter = painterResource(id = R.drawable.ic_arrow_left),
+                contentDescription = "",
             )
         }
         Row(Modifier.align(Alignment.Center)) {
             title()
         }
-        Row(Modifier.align(Alignment.CenterEnd).padding(end = 10.dp)) {
+        Row(
+            Modifier
+                .align(Alignment.CenterEnd)
+                .padding(end = 10.dp),
+        ) {
             actionButtons()
         }
     }
