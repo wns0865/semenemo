@@ -1,5 +1,6 @@
 package com.semonemo.data.di
 
+import com.semonemo.data.network.api.AiApi
 import com.semonemo.data.network.api.AuthApi
 import com.semonemo.data.network.api.NFTApi
 import com.semonemo.data.network.api.UserApi
@@ -31,4 +32,10 @@ object ApiModule {
     fun provideUserApi(
         @NetworkModule.BaseClient retrofit: Retrofit,
     ): UserApi = retrofit.create()
+
+    @Provides
+    @Singleton
+    fun provideAiApi(
+        @NetworkModule.AiClient retrofit: Retrofit,
+    ): AiApi = retrofit.create()
 }
