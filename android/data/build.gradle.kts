@@ -21,6 +21,7 @@ android {
         buildConfigField("String", "SEVER_URL", properties["SEVER_URL"] as String)
         buildConfigField("String", "NODE_PORT_NUMBER", properties["NODE_PORT_NUMBER"] as String)
         buildConfigField("String", "TEST_URL", properties["TEST_URL"] as String)
+        buildConfigField("String","AI_SERVER_URL",properties["AI_SERVER_URL"] as String)
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
