@@ -1,7 +1,10 @@
 package com.semonemo.presentation.screen.frame
 
-import android.util.Log
+import android.annotation.SuppressLint
+import androidx.compose.animation.SharedTransitionScope.PlaceHolderSize.Companion.contentSize
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
@@ -10,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +21,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,16 +38,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BrushPalette
 import com.semonemo.presentation.component.ColorPalette
 import com.semonemo.presentation.component.CustomTab
@@ -48,6 +62,7 @@ import com.semonemo.presentation.theme.FrameBlue
 import com.semonemo.presentation.theme.FrameOrange
 import com.semonemo.presentation.theme.FramePink
 import com.semonemo.presentation.theme.FramePurple
+import com.semonemo.presentation.theme.Gray01
 import com.semonemo.presentation.theme.GreenGradient
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.PinkGradient
@@ -56,6 +71,7 @@ import com.semonemo.presentation.theme.Rainbow
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.White
+import com.semonemo.presentation.theme.WhiteGray
 
 enum class FrameType {
     OneByOne,
@@ -63,6 +79,14 @@ enum class FrameType {
     OneByFour,
 }
 
+data class OverlayAsset(
+    val resourceId: Int,
+    var scale: Float = 1f,
+    var offsetX: Float = 0f,
+    var offsetY: Float = 0f,
+)
+
+@SuppressLint("MutableCollectionMutableState")
 @Composable
 fun FrameScreen(
     modifier: Modifier = Modifier,
@@ -77,6 +101,7 @@ fun FrameScreen(
             FrameOrange,
             FrameBlue,
             FramePurple,
+            Gray01,
         )
     val brushes =
         listOf(
@@ -87,12 +112,21 @@ fun FrameScreen(
             BlueGradient,
             Rainbow,
         )
+    val assets =
+        listOf(
+            R.drawable.asset_example,
+            R.drawable.asset_example,
+            R.drawable.asset_example,
+            R.drawable.asset_example,
+            R.drawable.asset_example,
+        )
 
     var frameType by remember { mutableStateOf(FrameType.OneByOne) }
     var selectedIndex by remember { mutableIntStateOf(0) }
     var selectedBtn by remember { mutableStateOf("1x1") }
-    var selectedColor: Color? by remember { mutableStateOf(Color.Black) }
-    var selectedBrush: Brush? by remember { mutableStateOf(null) }
+    var selectedColor by remember { mutableStateOf<Color?>(Color.Black) }
+    var selectedBrush by remember { mutableStateOf<Brush?>(null) }
+    var overlayAssets by remember { mutableStateOf(mutableListOf<OverlayAsset>()) }
 
     Surface(
         modifier =
@@ -108,13 +142,13 @@ fun FrameScreen(
                     .navigationBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.fillMaxHeight(0.02f))
             Text(
                 text = "프레임은 아래와 같이 제작돼요!",
                 style = Typography.labelMedium.copy(fontSize = 16.sp),
                 color = GunMetal,
             )
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.fillMaxHeight(0.02f))
             Column(modifier = Modifier.fillMaxWidth()) {
                 Box(
                     modifier =
@@ -125,6 +159,7 @@ fun FrameScreen(
                 ) {
                     FramePreview(
                         frameType = frameType,
+                        overlayAssets = overlayAssets,
                         backgroundColor = selectedColor,
                         backgroundBrush = selectedBrush,
                     )
@@ -145,9 +180,8 @@ fun FrameScreen(
                     Box(
                         modifier =
                             Modifier
-                                .fillMaxWidth()
+                                .wrapContentSize()
                                 .padding(top = 25.dp),
-                        contentAlignment = Alignment.Center,
                     ) {
                         AssetButtonList(
                             titles = sizes,
@@ -200,7 +234,6 @@ fun FrameScreen(
                             circleSize = 45,
                             selectedBrush = selectedBrush,
                             onBrushSelected = {
-                                Log.d("nakyung", "selectedBrush: $it")
                                 selectedBrush = it
                                 selectedColor = null
                             },
@@ -209,6 +242,33 @@ fun FrameScreen(
                 }
 
                 2 -> {
+                    LazyVerticalGrid(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .padding(horizontal = 20.dp, vertical = 20.dp),
+                        columns = GridCells.Fixed(4),
+                        state = rememberLazyGridState(),
+                    ) {
+                        items(assets.size) { index ->
+                            Image(
+                                painter = painterResource(id = assets[index]),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .aspectRatio(1f)
+                                        .padding(8.dp)
+                                        .clip(shape = RoundedCornerShape(10.dp))
+                                        .background(color = WhiteGray)
+                                        .clickable {
+                                            overlayAssets.add(OverlayAsset(resourceId = assets[index]))
+                                        },
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -218,6 +278,8 @@ fun FrameScreen(
 @Composable
 fun FramePreview(
     frameType: FrameType,
+    overlayAssets: List<OverlayAsset>,
+//    onAssetTransform: (OverlayAsset) -> Unit,
     backgroundColor: Color? = null,
     backgroundBrush: Brush? = null,
 ) {
@@ -419,6 +481,35 @@ fun FramePreview(
                     }
                 }
             }
+        }
+        overlayAssets.forEach { asset ->
+            val assetModifier =
+                Modifier
+                    .graphicsLayer(
+                        scaleX = asset.scale,
+                        scaleY = asset.scale,
+                        translationY = asset.offsetY,
+                        translationX = asset.offsetX,
+                    ).pointerInput(Unit) {
+                        detectTransformGestures { _, pan, zoom, _ ->
+                            asset.scale *= zoom
+                            asset.offsetX = pan.x
+                            asset.offsetY = pan.y
+
+                            val maxOffsetX =
+                                (contentSize.width * asset.scale - parentSize.width) / 2
+                            val maxOffsetY =
+                                (contentSize.height * asset.scale - parentSize.height) / 2
+
+                            asset.offsetX = asset.offsetX.coerceIn(-maxOffsetX, maxOffsetX)
+                            asset.offsetY = asset.offsetY.coerceIn(-maxOffsetY, maxOffsetY)
+                        }
+                    }
+            Image(
+                painter = painterResource(id = asset.resourceId),
+                contentDescription = null,
+                modifier = assetModifier,
+            )
         }
     }
 }
