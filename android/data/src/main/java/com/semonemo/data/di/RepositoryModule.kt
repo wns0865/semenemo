@@ -1,7 +1,9 @@
 package com.semonemo.data.di
 
+import com.semonemo.data.repository.AiRepositoryImpl
 import com.semonemo.data.repository.AuthRepositoryImpl
 import com.semonemo.data.repository.NFTRepositoryImpl
+import com.semonemo.domain.repository.AiRepository
 import com.semonemo.domain.repository.AuthRepository
 import com.semonemo.domain.repository.NFTRepository
 import dagger.Binds
@@ -13,8 +15,11 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 interface RepositoryModule {
     @Binds
-    fun provideNFTRepository(nftRepositoryImpl: NFTRepositoryImpl): NFTRepository
+    fun bindNFTRepository(nftRepositoryImpl: NFTRepositoryImpl): NFTRepository
 
     @Binds
-    fun provideAuthRepository(authRepositoryImpl: AuthRepositoryImpl): AuthRepository
+    fun bindAuthRepository(authRepositoryImpl: AuthRepositoryImpl): AuthRepository
+
+    @Binds
+    fun bindApiRepository(aiRepositoryImpl: AiRepositoryImpl): AiRepository
 }
