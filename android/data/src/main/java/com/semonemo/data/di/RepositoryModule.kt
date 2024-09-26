@@ -15,11 +15,11 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 interface RepositoryModule {
     @Binds
-    fun provideNFTRepository(nftRepositoryImpl: NFTRepositoryImpl): NFTRepository
+    fun bindNFTRepository(nftRepositoryImpl: NFTRepositoryImpl): NFTRepository
 
     @Binds
-    fun provideAuthRepository(authRepositoryImpl: AuthRepositoryImpl): AuthRepository
+    fun bindAuthRepository(authRepositoryImpl: AuthRepositoryImpl): AuthRepository
 
     @Binds
-    fun provideAiRepository(aiRepositoryImpl: AiRepositoryImpl): AiRepository
+    fun bindApiRepository(aiRepositoryImpl: AiRepositoryImpl): AiRepository
 }
