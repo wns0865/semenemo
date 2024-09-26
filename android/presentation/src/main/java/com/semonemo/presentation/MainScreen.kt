@@ -38,6 +38,7 @@ import com.semonemo.presentation.screen.mypage.DetailScreen
 import com.semonemo.presentation.screen.mypage.MyPageScreen
 import com.semonemo.presentation.screen.picture.PictureMainScreen
 import com.semonemo.presentation.screen.signup.SignUpRoute
+import com.semonemo.presentation.screen.store.StoreScreen
 import com.semonemo.presentation.screen.wallet.WalletScreen
 import com.semonemo.presentation.theme.Gray01
 import com.semonemo.presentation.theme.GunMetal
@@ -158,9 +159,9 @@ fun MainNavHost(
         composable(
             route = ScreenDestinations.Shop.route,
         ) {
-            // 상점 스크린
-            // 일단 임시로 아무 스크린이나
-            DrawAssetScreen()
+            StoreScreen(
+                modifier = modifier,
+            )
         }
 
         composable(
