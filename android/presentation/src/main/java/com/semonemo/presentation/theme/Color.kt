@@ -26,6 +26,63 @@ val WhiteGray = Color(0xFFE7E7E7)
 val ProgressRed = Color(0xFFFF6961)
 val ProgressYellow = Color(0xFFFDFD96)
 val ProgressGreen = Color(0xFF77DD77)
+
+val FramePink = Color(0xFFFFCCCD)
+val FrameOrange = Color(0xFFFFD085)
+val FrameBlue = Color(0xFFADC4FF)
+val FramePurple = Color(0xFFFFB3FF)
+val BlackGradient =
+    Brush.verticalGradient(
+        colors =
+            listOf(
+                Color(0xFFB5B5B5),
+                Color.Black,
+            ),
+    )
+val PinkGradient =
+    Brush.verticalGradient(
+        colors =
+            listOf(
+                Color(0xFFFFE5E5),
+                Color(0xFFFF9393),
+            ),
+    )
+val GreenGradient =
+    Brush.verticalGradient(
+        colors =
+            listOf(
+                Color(0xFFA7FF85),
+                Color(0xFFFFEA4D),
+            ),
+    )
+val PurpleGradient =
+    Brush.verticalGradient(
+        colors =
+            listOf(
+                Color(0xFFFFD085),
+                Color(0xFF9C33FF),
+            ),
+    )
+val BlueGradient =
+    Brush.verticalGradient(
+        colors =
+            listOf(
+                Color(0xFFADC4FF),
+                Color(0xFF2664FF),
+            ),
+    )
+val Rainbow =
+    Brush.verticalGradient(
+        colors =
+            listOf(
+                Color(0xFFFB3DFB),
+                Color(0xFFFF4F64),
+                Color(0xFFFAE94E),
+                Color(0xFF71F74F),
+                Color(0xFF3887FE),
+                Color(0xFF812CED),
+            ),
+    )
 val Main01 =
     Brush.linearGradient(
         colors =
