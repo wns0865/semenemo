@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.view.WindowCompat
-import com.semonemo.presentation.screen.picture.PictureMainScreen
 import com.semonemo.presentation.theme.SemonemoTheme
 import dagger.hilt.android.AndroidEntryPoint
 

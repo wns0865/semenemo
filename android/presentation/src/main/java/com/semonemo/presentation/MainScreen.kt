@@ -34,7 +34,7 @@ import com.semonemo.presentation.screen.imgAsset.ImageSelectRoute
 import com.semonemo.presentation.screen.login.LoginRoute
 import com.semonemo.presentation.screen.moment.MomentScreen
 import com.semonemo.presentation.screen.mypage.DetailScreen
-import com.semonemo.presentation.screen.mypage.MyPageScreen
+import com.semonemo.presentation.screen.mypage.MyPageRoute
 import com.semonemo.presentation.screen.picture.PictureMainScreen
 import com.semonemo.presentation.screen.signup.SignUpRoute
 import com.semonemo.presentation.screen.wallet.WalletScreen
@@ -192,11 +192,16 @@ fun MainNavHost(
         composable(
             route = ScreenDestinations.MyPage.route,
         ) {
-            MyPageScreen(
+            MyPageRoute(
                 modifier = modifier,
                 navigateToDetail = { imgUrl ->
-                    navController.navigate(ScreenDestinations.Detail.createRoute(imgUrl))
+                    navController.navigate(
+                        ScreenDestinations.Detail.createRoute(
+                            imgUrl,
+                        ),
+                    )
                 },
+                onErrorSnackBar = onShowErrorSnackBar,
             )
         }
 
