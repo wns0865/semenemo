@@ -1,11 +1,8 @@
 package com.semonemo.presentation.screen.frame
 
-import android.annotation.SuppressLint
-import androidx.compose.animation.SharedTransitionScope.PlaceHolderSize.Companion.contentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -43,7 +41,6 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
@@ -55,6 +52,7 @@ import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BrushPalette
 import com.semonemo.presentation.component.ColorPalette
 import com.semonemo.presentation.component.CustomTab
+import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.screen.aiAsset.AssetButtonList
 import com.semonemo.presentation.theme.BlackGradient
 import com.semonemo.presentation.theme.BlueGradient
@@ -86,7 +84,6 @@ data class OverlayAsset(
     var offsetY: Float = 0f,
 )
 
-@SuppressLint("MutableCollectionMutableState")
 @Composable
 fun FrameScreen(
     modifier: Modifier = Modifier,
@@ -115,10 +112,11 @@ fun FrameScreen(
     val assets =
         listOf(
             R.drawable.asset_example,
+            R.drawable.asset_example2,
+            R.drawable.asset_example3,
             R.drawable.asset_example,
-            R.drawable.asset_example,
-            R.drawable.asset_example,
-            R.drawable.asset_example,
+            R.drawable.asset_example2,
+            R.drawable.asset_example3,
         )
 
     var frameType by remember { mutableStateOf(FrameType.OneByOne) }
@@ -126,7 +124,7 @@ fun FrameScreen(
     var selectedBtn by remember { mutableStateOf("1x1") }
     var selectedColor by remember { mutableStateOf<Color?>(Color.Black) }
     var selectedBrush by remember { mutableStateOf<Brush?>(null) }
-    var overlayAssets by remember { mutableStateOf(mutableListOf<OverlayAsset>()) }
+    val overlayAssets = remember { mutableStateListOf<OverlayAsset>() }
 
     Surface(
         modifier =
@@ -271,6 +269,15 @@ fun FrameScreen(
                     }
                 }
             }
+            Spacer(modifier = Modifier.weight(1f))
+            LongBlackButton(
+                icon = null,
+                text = "완성했어요!",
+                onClick = {
+                    navigateToFrameDone()
+                },
+            )
+            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }
@@ -279,7 +286,6 @@ fun FrameScreen(
 fun FramePreview(
     frameType: FrameType,
     overlayAssets: List<OverlayAsset>,
-//    onAssetTransform: (OverlayAsset) -> Unit,
     backgroundColor: Color? = null,
     backgroundBrush: Brush? = null,
 ) {
@@ -327,32 +333,9 @@ fun FramePreview(
                 .fillMaxWidth()
                 .clipToBounds()
                 .onSizeChanged { parentSize = it } // 부모 박스의 크기를 저장
-                .pointerInput(Unit) {
-                    detectTransformGestures { _, pan, zoom, _ ->
-                        val newOffsetX = offsetX + pan.x
-                        val newOffsetY = offsetY + pan.y
-                        scale *= zoom
-
-                        // 이동 범위 제한
-                        val maxOffsetX =
-                            if (contentSize.width * scale > parentSize.width) {
-                                (contentSize.width * scale - parentSize.width) / 2
-                            } else {
-                                0f
-                            }
-
-                        val maxOffsetY =
-                            if (contentSize.height * scale > parentSize.height) {
-                                (contentSize.height * scale - parentSize.height) / 2
-                            } else {
-                                0f
-                            }
-
-                        offsetX = newOffsetX.coerceIn(-maxOffsetX, maxOffsetX)
-                        offsetY = newOffsetY.coerceIn(-maxOffsetY, maxOffsetY)
-                    }
-                }.transformable(state = transformableState)
-                .graphicsLayer(
+                .transformable(
+                    state = transformableState,
+                ).graphicsLayer(
                     scaleX = scale,
                     scaleY = scale,
                     translationX = offsetX,
@@ -483,32 +466,50 @@ fun FramePreview(
             }
         }
         overlayAssets.forEach { asset ->
+            var imageScale by remember { mutableFloatStateOf(0.5f) }
+            var imageOffsetX by remember { mutableFloatStateOf(0f) }
+            var imageOffsetY by remember { mutableFloatStateOf(0f) }
+            var imageRotation by remember { mutableFloatStateOf(0f) }
+            var assetSize by remember { mutableStateOf(IntSize.Zero) }
+
+            val imageTransformableState =
+                rememberTransformableState { zoomChange, offsetChange, rotationChange ->
+                    imageScale = (imageScale * zoomChange).coerceIn(0.25f, 1.5f)
+                    imageRotation += rotationChange
+
+                    // 이미지 이동 제한 로직
+                    val newOffsetX = imageOffsetX + offsetChange.x * imageScale
+                    val newOffsetY = imageOffsetY + offsetChange.y * imageScale
+
+                    val maxOffsetX = (contentSize.width + 250 - assetSize.width * imageScale) / 2
+                    val maxOffsetY = (parentSize.height + 200 - assetSize.height * imageScale) / 2
+
+                    // 최소값과 최대값을 안전하게 계산
+                    val minX = -maxOffsetX.coerceAtLeast(0f)
+                    val maxX = maxOffsetX.coerceAtLeast(0f)
+                    val minY = -maxOffsetY.coerceAtLeast(0f)
+                    val maxY = maxOffsetY.coerceAtLeast(0f)
+
+                    imageOffsetX = newOffsetX.coerceIn(minX, maxX)
+                    imageOffsetY = newOffsetY.coerceIn(minY, maxY)
+                }
+
             val assetModifier =
                 Modifier
                     .graphicsLayer(
-                        scaleX = asset.scale,
-                        scaleY = asset.scale,
-                        translationY = asset.offsetY,
-                        translationX = asset.offsetX,
-                    ).pointerInput(Unit) {
-                        detectTransformGestures { _, pan, zoom, _ ->
-                            asset.scale *= zoom
-                            asset.offsetX = pan.x
-                            asset.offsetY = pan.y
-
-                            val maxOffsetX =
-                                (contentSize.width * asset.scale - parentSize.width) / 2
-                            val maxOffsetY =
-                                (contentSize.height * asset.scale - parentSize.height) / 2
-
-                            asset.offsetX = asset.offsetX.coerceIn(-maxOffsetX, maxOffsetX)
-                            asset.offsetY = asset.offsetY.coerceIn(-maxOffsetY, maxOffsetY)
-                        }
-                    }
+                        scaleX = imageScale,
+                        scaleY = imageScale,
+                        translationX = imageOffsetX,
+                        translationY = imageOffsetY,
+                        rotationZ = imageRotation,
+                    ).onSizeChanged { assetSize = it }
+                    .transformable(
+                        state = imageTransformableState,
+                    )
             Image(
+                modifier = assetModifier.wrapContentSize(),
                 painter = painterResource(id = asset.resourceId),
                 contentDescription = null,
-                modifier = assetModifier,
             )
         }
     }
