@@ -29,6 +29,7 @@ import com.semonemo.presentation.screen.aiAsset.AssetDoneScreen
 import com.semonemo.presentation.screen.aiAsset.DrawAssetScreen
 import com.semonemo.presentation.screen.aiAsset.PromptAssetScreen
 import com.semonemo.presentation.screen.auction.AuctionScreen
+import com.semonemo.presentation.screen.frame.FrameScreen
 import com.semonemo.presentation.screen.imgAsset.ImageAssetScreen
 import com.semonemo.presentation.screen.imgAsset.ImageSelectRoute
 import com.semonemo.presentation.screen.login.LoginRoute
@@ -291,6 +292,12 @@ fun MainNavHost(
                 modifier = modifier,
                 imgUrl = it.arguments?.getString("imgUrl"),
             )
+        }
+
+        composable(
+            route = ScreenDestinations.Frame.route,
+        ) {
+            FrameScreen()
         }
     }
 }

@@ -86,4 +86,6 @@ sealed class ScreenDestinations(
 
         fun createRoute(imgUrl: String) = "detail/$imgUrl"
     }
+
+    data object Frame : ScreenDestinations(route = "frame")
 }
