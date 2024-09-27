@@ -61,26 +61,26 @@ fun AuctionCard(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(text = author, style = Typography.labelMedium)
-                Spacer(modifier = modifier.width(4.dp))
+                Spacer(modifier = Modifier.width(4.dp))
                 Icon(
                     painter = painterResource(id = R.drawable.ic_user_certified),
                     contentDescription = "Verified",
                     tint = Color.Unspecified,
-                    modifier = modifier.size(16.dp),
+                    modifier = Modifier.size(16.dp),
                 )
             }
-            Spacer(modifier = modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             GlideImage(
                 imageModel = imageUrl,
                 contentScale = ContentScale.Crop,
                 modifier =
-                modifier
+                Modifier
                         .fillMaxWidth()
                         .weight(1f),
             )
-            Spacer(modifier = modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             Row(
-                modifier = modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -89,15 +89,15 @@ fun AuctionCard(
                         painter = painterResource(id = R.drawable.ic_auction_time),
                         contentDescription = "Remaining Time",
                         tint = Color.Unspecified,
-                        modifier = modifier.size(20.dp),
+                        modifier = Modifier.size(20.dp),
                     )
-                    Spacer(modifier = modifier.width(0.dp))
+                    Spacer(modifier = Modifier.width(0.dp))
                     CountdownTimer(deadline = LocalDateTime.now().plusDays(2))
                 }
             }
-            Spacer(modifier = modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             Row(
-                modifier = modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -106,9 +106,9 @@ fun AuctionCard(
                         painter = painterResource(id = R.drawable.ic_color_sene_coin),
                         contentDescription = "Price",
                         tint = Color.Unspecified,
-                        modifier = modifier.size(20.dp),
+                        modifier = Modifier.size(20.dp),
                     )
-                    Spacer(modifier = modifier.width(4.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = "${price}AHO",
                         fontWeight = FontWeight.Bold,

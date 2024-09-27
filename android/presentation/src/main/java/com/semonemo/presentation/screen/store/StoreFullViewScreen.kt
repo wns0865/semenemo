@@ -1,8 +1,8 @@
 package com.semonemo.presentation.screen.store
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -14,15 +14,12 @@ fun StoreFullViewScreen(
     isFrame: Boolean,
 ) {
     Column(
-        modifier =
-            modifier
-                .fillMaxSize(),
+        modifier = modifier
+            .navigationBarsPadding()
+            .statusBarsPadding(),
     ) {
         StoreSubFullViewScreen(
-            modifier =
-                modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
+            modifier = Modifier,
             isFrame = isFrame,
         )
     }

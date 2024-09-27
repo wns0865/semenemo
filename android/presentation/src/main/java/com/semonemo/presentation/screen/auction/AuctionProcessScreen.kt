@@ -1,5 +1,6 @@
 package com.semonemo.presentation.screen.auction
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,7 +27,8 @@ import com.skydoves.landscapist.glide.GlideImage
 
 @Preview
 @Composable
-fun AuctionProcessScreen(modifier: Modifier = Modifier) {
+fun AuctionProcessScreen(modifier: Modifier = Modifier, auctionId: String = "") {
+    Log.d("test","${auctionId}")
     Column(
         modifier = modifier.padding(16.dp),
     ) {
