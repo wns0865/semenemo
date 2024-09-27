@@ -15,9 +15,20 @@ import io.metamask.androidsdk.EthereumMethod
 import io.metamask.androidsdk.EthereumRequest
 import io.metamask.androidsdk.EthereumState
 import io.metamask.androidsdk.RequestError
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.web3j.abi.FunctionEncoder
+import org.web3j.abi.FunctionReturnDecoder
+import org.web3j.abi.TypeReference
+import org.web3j.abi.datatypes.Address
+import org.web3j.abi.datatypes.Function
+import org.web3j.abi.datatypes.generated.Uint256
+import org.web3j.protocol.Web3j
+import org.web3j.protocol.core.DefaultBlockParameterName
+import org.web3j.protocol.http.HttpService
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,8 +39,11 @@ class NftViewModel
         private val dApp: Dapp,
         private val nftRepository: NFTRepository,
     ) : ViewModel() {
+        private val web3j =
+            Web3j.build(HttpService("https://rpc.ssafy-blockchain.com"))
         private val walletAddress = mutableStateOf("")
-        private val _transaction = MutableStateFlow<Transaction>(Transaction("", "", "", "", "", ""))
+        private val transactionState =
+            MutableStateFlow<Transaction>(Transaction("", "", "", "", "", ""))
         val ethereumState =
             MediatorLiveData<EthereumState>().apply {
                 addSource(ethereum.ethereumState) { newEthereumState ->
@@ -124,7 +138,7 @@ class NftViewModel
                         ),
                     ).collectLatest {
                         it?.let { transaction ->
-                            _transaction.value = transaction
+                            transactionState.value = transaction
                         }
                     }
             }
@@ -133,9 +147,9 @@ class NftViewModel
         fun sendTransaction() {
             val params: MutableMap<String, Any> =
                 mutableMapOf(
-                    "from" to _transaction.value.from,
-                    "to" to _transaction.value.to,
-                    "data" to _transaction.value.data,
+                    "from" to transactionState.value.from,
+                    "to" to transactionState.value.to,
+                    "data" to transactionState.value.data,
                 )
 
             val transactionRequest =
@@ -144,5 +158,46 @@ class NftViewModel
                     params = listOf(params),
                 )
             ethereum.run { sendRequest(transactionRequest) }
+        }
+
+        fun getUserBalance(
+            onSuccess: (String) -> Unit,
+            onError: (String) -> Unit,
+        ) {
+            viewModelScope.launch {
+                try {
+                    withContext(Dispatchers.IO) {
+                        val function =
+                            Function(
+                                "getUserBalance",
+                                listOf(Address(walletAddress.value)),
+                                listOf<TypeReference<*>>(object : TypeReference<Uint256>() {}),
+                            )
+
+                        val encodedFunction = FunctionEncoder.encode(function)
+                        val contractAddress = "0x503932fFA68504646FebC302aedFEBd7f64CcAd8"
+
+                        val response =
+                            web3j
+                                .ethCall(
+                                    org.web3j.protocol.core.methods.request.Transaction.createEthCallTransaction(
+                                        walletAddress.value,
+                                        contractAddress,
+                                        encodedFunction,
+                                    ),
+                                    DefaultBlockParameterName.LATEST,
+                                ).send()
+                        if (response.hasError()) {
+                            throw Exception("ETH calling Error: ${response.error.message}")
+                        }
+                        val returnValues =
+                            FunctionReturnDecoder.decode(response.value, function.outputParameters)
+                        val decodedValue = returnValues[0]
+                        onSuccess(decodedValue.value.toString())
+                    }
+                } catch (e: Exception) {
+                    onError(e.message ?: "Unknown error")
+                }
+            }
         }
     }

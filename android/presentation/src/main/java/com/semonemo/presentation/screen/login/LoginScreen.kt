@@ -120,8 +120,6 @@ fun LoginContent(
 
     LoginScreen(
         modifier = modifier,
-        popUpBackStack = popUpBackStack,
-        navigateToRegister = navigateToRegister,
         onConnect = {
             if (isInstalled.not()) { // 설치 안된 경우
                 setShowDialog(true) //
@@ -149,6 +147,7 @@ fun LoginContent(
         },
         onClick = { loginViewModel.login(it) },
         isConnect = isConnect,
+        // getBalance = nftViewModel::getBalance,
 //        transfer = { nftViewModel.transfer(BuildConfig.CONTRACT_ADDRESS, "1") },
 //        onSigned = nftViewModel::sendTransaction,
     )
@@ -196,8 +195,6 @@ fun checkIfMetaMaskInstalled(context: Context): Boolean =
 fun LoginScreen(
     modifier: Modifier = Modifier,
     focusManager: FocusManager = LocalFocusManager.current,
-    popUpBackStack: () -> Unit = {},
-    navigateToRegister: (String) -> Unit = {},
     onConnect: () -> Unit = {},
     isConnect: Boolean = true,
     onClick: (String) -> Unit = {},
