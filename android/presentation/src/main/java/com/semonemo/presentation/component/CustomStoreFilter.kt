@@ -7,7 +7,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -35,6 +34,7 @@ import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.White
 import com.semonemo.presentation.theme.WhiteGray
+import com.semonemo.presentation.util.noRippleClickable
 
 @Composable
 fun FilterButton(
@@ -69,7 +69,7 @@ fun FilterButton(
                 .height(40.dp)
                 .background(backgroundColor, shape = RoundedCornerShape(10.dp))
                 .padding(horizontal = 12.dp, vertical = 8.dp)
-                .clickable { onClick() }
+                .noRippleClickable { onClick() }
                 .animateContentSize(),
         contentAlignment = Alignment.Center // 요소들을 가운데 정렬
     ) {
