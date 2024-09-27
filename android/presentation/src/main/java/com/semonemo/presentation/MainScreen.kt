@@ -299,18 +299,18 @@ fun MainNavHost(
             )
         }
 
-//        composable(
-//            route = ScreenDestinations.Frame.route,
-//        ) {
-//            FrameScreen(
-//                modifier = modifier,
-//                navigateToFrameDone = { frame ->
+        composable(
+            route = ScreenDestinations.Frame.route,
+        ) {
+            FrameScreen(
+                modifier = modifier,
+                navigateToFrameDone = { frame ->
 //                    val base64String = Base64.encodeToString(frame, Base64.DEFAULT)
 //                    Log.d("test", "${frame}\n  $base64String")
 //                    navController.navigate(ScreenDestinations.FrameDone.createRoute("123"))
-//                },
-//            )
-//        }
+                },
+            )
+        }
 
 //        composable(
 //            route = ScreenDestinations.FrameDone.route,
