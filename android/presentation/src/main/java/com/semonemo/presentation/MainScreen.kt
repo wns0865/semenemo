@@ -1,7 +1,6 @@
 package com.semonemo.presentation
 
 import BottomNavigationBar
-import android.net.Uri
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -31,11 +30,11 @@ import com.semonemo.presentation.screen.aiAsset.DrawAssetScreen
 import com.semonemo.presentation.screen.aiAsset.PromptAssetScreen
 import com.semonemo.presentation.screen.auction.AuctionScreen
 import com.semonemo.presentation.screen.imgAsset.ImageAssetScreen
-import com.semonemo.presentation.screen.imgAsset.ImageSelectScreen
+import com.semonemo.presentation.screen.imgAsset.ImageSelectRoute
 import com.semonemo.presentation.screen.login.LoginRoute
 import com.semonemo.presentation.screen.moment.MomentScreen
 import com.semonemo.presentation.screen.mypage.DetailScreen
-import com.semonemo.presentation.screen.mypage.MyPageScreen
+import com.semonemo.presentation.screen.mypage.MyPageRoute
 import com.semonemo.presentation.screen.picture.PictureMainScreen
 import com.semonemo.presentation.screen.signup.SignUpRoute
 import com.semonemo.presentation.screen.store.StoreScreen
@@ -43,6 +42,7 @@ import com.semonemo.presentation.screen.wallet.WalletScreen
 import com.semonemo.presentation.theme.Gray01
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Typography
+import com.semonemo.presentation.util.toUriOrDefault
 import kotlinx.coroutines.launch
 
 @Composable
@@ -193,11 +193,16 @@ fun MainNavHost(
         composable(
             route = ScreenDestinations.MyPage.route,
         ) {
-            MyPageScreen(
+            MyPageRoute(
                 modifier = modifier,
                 navigateToDetail = { imgUrl ->
-                    navController.navigate(ScreenDestinations.Detail.createRoute(imgUrl))
+                    navController.navigate(
+                        ScreenDestinations.Detail.createRoute(
+                            imgUrl,
+                        ),
+                    )
                 },
+                onErrorSnackBar = onShowErrorSnackBar,
             )
         }
 
@@ -218,14 +223,13 @@ fun MainNavHost(
             arguments = ScreenDestinations.Select.arguments,
         ) { navBackStackEntry ->
             val imageUriString = navBackStackEntry.arguments?.getString("selectedImg")
-            val imageUri = imageUriString?.let { Uri.decode(it) }?.let { Uri.parse(it) }
-            ImageSelectScreen(
+            val imageUri = imageUriString?.toUriOrDefault()
+            ImageSelectRoute(
                 modifier = modifier,
                 popUpBackStack = navController::popBackStack,
                 navigateToDone = { assetUrl ->
                     navController.navigate(ScreenDestinations.AssetDone.createRoute(assetUrl))
                 },
-                imageUri = imageUri,
             )
         }
 

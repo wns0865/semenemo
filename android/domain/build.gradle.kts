@@ -25,4 +25,6 @@ android {
 dependencies {
     implementation(libs.bundles.coroutines)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.gson)
+    implementation(libs.converter.gson)
 }
