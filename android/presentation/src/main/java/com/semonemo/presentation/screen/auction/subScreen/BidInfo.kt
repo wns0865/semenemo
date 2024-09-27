@@ -12,8 +12,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.semonemo.presentation.R
 import com.semonemo.presentation.theme.Gray02
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Typography
@@ -43,7 +45,7 @@ fun BindInfo(
                         ),
                 )
                 Text(
-                    text = String.format("%,d AHO", bidPrice),
+                    text = String.format("%,d ${stringResource(id = R.string.coin_price_unit)}", bidPrice),
                     fontSize = 32.sp, // 더 큰 텍스트 크기
                     style =
                         Typography.bodyMedium.copy(
@@ -84,7 +86,7 @@ fun BindInfo(
                             ),
                     )
                     Text(
-                        text = String.format("%,d AHO", bidPrice),
+                        text = String.format("%,d ${stringResource(id = R.string.coin_price_unit)}", bidPrice),
                         fontSize = 24.sp, // 기본 텍스트 크기
                         style =
                             Typography.labelMedium.copy(

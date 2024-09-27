@@ -14,9 +14,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BidPriceInputTextField
 import com.semonemo.presentation.component.BidPriceUnitButton
 import com.semonemo.presentation.component.CustomAuctionProgressBar
@@ -68,7 +70,7 @@ fun AuctionProcessScreen(modifier: Modifier = Modifier, auctionId: String = "") 
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
-                text = "10% = 100AOR",
+                text = "10% = 100${stringResource(id = R.string.coin_price_unit)}",
                 style =
                     Typography.labelMedium.copy(
                         fontFeatureSettings = "tnum",
