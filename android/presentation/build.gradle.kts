@@ -106,4 +106,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     // MultiFloatActionButton
     implementation(libs.multifab)
+
+    // web3j
+    implementation(libs.web3j.core)
 }
