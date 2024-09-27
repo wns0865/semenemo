@@ -3,6 +3,7 @@ package com.semonemo.data.di
 import com.semonemo.data.network.api.AiApi
 import com.semonemo.data.network.api.AuthApi
 import com.semonemo.data.network.api.NFTApi
+import com.semonemo.data.network.api.UserApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,4 +32,10 @@ object ApiModule {
     fun provideAiApi(
         @NetworkModule.AiClient retrofit: Retrofit,
     ): AiApi = retrofit.create()
+
+    @Provides
+    @Singleton
+    fun provideUserApi(
+        @NetworkModule.BaseClient retrofit: Retrofit,
+    ): UserApi = retrofit.create()
 }

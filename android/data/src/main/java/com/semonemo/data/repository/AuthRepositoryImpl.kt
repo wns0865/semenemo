@@ -64,6 +64,7 @@ class AuthRepositoryImpl
                 if (response is ApiResponse.Success) {
                     authDataSource.savePassword(data.password)
                     authDataSource.saveWalletAddress(data.address)
+                    authDataSource.saveNickname(data.nickname)
                 }
                 emit(response)
             }
