@@ -1,6 +1,8 @@
 package com.semonemo.presentation
 
 import BottomNavigationBar
+import android.util.Base64
+import android.util.Log
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -13,6 +15,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavBackStackEntry
@@ -29,6 +32,7 @@ import com.semonemo.presentation.screen.aiAsset.AssetDoneScreen
 import com.semonemo.presentation.screen.aiAsset.DrawAssetScreen
 import com.semonemo.presentation.screen.aiAsset.PromptAssetScreen
 import com.semonemo.presentation.screen.auction.AuctionScreen
+import com.semonemo.presentation.screen.frame.FrameDoneScreen
 import com.semonemo.presentation.screen.frame.FrameScreen
 import com.semonemo.presentation.screen.imgAsset.ImageAssetScreen
 import com.semonemo.presentation.screen.imgAsset.ImageSelectRoute
@@ -42,6 +46,7 @@ import com.semonemo.presentation.screen.wallet.WalletScreen
 import com.semonemo.presentation.theme.Gray01
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Typography
+import com.semonemo.presentation.util.decodeBase64ToImage
 import com.semonemo.presentation.util.toUriOrDefault
 import kotlinx.coroutines.launch
 
@@ -179,7 +184,7 @@ fun MainNavHost(
                 modifier = modifier,
                 navigateToAiAsset = { navController.navigate(ScreenDestinations.AiAsset.route) },
                 navigateToImageAsset = { navController.navigate(ScreenDestinations.ImageAsset.route) },
-                navigateToFrame = {},
+                navigateToFrame = { navController.navigate(ScreenDestinations.Frame.route) },
                 navigateToPicture = { navController.navigate(ScreenDestinations.PictureMain.route) },
             )
         }
@@ -294,11 +299,31 @@ fun MainNavHost(
             )
         }
 
-        composable(
-            route = ScreenDestinations.Frame.route,
-        ) {
-            FrameScreen()
-        }
+//        composable(
+//            route = ScreenDestinations.Frame.route,
+//        ) {
+//            FrameScreen(
+//                modifier = modifier,
+//                navigateToFrameDone = { frame ->
+//                    val base64String = Base64.encodeToString(frame, Base64.DEFAULT)
+//                    Log.d("test", "${frame}\n  $base64String")
+//                    navController.navigate(ScreenDestinations.FrameDone.createRoute("123"))
+//                },
+//            )
+//        }
+
+//        composable(
+//            route = ScreenDestinations.FrameDone.route,
+//            arguments = ScreenDestinations.FrameDone.arguments,
+//        ) { navBackStackEntry ->
+//            val frame = navBackStackEntry.arguments?.getString("frame") ?: ""
+//            val uri = decodeBase64ToImage(frame)!!
+//            val byteArray = Base64.decode(frame, Base64.DEFAULT)
+//            FrameDoneScreen(
+//                modifier = modifier,
+//                frame = "123".toUri(),
+//            )
+//        }
     }
 }
 
