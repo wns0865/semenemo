@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.semonemo.domain.model.ApiResponse
 import com.semonemo.domain.repository.UserRepository
+import com.semonemo.domain.request.EditUserRequest
 import com.semonemo.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -63,7 +64,7 @@ class MyPageViewModel
             Log.d("jaehan", "프로필 이미지 수정 요청 ${image.path} $imageUri")
             viewModelScope.launch {
                 userRepository
-                    .edit(profileImage = image, nickName = state.nickname)
+                    .edit(profileImage = image, request = EditUserRequest(state.nickname))
                     .collectLatest { response ->
                         when (response) {
                             is ApiResponse.Error -> {
