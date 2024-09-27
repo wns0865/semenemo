@@ -1,5 +1,9 @@
 package com.semonemo.presentation.screen.mypage
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -31,6 +35,9 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,7 +49,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -58,14 +68,17 @@ import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.NameWithBadge
 import com.semonemo.presentation.component.TopAppBar
 import com.semonemo.presentation.component.TopAppBarNavigationType
+import com.semonemo.presentation.theme.Blue3
 import com.semonemo.presentation.theme.Gray03
 import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.util.noRippleClickable
+import com.semonemo.presentation.util.toAbsolutePath
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
+import java.io.File
 
 @Composable
 fun MyPageRoute(
@@ -75,8 +88,20 @@ fun MyPageRoute(
     onErrorSnackBar: (String) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    HandleMyPageEvent(uiEvent = viewModel.uiEvent, onErrorSnackBar = onErrorSnackBar)
-    HandleMyPageUi(modifier = modifier, uiState = uiState, navigateToDetail = navigateToDetail)
+    val context = LocalContext.current
+    HandleMyPageEvent(
+        uiEvent = viewModel.uiEvent,
+        onErrorSnackBar = onErrorSnackBar,
+    )
+    HandleMyPageUi(
+        modifier = modifier,
+        uiState = uiState,
+        navigateToDetail = navigateToDetail,
+        updateProfileImage = { imageUri ->
+            val image = File(imageUri.toAbsolutePath(context))
+            viewModel.updateProfileImage(image, imageUri.toString())
+        },
+    )
 }
 
 @Composable
@@ -99,6 +124,7 @@ fun HandleMyPageUi(
     modifier: Modifier = Modifier,
     uiState: MyPageUiState,
     navigateToDetail: (String) -> Unit,
+    updateProfileImage: (Uri) -> Unit,
 ) {
     when (uiState) {
         MyPageUiState.Loading -> LoadingDialog()
@@ -112,6 +138,7 @@ fun HandleMyPageUi(
                 volume = uiState.volume,
                 follower = uiState.follower,
                 following = uiState.following,
+                updateProfileImage = updateProfileImage,
             )
     }
 }
@@ -126,10 +153,19 @@ fun MyPageScreen(
     volume: Int = 0,
     follower: Int = 0,
     following: Int = 0,
+    updateProfileImage: (Uri) -> Unit = {},
 ) {
     val tabs = listOf("내 프레임", "에셋", "찜")
     val selectedIndex = remember { mutableIntStateOf(0) }
-
+    val singlePhotoPickerLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.PickVisualMedia(),
+            onResult = { uri ->
+                uri?.let {
+                    updateProfileImage(it)
+                }
+            },
+        )
     val images = remember { mutableStateListOf<Int>() }
     // 더미 이미지 데이터들
     val frames =
@@ -185,17 +221,45 @@ fun MyPageScreen(
                     )
                 },
                 navigationType = TopAppBarNavigationType.None,
+                actionButtons = {
+                    Icon(
+                        modifier = Modifier.size(30.dp).noRippleClickable {  },
+                        painter = painterResource(id = R.drawable.ic_setting),
+                        contentDescription = "",
+                    )
+                },
             )
 
             Spacer(modifier = Modifier.fillMaxHeight(0.04f))
-            GlideImage(
-                imageModel = profileImageUrl.toUri(),
-                contentScale = ContentScale.Crop,
-                modifier =
-                    Modifier
-                        .size(120.dp)
-                        .clip(shape = CircleShape),
-            )
+            Box {
+                GlideImage(
+                    imageModel = profileImageUrl.toUri(),
+                    contentScale = ContentScale.Crop,
+                    modifier =
+                        Modifier
+                            .size(120.dp)
+                            .clip(shape = CircleShape),
+                )
+                Image(
+                    modifier =
+                        Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(end = 5.dp, bottom = 10.dp)
+                            .background(Blue3, shape = CircleShape)
+                            .size(30.dp)
+                            .noRippleClickable {
+                                singlePhotoPickerLauncher.launch(
+                                    PickVisualMediaRequest(
+                                        ActivityResultContracts.PickVisualMedia.ImageOnly,
+                                    ),
+                                )
+                            },
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = "",
+                    colorFilter = ColorFilter.tint(Color.White),
+                )
+            }
+
             Spacer(modifier = Modifier.fillMaxHeight(0.07f))
             Row(
                 modifier = Modifier.fillMaxWidth(),

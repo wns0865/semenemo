@@ -1,5 +1,6 @@
 package com.semonemo.presentation.screen.mypage
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.semonemo.domain.model.ApiResponse
 import com.semonemo.domain.repository.UserRepository
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,7 +32,9 @@ class MyPageViewModel
 
         private fun loadUserInfo() {
             viewModelScope.launch {
+                Log.d("jaehan", "정보 조회 요청")
                 userRepository.loadUserInfo().collectLatest { response ->
+                    Log.d("jaehan", "성공 : $response")
                     when (response) {
                         is ApiResponse.Error -> {
                             _uiEvent.emit(MyPageUiEvent.Error(response.errorMessage))
@@ -45,6 +49,35 @@ class MyPageViewModel
                         }
                     }
                 }
+            }
+        }
+
+        fun updateProfileImage(
+            image: File,
+            imageUri: String,
+        ) {
+            val state = uiState.value
+            if (state !is MyPageUiState.Success) {
+                return
+            }
+            Log.d("jaehan", "프로필 이미지 수정 요청 ${image.path} $imageUri")
+            viewModelScope.launch {
+                userRepository
+                    .edit(profileImage = image, nickName = state.nickname)
+                    .collectLatest { response ->
+                        when (response) {
+                            is ApiResponse.Error -> {
+                                _uiEvent.emit(MyPageUiEvent.Error(response.errorMessage))
+                            }
+
+                            is ApiResponse.Success -> {
+                                _uiState.value =
+                                    state.copy(
+                                        profileImageUrl = imageUri,
+                                    )
+                            }
+                        }
+                    }
             }
         }
     }
