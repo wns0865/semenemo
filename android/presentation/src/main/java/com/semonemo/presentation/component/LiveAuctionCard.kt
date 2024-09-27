@@ -28,6 +28,7 @@ import com.semonemo.presentation.R
 import com.semonemo.presentation.animation.LiveAnimation
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Red
+import com.semonemo.presentation.util.noRippleClickable
 import com.skydoves.landscapist.glide.GlideImage
 
 private const val TAG = "LiveAuctionCard"
@@ -39,12 +40,13 @@ fun LiveAuctionCard(
     price: Int,
     imageUrl: String,
     modifier: Modifier = Modifier, // 이 줄을 추가합니다
+    onClick : (String) -> Unit = {},
 ) {
     Card(
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        modifier = modifier, // 여기에 modifier를 적용합니다
+        modifier = modifier.noRippleClickable { onClick("test") }, // 여기에 modifier를 적용합니다
     ) {
         Log.d(TAG, "LiveAuctionCard: $imageUrl")
         // Overlay content

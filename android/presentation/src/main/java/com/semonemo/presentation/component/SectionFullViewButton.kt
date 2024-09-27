@@ -20,14 +20,14 @@ import com.semonemo.presentation.util.noRippleClickable
 @Composable
 fun SectionFullViewButton(
     modifier: Modifier = Modifier,
-    onClick: () -> Unit,
+    onClick: (Boolean) -> Unit = {},
 ) {
     Row(
         modifier =
             modifier
                 .wrapContentWidth()
                 .padding(4.dp)
-                .noRippleClickable(onClick = onClick),
+                .noRippleClickable{onClick(true)},
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(

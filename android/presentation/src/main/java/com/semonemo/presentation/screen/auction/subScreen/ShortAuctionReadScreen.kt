@@ -30,11 +30,12 @@ import kotlinx.coroutines.launch
 @Preview(showBackground = true, name = "AuctionReadScreen")
 @Composable
 fun ShortAuctionReadScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navigateToAuctionProcess: (String) -> Unit = {},
 ) {
     Column(
         modifier =
-        modifier
+            modifier
                 .fillMaxWidth()
                 .wrapContentHeight(),
     ) {
@@ -105,6 +106,7 @@ fun ShortAuctionReadScreen(
                         Modifier
                             .width(160.dp) // 카드의 너비 설정
                             .height(300.dp),
+                    onClick = navigateToAuctionProcess
                 )
             }
         }

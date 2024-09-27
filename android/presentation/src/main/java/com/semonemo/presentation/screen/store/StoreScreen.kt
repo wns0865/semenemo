@@ -34,7 +34,10 @@ import com.skydoves.landscapist.glide.GlideImage
 
 @Preview(showBackground = true)
 @Composable
-fun StoreScreen(modifier: Modifier = Modifier) {
+fun StoreScreen(
+    modifier: Modifier = Modifier,
+    navigateToFullView: (Boolean) -> Unit = {},
+) {
     val verticalScrollState = rememberScrollState()
     Column(
         modifier =
@@ -45,7 +48,7 @@ fun StoreScreen(modifier: Modifier = Modifier) {
                 .verticalScroll(state = verticalScrollState),
     ) {
         SectionHeader(text = "최근 인기 프레임")
-        //아마 리스트형태로 뷰페이저로 들어갈듯
+        // 아마 리스트형태로 뷰페이저로 들어갈듯
         HotRecentFrame(
             imgUrl = "https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNDA3MjhfMjQ5%2FMDAxNzIyMTc0NDI3NTUx.2i13wuVFmNnbi_PAAaWFaMoH8dnfMCELiKLi3FzWDowg.Jpv5rH4kLAXvpQvH7ZSiFATG9sCXuZxNlSx-Ac3hXlEg.JPEG%2FIMG%25A3%25DF2672.JPG&type=a340",
         )
@@ -55,7 +58,9 @@ fun StoreScreen(modifier: Modifier = Modifier) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             SectionHeader(text = stringResource(id = R.string.section_header_sell_frame))
-            SectionFullViewButton(onClick = {})
+            SectionFullViewButton(onClick = {
+                navigateToFullView(true)
+            })
         }
 
         StoreSubScreen(
@@ -71,7 +76,7 @@ fun StoreScreen(modifier: Modifier = Modifier) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             SectionHeader(text = stringResource(id = R.string.section_header_sell_asset))
-            SectionFullViewButton(onClick = {})
+            SectionFullViewButton(onClick = { navigateToFullView(false) })
         }
         StoreSubScreen(
             modifier =
