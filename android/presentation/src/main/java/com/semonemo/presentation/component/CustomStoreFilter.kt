@@ -30,6 +30,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.semonemo.presentation.R
 import com.semonemo.presentation.theme.GunMetal
+import com.semonemo.presentation.theme.SemonemoTheme
+import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.White
 import com.semonemo.presentation.theme.WhiteGray
 
@@ -53,13 +55,12 @@ fun FilterButton(
             else -> White
         }
 
-    // 뒤집히는 애니메이션을 위한 X 축 스케일 값
+    // 화살표가 Y축으로 뒤집힘
     val flipScaleY by animateFloatAsState(
         targetValue = if (state == false) -1f else 1f,
         animationSpec = tween(durationMillis = 300),
         label = "",
     )
-
 
     Box(
         modifier =
@@ -70,7 +71,11 @@ fun FilterButton(
                 .animateContentSize(),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = text, color = contentColor)
+            Text(
+                text = text,
+                style = Typography.labelMedium,
+                color = contentColor
+            )
             // 아이콘의 가시성을 애니메이션으로 처리
             AnimatedVisibility(
                 visible = state != null,
@@ -78,7 +83,7 @@ fun FilterButton(
                 exit = shrinkHorizontally(),
             ) {
                 Icon(
-                    painterResource(id = R.drawable.ic_arrow_up),
+                    painter = painterResource(id = R.drawable.ic_arrow_up),
                     contentDescription = null,
                     tint = contentColor,
                     modifier =
@@ -92,59 +97,103 @@ fun FilterButton(
 }
 
 @Composable
-fun FilterBar(modifier: Modifier = Modifier) {
-    // 상태를 관리할 변수
-    var selectedFilter by remember { mutableStateOf<String?>(null) }
-    var filterStates by remember {
-        mutableStateOf(
-            mapOf(
-                "날짜순" to null,
-                "가격순" to null,
-                "좋아요" to null,
-                "판매량" to null,
-                "조회수" to null,
-            ) as Map<String, Boolean?>,
-        )
-    }
-
+fun CustomStoreFilter(
+    modifier: Modifier = Modifier,
+    filters: List<StoreFilter>,
+    filterStates: Map<StoreFilter, Boolean?>, // 필터 상태를 외부에서 관리
+    onFilterChange: (StoreFilter, Boolean?) -> Unit,
+) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly,
+        horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
     ) {
-        filterStates.forEach { (filterName, filterState) ->
+        filters.forEach { filter ->
+            val state = filterStates[filter] // 현재 필터의 상태를 가져옴
             FilterButton(
-                text = filterName,
-                state = filterState,
+                text = filter.displayName,
+                state = state,
                 onClick = {
                     // 클릭 시 해당 필터의 상태 변경 로직
                     val newState =
-                        when (filterState) {
+                        when (state) {
                             true -> false
                             false -> null
                             else -> true
                         }
 
-                    // 상태 업데이트
-                    filterStates =
-                        filterStates.mapValues {
-                            if (it.key == filterName) newState else null
-                        }
+                    // 상태 업데이트 - 하나만 활성화되도록, 나머지는 모두 null
+                    onFilterChange(filter, newState)
                 },
             )
         }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun FilterBarPreview() {
-    FilterBar(modifier = Modifier.padding(10.dp))
+enum class StoreFilter(
+    val displayName: String,
+) {
+    DATE("날짜순"),
+    PRICE("가격순"),
+    LIKE("좋아요"),
+    SALE("판매량"),
+    VIEW("조회수"),
 }
 
-enum class StoreFilter(name: String, status: Boolean?){
-    DATE("날짜순", null),
-    PRICE("가격순", null),
-    LIKE("좋아요", null),
-    SALE("판매량", null),
-    VIEW("조회수", null),
+// 각 필터 그룹에 대한 상태 관리
+val assetFilters =
+    listOf(
+        StoreFilter.DATE,
+        StoreFilter.PRICE,
+        StoreFilter.LIKE,
+        StoreFilter.SALE,
+        StoreFilter.VIEW,
+    )
+
+val frameFilters =
+    listOf(
+        StoreFilter.DATE,
+        StoreFilter.PRICE,
+        StoreFilter.LIKE,
+    )
+
+@Composable
+@Preview
+fun AssetFilterBarPreview() {
+    var filterStates by remember {
+        mutableStateOf(StoreFilter.entries.associateWith { null as Boolean? })
+    }
+
+    SemonemoTheme {
+        CustomStoreFilter(
+            filters = assetFilters, // 에셋 필터 사용
+            filterStates = filterStates,
+            onFilterChange = { selectedFilter, newState ->
+                // 선택된 필터만 활성화하고 나머지는 null로
+                filterStates =
+                    filterStates.mapValues { (filter, _) ->
+                        if (filter == selectedFilter) newState else null
+                    }
+            },
+        )
+    }
+}
+
+@Composable
+@Preview
+fun FrameFilterBarPreview() {
+    var filterStates by remember {
+        mutableStateOf(StoreFilter.entries.associateWith { null as Boolean? })
+    }
+
+    CustomStoreFilter(
+        filters = frameFilters, // 프레임 필터 사용
+        filterStates = filterStates,
+        onFilterChange = { selectedFilter, newState ->
+            // 선택된 필터만 활성화하고 나머지는 null로
+            filterStates =
+                filterStates.mapValues { (filter, _) ->
+                    if (filter == selectedFilter) newState else null
+                }
+        },
+    )
 }
