@@ -1,15 +1,18 @@
 package com.semonemo.data.repository
 
+import com.google.gson.Gson
 import com.semonemo.data.datasource.AuthDataSource
 import com.semonemo.data.network.api.UserApi
 import com.semonemo.data.network.response.emitApiResponse
 import com.semonemo.data.util.toMultiPart
-import com.semonemo.data.util.toRequestBody
 import com.semonemo.domain.model.ApiResponse
 import com.semonemo.domain.model.User
 import com.semonemo.domain.repository.UserRepository
+import com.semonemo.domain.request.EditUserRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import javax.inject.Inject
 
@@ -21,11 +24,12 @@ class UserRepositoryImpl
     ) : UserRepository {
         override suspend fun edit(
             profileImage: File?,
-            nickName: String,
+            request: EditUserRequest,
         ): Flow<ApiResponse<Unit>> =
             flow {
                 val image = profileImage.toMultiPart()
-                val requestBody = nickName.toRequestBody()
+                val requestBody =
+                    Gson().toJson(request).toRequestBody("application/json".toMediaTypeOrNull())
                 val response =
                     emitApiResponse(apiResponse = {
                         api.edit(
@@ -34,8 +38,8 @@ class UserRepositoryImpl
                         )
                     }, default = Unit)
                 if (response is ApiResponse.Success) {
-                    authDataSource.saveNickname(nickName)
-                    profileImage?.let{
+                    authDataSource.saveNickname(request.nickname)
+                    profileImage?.let {
                         authDataSource.saveProfileImage(it.path)
                     }
                 }
