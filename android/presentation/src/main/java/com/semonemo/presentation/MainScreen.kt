@@ -187,7 +187,7 @@ fun MainNavHost(
         composable(
             route = ScreenDestinations.Wallet.route,
         ) {
-            WalletScreen()
+            WalletScreen(modifier = modifier)
         }
 
         composable(

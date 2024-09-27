@@ -23,6 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.semonemo.presentation.R
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Red
@@ -47,9 +48,9 @@ fun StoreItemCard(
     ) {
         Column(
             modifier =
-                modifier
+                Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(8.dp),
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -83,20 +84,21 @@ fun StoreItemCard(
                         painter = painterResource(id = R.drawable.ic_color_sene_coin),
                         contentDescription = "Price",
                         tint = Color.Unspecified,
-                        modifier = Modifier.size(20.dp),
+                        modifier = Modifier.size(16.dp),
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = "${price}AHO",
                         fontWeight = FontWeight.Bold,
                         style = Typography.bodyMedium,
+                        fontSize = 12.sp
                     )
                 }
                 Icon(
                     painter = painterResource(id = if (isLiked) R.drawable.ic_toggle_heart_on else R.drawable.ic_toggle_heart_off),
                     contentDescription = "Like",
                     tint = if (isLiked) Red else GunMetal,
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(16.dp),
                 )
             }
         }

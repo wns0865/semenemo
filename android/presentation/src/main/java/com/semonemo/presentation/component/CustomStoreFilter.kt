@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -65,10 +66,12 @@ fun FilterButton(
     Box(
         modifier =
             modifier
+                .height(40.dp)
                 .background(backgroundColor, shape = RoundedCornerShape(10.dp))
                 .padding(horizontal = 12.dp, vertical = 8.dp)
                 .clickable { onClick() }
                 .animateContentSize(),
+        contentAlignment = Alignment.Center // 요소들을 가운데 정렬
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
@@ -88,7 +91,7 @@ fun FilterButton(
                     tint = contentColor,
                     modifier =
                         Modifier
-                            .size(20.dp)
+                            .size(16.dp)
                             .scale(1f, flipScaleY),
                 )
             }
