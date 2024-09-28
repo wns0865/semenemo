@@ -1,6 +1,7 @@
 [versions]
 agp = "8.5.2"
 androidCoreVersion = "1.35.1"
+core = "4.9.7"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -28,6 +29,7 @@ kotlinxSerializationCore = "1.5.1"
 web3walletVersion = "1.35.1"
 kotlinxCollectionsImmutableVersion = "0.3.5"
 [libraries]
+web3j-core = { module = "org.web3j:core", version.ref = "core" }
 multifab = { module = "com.github.iamageo:MultiFab", version.ref = "multifab" }
 wallet-android-core = { module = "com.walletconnect:android-core", version.ref = "androidCoreVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

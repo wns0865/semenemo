@@ -31,6 +31,7 @@ import com.semonemo.presentation.screen.aiAsset.AiAssetScreen
 import com.semonemo.presentation.screen.aiAsset.AssetDoneScreen
 import com.semonemo.presentation.screen.aiAsset.DrawAssetScreen
 import com.semonemo.presentation.screen.aiAsset.PromptAssetScreen
+import com.semonemo.presentation.screen.auction.AuctionProcessScreen
 import com.semonemo.presentation.screen.auction.AuctionScreen
 import com.semonemo.presentation.screen.frame.FrameDoneScreen
 import com.semonemo.presentation.screen.frame.FrameScreen
@@ -39,9 +40,11 @@ import com.semonemo.presentation.screen.imgAsset.ImageSelectRoute
 import com.semonemo.presentation.screen.login.LoginRoute
 import com.semonemo.presentation.screen.moment.MomentScreen
 import com.semonemo.presentation.screen.mypage.DetailScreen
-import com.semonemo.presentation.screen.mypage.MyPageScreen
+import com.semonemo.presentation.screen.mypage.MyPageRoute
 import com.semonemo.presentation.screen.picture.PictureMainScreen
 import com.semonemo.presentation.screen.signup.SignUpRoute
+import com.semonemo.presentation.screen.store.StoreFullViewScreen
+import com.semonemo.presentation.screen.store.StoreScreen
 import com.semonemo.presentation.screen.wallet.WalletScreen
 import com.semonemo.presentation.theme.Gray01
 import com.semonemo.presentation.theme.GunMetal
@@ -62,7 +65,10 @@ fun MainScreen(modifier: Modifier = Modifier) {
             mutableStateOf(false)
         }
     when (currentRoute) {
-        "mypage", "shop", "moment", "wallet", "auction" -> setVisible(true)
+        "mypage", "shop", "moment", "wallet", "auction", "storeFullView/{isFrame}" ->
+            setVisible(
+                true,
+            )
 
         else -> setVisible(false)
     }
@@ -164,9 +170,16 @@ fun MainNavHost(
         composable(
             route = ScreenDestinations.Shop.route,
         ) {
-            // 상점 스크린
-            // 일단 임시로 아무 스크린이나
-            DrawAssetScreen()
+            StoreScreen(
+                modifier = modifier,
+                navigateToFullView = { isFrame ->
+                    navController.navigate(
+                        ScreenDestinations.StoreFullView.createRoute(
+                            isFrame,
+                        ),
+                    )
+                },
+            )
         }
 
         composable(
@@ -174,6 +187,13 @@ fun MainNavHost(
         ) {
             AuctionScreen(
                 modifier = modifier,
+                navigateToAuctionProcess = { auctionId ->
+                    navController.navigate(
+                        ScreenDestinations.AuctionProcess.createRoute(
+                            auctionId,
+                        ),
+                    )
+                },
             )
         }
 
@@ -192,17 +212,22 @@ fun MainNavHost(
         composable(
             route = ScreenDestinations.Wallet.route,
         ) {
-            WalletScreen()
+            WalletScreen(modifier = modifier)
         }
 
         composable(
             route = ScreenDestinations.MyPage.route,
         ) {
-            MyPageScreen(
+            MyPageRoute(
                 modifier = modifier,
                 navigateToDetail = { imgUrl ->
-                    navController.navigate(ScreenDestinations.Detail.createRoute(imgUrl))
+                    navController.navigate(
+                        ScreenDestinations.Detail.createRoute(
+                            imgUrl,
+                        ),
+                    )
                 },
+                onErrorSnackBar = onShowErrorSnackBar,
             )
         }
 
@@ -299,7 +324,6 @@ fun MainNavHost(
             )
         }
 
-        composable(
             route = ScreenDestinations.Frame.route,
         ) {
             FrameScreen(
@@ -324,6 +348,27 @@ fun MainNavHost(
 //                frame = "123".toUri(),
 //            )
 //        }
+        composable(
+            route = ScreenDestinations.AuctionProcess.route,
+            arguments = ScreenDestinations.AuctionProcess.arguments,
+        ) {
+            AuctionProcessScreen(
+                modifier = modifier,
+                auctionId = it.arguments?.getString("auctionId") ?: "",
+            )
+        }
+
+        composable(
+            route = ScreenDestinations.StoreFullView.route,
+            arguments = ScreenDestinations.StoreFullView.arguments,
+        ) { navBackStackEntry ->
+
+            Log.d("test", "${navBackStackEntry.destination?.route}")
+            StoreFullViewScreen(
+                modifier = modifier,
+                isFrame = navBackStackEntry.arguments?.getBoolean("isFrame") ?: false,
+            )
+        }
     }
 }
 

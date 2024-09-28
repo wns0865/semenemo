@@ -36,7 +36,7 @@ fun LongAuctionReadScreen(
                 price = auctionItem.price,
                 isLiked = auctionItem.isLiked,
                 modifier =
-                modifier
+                Modifier
                         .fillMaxWidth()
                         .aspectRatio(0.6f),
             )

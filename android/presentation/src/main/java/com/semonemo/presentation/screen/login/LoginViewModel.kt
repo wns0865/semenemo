@@ -1,6 +1,5 @@
 package com.semonemo.presentation.screen.login
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.semonemo.domain.model.ApiResponse
 import com.semonemo.domain.repository.AuthRepository

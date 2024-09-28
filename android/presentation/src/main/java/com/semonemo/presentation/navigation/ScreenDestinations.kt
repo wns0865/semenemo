@@ -88,4 +88,26 @@ sealed class ScreenDestinations(
     }
 
     data object Frame : ScreenDestinations(route = "frame")
+
+    data object AuctionProcess : ScreenDestinations(route = "auctionProcess") {
+        override val route: String
+            get() = "auctionProcess/{auctionId}"
+        val arguments =
+            listOf(
+                navArgument("auctionId") { type = NavType.StringType },
+            )
+
+        fun createRoute(auctionId: String) = "auctionProcess/$auctionId"
+    }
+
+    data object StoreFullView: ScreenDestinations(route = "storeFullView") {
+        override val route: String
+            get() = "storeFullView/{isFrame}"
+        val arguments =
+            listOf(
+                navArgument(name = "isFrame") { type = NavType.BoolType },
+            )
+
+        fun createRoute(isFrame: Boolean) = "storeFullView/$isFrame"
+    }
 }
