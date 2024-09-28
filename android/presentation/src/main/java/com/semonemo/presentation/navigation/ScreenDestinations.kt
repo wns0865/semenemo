@@ -87,6 +87,8 @@ sealed class ScreenDestinations(
         fun createRoute(imgUrl: String) = "detail/$imgUrl"
     }
 
+    data object Frame : ScreenDestinations(route = "frame")
+
     data object AuctionProcess : ScreenDestinations(route = "auctionProcess") {
         override val route: String
             get() = "auctionProcess/{auctionId}"

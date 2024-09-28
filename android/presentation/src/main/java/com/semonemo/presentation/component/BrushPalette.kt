@@ -14,38 +14,38 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.semonemo.presentation.R
-import com.semonemo.presentation.theme.Gray02
 
 /**
  * TODO
  *
- * @param colors : 색상 리스트
+ * @param brushes : 브러쉬들 (그라데이션)
  * @param circleSize : 원형 크기
- * @param selectedColor : 선택된 색상
- * @param onColorSelected : 색상 선택했을 때
+ * @param selectedBrush : 선택된 브러쉬
+ * @param onBrushSelected : 브러쉬 선택했을 때
  */
 @Composable
-fun ColorPalette(
-    colors: List<Color>,
+fun BrushPalette(
+    brushes: List<Brush>,
     circleSize: Int = 30,
-    selectedColor: Color?,
-    onColorSelected: (Color) -> Unit,
+    selectedBrush: Brush?,
+    onBrushSelected: (Brush) -> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        colors.forEach { color ->
-            ColorCircle(
-                color = color,
+        brushes.forEach { brush ->
+            BrushCircle(
+                brush = brush,
                 circleSize = circleSize,
-                isSelected = color == selectedColor,
-                onClick = { onColorSelected(color) },
+                isSelected = brush == selectedBrush,
+                onClick = { onBrushSelected(brush) },
             )
         }
     }
@@ -54,14 +54,14 @@ fun ColorPalette(
 /**
  * TODO
  *
- * @param color : 색상
+ * @param brush : 색상
  * @param circleSize : 원형 크기
  * @param isSelected : 선택되었을 때
  * @param onClick : 클릭했을 때
  */
 @Composable
-fun ColorCircle(
-    color: Color,
+fun BrushCircle(
+    brush: Brush,
     circleSize: Int = 30,
     isSelected: Boolean,
     onClick: () -> Unit,
@@ -73,25 +73,19 @@ fun ColorCircle(
             Modifier
                 .size(circleSize.dp)
                 .clip(CircleShape)
-                .background(color)
+                .background(brush)
                 .border(
                     width = 1.dp,
-                    color =
-                        if (color == Color.White && !isSelected) {
-                            Gray02
-                        } else {
-                            borderColor
-                        },
+                    color = borderColor,
                     shape = CircleShape,
                 ).clickable { onClick() },
         contentAlignment = Alignment.Center,
     ) {
         if (isSelected) {
-            val checkColor = if (color.luminance() > 0.5f) Color.Black else Color.White
             Icon(
                 painter = painterResource(id = R.drawable.ic_check),
                 contentDescription = "color_selected",
-                tint = checkColor,
+                tint = Color.White,
             )
         }
     }
