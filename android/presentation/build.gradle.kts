@@ -115,18 +115,8 @@ dependencies {
     // web3j
     implementation(libs.web3j.core)
 
-    // capture
-    implementation(libs.capturable)
-
-    // Gson
-    implementation(libs.gson)
-
-    // camera
-    implementation(libs.bundles.camera)
-
-    // PermissionState
-    implementation(libs.accompanist.permissions)
-
-    // graph
-    implementation(libs.bundles.graph)
+    // websocket
+    implementation(libs.krossbow.stomp.core)
+    implementation(libs.krossbow.websocket.okhttp)
+    implementation(libs.krossbow.stomp.moshi)
 }
