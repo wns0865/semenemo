@@ -109,4 +109,9 @@ dependencies {
 
     // web3j
     implementation(libs.web3j.core)
+
+    // websocket
+    implementation(libs.krossbow.stomp.core)
+    implementation(libs.krossbow.websocket.okhttp)
+    implementation(libs.krossbow.stomp.moshi)
 }

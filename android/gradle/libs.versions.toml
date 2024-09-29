@@ -7,6 +7,7 @@ coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
+krossbowStompCore = "7.3.0"
 landscapistGlide = "1.4.7"
 lifecycleRuntimeKtx = "2.8.5"
 activityCompose = "1.9.2"
@@ -29,6 +30,9 @@ kotlinxSerializationCore = "1.5.1"
 web3walletVersion = "1.35.1"
 kotlinxCollectionsImmutableVersion = "0.3.5"
 [libraries]
+krossbow-stomp-core = { module = "org.hildan.krossbow:krossbow-stomp-core", version.ref = "krossbowStompCore" }
+krossbow-stomp-moshi = { module = "org.hildan.krossbow:krossbow-stomp-moshi", version.ref = "krossbowStompCore" }
+krossbow-websocket-okhttp = { module = "org.hildan.krossbow:krossbow-websocket-okhttp", version.ref = "krossbowStompCore" }
 web3j-core = { module = "org.web3j:core", version.ref = "core" }
 multifab = { module = "com.github.iamageo:MultiFab", version.ref = "multifab" }
 wallet-android-core = { module = "com.walletconnect:android-core", version.ref = "androidCoreVersion" }
