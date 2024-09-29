@@ -50,7 +50,15 @@ class UserRepositoryImpl
 
         override suspend fun loadUserInfo(): Flow<ApiResponse<User>> =
             flow {
-                emit(emitApiResponse(apiResponse = { api.loadMyInfo() }, default = User()))
+                val response = emitApiResponse(apiResponse = { api.loadMyInfo() }, default = User())
+                if (response is ApiResponse.Success) {
+                    response.data.apply {
+                        authDataSource.saveUserId(userId)
+                        authDataSource.saveNickname(nickname)
+                        authDataSource.saveWalletAddress(address)
+                        authDataSource.saveProfileImage(profileImage)
+                    }
+                }
             }
 
         override suspend fun delete(): Flow<ApiResponse<Unit>> =
