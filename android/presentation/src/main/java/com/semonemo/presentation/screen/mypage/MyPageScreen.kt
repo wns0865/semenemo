@@ -136,8 +136,8 @@ fun HandleMyPageUi(
                 profileImageUrl = uiState.profileImageUrl,
                 amount = uiState.amount,
                 volume = uiState.volume,
-                follower = uiState.follower,
-                following = uiState.following,
+                follower = uiState.follower.size,
+                following = uiState.following.size,
                 updateProfileImage = updateProfileImage,
             )
     }
