@@ -1,5 +1,6 @@
 package com.semonemo.data.repository
 
+import android.util.Log
 import com.google.gson.Gson
 import com.semonemo.data.datasource.AuthDataSource
 import com.semonemo.data.datasource.TokenDataSource
@@ -59,6 +60,7 @@ class UserRepositoryImpl
                         authDataSource.saveProfileImage(profileImage)
                     }
                 }
+                emit(response)
             }
 
         override suspend fun delete(): Flow<ApiResponse<Unit>> =
