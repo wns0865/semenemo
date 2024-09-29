@@ -86,4 +86,19 @@ class UserRepositoryImpl
                     }
                 emit(response)
             }
+
+        override suspend fun loadFollowers(userId: Long?): Flow<ApiResponse<List<User>>> =
+            flow {
+                val response =
+                    userId?.let {
+                        emitApiResponse(apiResponse = { api.loadFollowers(it) }, default = listOf())
+                    } ?: run {
+                        emitApiResponse(apiResponse = {
+                            api.loadFollowers(
+                                authDataSource.getUserId()?.toLong() ?: -1,
+                            )
+                        }, default = listOf())
+                    }
+                emit(response)
+            }
     }
