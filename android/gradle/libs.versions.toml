@@ -1,6 +1,7 @@
 [versions]
 agp = "8.5.2"
 androidCoreVersion = "1.35.1"
+capturable = "2.1.0"
 core = "4.9.7"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
@@ -29,6 +30,7 @@ kotlinxSerializationCore = "1.5.1"
 web3walletVersion = "1.35.1"
 kotlinxCollectionsImmutableVersion = "0.3.5"
 [libraries]
+capturable = { module = "dev.shreyaspatil:capturable", version.ref = "capturable" }
 web3j-core = { module = "org.web3j:core", version.ref = "core" }
 multifab = { module = "com.github.iamageo:MultiFab", version.ref = "multifab" }
 wallet-android-core = { module = "com.walletconnect:android-core", version.ref = "androidCoreVersion" }
