@@ -15,4 +15,6 @@ interface UserRepository {
     suspend fun loadUserInfo(): Flow<ApiResponse<User>>
 
     suspend fun delete(): Flow<ApiResponse<Unit>>
+
+    suspend fun loadFollowing(userId: Long?): Flow<ApiResponse<List<User>>>
 }
