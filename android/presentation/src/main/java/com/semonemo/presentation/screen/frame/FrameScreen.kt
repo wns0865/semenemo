@@ -1,5 +1,7 @@
 package com.semonemo.presentation.screen.frame
 
+import android.graphics.Bitmap
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,19 +29,23 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ExperimentalComposeApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
@@ -48,6 +54,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BrushPalette
 import com.semonemo.presentation.component.ColorPalette
@@ -70,6 +77,9 @@ import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.White
 import com.semonemo.presentation.theme.WhiteGray
+import dev.shreyaspatil.capturable.capturable
+import dev.shreyaspatil.capturable.controller.rememberCaptureController
+import kotlinx.coroutines.launch
 
 enum class FrameType {
     OneByOne,
@@ -82,13 +92,34 @@ data class OverlayAsset(
     var scale: Float = 1f,
     var offsetX: Float = 0f,
     var offsetY: Float = 0f,
+    val rotation: Float = 0f,
 )
 
+@Composable
+fun FrameRoute(
+    modifier: Modifier = Modifier,
+    navigateToFrameDone: () -> Unit = {},
+    viewModel: FrameViewModel = hiltViewModel(),
+    onErrorSnackBar: (String) -> Unit = {},
+) {
+    FrameScreen(
+        modifier = modifier,
+        navigateToFrameDone = navigateToFrameDone,
+        updateFrame = viewModel::updateFrame,
+        onErrorSnackBar = onErrorSnackBar,
+    )
+}
+
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalComposeApi::class)
 @Composable
 fun FrameScreen(
     modifier: Modifier = Modifier,
     navigateToFrameDone: () -> Unit = {},
+    updateFrame: (Bitmap) -> Unit = {},
+    onErrorSnackBar: (String) -> Unit = {},
 ) {
+    val captureController = rememberCaptureController()
+    val scope = rememberCoroutineScope()
     val tabs = listOf("사이즈", "배경색", "에셋")
     val sizes = listOf("1x1", "1x4", "2x2")
     val colors =
@@ -152,7 +183,8 @@ fun FrameScreen(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight(0.4f),
+                            .fillMaxHeight(0.4f)
+                            .capturable(captureController),
                     contentAlignment = Alignment.Center,
                 ) {
                     FramePreview(
@@ -274,6 +306,15 @@ fun FrameScreen(
                 icon = null,
                 text = "완성했어요!",
                 onClick = {
+                    scope.launch {
+                        val bitmapAsync = captureController.captureAsync()
+                        try {
+                            val bitmap = bitmapAsync.await().asAndroidBitmap()
+                            updateFrame(bitmap)
+                        } catch (error: Throwable) {
+                            onErrorSnackBar(error.message?:"")
+                        }
+                    }
                     navigateToFrameDone()
                 },
             )
@@ -284,6 +325,7 @@ fun FrameScreen(
 
 @Composable
 fun FramePreview(
+    modifier: Modifier = Modifier,
     frameType: FrameType,
     overlayAssets: List<OverlayAsset>,
     backgroundColor: Color? = null,
@@ -329,7 +371,7 @@ fun FramePreview(
 
     Box(
         modifier =
-            Modifier
+            modifier
                 .fillMaxWidth()
                 .clipToBounds()
                 .onSizeChanged { parentSize = it } // 부모 박스의 크기를 저장
