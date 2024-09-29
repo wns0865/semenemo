@@ -1,6 +1,5 @@
 package com.semonemo.presentation.screen.mypage
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.semonemo.domain.model.ApiResponse
@@ -14,7 +13,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
@@ -41,9 +39,8 @@ class MyPageViewModel
                 combine(
                     userRepository.loadUserInfo(),
                     userRepository.loadFollowing(userId),
-                ) { userInfo, followingInfo ->
-                    Pair(userInfo, followingInfo)
-                }.map { (userInfo, followingInfo) ->
+                    userRepository.loadFollowers(userId),
+                ) { userInfo, followingInfo, followerInfo ->
                     val currentState = MyPageUiState.Success()
                     val newUiState =
                         when (userInfo) {
@@ -54,6 +51,7 @@ class MyPageViewModel
 
                             is ApiResponse.Success -> {
                                 currentState.copy(
+                                    userId = userInfo.data.userId,
                                     profileImageUrl = userInfo.data.profileImage,
                                     nickname = userInfo.data.nickname,
                                 )
@@ -62,12 +60,22 @@ class MyPageViewModel
                     when (followingInfo) {
                         is ApiResponse.Error -> {
                             _uiEvent.emit(MyPageUiEvent.Error(followingInfo.errorMessage))
-                            newUiState
                         }
 
                         is ApiResponse.Success -> {
                             newUiState.copy(
                                 following = followingInfo.data,
+                            )
+                        }
+                    }
+                    when (followerInfo) {
+                        is ApiResponse.Error -> {
+                            _uiEvent.emit(MyPageUiEvent.Error(followerInfo.errorMessage))
+                        }
+
+                        is ApiResponse.Success -> {
+                            newUiState.copy(
+                                follower = followerInfo.data,
                             )
                         }
                     }
@@ -86,7 +94,6 @@ class MyPageViewModel
             if (state !is MyPageUiState.Success) {
                 return
             }
-            Log.d("jaehan", "프로필 이미지 수정 요청 ${image.path} $imageUri")
             viewModelScope.launch {
                 userRepository
                     .edit(profileImage = image, request = EditUserRequest(state.nickname))
