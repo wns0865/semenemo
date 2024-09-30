@@ -2,6 +2,7 @@ package com.semonemo.presentation.screen.mypage
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
+import com.semonemo.domain.model.User
 
 @Stable
 sealed interface MyPageUiState {
@@ -13,8 +14,8 @@ sealed interface MyPageUiState {
         val userId: Long = 0,
         val nickname: String = "",
         val profileImageUrl: String = "",
-        val following: Int = 0,
-        val follower: Int = 0,
+        val following: List<User> = listOf(),
+        val follower: List<User> = listOf(),
         val volume: Int = 0,
         val amount: Int = 0,
     ) : MyPageUiState

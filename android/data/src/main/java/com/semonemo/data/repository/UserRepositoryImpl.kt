@@ -1,6 +1,5 @@
 package com.semonemo.data.repository
 
-import android.util.Log
 import com.google.gson.Gson
 import com.semonemo.data.datasource.AuthDataSource
 import com.semonemo.data.datasource.TokenDataSource
@@ -70,6 +69,21 @@ class UserRepositoryImpl
                     tokenDataSource.deleteJwtToken()
                     authDataSource.deleteAuthData()
                 }
+                emit(response)
+            }
+
+        override suspend fun loadFollowing(userId: Long?): Flow<ApiResponse<List<User>>> =
+            flow {
+                val response =
+                    userId?.let {
+                        emitApiResponse(apiResponse = { api.loadFollowing(it) }, default = listOf())
+                    } ?: run {
+                        emitApiResponse(apiResponse = {
+                            api.loadFollowing(
+                                authDataSource.getUserId()?.toLong() ?: -1,
+                            )
+                        }, default = listOf())
+                    }
                 emit(response)
             }
     }

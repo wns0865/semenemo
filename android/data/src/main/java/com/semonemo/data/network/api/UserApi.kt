@@ -9,6 +9,7 @@ import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.PUT
 import retrofit2.http.Part
+import retrofit2.http.Path
 
 interface UserApi {
     @GET("api/user/me")
@@ -23,4 +24,9 @@ interface UserApi {
 
     @DELETE("api/user")
     suspend fun delete(): BaseResponse<Unit>
+
+    @GET("api/user/{userId}/following")
+    suspend fun loadFollowing(
+        @Path("userId") userId: Long,
+    ): BaseResponse<List<User>>
 }
