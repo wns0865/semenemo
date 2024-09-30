@@ -42,7 +42,16 @@ sealed class ScreenDestinations(
 
     data object Wallet : ScreenDestinations(route = "wallet")
 
-    data object MyPage : ScreenDestinations(route = "mypage")
+    data object MyPage : ScreenDestinations(route = "mypage") {
+        override val route: String
+            get() = "mypage/{userId}"
+        val arguments =
+            listOf(
+                navArgument(name = "userId") { type = NavType.LongType },
+            )
+
+        fun createRoute(userId: Long) = "mypage/$userId"
+    }
 
     data object AiAsset : ScreenDestinations(route = "aiAsset")
 

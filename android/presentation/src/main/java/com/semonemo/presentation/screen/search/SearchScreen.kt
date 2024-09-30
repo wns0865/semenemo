@@ -1,6 +1,5 @@
 package com.semonemo.presentation.screen.search
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -95,7 +94,6 @@ fun SearchScreen(
     Column(
         modifier =
             modifier
-                .padding(horizontal = 10.dp)
                 .navigationBarsPadding()
                 .statusBarsPadding()
                 .pointerInput(Unit) {
@@ -130,6 +128,7 @@ fun SearchScreen(
                     hotSearchList = searchState.hotList,
                     onClickedKeyword = { keyword ->
                         // 키워드 검색
+                        // searchTextField에 해당 키워드 뜨도록
                         viewModel.userSearch(keyword)
                     },
                     onDeleteKeyword = {
@@ -147,6 +146,7 @@ fun SearchScreen(
                         userList = searchState.userList,
                         frameList = searchState.frameList,
                         assetList = searchState.assetList,
+                        navigateToProfile = navigateToProfile,
                     )
                 }
             }
@@ -231,6 +231,7 @@ fun SearchSuccessScreen(
     userList: List<User> = emptyList(),
     frameList: List<Frame> = emptyList(),
     assetList: List<Asset> = emptyList(),
+    navigateToProfile: (Long) -> Unit = {},
 ) {
     if (userList.isNotEmpty()) {
         LazyColumn(
@@ -247,9 +248,7 @@ fun SearchSuccessScreen(
                     userId = user.userId,
                     profileImgUrl = user.profileImage,
                     nickname = user.nickname,
-                    navigateToProfile = {
-
-                    }
+                    navigateToProfile = navigateToProfile,
                 )
             }
         }
@@ -456,7 +455,6 @@ private fun RecentSearchSection(
             text = mode,
             style = Typography.labelLarge.copy(color = Gray01),
         )
-        Spacer(modifier = Modifier.weight(0.1f))
     }
 }
 

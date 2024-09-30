@@ -1,7 +1,6 @@
 package com.semonemo.presentation
 
 import BottomNavigationBar
-import android.util.Log
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -182,7 +181,9 @@ fun MainNavHost(
             route = ScreenDestinations.Search.route,
         ) {
             SearchRoute(
-                navigateToProfile = { }
+                navigateToProfile = { userId ->
+                    navController.navigate(ScreenDestinations.MyPage.createRoute(userId))
+                },
             )
         }
 
@@ -221,7 +222,10 @@ fun MainNavHost(
 
         composable(
             route = ScreenDestinations.MyPage.route,
-        ) {
+            arguments = ScreenDestinations.MyPage.arguments,
+        ) { navBackStackEntry ->
+            val userId = navBackStackEntry.arguments?.getLong("userId")
+
             MyPageRoute(
                 modifier = modifier,
                 navigateToDetail = { imgUrl ->
@@ -232,6 +236,7 @@ fun MainNavHost(
                     )
                 },
                 onErrorSnackBar = onShowErrorSnackBar,
+                userId = userId ?: -1,
             )
         }
 
@@ -349,8 +354,6 @@ fun MainNavHost(
             route = ScreenDestinations.StoreFullView.route,
             arguments = ScreenDestinations.StoreFullView.arguments,
         ) { navBackStackEntry ->
-
-            Log.d("test", "${navBackStackEntry.destination?.route}")
             StoreFullViewScreen(
                 modifier = modifier,
                 isFrame = navBackStackEntry.arguments?.getBoolean("isFrame") ?: false,
