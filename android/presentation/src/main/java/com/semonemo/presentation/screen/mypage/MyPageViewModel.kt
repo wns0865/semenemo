@@ -34,19 +34,21 @@ class MyPageViewModel
             if (userId == -1L) { // 마이페이지
                 loadUserInfo()
             } else { // 타사용자 페이지
-                loadUserOtherInfo()
+                loadOtherUserInfo()
             }
         }
 
-        private fun loadUserOtherInfo() {
+        fun loadOtherUserInfo() {
             viewModelScope.launch {
                 combine(
                     userRepository.loadOtherUserInfo(userId),
                     userRepository.loadFollowing(userId),
                     userRepository.loadFollowers(userId),
-                ) { userInfo, followingInfo, followerInfo ->
-                    val currentState = MyPageUiState.Success()
-                    val newUiState =
+                    userRepository.isFollow(userId),
+                ) { userInfo, followingInfo, followerInfo, isFollow ->
+                    var currentState = MyPageUiState.Success()
+
+                    currentState =
                         when (userInfo) {
                             is ApiResponse.Error -> {
                                 _uiEvent.emit(MyPageUiEvent.Error(userInfo.errorMessage))
@@ -61,29 +63,49 @@ class MyPageViewModel
                                 )
                             }
                         }
-                    when (followingInfo) {
-                        is ApiResponse.Error -> {
-                            _uiEvent.emit(MyPageUiEvent.Error(followingInfo.errorMessage))
+
+                    currentState =
+                        when (followingInfo) {
+                            is ApiResponse.Error -> {
+                                _uiEvent.emit(MyPageUiEvent.Error(followingInfo.errorMessage))
+                                currentState
+                            }
+
+                            is ApiResponse.Success -> {
+                                currentState.copy(
+                                    following = followingInfo.data,
+                                )
+                            }
                         }
 
-                        is ApiResponse.Success -> {
-                            newUiState.copy(
-                                following = followingInfo.data,
-                            )
-                        }
-                    }
-                    when (followerInfo) {
-                        is ApiResponse.Error -> {
-                            _uiEvent.emit(MyPageUiEvent.Error(followerInfo.errorMessage))
+                    currentState =
+                        when (followerInfo) {
+                            is ApiResponse.Error -> {
+                                _uiEvent.emit(MyPageUiEvent.Error(followerInfo.errorMessage))
+                                currentState
+                            }
+
+                            is ApiResponse.Success -> {
+                                currentState.copy(
+                                    follower = followerInfo.data,
+                                )
+                            }
                         }
 
-                        is ApiResponse.Success -> {
-                            newUiState.copy(
-                                follower = followerInfo.data,
-                            )
+                    currentState =
+                        when (isFollow) {
+                            is ApiResponse.Error -> {
+                                _uiEvent.emit(MyPageUiEvent.Error(isFollow.errorMessage))
+                                currentState
+                            }
+
+                            is ApiResponse.Success -> {
+                                currentState.copy(
+                                    isFollow = isFollow.data,
+                                )
+                            }
                         }
-                    }
-                    newUiState
+                    currentState
                 }.collectLatest { updatedUiState ->
                     _uiState.value = updatedUiState
                 }
@@ -97,8 +119,8 @@ class MyPageViewModel
                     userRepository.loadFollowing(userId),
                     userRepository.loadFollowers(userId),
                 ) { userInfo, followingInfo, followerInfo ->
-                    val currentState = MyPageUiState.Success()
-                    val newUiState =
+                    var currentState = MyPageUiState.Success()
+                    currentState =
                         when (userInfo) {
                             is ApiResponse.Error -> {
                                 _uiEvent.emit(MyPageUiEvent.Error(userInfo.errorMessage))
@@ -113,29 +135,33 @@ class MyPageViewModel
                                 )
                             }
                         }
-                    when (followingInfo) {
-                        is ApiResponse.Error -> {
-                            _uiEvent.emit(MyPageUiEvent.Error(followingInfo.errorMessage))
-                        }
+                    currentState =
+                        when (followingInfo) {
+                            is ApiResponse.Error -> {
+                                _uiEvent.emit(MyPageUiEvent.Error(followingInfo.errorMessage))
+                                currentState
+                            }
 
-                        is ApiResponse.Success -> {
-                            newUiState.copy(
-                                following = followingInfo.data,
-                            )
+                            is ApiResponse.Success -> {
+                                currentState.copy(
+                                    following = followingInfo.data,
+                                )
+                            }
                         }
-                    }
-                    when (followerInfo) {
-                        is ApiResponse.Error -> {
-                            _uiEvent.emit(MyPageUiEvent.Error(followerInfo.errorMessage))
-                        }
+                    currentState =
+                        when (followerInfo) {
+                            is ApiResponse.Error -> {
+                                _uiEvent.emit(MyPageUiEvent.Error(followerInfo.errorMessage))
+                                currentState
+                            }
 
-                        is ApiResponse.Success -> {
-                            newUiState.copy(
-                                follower = followerInfo.data,
-                            )
+                            is ApiResponse.Success -> {
+                                currentState.copy(
+                                    follower = followerInfo.data,
+                                )
+                            }
                         }
-                    }
-                    newUiState
+                    currentState
                 }.collectLatest { updatedUiState ->
                     _uiState.value = updatedUiState
                 }
@@ -167,6 +193,54 @@ class MyPageViewModel
                             }
                         }
                     }
+            }
+        }
+
+        fun followUser(userId: Long) {
+            val state = uiState.value
+            if (state !is MyPageUiState.Success) {
+                return
+            }
+            viewModelScope.launch {
+                userRepository.followUser(userId).collectLatest { response ->
+                    when (response) {
+                        is ApiResponse.Error -> {
+                            _uiEvent.emit(MyPageUiEvent.Error(response.errorMessage))
+                        }
+
+                        is ApiResponse.Success -> {
+                            _uiState.value =
+                                state.copy(
+                                    isFollow = true,
+                                )
+                            _uiEvent.emit(MyPageUiEvent.Subscribe)
+                        }
+                    }
+                }
+            }
+        }
+
+        fun unfollowUser(userId: Long) {
+            val state = uiState.value
+            if (state !is MyPageUiState.Success) {
+                return
+            }
+            viewModelScope.launch {
+                userRepository.unfollowUser(userId).collectLatest { response ->
+                    when (response) {
+                        is ApiResponse.Error -> {
+                            _uiEvent.emit(MyPageUiEvent.Error(response.errorMessage))
+                        }
+
+                        is ApiResponse.Success -> {
+                            _uiState.value =
+                                state.copy(
+                                    isFollow = false,
+                                )
+                            _uiEvent.emit(MyPageUiEvent.Subscribe)
+                        }
+                    }
+                }
             }
         }
     }
