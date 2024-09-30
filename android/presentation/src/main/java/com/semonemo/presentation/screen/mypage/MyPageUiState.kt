@@ -18,5 +18,6 @@ sealed interface MyPageUiState {
         val follower: List<User> = listOf(),
         val volume: Int = 0,
         val amount: Int = 0,
+        val isFollow: Boolean? = null,
     ) : MyPageUiState
 }
