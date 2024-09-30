@@ -46,7 +46,7 @@ import com.semonemo.presentation.util.noRippleClickable
 fun SearchTextField(
     modifier: Modifier = Modifier,
     onValueChanged: (String) -> Unit = {},
-    onSearchAction: () -> Unit = {},
+    onSearchAction: (String) -> Unit = {},
     placeHolder: String = stringResource(R.string.search_placeholder),
     focusManager: FocusManager,
 ) {
@@ -80,7 +80,7 @@ fun SearchTextField(
         keyboardActions =
             KeyboardActions(onSearch = {
                 focusManager.clearFocus()
-                onSearchAction()
+                onSearchAction(keyword)
             }),
         textStyle = Typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
         trailingIcon = {

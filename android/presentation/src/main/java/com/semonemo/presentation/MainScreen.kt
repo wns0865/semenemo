@@ -1,7 +1,6 @@
 package com.semonemo.presentation
 
 import BottomNavigationBar
-import android.util.Log
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -35,6 +34,7 @@ import com.semonemo.presentation.screen.moment.MomentScreen
 import com.semonemo.presentation.screen.mypage.DetailScreen
 import com.semonemo.presentation.screen.mypage.MyPageRoute
 import com.semonemo.presentation.screen.picture.PictureMainScreen
+import com.semonemo.presentation.screen.search.SearchRoute
 import com.semonemo.presentation.screen.signup.SignUpRoute
 import com.semonemo.presentation.screen.store.StoreFullViewScreen
 import com.semonemo.presentation.screen.store.StoreScreen
@@ -171,6 +171,19 @@ fun MainNavHost(
                         ),
                     )
                 },
+                navigateToSearch = {
+                    navController.navigate(ScreenDestinations.Search.route)
+                },
+            )
+        }
+
+        composable(
+            route = ScreenDestinations.Search.route,
+        ) {
+            SearchRoute(
+                navigateToProfile = { userId ->
+                    navController.navigate(ScreenDestinations.MyPage.createRoute(userId))
+                },
             )
         }
 
@@ -209,7 +222,10 @@ fun MainNavHost(
 
         composable(
             route = ScreenDestinations.MyPage.route,
-        ) {
+            arguments = ScreenDestinations.MyPage.arguments,
+        ) { navBackStackEntry ->
+            val userId = navBackStackEntry.arguments?.getLong("userId")
+
             MyPageRoute(
                 modifier = modifier,
                 navigateToDetail = { imgUrl ->
@@ -220,6 +236,7 @@ fun MainNavHost(
                     )
                 },
                 onErrorSnackBar = onShowErrorSnackBar,
+                userId = userId ?: -1,
             )
         }
 
@@ -337,8 +354,6 @@ fun MainNavHost(
             route = ScreenDestinations.StoreFullView.route,
             arguments = ScreenDestinations.StoreFullView.arguments,
         ) { navBackStackEntry ->
-
-            Log.d("test", "${navBackStackEntry.destination?.route}")
             StoreFullViewScreen(
                 modifier = modifier,
                 isFrame = navBackStackEntry.arguments?.getBoolean("isFrame") ?: false,

@@ -86,6 +86,7 @@ fun MyPageRoute(
     navigateToDetail: (String) -> Unit,
     viewModel: MyPageViewModel = hiltViewModel(),
     onErrorSnackBar: (String) -> Unit,
+    userId: Long = -1,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current

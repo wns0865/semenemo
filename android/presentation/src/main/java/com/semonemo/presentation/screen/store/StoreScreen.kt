@@ -1,5 +1,6 @@
 package com.semonemo.presentation.screen.store
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,10 +17,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,6 +32,7 @@ import com.semonemo.presentation.component.CustomStoreFAB
 import com.semonemo.presentation.component.SectionFullViewButton
 import com.semonemo.presentation.component.SectionHeader
 import com.semonemo.presentation.screen.store.subScreen.StoreSubScreen
+import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.White
 import com.skydoves.landscapist.glide.GlideImage
@@ -37,6 +42,7 @@ import com.skydoves.landscapist.glide.GlideImage
 fun StoreScreen(
     modifier: Modifier = Modifier,
     navigateToFullView: (Boolean) -> Unit = {},
+    navigateToSearch: () -> Unit = {},
 ) {
     val verticalScrollState = rememberScrollState()
     Column(
@@ -47,7 +53,23 @@ fun StoreScreen(
                 .navigationBarsPadding()
                 .verticalScroll(state = verticalScrollState),
     ) {
-        SectionHeader(text = "최근 인기 프레임")
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            SectionHeader(text = "최근 인기 프레임")
+            Spacer(modifier.weight(1f))
+            Icon(
+                modifier =
+                    Modifier
+                        .padding(end = 15.dp)
+                        .clickable {
+                            navigateToSearch()
+                        },
+                painter = painterResource(id = R.drawable.ic_search_magnifier),
+                contentDescription = null,
+                tint = GunMetal,
+            )
+        }
         // 아마 리스트형태로 뷰페이저로 들어갈듯
         HotRecentFrame(
             imgUrl = "https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNDA3MjhfMjQ5%2FMDAxNzIyMTc0NDI3NTUx.2i13wuVFmNnbi_PAAaWFaMoH8dnfMCELiKLi3FzWDowg.Jpv5rH4kLAXvpQvH7ZSiFATG9sCXuZxNlSx-Ac3hXlEg.JPEG%2FIMG%25A3%25DF2672.JPG&type=a340",

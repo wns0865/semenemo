@@ -42,7 +42,16 @@ sealed class ScreenDestinations(
 
     data object Wallet : ScreenDestinations(route = "wallet")
 
-    data object MyPage : ScreenDestinations(route = "mypage")
+    data object MyPage : ScreenDestinations(route = "mypage") {
+        override val route: String
+            get() = "mypage/{userId}"
+        val arguments =
+            listOf(
+                navArgument(name = "userId") { type = NavType.LongType },
+            )
+
+        fun createRoute(userId: Long) = "mypage/$userId"
+    }
 
     data object AiAsset : ScreenDestinations(route = "aiAsset")
 
@@ -100,7 +109,7 @@ sealed class ScreenDestinations(
         fun createRoute(auctionId: String) = "auctionProcess/$auctionId"
     }
 
-    data object StoreFullView: ScreenDestinations(route = "storeFullView") {
+    data object StoreFullView : ScreenDestinations(route = "storeFullView") {
         override val route: String
             get() = "storeFullView/{isFrame}"
         val arguments =
@@ -112,4 +121,6 @@ sealed class ScreenDestinations(
     }
 
     data object FrameDone : ScreenDestinations(route = "frameDone")
+
+    data object Search : ScreenDestinations(route = "search")
 }
