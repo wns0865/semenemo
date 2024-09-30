@@ -66,6 +66,7 @@ import com.semonemo.presentation.component.CustomDropdownMenuStyles
 import com.semonemo.presentation.component.CustomTab
 import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.NameWithBadge
+import com.semonemo.presentation.component.SubScribeButton
 import com.semonemo.presentation.component.TopAppBar
 import com.semonemo.presentation.component.TopAppBarNavigationType
 import com.semonemo.presentation.theme.Blue3
@@ -86,13 +87,14 @@ fun MyPageRoute(
     navigateToDetail: (String) -> Unit,
     viewModel: MyPageViewModel = hiltViewModel(),
     onErrorSnackBar: (String) -> Unit,
-    userId: Long = -1,
+    userId: Long,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     HandleMyPageEvent(
         uiEvent = viewModel.uiEvent,
         onErrorSnackBar = onErrorSnackBar,
+        onSubscribe = { viewModel.loadOtherUserInfo() },
     )
     HandleMyPageUi(
         modifier = modifier,
@@ -102,19 +104,26 @@ fun MyPageRoute(
             val image = File(imageUri.toAbsolutePath(context))
             viewModel.updateProfileImage(image, imageUri.toString())
         },
+        followUser = {
+            viewModel.followUser(userId)
+        },
+        unfollowUser = {
+            viewModel.unfollowUser(userId)
+        },
     )
 }
 
 @Composable
 fun HandleMyPageEvent(
     uiEvent: SharedFlow<MyPageUiEvent>,
+    onSubscribe: () -> Unit,
     onErrorSnackBar: (String) -> Unit,
 ) {
     LaunchedEffect(uiEvent) {
         uiEvent.collectLatest { event ->
             when (event) {
                 is MyPageUiEvent.Error -> onErrorSnackBar(event.errorMessage)
-                MyPageUiEvent.Subscribe -> {}
+                MyPageUiEvent.Subscribe -> onSubscribe()
             }
         }
     }
@@ -126,6 +135,8 @@ fun HandleMyPageUi(
     uiState: MyPageUiState,
     navigateToDetail: (String) -> Unit,
     updateProfileImage: (Uri) -> Unit,
+    followUser: () -> Unit,
+    unfollowUser: () -> Unit,
 ) {
     when (uiState) {
         MyPageUiState.Loading -> LoadingDialog()
@@ -140,6 +151,9 @@ fun HandleMyPageUi(
                 follower = uiState.follower.size,
                 following = uiState.following.size,
                 updateProfileImage = updateProfileImage,
+                isFollow = uiState.isFollow,
+                followUser = followUser,
+                unfollowUser = unfollowUser,
             )
     }
 }
@@ -155,6 +169,9 @@ fun MyPageScreen(
     follower: Int = 0,
     following: Int = 0,
     updateProfileImage: (Uri) -> Unit = {},
+    isFollow: Boolean? = null,
+    followUser: () -> Unit = {},
+    unfollowUser: () -> Unit = {},
 ) {
     val tabs = listOf("내 프레임", "에셋", "찜")
     val selectedIndex = remember { mutableIntStateOf(0) }
@@ -223,11 +240,26 @@ fun MyPageScreen(
                 },
                 navigationType = TopAppBarNavigationType.None,
                 actionButtons = {
-                    Icon(
-                        modifier = Modifier.size(30.dp).noRippleClickable {  },
-                        painter = painterResource(id = R.drawable.ic_setting),
-                        contentDescription = "",
-                    )
+                    // 타사용자 페이지
+                    isFollow?.let { isFollow ->
+                        SubScribeButton(
+                            isSubscribed = isFollow,
+                            onToggleSubscription = {
+                                if (isFollow) {
+                                    unfollowUser()
+                                } else {
+                                    followUser()
+                                }
+                            },
+                        )
+                    } ?: run {
+                        // 마이페이지
+                        Icon(
+                            modifier = Modifier.size(30.dp).noRippleClickable { },
+                            painter = painterResource(id = R.drawable.ic_setting),
+                            contentDescription = "",
+                        )
+                    }
                 },
             )
 
