@@ -20,8 +20,9 @@ android {
         buildConfigField("String", "RPC_URLS", properties["RPC_URLS"] as String)
         buildConfigField("String", "SEVER_URL", properties["SEVER_URL"] as String)
         buildConfigField("String", "NODE_PORT_NUMBER", properties["NODE_PORT_NUMBER"] as String)
-        buildConfigField("String", "TEST_URL", properties["TEST_URL"] as String)
-        buildConfigField("String","AI_SERVER_URL",properties["AI_SERVER_URL"] as String)
+        buildConfigField("String", "IPFS_UPLOAD_URL", properties["IPFS_UPLOAD_URL"] as String)
+        buildConfigField("String", "IPFS_READ_URL", properties["IPFS_READ_URL"] as String)
+        buildConfigField("String", "AI_SERVER_URL", properties["AI_SERVER_URL"] as String)
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
