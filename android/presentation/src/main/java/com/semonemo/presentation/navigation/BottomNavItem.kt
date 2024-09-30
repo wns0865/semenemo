@@ -35,6 +35,6 @@ sealed class BottomNavItem(
         title = R.string.my_title,
         icon = R.drawable.ic_bot_nav_outline_profile,
         iconSelected = R.drawable.ic_bot_nav_fill_profile,
-        route = ScreenDestinations.MyPage.route,
+        route = ScreenDestinations.MyPage.createRoute(-1),
     )
 }
