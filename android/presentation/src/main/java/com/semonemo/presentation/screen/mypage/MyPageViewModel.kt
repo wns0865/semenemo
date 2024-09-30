@@ -28,10 +28,66 @@ class MyPageViewModel
         val uiState = _uiState.asStateFlow()
         private val _uiEvent = MutableSharedFlow<MyPageUiEvent>()
         val uiEvent = _uiEvent.asSharedFlow()
-        private val userId = savedStateHandle.get<Long>("userId")
+        private val userId = savedStateHandle.get<Long>("userId") ?: -1
 
         init {
-            loadUserInfo()
+            if (userId == -1L) { // 마이페이지
+                loadUserInfo()
+            } else { // 타사용자 페이지
+                loadUserOtherInfo()
+            }
+        }
+
+        private fun loadUserOtherInfo() {
+            viewModelScope.launch {
+                combine(
+                    userRepository.loadOtherUserInfo(userId),
+                    userRepository.loadFollowing(userId),
+                    userRepository.loadFollowers(userId),
+                ) { userInfo, followingInfo, followerInfo ->
+                    val currentState = MyPageUiState.Success()
+                    val newUiState =
+                        when (userInfo) {
+                            is ApiResponse.Error -> {
+                                _uiEvent.emit(MyPageUiEvent.Error(userInfo.errorMessage))
+                                currentState
+                            }
+
+                            is ApiResponse.Success -> {
+                                currentState.copy(
+                                    userId = userInfo.data.userId,
+                                    profileImageUrl = userInfo.data.profileImage,
+                                    nickname = userInfo.data.nickname,
+                                )
+                            }
+                        }
+                    when (followingInfo) {
+                        is ApiResponse.Error -> {
+                            _uiEvent.emit(MyPageUiEvent.Error(followingInfo.errorMessage))
+                        }
+
+                        is ApiResponse.Success -> {
+                            newUiState.copy(
+                                following = followingInfo.data,
+                            )
+                        }
+                    }
+                    when (followerInfo) {
+                        is ApiResponse.Error -> {
+                            _uiEvent.emit(MyPageUiEvent.Error(followerInfo.errorMessage))
+                        }
+
+                        is ApiResponse.Success -> {
+                            newUiState.copy(
+                                follower = followerInfo.data,
+                            )
+                        }
+                    }
+                    newUiState
+                }.collectLatest { updatedUiState ->
+                    _uiState.value = updatedUiState
+                }
+            }
         }
 
         private fun loadUserInfo() {
