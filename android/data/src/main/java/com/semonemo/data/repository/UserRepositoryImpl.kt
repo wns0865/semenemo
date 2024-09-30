@@ -110,4 +110,37 @@ class UserRepositoryImpl
                     }, default = User())
                 emit(response)
             }
+
+        override suspend fun isFollow(userId: Long): Flow<ApiResponse<Boolean>> =
+            flow {
+                val response =
+                    emitApiResponse(apiResponse = {
+                        api.isFollow(userId)
+                    }, default = false)
+                emit(response)
+            }
+
+        override suspend fun followUser(userId: Long): Flow<ApiResponse<Unit>> =
+            flow {
+                val response =
+                    emitApiResponse(
+                        apiResponse = {
+                            api.followUser(userId)
+                        },
+                        default = Unit,
+                    )
+                emit(response)
+            }
+
+        override suspend fun unfollowUser(userId: Long): Flow<ApiResponse<Unit>> =
+            flow {
+                val response =
+                    emitApiResponse(
+                        apiResponse = {
+                            api.unfollowUser(userId)
+                        },
+                        default = Unit,
+                    )
+                emit(response)
+            }
     }

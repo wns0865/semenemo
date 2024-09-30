@@ -7,6 +7,7 @@ import okhttp3.RequestBody
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
+import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
@@ -39,4 +40,19 @@ interface UserApi {
     suspend fun loadOtherUserInfo(
         @Path("userId") userId: Long,
     ): BaseResponse<User>
+
+    @GET("api/user/{userId}/follow")
+    suspend fun isFollow(
+        @Path("userId") userId: Long,
+    ): BaseResponse<Boolean>
+
+    @POST("api/user/{userId}/follow")
+    suspend fun followUser(
+        @Path("userId") userId: Long,
+    ): BaseResponse<Unit>
+
+    @DELETE("api/user/{userId}/follow")
+    suspend fun unfollowUser(
+        @Path("userId") userId: Long,
+    ): BaseResponse<Unit>
 }
