@@ -32,15 +32,19 @@ object NetworkModule {
 
     @Qualifier
     @Retention(AnnotationRetention.BINARY)
-    annotation class NftClient
+    annotation class NftUploadClient
+
+    @Qualifier
+    @Retention(AnnotationRetention.BINARY)
+    annotation class NftReadClient
 
     @Qualifier
     @Retention(AnnotationRetention.BINARY)
     annotation class AiClient
 
+    @BaseClient
     @Singleton
     @Provides
-    @BaseClient
     fun provideOkHttpClient(
         accessTokenInterceptor: AccessTokenInterceptor,
         jwtAuthenticator: JwtAuthenticator,
@@ -69,10 +73,27 @@ object NetworkModule {
             build()
         }
 
-    @NftClient
+    @NftUploadClient
     @Singleton
     @Provides
-    fun provideNftOkHttpClient(
+    fun provideNftUploadClient(
+        accessTokenInterceptor: AccessTokenInterceptor,
+        jwtAuthenticator: JwtAuthenticator,
+    ) = OkHttpClient.Builder().run {
+        addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+        addInterceptor(ErrorHandlingInterceptor())
+        addInterceptor(accessTokenInterceptor)
+        authenticator(jwtAuthenticator)
+        connectTimeout(10, TimeUnit.SECONDS)
+        readTimeout(10, TimeUnit.SECONDS)
+        writeTimeout(10, TimeUnit.SECONDS)
+        build()
+    }
+
+    @NftReadClient
+    @Singleton
+    @Provides
+    fun provideNftReadOkHttpClient(
         accessTokenInterceptor: AccessTokenInterceptor,
         jwtAuthenticator: JwtAuthenticator,
     ) = OkHttpClient.Builder().run {
@@ -129,15 +150,29 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    @NftClient
-    fun provideNFTRetrofit(
-        @NftClient
+    @NftUploadClient
+    fun provideNftUploadRetrofit(
+        @NftUploadClient
         okHttpClient: OkHttpClient,
     ): Retrofit =
         Retrofit
             .Builder()
             .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
-            .baseUrl(BuildConfig.TEST_URL + BuildConfig.NODE_PORT_NUMBER)
+            .baseUrl(BuildConfig.IPFS_UPLOAD_URL)
+            .client(okHttpClient)
+            .build()
+
+    @Singleton
+    @Provides
+    @NftReadClient
+    fun provideNFTReadRetrofit(
+        @NftReadClient
+        okHttpClient: OkHttpClient,
+    ): Retrofit =
+        Retrofit
+            .Builder()
+            .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
+            .baseUrl(BuildConfig.IPFS_READ_URL)
             .client(okHttpClient)
             .build()
 
