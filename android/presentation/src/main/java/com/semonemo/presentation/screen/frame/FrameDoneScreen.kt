@@ -3,6 +3,8 @@ package com.semonemo.presentation.screen.frame
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -39,6 +43,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.CustomTextField
+import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.component.ScriptTextField
 import com.semonemo.presentation.theme.Gray01
@@ -46,6 +51,10 @@ import com.semonemo.presentation.theme.Gray02
 import com.semonemo.presentation.theme.Main02
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
+import com.semonemo.presentation.util.converterFile
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collectLatest
+import java.io.File
 
 @Composable
 fun FrameDoneRoute(
@@ -54,11 +63,58 @@ fun FrameDoneRoute(
     navigateToMoment: () -> Unit = {},
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+
+    FrameDoneContent(
+        modifier = modifier,
+        uiState = uiState.value,
+        uiEvent = viewModel.uiEvent,
+        navigateToMoment = navigateToMoment,
+        onClick = viewModel::uploadImage,
+        updateContent = viewModel::updateContent,
+        updateTitle = viewModel::updateTitle,
+    )
+}
+
+@Composable
+fun FrameDoneContent(
+    modifier: Modifier,
+    uiState: FrameUiState,
+    navigateToMoment: () -> Unit = {},
+    onClick: (File) -> Unit = {},
+    updateTitle: (String) -> Unit = {},
+    updateContent: (String) -> Unit = {},
+    uiEvent: SharedFlow<FrameUiEvent>,
+    onErrorSnackBar: (String) -> Unit = {},
+) {
+    LaunchedEffect(uiEvent) {
+        uiEvent.collectLatest { event ->
+            when (event) {
+                is FrameUiEvent.Error -> onErrorSnackBar(event.errorMessage)
+                FrameUiEvent.UploadFinish -> navigateToMoment()
+            }
+        }
+    }
     FrameDoneScreen(
         modifier = modifier,
-        bitmap = uiState.value.bitmap,
         navigateToMoment = navigateToMoment,
+        onClick = onClick,
+        bitmap = uiState.bitmap,
+        updateContent = updateContent,
+        updateTitle = updateTitle,
     )
+    if (uiState.isLoading) {
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .clickable(enabled = false) {},
+        )
+        LoadingDialog(
+            lottieRes = R.raw.normal_load,
+            loadingMessage = stringResource(R.string.loading_message),
+            subMessage = stringResource(R.string.loading_sub_message),
+        )
+    }
 }
 
 @Composable
@@ -66,12 +122,15 @@ fun FrameDoneScreen(
     modifier: Modifier = Modifier,
     bitmap: Bitmap? = null,
     navigateToMoment: () -> Unit = {},
+    onClick: (File) -> Unit = {},
+    updateTitle: (String) -> Unit = {},
+    updateContent: (String) -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
     val focusManager = LocalFocusManager.current
     var title by remember { mutableStateOf("") }
     var script by remember { mutableStateOf("") }
-
+    val context = LocalContext.current
     Surface(
         modifier =
             modifier
@@ -130,6 +189,7 @@ fun FrameDoneScreen(
                 input = title,
                 onValueChange = {
                     title = it
+                    updateTitle(it)
                 },
                 onClearPressed = { title = "" },
                 focusManager = focusManager,
@@ -140,7 +200,10 @@ fun FrameDoneScreen(
                 placeholder = stringResource(R.string.frame_script_placeholder),
                 height = 130,
                 value = script,
-                onValueChange = { script = it },
+                onValueChange = {
+                    script = it
+                    updateContent(it)
+                },
                 focusManager = focusManager,
             )
             Spacer(modifier = Modifier.height(40.dp))
@@ -148,7 +211,9 @@ fun FrameDoneScreen(
                 icon = null,
                 text = stringResource(R.string.frame_save_btn_title),
                 onClick = {
-                    navigateToMoment()
+                    bitmap?.let {
+                        onClick(converterFile(it))
+                    }
                 },
             )
             Spacer(modifier = Modifier.height(10.dp))

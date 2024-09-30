@@ -18,7 +18,7 @@ object ApiModule {
     @Provides
     @Singleton
     fun provideNFTApi(
-        @NetworkModule.NftClient retrofit: Retrofit,
+        @NetworkModule.NftUploadClient retrofit: Retrofit,
     ): NFTApi = retrofit.create()
 
     @Provides
