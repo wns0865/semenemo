@@ -72,32 +72,32 @@ class UserRepositoryImpl
                 emit(response)
             }
 
-        override suspend fun loadFollowing(userId: Long?): Flow<ApiResponse<List<User>>> =
+        override suspend fun loadFollowing(userId: Long): Flow<ApiResponse<List<User>>> =
             flow {
                 val response =
-                    userId?.let {
-                        emitApiResponse(apiResponse = { api.loadFollowing(it) }, default = listOf())
-                    } ?: run {
+                    if (userId == -1L) { // 마이페이지
                         emitApiResponse(apiResponse = {
                             api.loadFollowing(
                                 authDataSource.getUserId()?.toLong() ?: -1,
                             )
                         }, default = listOf())
+                    } else { // 타사용자
+                        emitApiResponse(apiResponse = { api.loadFollowing(userId) }, default = listOf())
                     }
                 emit(response)
             }
 
-        override suspend fun loadFollowers(userId: Long?): Flow<ApiResponse<List<User>>> =
+        override suspend fun loadFollowers(userId: Long): Flow<ApiResponse<List<User>>> =
             flow {
                 val response =
-                    userId?.let {
-                        emitApiResponse(apiResponse = { api.loadFollowers(it) }, default = listOf())
-                    } ?: run {
+                    if (userId == -1L) { // 마이페이지
                         emitApiResponse(apiResponse = {
                             api.loadFollowers(
                                 authDataSource.getUserId()?.toLong() ?: -1,
                             )
                         }, default = listOf())
+                    } else { // 타사용자
+                        emitApiResponse(apiResponse = { api.loadFollowers(userId) }, default = listOf())
                     }
                 emit(response)
             }
