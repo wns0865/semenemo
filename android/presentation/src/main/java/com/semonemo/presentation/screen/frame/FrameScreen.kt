@@ -1,7 +1,7 @@
 package com.semonemo.presentation.screen.frame
 
 import android.graphics.Bitmap
-import android.util.Log
+import androidx.compose.animation.SharedTransitionScope.PlaceHolderSize.Companion.contentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -78,6 +78,7 @@ import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.White
 import com.semonemo.presentation.theme.WhiteGray
 import dev.shreyaspatil.capturable.capturable
+import dev.shreyaspatil.capturable.controller.CaptureController
 import dev.shreyaspatil.capturable.controller.rememberCaptureController
 import kotlinx.coroutines.launch
 
@@ -110,7 +111,7 @@ fun FrameRoute(
     )
 }
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalComposeApi::class)
+@OptIn(ExperimentalComposeApi::class)
 @Composable
 fun FrameScreen(
     modifier: Modifier = Modifier,
@@ -183,12 +184,12 @@ fun FrameScreen(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight(0.4f)
-                            .capturable(captureController),
+                            .fillMaxHeight(0.4f),
                     contentAlignment = Alignment.Center,
                 ) {
                     FramePreview(
                         frameType = frameType,
+                        captureController = captureController,
                         overlayAssets = overlayAssets,
                         backgroundColor = selectedColor,
                         backgroundBrush = selectedBrush,
@@ -245,7 +246,7 @@ fun FrameScreen(
                         Spacer(modifier = Modifier.fillMaxHeight(0.03f))
                         ColorPalette(
                             colors = colors,
-                            circleSize = 45,
+                            circleSize = 35,
                             selectedColor = selectedColor,
                             onColorSelected = {
                                 selectedColor = it
@@ -261,7 +262,7 @@ fun FrameScreen(
                         Spacer(modifier = Modifier.fillMaxHeight(0.03f))
                         BrushPalette(
                             brushes = brushes,
-                            circleSize = 45,
+                            circleSize = 35,
                             selectedBrush = selectedBrush,
                             onBrushSelected = {
                                 selectedBrush = it
@@ -312,7 +313,7 @@ fun FrameScreen(
                             val bitmap = bitmapAsync.await().asAndroidBitmap()
                             updateFrame(bitmap)
                         } catch (error: Throwable) {
-                            onErrorSnackBar(error.message?:"")
+                            onErrorSnackBar(error.message ?: "")
                         }
                     }
                     navigateToFrameDone()
@@ -323,11 +324,13 @@ fun FrameScreen(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun FramePreview(
     modifier: Modifier = Modifier,
-    frameType: FrameType,
+    captureController: CaptureController,
     overlayAssets: List<OverlayAsset>,
+    frameType: FrameType,
     backgroundColor: Color? = null,
     backgroundBrush: Brush? = null,
 ) {
@@ -391,19 +394,33 @@ fun FramePreview(
                 Box(
                     modifier =
                         Modifier
-                            .fillMaxWidth(0.5f)
-                            .fillMaxHeight()
-                            .then(backgroundModifier)
+                            .wrapContentSize()
+                            .capturable(captureController)
                             .onSizeChanged { contentSize = it },
-                    contentAlignment = Alignment.TopCenter,
                 ) {
                     Box(
                         modifier =
                             Modifier
-                                .fillMaxSize()
-                                .padding(start = 5.dp, top = 5.dp, end = 5.dp, bottom = 50.dp)
-                                .background(color = White),
-                    )
+                                .fillMaxWidth(0.5f)
+                                .fillMaxHeight()
+                                .then(backgroundModifier),
+                        contentAlignment = Alignment.TopCenter,
+                    ) {
+                        Box(
+                            modifier =
+                                Modifier
+                                    .fillMaxSize()
+                                    .padding(start = 5.dp, top = 5.dp, end = 5.dp, bottom = 50.dp)
+                                    .background(color = White),
+                        )
+                        if (overlayAssets.isNotEmpty()) {
+                            ShowAssets(
+                                overlayAssets = overlayAssets,
+                                parentSize = parentSize,
+                                contentSize = contentSize,
+                            )
+                        }
+                    }
                 }
             }
 
@@ -412,66 +429,81 @@ fun FramePreview(
                 Box(
                     modifier =
                         Modifier
-                            .fillMaxWidth(0.5f)
-                            .fillMaxHeight()
-                            .then(backgroundModifier)
+                            .wrapContentSize()
+                            .capturable(captureController)
                             .onSizeChanged { contentSize = it },
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
+                    Box(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth(0.5f)
+                                .fillMaxHeight()
+                                .then(backgroundModifier),
                     ) {
-                        Row(
-                            modifier =
-                                Modifier
-                                    .weight(1f)
-                                    .padding(horizontal = 5.dp)
-                                    .padding(top = 5.dp),
-                            horizontalArrangement = Arrangement.spacedBy(5.dp),
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
                         ) {
-                            Box(
+                            Row(
                                 modifier =
                                     Modifier
-                                        .fillMaxSize()
                                         .weight(1f)
-                                        .background(color = White),
-                            )
-                            Box(
+                                        .padding(horizontal = 5.dp)
+                                        .padding(top = 5.dp),
+                                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                            ) {
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxSize()
+                                            .weight(1f)
+                                            .background(color = White),
+                                )
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxSize()
+                                            .weight(1f)
+                                            .background(color = White),
+                                )
+                            }
+                            Row(
                                 modifier =
                                     Modifier
-                                        .fillMaxSize()
                                         .weight(1f)
-                                        .background(color = White),
+                                        .padding(horizontal = 5.dp)
+                                        .padding(top = 5.dp),
+                                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                            ) {
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxSize()
+                                            .weight(1f)
+                                            .background(color = White),
+                                )
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxSize()
+                                            .weight(1f)
+                                            .background(color = White),
+                                )
+                            }
+                            Spacer(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(50.dp),
                             )
                         }
-                        Row(
-                            modifier =
-                                Modifier
-                                    .weight(1f)
-                                    .padding(horizontal = 5.dp)
-                                    .padding(top = 5.dp),
-                            horizontalArrangement = Arrangement.spacedBy(5.dp),
-                        ) {
-                            Box(
-                                modifier =
-                                    Modifier
-                                        .fillMaxSize()
-                                        .weight(1f)
-                                        .background(color = White),
-                            )
-                            Box(
-                                modifier =
-                                    Modifier
-                                        .fillMaxSize()
-                                        .weight(1f)
-                                        .background(color = White),
+
+                        if (overlayAssets.isNotEmpty()) {
+                            ShowAssets(
+                                overlayAssets = overlayAssets,
+                                parentSize = parentSize,
+                                contentSize = contentSize,
                             )
                         }
-                        Spacer(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .height(50.dp),
-                        )
                     }
                 }
             }
@@ -481,79 +513,101 @@ fun FramePreview(
                 Box(
                     modifier =
                         Modifier
-                            .fillMaxWidth(0.25f)
-                            .fillMaxHeight()
-                            .then(backgroundModifier)
+                            .wrapContentSize()
+                            .capturable(captureController)
                             .onSizeChanged { contentSize = it },
+                    contentAlignment = Alignment.Center,
                 ) {
-                    Column(
+                    Box(
                         modifier =
                             Modifier
-                                .fillMaxSize()
-                                .padding(4.dp),
+                                .fillMaxWidth(0.25f)
+                                .fillMaxHeight()
+                                .then(backgroundModifier),
                     ) {
-                        repeat(4) {
-                            Box(
-                                modifier =
-                                    Modifier
-                                        .weight(1f)
-                                        .fillMaxWidth()
-                                        .background(color = White),
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
+                        Column(
+                            modifier =
+                                Modifier
+                                    .fillMaxSize()
+                                    .padding(4.dp),
+                        ) {
+                            repeat(4) {
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .weight(1f)
+                                            .fillMaxWidth()
+                                            .background(color = White),
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                            }
+                            Spacer(modifier = Modifier.height(30.dp))
                         }
-                        Spacer(modifier = Modifier.height(30.dp))
+                        if (overlayAssets.isNotEmpty()) {
+                            ShowAssets(
+                                overlayAssets = overlayAssets,
+                                parentSize = parentSize,
+                                contentSize = contentSize,
+                            )
+                        }
                     }
                 }
             }
         }
-        overlayAssets.forEach { asset ->
-            var imageScale by remember { mutableFloatStateOf(0.5f) }
-            var imageOffsetX by remember { mutableFloatStateOf(0f) }
-            var imageOffsetY by remember { mutableFloatStateOf(0f) }
-            var imageRotation by remember { mutableFloatStateOf(0f) }
-            var assetSize by remember { mutableStateOf(IntSize.Zero) }
+    }
+}
 
-            val imageTransformableState =
-                rememberTransformableState { zoomChange, offsetChange, rotationChange ->
-                    imageScale = (imageScale * zoomChange).coerceIn(0.25f, 1.5f)
-                    imageRotation += rotationChange
+@Composable
+fun ShowAssets(
+    overlayAssets: List<OverlayAsset>,
+    parentSize: IntSize,
+    contentSize: IntSize,
+) {
+    overlayAssets.forEach { asset ->
+        var imageScale by remember { mutableFloatStateOf(0.5f) }
+        var imageOffsetX by remember { mutableFloatStateOf(0f) }
+        var imageOffsetY by remember { mutableFloatStateOf(0f) }
+        var imageRotation by remember { mutableFloatStateOf(0f) }
+        var assetSize by remember { mutableStateOf(IntSize.Zero) }
 
-                    // 이미지 이동 제한 로직
-                    val newOffsetX = imageOffsetX + offsetChange.x * imageScale
-                    val newOffsetY = imageOffsetY + offsetChange.y * imageScale
+        val imageTransformableState =
+            rememberTransformableState { zoomChange, offsetChange, rotationChange ->
+                imageScale = (imageScale * zoomChange).coerceIn(0.25f, 1.5f)
+                imageRotation += rotationChange
 
-                    val maxOffsetX = (contentSize.width + 250 - assetSize.width * imageScale) / 2
-                    val maxOffsetY = (parentSize.height + 200 - assetSize.height * imageScale) / 2
+                val newOffsetX = imageOffsetX + offsetChange.x * imageScale
+                val newOffsetY = imageOffsetY + offsetChange.y * imageScale
 
-                    // 최소값과 최대값을 안전하게 계산
-                    val minX = -maxOffsetX.coerceAtLeast(0f)
-                    val maxX = maxOffsetX.coerceAtLeast(0f)
-                    val minY = -maxOffsetY.coerceAtLeast(0f)
-                    val maxY = maxOffsetY.coerceAtLeast(0f)
+                val maxOffsetX = (parentSize.width - assetSize.width * imageScale)
+                val maxOffsetY = (contentSize.height - assetSize.height * imageScale)
 
-                    imageOffsetX = newOffsetX.coerceIn(minX, maxX)
-                    imageOffsetY = newOffsetY.coerceIn(minY, maxY)
-                }
+                // 최소값과 최대값을 안전하게 계산
+                val minX = -maxOffsetX.coerceAtLeast(0f)
+                val maxX = maxOffsetX.coerceAtLeast(0f)
+                val minY = -maxOffsetY.coerceAtLeast(0f)
+                val maxY = maxOffsetY.coerceAtLeast(0f)
 
-            val assetModifier =
-                Modifier
-                    .graphicsLayer(
-                        scaleX = imageScale,
-                        scaleY = imageScale,
-                        translationX = imageOffsetX,
-                        translationY = imageOffsetY,
-                        rotationZ = imageRotation,
-                    ).onSizeChanged { assetSize = it }
-                    .transformable(
-                        state = imageTransformableState,
-                    )
-            Image(
-                modifier = assetModifier.wrapContentSize(),
-                painter = painterResource(id = asset.resourceId),
-                contentDescription = null,
-            )
-        }
+                imageOffsetX = newOffsetX.coerceIn(minX, maxX)
+                imageOffsetY = newOffsetY.coerceIn(minY, maxY)
+            }
+
+        val assetModifier =
+            Modifier
+                .graphicsLayer(
+                    scaleX = imageScale,
+                    scaleY = imageScale,
+                    translationX = imageOffsetX,
+                    translationY = imageOffsetY,
+                    rotationZ = imageRotation,
+                ).onSizeChanged { assetSize = it }
+                .transformable(
+                    state = imageTransformableState,
+                )
+        Image(
+            modifier = assetModifier.wrapContentSize(),
+            painter = painterResource(id = asset.resourceId),
+            contentDescription = null,
+        )
     }
 }
 
