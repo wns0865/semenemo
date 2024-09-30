@@ -110,4 +110,6 @@ sealed class ScreenDestinations(
 
         fun createRoute(isFrame: Boolean) = "storeFullView/$isFrame"
     }
+
+    data object FrameDone : ScreenDestinations(route = "frameDone")
 }

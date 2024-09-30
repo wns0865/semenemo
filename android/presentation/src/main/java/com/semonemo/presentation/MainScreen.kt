@@ -14,10 +14,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -31,7 +27,7 @@ import com.semonemo.presentation.screen.aiAsset.DrawAssetScreen
 import com.semonemo.presentation.screen.aiAsset.PromptAssetScreen
 import com.semonemo.presentation.screen.auction.AuctionProcessScreen
 import com.semonemo.presentation.screen.auction.AuctionScreen
-import com.semonemo.presentation.screen.frame.FrameScreen
+import com.semonemo.presentation.screen.frame.FrameNavGraph
 import com.semonemo.presentation.screen.imgAsset.ImageAssetScreen
 import com.semonemo.presentation.screen.imgAsset.ImageSelectRoute
 import com.semonemo.presentation.screen.login.LoginRoute
@@ -320,32 +316,13 @@ fun MainNavHost(
             )
         }
 
-        composable(
-            route = ScreenDestinations.Frame.route,
-            //arguments = ScreenDestinations.Frame.ar
-        ) {
-            FrameScreen(
-                modifier = modifier,
-                //navigateToFrameDone = { frame ->
-//                    val base64String = Base64.encodeToString(frame, Base64.DEFAULT)
-//                    Log.d("test", "${frame}\n  $base64String")
-//                    navController.navigate(ScreenDestinations.FrameDone.createRoute("123"))
-                //},
-            )
-        }
+        FrameNavGraph(
+            modifier = modifier,
+            navController = navController,
+            graphRoute = "frame_graph",
+            onErrorSnackBar = onShowErrorSnackBar,
+        )
 
-//        composable(
-//            route = ScreenDestinations.FrameDone.route,
-//            arguments = ScreenDestinations.FrameDone.arguments,
-//        ) { navBackStackEntry ->
-//            val frame = navBackStackEntry.arguments?.getString("frame") ?: ""
-//            val uri = decodeBase64ToImage(frame)!!
-//            val byteArray = Base64.decode(frame, Base64.DEFAULT)
-//            FrameDoneScreen(
-//                modifier = modifier,
-//                frame = "123".toUri(),
-//            )
-//        }
         composable(
             route = ScreenDestinations.AuctionProcess.route,
             arguments = ScreenDestinations.AuctionProcess.arguments,
@@ -368,14 +345,4 @@ fun MainNavHost(
             )
         }
     }
-}
-
-@Composable
-inline fun <reified T : ViewModel> NavBackStackEntry.sharedViewModel(navController: NavController): T {
-    val navGraphRoute = destination.parent?.route ?: return hiltViewModel()
-    val parentEntry =
-        remember(this) {
-            navController.getBackStackEntry(navGraphRoute)
-        }
-    return hiltViewModel(parentEntry)
 }

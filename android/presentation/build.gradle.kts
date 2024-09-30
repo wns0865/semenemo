@@ -109,4 +109,7 @@ dependencies {
 
     // web3j
     implementation(libs.web3j.core)
+
+    // capture
+    implementation(libs.capturable)
 }
