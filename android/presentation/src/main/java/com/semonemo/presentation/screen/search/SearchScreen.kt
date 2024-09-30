@@ -257,7 +257,8 @@ fun SearchSuccessScreen(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight(),
+                    .wrapContentHeight()
+                    .padding(horizontal = 10.dp),
             columns = GridCells.Fixed(2),
             state = rememberLazyGridState(),
         ) {
@@ -303,8 +304,9 @@ fun SearchSuccessScreen(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight(),
-            columns = GridCells.Fixed(4),
+                    .wrapContentHeight()
+                    .padding(horizontal = 10.dp),
+            columns = GridCells.Fixed(3),
             state = rememberLazyGridState(),
         ) {
             items(assetList.size) { index ->
