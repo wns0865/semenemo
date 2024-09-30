@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -92,7 +93,7 @@ fun FrameDoneScreen(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = "나만의 프레임 완성!",
+                    text = stringResource(R.string.frame_done_title),
                     style = Typography.titleLarge.copy(fontSize = 30.sp, brush = Main02),
                 )
                 Spacer(modifier = Modifier.width(3.dp))
@@ -106,8 +107,7 @@ fun FrameDoneScreen(
             Spacer(modifier = Modifier.height(18.dp))
             Text(
                 text =
-                    "멋진 프레임을 제작했네요. ✪ ω ✪\n" +
-                        "프레임의 제목과 설명을 입력해 주세요.",
+                    stringResource(R.string.frame_done_script),
                 textAlign = TextAlign.Center,
                 style = Typography.labelMedium.copy(fontSize = 15.sp),
                 color = Gray01,
@@ -126,7 +126,7 @@ fun FrameDoneScreen(
                     Modifier
                         .fillMaxWidth(0.88f)
                         .height(48.dp),
-                placeholder = "제목",
+                placeholder = stringResource(R.string.frame_title_placeholder),
                 input = title,
                 onValueChange = {
                     title = it
@@ -137,7 +137,7 @@ fun FrameDoneScreen(
             Spacer(modifier = Modifier.height(8.dp))
             ScriptTextField(
                 modifier = Modifier.fillMaxWidth(0.88f),
-                placeholder = "설명을 적어 주세요",
+                placeholder = stringResource(R.string.frame_script_placeholder),
                 height = 130,
                 value = script,
                 onValueChange = { script = it },
@@ -146,14 +146,14 @@ fun FrameDoneScreen(
             Spacer(modifier = Modifier.height(40.dp))
             LongBlackButton(
                 icon = null,
-                text = "저장하고 홈으로 돌아가기",
+                text = stringResource(R.string.frame_save_btn_title),
                 onClick = {
                     navigateToMoment()
                 },
             )
             Spacer(modifier = Modifier.height(10.dp))
             Text(
-                text = "제작된 프레임은 마이페이지에서 확인할 수 있어요.",
+                text = stringResource(R.string.frame_save_btn_script),
                 style = Typography.bodySmall.copy(fontSize = 13.sp),
                 color = Gray02,
             )

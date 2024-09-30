@@ -50,6 +50,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -121,8 +122,18 @@ fun FrameScreen(
 ) {
     val captureController = rememberCaptureController()
     val scope = rememberCoroutineScope()
-    val tabs = listOf("사이즈", "배경색", "에셋")
-    val sizes = listOf("1x1", "1x4", "2x2")
+    val tabs =
+        listOf(
+            stringResource(R.string.frame_size),
+            stringResource(R.string.frame_background),
+            stringResource(R.string.frame_asset),
+        )
+    val sizes =
+        listOf(
+            stringResource(R.string.frame_one_by_one),
+            stringResource(R.string.frame_one_by_four),
+            stringResource(R.string.frame_two_by_two),
+        )
     val colors =
         listOf(
             Color.Black,
@@ -174,7 +185,7 @@ fun FrameScreen(
         ) {
             Spacer(modifier = Modifier.fillMaxHeight(0.02f))
             Text(
-                text = "프레임은 아래와 같이 제작돼요!",
+                text = stringResource(R.string.frame_description),
                 style = Typography.labelMedium.copy(fontSize = 16.sp),
                 color = GunMetal,
             )
@@ -305,7 +316,7 @@ fun FrameScreen(
             Spacer(modifier = Modifier.weight(1f))
             LongBlackButton(
                 icon = null,
-                text = "완성했어요!",
+                text = stringResource(R.string.frame_done_btn_title),
                 onClick = {
                     scope.launch {
                         val bitmapAsync = captureController.captureAsync()
