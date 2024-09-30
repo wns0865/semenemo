@@ -17,6 +17,7 @@ hilt = "2.48"
 androidxDataStore = "1.1.1"
 gson = "2.10.1"
 metamaskAndroidSdk = "0.2.1"
+moshi = "1.12.0"
 multifab = "1.0.8"
 retrofit = "2.9.0"
 okhttp = "4.11.0"
@@ -33,6 +34,8 @@ kotlinxCollectionsImmutableVersion = "0.3.5"
 krossbow-stomp-core = { module = "org.hildan.krossbow:krossbow-stomp-core", version.ref = "krossbowStompCore" }
 krossbow-stomp-moshi = { module = "org.hildan.krossbow:krossbow-stomp-moshi", version.ref = "krossbowStompCore" }
 krossbow-websocket-okhttp = { module = "org.hildan.krossbow:krossbow-websocket-okhttp", version.ref = "krossbowStompCore" }
+moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
+moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshi" }
 web3j-core = { module = "org.web3j:core", version.ref = "core" }
 multifab = { module = "com.github.iamageo:MultiFab", version.ref = "multifab" }
 wallet-android-core = { module = "com.walletconnect:android-core", version.ref = "androidCoreVersion" }
