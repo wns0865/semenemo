@@ -378,7 +378,10 @@ fun UserListItem(
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .noRippleClickable {
-                    navigateToProfile(userId)
+                    // 임시
+                    navigateToProfile(3)
+                    // 실제 구현
+//                    navigateToProfile(userId)
                 },
         verticalAlignment = Alignment.CenterVertically,
     ) {
