@@ -21,9 +21,9 @@ fun SectionHeader(
     text: String,
 ) {
     Text(
-        modifier = modifier.padding(15.dp),
+        modifier = modifier.padding(5.dp),
         text = text,
-        style = Typography.bodyMedium.copy(color = GunMetal, fontSize = 24.sp),
+        style = Typography.titleMedium.copy(color = GunMetal, fontSize = 18.sp),
     )
 }
 
