@@ -101,4 +101,13 @@ class UserRepositoryImpl
                     }
                 emit(response)
             }
+
+        override suspend fun loadOtherUserInfo(userId: Long): Flow<ApiResponse<User>> =
+            flow {
+                val response =
+                    emitApiResponse(apiResponse = {
+                        api.loadOtherUserInfo(userId)
+                    }, default = User())
+                emit(response)
+            }
     }
