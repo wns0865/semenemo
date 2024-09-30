@@ -38,6 +38,13 @@ class TokenDataSource
                 Pair(getAccessToken() ?: "", getRefreshToken() ?: "")
             }
 
+        suspend fun deleteJwtToken() {
+            dataStore.edit { prefs ->
+                prefs.remove(ACCESS_TOKEN_KEY)
+                prefs.remove(REFRESH_TOKEN_KEY)
+            }
+        }
+
         companion object {
             val ACCESS_TOKEN_KEY = stringPreferencesKey("ACCESS_TOKEN_KEY")
             val REFRESH_TOKEN_KEY = stringPreferencesKey("REFRESH_TOKEN_KEY")

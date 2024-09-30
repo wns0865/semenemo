@@ -1,7 +1,9 @@
 package com.semonemo.data.repository
 
+import android.util.Log
 import com.google.gson.Gson
 import com.semonemo.data.datasource.AuthDataSource
+import com.semonemo.data.datasource.TokenDataSource
 import com.semonemo.data.network.api.UserApi
 import com.semonemo.data.network.response.emitApiResponse
 import com.semonemo.data.util.toMultiPart
@@ -21,6 +23,7 @@ class UserRepositoryImpl
     constructor(
         private val api: UserApi,
         private val authDataSource: AuthDataSource,
+        private val tokenDataSource: TokenDataSource,
     ) : UserRepository {
         override suspend fun edit(
             profileImage: File?,
@@ -48,6 +51,25 @@ class UserRepositoryImpl
 
         override suspend fun loadUserInfo(): Flow<ApiResponse<User>> =
             flow {
-                emit(emitApiResponse(apiResponse = { api.loadMyInfo() }, default = User()))
+                val response = emitApiResponse(apiResponse = { api.loadMyInfo() }, default = User())
+                if (response is ApiResponse.Success) {
+                    response.data.apply {
+                        authDataSource.saveUserId(userId)
+                        authDataSource.saveNickname(nickname)
+                        authDataSource.saveWalletAddress(address)
+                        authDataSource.saveProfileImage(profileImage)
+                    }
+                }
+                emit(response)
+            }
+
+        override suspend fun delete(): Flow<ApiResponse<Unit>> =
+            flow {
+                val response = emitApiResponse(apiResponse = { api.delete() }, default = Unit)
+                if (response is ApiResponse.Success) {
+                    tokenDataSource.deleteJwtToken()
+                    authDataSource.deleteAuthData()
+                }
+                emit(response)
             }
     }

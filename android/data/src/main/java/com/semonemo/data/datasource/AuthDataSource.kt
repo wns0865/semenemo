@@ -61,6 +61,27 @@ class AuthDataSource
                     prefs[PROFILE_IMAGE_KEY]
                 }.first()
 
+        suspend fun deleteAuthData() {
+            dataStore.edit { prefs ->
+                prefs.remove(WALLET_ADDRESS_KEY)
+                prefs.remove(PASSWORD_KEY)
+                prefs.remove(USER_ID_KEY)
+                prefs.remove(PROFILE_IMAGE_KEY)
+            }
+        }
+
+        suspend fun saveUserId(userId: Long) {
+            dataStore.edit { prefs ->
+                prefs[USER_ID_KEY] = userId.toString()
+            }
+        }
+
+        suspend fun getUserId(): String? =
+            dataStore.data
+                .map { prefs ->
+                    prefs[USER_ID_KEY]
+                }.first()
+
         companion object {
             val WALLET_ADDRESS_KEY = stringPreferencesKey("WALLET_ADDRESS_KEY")
             val PASSWORD_KEY = stringPreferencesKey("PASSWORD_KEY")
