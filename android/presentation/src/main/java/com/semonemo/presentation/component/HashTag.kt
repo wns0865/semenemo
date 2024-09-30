@@ -37,16 +37,16 @@ import com.semonemo.presentation.util.noRippleClickable
 fun HashTag(
     modifier: Modifier = Modifier,
     keyword: String,
-    onTagClicked: () -> Unit = {},
+    onTagClicked: (String) -> Unit = {},
     isEdit: Boolean = false,
-    onCloseClicked: () -> Unit = {},
+    onCloseClicked: (String) -> Unit = {},
 ) {
     Surface(
         modifier =
             modifier
                 .wrapContentSize()
                 .clickable(
-                    onClick = onTagClicked,
+                    onClick = { onTagClicked(keyword) },
                 ),
         shape = RoundedCornerShape(8.dp),
         color = WhiteGray,
@@ -69,7 +69,7 @@ fun HashTag(
                     modifier =
                         Modifier
                             .size(12.dp)
-                            .noRippleClickable { onCloseClicked() },
+                            .noRippleClickable { onCloseClicked(keyword) },
                     imageVector = Icons.Default.Close,
                     contentDescription = null,
                     tint = Gray01,
