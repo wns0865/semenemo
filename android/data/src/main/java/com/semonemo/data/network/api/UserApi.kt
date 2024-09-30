@@ -29,4 +29,9 @@ interface UserApi {
     suspend fun loadFollowing(
         @Path("userId") userId: Long,
     ): BaseResponse<List<User>>
+
+    @GET("api/user/{userId}/followers")
+    suspend fun loadFollowers(
+        @Path("userId") userId: Long,
+    ): BaseResponse<List<User>>
 }
