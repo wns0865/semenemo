@@ -40,6 +40,7 @@ fun NavGraphBuilder.FrameNavGraph(
             FrameDoneRoute(
                 modifier = modifier,
                 viewModel = viewModel,
+                navigateToMoment = { navController.navigate(ScreenDestinations.Moment.route) },
             )
         }
     }
