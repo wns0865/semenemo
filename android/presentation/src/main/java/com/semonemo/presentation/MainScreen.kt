@@ -35,6 +35,7 @@ import com.semonemo.presentation.screen.moment.MomentScreen
 import com.semonemo.presentation.screen.mypage.DetailScreen
 import com.semonemo.presentation.screen.mypage.MyPageRoute
 import com.semonemo.presentation.screen.picture.PictureMainScreen
+import com.semonemo.presentation.screen.search.SearchRoute
 import com.semonemo.presentation.screen.signup.SignUpRoute
 import com.semonemo.presentation.screen.store.StoreFullViewScreen
 import com.semonemo.presentation.screen.store.StoreScreen
@@ -171,6 +172,17 @@ fun MainNavHost(
                         ),
                     )
                 },
+                navigateToSearch = {
+                    navController.navigate(ScreenDestinations.Search.route)
+                },
+            )
+        }
+
+        composable(
+            route = ScreenDestinations.Search.route,
+        ) {
+            SearchRoute(
+                navigateToProfile = { }
             )
         }
 

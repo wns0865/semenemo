@@ -100,7 +100,7 @@ sealed class ScreenDestinations(
         fun createRoute(auctionId: String) = "auctionProcess/$auctionId"
     }
 
-    data object StoreFullView: ScreenDestinations(route = "storeFullView") {
+    data object StoreFullView : ScreenDestinations(route = "storeFullView") {
         override val route: String
             get() = "storeFullView/{isFrame}"
         val arguments =
@@ -112,4 +112,6 @@ sealed class ScreenDestinations(
     }
 
     data object FrameDone : ScreenDestinations(route = "frameDone")
+
+    data object Search : ScreenDestinations(route = "search")
 }
