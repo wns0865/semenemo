@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -104,7 +105,7 @@ fun SettingScreen(
 ) {
     val focusManager = LocalFocusManager.current
     var nickname by remember { mutableStateOf("") }
-
+    var errorMessage = Validator.validationNickname(nickname)
     Surface(
         modifier =
             modifier
@@ -122,7 +123,10 @@ fun SettingScreen(
             Spacer(modifier = Modifier.height(10.dp))
             TopAppBar(
                 title = {
-                    Text(text = "설정", style = Typography.bodySmall)
+                    Text(
+                        text = stringResource(R.string.setting_title),
+                        style = Typography.bodySmall,
+                    )
                 },
                 onNavigationClick = popUpBackStack,
             )
@@ -136,28 +140,28 @@ fun SettingScreen(
             ) {
                 Text(
                     modifier = Modifier.padding(start = 3.dp),
-                    text = "닉네임 변경",
+                    text = stringResource(R.string.edit_title),
                     style = Typography.bodySmall.copy(fontSize = 18.sp),
                 )
             }
             Spacer(modifier = Modifier.height(15.dp))
             CustomTextField(
                 modifier = Modifier.padding(horizontal = 10.dp),
-                placeholder = "변경할 닉네임을 입력해 주세요",
+                placeholder = stringResource(R.string.edit_place_holder),
                 input = nickname,
                 onValueChange = { nickname = it },
-                errorMessage = Validator.validationNickname(nickname),
+                errorMessage = errorMessage,
                 focusManager = focusManager,
                 onClearPressed = { nickname = "" },
             )
-            if (nickname.isNotBlank()) {
+            if (nickname.isNotEmpty() && errorMessage.isBlank()) {
                 LongBlackButton(
                     modifier =
                         Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 10.dp),
                     icon = null,
-                    text = "변경하기",
+                    text = stringResource(R.string.edit_button_message),
                     onClick = { editNickname(nickname) },
                 )
             } else {
@@ -166,7 +170,7 @@ fun SettingScreen(
                         Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 10.dp),
-                    text = "변경하기",
+                    text = stringResource(id = R.string.edit_button_message),
                 )
             }
             Spacer(modifier = Modifier.fillMaxHeight(0.1f))
@@ -180,7 +184,7 @@ fun SettingScreen(
                         },
             ) {
                 Text(
-                    text = "로그아웃",
+                    text = stringResource(R.string.logout_message),
                     style = Typography.bodySmall.copy(fontSize = 18.sp),
                 )
                 Spacer(modifier = Modifier.weight(1f))
@@ -200,7 +204,7 @@ fun SettingScreen(
                         },
             ) {
                 Text(
-                    text = "회원탈퇴",
+                    text = stringResource(R.string.delete_user_message),
                     style = Typography.bodySmall.copy(fontSize = 18.sp),
                     color = Color.Red,
                 )
