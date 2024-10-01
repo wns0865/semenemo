@@ -1,8 +1,6 @@
 package com.semonemo.presentation.screen.frame
 
 import android.graphics.Bitmap
-import androidx.compose.animation.SharedTransitionScope.PlaceHolderSize.Companion.contentSize
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.rememberTransformableState
@@ -30,6 +28,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ExperimentalComposeApi
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -49,13 +48,13 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.semonemo.domain.model.Asset
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BrushPalette
 import com.semonemo.presentation.component.ColorPalette
@@ -78,6 +77,7 @@ import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.White
 import com.semonemo.presentation.theme.WhiteGray
+import com.skydoves.landscapist.glide.GlideImage
 import dev.shreyaspatil.capturable.capturable
 import dev.shreyaspatil.capturable.controller.CaptureController
 import dev.shreyaspatil.capturable.controller.rememberCaptureController
@@ -90,7 +90,7 @@ enum class FrameType {
 }
 
 data class OverlayAsset(
-    val resourceId: Int,
+    val imageUrl: String,
     var scale: Float = 1f,
     var offsetX: Float = 0f,
     var offsetY: Float = 0f,
@@ -104,11 +104,15 @@ fun FrameRoute(
     viewModel: FrameViewModel = hiltViewModel(),
     onErrorSnackBar: (String) -> Unit = {},
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.loadMyAssets()
+    }
     FrameScreen(
         modifier = modifier,
         navigateToFrameDone = navigateToFrameDone,
         updateFrame = viewModel::updateFrame,
         onErrorSnackBar = onErrorSnackBar,
+        assets = viewModel.assets.value,
     )
 }
 
@@ -119,6 +123,7 @@ fun FrameScreen(
     navigateToFrameDone: () -> Unit = {},
     updateFrame: (Bitmap) -> Unit = {},
     onErrorSnackBar: (String) -> Unit = {},
+    assets: List<Asset> = listOf(),
 ) {
     val captureController = rememberCaptureController()
     val scope = rememberCoroutineScope()
@@ -151,15 +156,6 @@ fun FrameScreen(
             PurpleGradient,
             BlueGradient,
             Rainbow,
-        )
-    val assets =
-        listOf(
-            R.drawable.asset_example,
-            R.drawable.asset_example2,
-            R.drawable.asset_example3,
-            R.drawable.asset_example,
-            R.drawable.asset_example2,
-            R.drawable.asset_example3,
         )
 
     var frameType by remember { mutableStateOf(FrameType.OneByOne) }
@@ -294,9 +290,8 @@ fun FrameScreen(
                         state = rememberLazyGridState(),
                     ) {
                         items(assets.size) { index ->
-                            Image(
-                                painter = painterResource(id = assets[index]),
-                                contentDescription = null,
+                            GlideImage(
+                                imageModel = assets[index].imageUrl,
                                 contentScale = ContentScale.Crop,
                                 modifier =
                                     Modifier
@@ -305,10 +300,23 @@ fun FrameScreen(
                                         .padding(8.dp)
                                         .clip(shape = RoundedCornerShape(10.dp))
                                         .background(color = WhiteGray)
-                                        .clickable {
-                                            overlayAssets.add(OverlayAsset(resourceId = assets[index]))
-                                        },
+                                        .clickable { overlayAssets.add(OverlayAsset(imageUrl = assets[index].imageUrl)) },
                             )
+//                            Image(
+//                                painter = painterResource(id = assets[index]),
+//                                contentDescription = null,
+//                                contentScale = ContentScale.Crop,
+//                                modifier =
+//                                    Modifier
+//                                        .fillMaxWidth()
+//                                        .aspectRatio(1f)
+//                                        .padding(8.dp)
+//                                        .clip(shape = RoundedCornerShape(10.dp))
+//                                        .background(color = WhiteGray)
+//                                        .clickable {
+//                                            overlayAssets.add(OverlayAsset(resourceId = assets[index]))
+//                                        },
+//                            )
                         }
                     }
                 }
@@ -614,10 +622,9 @@ fun ShowAssets(
                 .transformable(
                     state = imageTransformableState,
                 )
-        Image(
+        GlideImage(
             modifier = assetModifier.wrapContentSize(),
-            painter = painterResource(id = asset.resourceId),
-            contentDescription = null,
+            imageModel = asset.imageUrl,
         )
     }
 }
