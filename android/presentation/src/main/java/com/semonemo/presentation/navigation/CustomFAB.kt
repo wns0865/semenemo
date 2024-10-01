@@ -35,7 +35,7 @@ fun CustomFAB(
         modifier =
             Modifier
                 .wrapContentSize()
-                .offset(y = 74.dp),
+                .offset(y = 67.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(
