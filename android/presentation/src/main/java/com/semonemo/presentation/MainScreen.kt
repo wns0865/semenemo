@@ -18,6 +18,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.semonemo.domain.model.User
 import com.semonemo.presentation.navigation.CustomFAB
 import com.semonemo.presentation.navigation.ScreenDestinations
 import com.semonemo.presentation.screen.aiAsset.AiAssetScreen
@@ -31,7 +32,9 @@ import com.semonemo.presentation.screen.imgAsset.ImageAssetScreen
 import com.semonemo.presentation.screen.imgAsset.ImageSelectRoute
 import com.semonemo.presentation.screen.login.LoginRoute
 import com.semonemo.presentation.screen.mypage.DetailScreen
+import com.semonemo.presentation.screen.mypage.FollowListScreen
 import com.semonemo.presentation.screen.mypage.MyPageRoute
+import com.semonemo.presentation.screen.mypage.setting.SettingRoute
 import com.semonemo.presentation.screen.picture.PictureMainScreen
 import com.semonemo.presentation.screen.search.SearchRoute
 import com.semonemo.presentation.screen.signup.SignUpRoute
@@ -222,8 +225,55 @@ fun MainNavHost(
                         ),
                     )
                 },
+                navigateToFollowList = { nickname, followerList, followingList ->
+                    navController.navigate(
+                        ScreenDestinations.FollowList.createRoute(
+                            nickname = nickname,
+                            followerList = followerList,
+                            followingList = followingList,
+                        ),
+                    )
+                },
+                navigateToSetting = {
+                    navController.navigate(ScreenDestinations.Setting.route)
+                },
                 onErrorSnackBar = onShowErrorSnackBar,
                 userId = userId ?: -1,
+            )
+        }
+
+        composable(
+            route = ScreenDestinations.Setting.route,
+        ) {
+            SettingRoute(
+                modifier = modifier,
+                popUpBackStack = navController::popBackStack,
+                navigateToLogin = {
+                    navController.navigate(ScreenDestinations.Login.route)
+                },
+                onShowSnackBar = onShowErrorSnackBar,
+            )
+        }
+
+        composable(
+            route = ScreenDestinations.FollowList.route,
+            arguments = ScreenDestinations.FollowList.arguments,
+        ) { navBackStackEntry ->
+            val nickname = navBackStackEntry.arguments?.getString("nickname")
+            val followerList =
+                navBackStackEntry.arguments?.getParcelableArrayList<User>("followerList")
+            val followingList =
+                navBackStackEntry.arguments?.getParcelableArrayList<User>("followingList")
+
+            FollowListScreen(
+                modifier = modifier,
+                nickname = nickname ?: "",
+                popUpBackStack = navController::popBackStack,
+                navigateToProfile = {
+                    navController.navigate(ScreenDestinations.MyPage.createRoute(it))
+                },
+                followerList = followerList ?: emptyList(),
+                followingList = followingList ?: emptyList(),
             )
         }
 

@@ -60,6 +60,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.semonemo.domain.model.User
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.CustomDropdownMenu
 import com.semonemo.presentation.component.CustomDropdownMenuStyles
@@ -85,6 +86,8 @@ import java.io.File
 fun MyPageRoute(
     modifier: Modifier = Modifier,
     navigateToDetail: (String) -> Unit,
+    navigateToFollowList: (String, List<User>, List<User>) -> Unit,
+    navigateToSetting: () -> Unit,
     viewModel: MyPageViewModel = hiltViewModel(),
     onErrorSnackBar: (String) -> Unit,
     userId: Long,
@@ -100,6 +103,8 @@ fun MyPageRoute(
         modifier = modifier,
         uiState = uiState,
         navigateToDetail = navigateToDetail,
+        navigateToFollowList = navigateToFollowList,
+        navigateToSetting = navigateToSetting,
         updateProfileImage = { imageUri ->
             val image = File(imageUri.toAbsolutePath(context))
             viewModel.updateProfileImage(image, imageUri.toString())
@@ -134,6 +139,8 @@ fun HandleMyPageUi(
     modifier: Modifier = Modifier,
     uiState: MyPageUiState,
     navigateToDetail: (String) -> Unit,
+    navigateToFollowList: (String, List<User>, List<User>) -> Unit,
+    navigateToSetting: () -> Unit,
     updateProfileImage: (Uri) -> Unit,
     followUser: () -> Unit,
     unfollowUser: () -> Unit,
@@ -144,12 +151,14 @@ fun HandleMyPageUi(
             MyPageScreen(
                 modifier = modifier,
                 navigateToDetail = navigateToDetail,
+                navigateToFollowList = navigateToFollowList,
+                navigateToSetting = navigateToSetting,
                 nickname = uiState.nickname,
                 profileImageUrl = uiState.profileImageUrl,
                 amount = uiState.amount,
                 volume = uiState.volume,
-                follower = uiState.follower.size,
-                following = uiState.following.size,
+                follower = uiState.follower,
+                following = uiState.following,
                 updateProfileImage = updateProfileImage,
                 isFollow = uiState.isFollow,
                 followUser = followUser,
@@ -162,12 +171,14 @@ fun HandleMyPageUi(
 fun MyPageScreen(
     modifier: Modifier = Modifier,
     navigateToDetail: (String) -> Unit = {},
+    navigateToFollowList: (String, List<User>, List<User>) -> Unit = { _, _, _ -> },
+    navigateToSetting: () -> Unit = {},
     nickname: String = "짜이한",
     profileImageUrl: String = "",
     amount: Int = 0,
     volume: Int = 0,
-    follower: Int = 0,
-    following: Int = 0,
+    follower: List<User> = emptyList(),
+    following: List<User> = emptyList(),
     updateProfileImage: (Uri) -> Unit = {},
     isFollow: Boolean? = null,
     followUser: () -> Unit = {},
@@ -255,7 +266,12 @@ fun MyPageScreen(
                     } ?: run {
                         // 마이페이지
                         Icon(
-                            modifier = Modifier.size(30.dp).noRippleClickable { },
+                            modifier =
+                                Modifier
+                                    .size(23.dp)
+                                    .noRippleClickable {
+                                        navigateToSetting()
+                                    },
                             painter = painterResource(id = R.drawable.ic_setting),
                             contentDescription = "",
                         )
@@ -279,7 +295,7 @@ fun MyPageScreen(
                             .align(Alignment.BottomEnd)
                             .padding(end = 5.dp, bottom = 10.dp)
                             .background(Blue3, shape = CircleShape)
-                            .size(30.dp)
+                            .size(20.dp)
                             .noRippleClickable {
                                 singlePhotoPickerLauncher.launch(
                                     PickVisualMediaRequest(
@@ -338,11 +354,14 @@ fun MyPageScreen(
                     modifier =
                         Modifier
                             .wrapContentWidth()
-                            .weight(1f),
+                            .weight(1f)
+                            .noRippleClickable {
+                                navigateToFollowList(nickname, follower, following)
+                            },
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
-                        text = "$follower",
+                        text = "${follower.size}",
                         style = Typography.bodyLarge,
                     )
                     Spacer(modifier = Modifier.height(2.dp))
@@ -355,11 +374,14 @@ fun MyPageScreen(
                     modifier =
                         Modifier
                             .wrapContentWidth()
-                            .weight(1f),
+                            .weight(1f)
+                            .noRippleClickable {
+                                navigateToFollowList(nickname, follower, following)
+                            },
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
-                        text = "$following",
+                        text = "${following.size}",
                         style = Typography.bodyLarge,
                     )
                     Spacer(modifier = Modifier.height(2.dp))
