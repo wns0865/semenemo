@@ -75,7 +75,9 @@ fun SearchRoute(
         modifier = modifier,
         navigateToProfile = navigateToProfile,
         searchState = searchState,
-        viewModel = viewModel,
+        searchUser = { viewModel.userSearch(it) },
+        searchFrame = { viewModel.frameSearch(it) },
+        searchAsset = { viewModel.assetSearch(it) },
     )
 }
 
@@ -83,10 +85,11 @@ fun SearchRoute(
 fun SearchScreen(
     modifier: Modifier = Modifier,
     searchState: SearchState,
-    viewModel: SearchViewModel,
     popUpBackStack: () -> Unit = {},
-    onSearchAction: (String) -> Unit = {},
     navigateToProfile: (Long) -> Unit = {},
+    searchUser: (String) -> Unit = {},
+    searchFrame: (String) -> Unit = {},
+    searchAsset: (String) -> Unit = {},
 ) {
     val focusManager = LocalFocusManager.current
     val testData = remember { mutableStateListOf("이나경", "이지언", "이준형", "최현성", "전형선", "이재한") }
@@ -111,7 +114,7 @@ fun SearchScreen(
                         .padding(end = 5.dp),
                 focusManager = focusManager,
                 onSearchAction = { keyword ->
-                    viewModel.userSearch(keyword)
+                    searchUser(keyword)
                 },
             )
         }
@@ -129,7 +132,7 @@ fun SearchScreen(
                     onClickedKeyword = { keyword ->
                         // 키워드 검색
                         // searchTextField에 해당 키워드 뜨도록
-                        viewModel.userSearch(keyword)
+                        searchUser(keyword)
                     },
                     onDeleteKeyword = {
                         testData.remove(it)
@@ -139,7 +142,17 @@ fun SearchScreen(
 
             is SearchState.Success -> {
                 Column(modifier = Modifier.fillMaxSize()) {
-                    SearchTabScreen(viewModel = viewModel)
+                    SearchTabScreen(
+                        searchUser = { keyword ->
+                            searchUser(keyword)
+                        },
+                        searchFrame = { keyword ->
+                            searchFrame(keyword)
+                        },
+                        searchAsset = { keyword ->
+                            searchAsset(keyword)
+                        },
+                    )
                     Spacer(modifier = Modifier.height(10.dp))
                     SearchSuccessScreen(
                         modifier = modifier,
@@ -191,7 +204,9 @@ fun SearchInitScreen(
 @Composable
 fun SearchTabScreen(
     modifier: Modifier = Modifier,
-    viewModel: SearchViewModel = hiltViewModel(),
+    searchUser: (String) -> Unit = {},
+    searchFrame: (String) -> Unit = {},
+    searchAsset: (String) -> Unit = {},
 ) {
     val tabList = listOf("사용자", "프레임", "에셋")
     var selectedIndex by remember { mutableIntStateOf(0) }
@@ -211,15 +226,15 @@ fun SearchTabScreen(
         )
         when (selectedIndex) {
             0 -> {
-                viewModel.userSearch("닉네임")
+                searchUser("닉네임")
             }
 
             1 -> {
-                viewModel.frameSearch("아이유")
+                searchFrame("프레임")
             }
 
             2 -> {
-                viewModel.assetSearch("고양이")
+                searchAsset("에셋")
             }
         }
     }
@@ -363,7 +378,10 @@ fun UserListItem(
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .noRippleClickable {
-                    navigateToProfile(userId)
+                    // 임시
+                    navigateToProfile(3)
+                    // 실제 구현
+//                    navigateToProfile(userId)
                 },
         verticalAlignment = Alignment.CenterVertically,
     ) {

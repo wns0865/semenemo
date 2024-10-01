@@ -72,33 +72,75 @@ class UserRepositoryImpl
                 emit(response)
             }
 
-        override suspend fun loadFollowing(userId: Long?): Flow<ApiResponse<List<User>>> =
+        override suspend fun loadFollowing(userId: Long): Flow<ApiResponse<List<User>>> =
             flow {
                 val response =
-                    userId?.let {
-                        emitApiResponse(apiResponse = { api.loadFollowing(it) }, default = listOf())
-                    } ?: run {
+                    if (userId == -1L) { // 마이페이지
                         emitApiResponse(apiResponse = {
                             api.loadFollowing(
                                 authDataSource.getUserId()?.toLong() ?: -1,
                             )
                         }, default = listOf())
+                    } else { // 타사용자
+                        emitApiResponse(apiResponse = { api.loadFollowing(userId) }, default = listOf())
                     }
                 emit(response)
             }
 
-        override suspend fun loadFollowers(userId: Long?): Flow<ApiResponse<List<User>>> =
+        override suspend fun loadFollowers(userId: Long): Flow<ApiResponse<List<User>>> =
             flow {
                 val response =
-                    userId?.let {
-                        emitApiResponse(apiResponse = { api.loadFollowers(it) }, default = listOf())
-                    } ?: run {
+                    if (userId == -1L) { // 마이페이지
                         emitApiResponse(apiResponse = {
                             api.loadFollowers(
                                 authDataSource.getUserId()?.toLong() ?: -1,
                             )
                         }, default = listOf())
+                    } else { // 타사용자
+                        emitApiResponse(apiResponse = { api.loadFollowers(userId) }, default = listOf())
                     }
+                emit(response)
+            }
+
+        override suspend fun loadOtherUserInfo(userId: Long): Flow<ApiResponse<User>> =
+            flow {
+                val response =
+                    emitApiResponse(apiResponse = {
+                        api.loadOtherUserInfo(userId)
+                    }, default = User())
+                emit(response)
+            }
+
+        override suspend fun isFollow(userId: Long): Flow<ApiResponse<Boolean>> =
+            flow {
+                val response =
+                    emitApiResponse(apiResponse = {
+                        api.isFollow(userId)
+                    }, default = false)
+                emit(response)
+            }
+
+        override suspend fun followUser(userId: Long): Flow<ApiResponse<Unit>> =
+            flow {
+                val response =
+                    emitApiResponse(
+                        apiResponse = {
+                            api.followUser(userId)
+                        },
+                        default = Unit,
+                    )
+                emit(response)
+            }
+
+        override suspend fun unfollowUser(userId: Long): Flow<ApiResponse<Unit>> =
+            flow {
+                val response =
+                    emitApiResponse(
+                        apiResponse = {
+                            api.unfollowUser(userId)
+                        },
+                        default = Unit,
+                    )
                 emit(response)
             }
     }
