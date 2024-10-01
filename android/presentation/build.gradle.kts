@@ -116,4 +116,7 @@ dependencies {
 
     // capture
     implementation(libs.capturable)
+
+    // Gson
+    implementation("com.google.code.gson:gson:2.8.8")
 }
