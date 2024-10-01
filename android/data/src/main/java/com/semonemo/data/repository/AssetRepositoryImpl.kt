@@ -1,6 +1,7 @@
 package com.semonemo.data.repository
 
 import com.semonemo.data.network.api.AssetApi
+import com.semonemo.data.network.response.GetAssetsResponse
 import com.semonemo.data.network.response.emitApiResponse
 import com.semonemo.data.util.toMultiPart
 import com.semonemo.domain.model.ApiResponse
@@ -25,5 +26,18 @@ class AssetRepositoryImpl
                         default = Asset(),
                     ),
                 )
+            }
+
+        override suspend fun getMyAssets(cursorId: Long?): Flow<ApiResponse<List<Asset>>> =
+            flow {
+                val response =
+                    emitApiResponse(
+                        apiResponse = { api.getMyAssets(cursorId) },
+                        default = GetAssetsResponse(),
+                    )
+                when (response) {
+                    is ApiResponse.Error -> emit(response)
+                    is ApiResponse.Success -> emit(ApiResponse.Success(data = response.data.content))
+                }
             }
     }
