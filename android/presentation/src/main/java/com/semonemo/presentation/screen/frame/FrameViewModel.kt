@@ -7,6 +7,8 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.viewModelScope
 import com.semonemo.domain.model.ApiResponse
 import com.semonemo.domain.repository.IpfsRepository
+import com.semonemo.domain.repository.NftRepository
+import com.semonemo.domain.request.PublishNftRequest
 import com.semonemo.domain.request.UploadFrameRequest
 import com.semonemo.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +29,7 @@ class FrameViewModel
     @Inject
     constructor(
         private val ipfsRepository: IpfsRepository,
+        private val nftRepository: NftRepository,
     ) : BaseViewModel() {
         private val _uiState = MutableStateFlow(FrameUiState())
         val uiState = _uiState.asStateFlow()
@@ -115,6 +118,27 @@ class FrameViewModel
                 it.copy(
                     tags = newList,
                 )
+            }
+        }
+
+        fun publishNft(imageHash: String) {
+            viewModelScope.launch {
+                nftRepository
+                    .publishNft(
+                        PublishNftRequest(
+                            txHash = imageHash,
+                            tags = uiState.value.tags,
+                        ),
+                    ).onStart {
+                        _uiState.update { it.copy(isLoading = true) }
+                    }.onCompletion { _uiState.update { it.copy(isLoading = false) } }
+                    .collectLatest { response ->
+                        Log.d("jaehan", "viewModel : $response")
+                        when (response) {
+                            is ApiResponse.Error -> _uiEvent.emit(FrameUiEvent.Error(response.errorMessage))
+                            is ApiResponse.Success -> _uiEvent.emit(FrameUiEvent.NavigateToHome)
+                        }
+                    }
             }
         }
     }

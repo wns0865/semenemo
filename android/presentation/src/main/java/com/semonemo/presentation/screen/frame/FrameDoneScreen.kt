@@ -50,6 +50,8 @@ import com.semonemo.presentation.component.HashTagTextField
 import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.component.ScriptTextField
+import com.semonemo.presentation.screen.nft.NftEvent
+import com.semonemo.presentation.screen.nft.NftViewModel
 import com.semonemo.presentation.theme.Gray01
 import com.semonemo.presentation.theme.Gray02
 import com.semonemo.presentation.theme.Main02
@@ -64,7 +66,9 @@ import java.io.File
 fun FrameDoneRoute(
     modifier: Modifier = Modifier,
     viewModel: FrameViewModel = hiltViewModel(),
+    nftViewModel: NftViewModel = hiltViewModel(),
     navigateToMoment: () -> Unit = {},
+    onErrorSnackBar: (String) -> Unit = {},
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -78,6 +82,18 @@ fun FrameDoneRoute(
         updateTitle = viewModel::updateTitle,
         addTags = viewModel::addTag,
         deleteTags = viewModel::deleteTag,
+        sendTransaction = { data ->
+            nftViewModel.sendTransaction(
+                data,
+                onSuccess = {
+                    viewModel.publishNft(data)
+                },
+                onError = {
+                    onErrorSnackBar(it)
+                },
+            )
+        },
+        nftEvent = nftViewModel.nftEvent,
     )
 }
 
@@ -90,15 +106,27 @@ fun FrameDoneContent(
     updateTitle: (String) -> Unit = {},
     updateContent: (String) -> Unit = {},
     uiEvent: SharedFlow<FrameUiEvent>,
+    nftEvent: SharedFlow<NftEvent>,
     onErrorSnackBar: (String) -> Unit = {},
     addTags: (String) -> Unit = {},
     deleteTags: (String) -> Unit = {},
+    sendTransaction: (String) -> Unit = {},
 ) {
     LaunchedEffect(uiEvent) {
         uiEvent.collectLatest { event ->
             when (event) {
                 is FrameUiEvent.Error -> onErrorSnackBar(event.errorMessage)
-                FrameUiEvent.UploadFinish -> navigateToMoment()
+                is FrameUiEvent.UploadFinish -> sendTransaction(event.imageHash)
+                FrameUiEvent.NavigateToHome -> navigateToMoment
+            }
+        }
+    }
+
+    LaunchedEffect(nftEvent) {
+        nftEvent.collectLatest { event ->
+            when (event) {
+                is NftEvent.Error -> onErrorSnackBar(event.errorMessage)
+                is NftEvent.SendTransaction -> {}
             }
         }
     }
