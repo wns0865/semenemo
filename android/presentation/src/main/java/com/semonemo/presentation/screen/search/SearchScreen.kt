@@ -45,6 +45,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.semonemo.domain.model.Asset
@@ -57,12 +58,12 @@ import com.semonemo.presentation.component.HashTag
 import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.SearchTextField
 import com.semonemo.presentation.component.SectionHeader
-import com.semonemo.presentation.screen.wallet.testData
 import com.semonemo.presentation.theme.Gray01
 import com.semonemo.presentation.theme.Gray03
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.util.noRippleClickable
+import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun SearchRoute(
@@ -378,34 +379,18 @@ fun UserListItem(
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .noRippleClickable {
-                    // 임시
-                    navigateToProfile(3)
-                    // 실제 구현
-//                    navigateToProfile(userId)
+                    navigateToProfile(userId)
                 },
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        // 실제 api 연동 후엔 이 코드로
-//        Box(
-//            modifier =
-//            Modifier
-//                .size(50.dp)
-//                .clip(CircleShape)
-//        ) {
-//            GlideImage(
-//                imageModel = profileImgUrl.toUri(),
-//                contentScale = ContentScale.Crop
-//            )
-//        }
         Box(
             modifier =
                 Modifier
                     .size(50.dp)
                     .clip(CircleShape),
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.img_example3),
-                contentDescription = null,
+            GlideImage(
+                imageModel = profileImgUrl.toUri(),
                 contentScale = ContentScale.Crop,
             )
         }
