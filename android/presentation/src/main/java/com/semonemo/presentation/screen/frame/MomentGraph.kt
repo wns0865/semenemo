@@ -7,14 +7,26 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.semonemo.presentation.navigation.ScreenDestinations
+import com.semonemo.presentation.screen.moment.MomentRoute
 
-fun NavGraphBuilder.FrameNavGraph(
+fun NavGraphBuilder.MomentGraph(
     modifier: Modifier,
     navController: NavController,
     graphRoute: String,
     onErrorSnackBar: (String) -> Unit,
 ) {
-    navigation(startDestination = ScreenDestinations.Frame.route, route = graphRoute) {
+    navigation(startDestination = ScreenDestinations.Moment.route, route = graphRoute) {
+        composable(
+            route = ScreenDestinations.Moment.route,
+        ) {
+            MomentRoute(
+                modifier = modifier,
+                navigateToAiAsset = { navController.navigate(ScreenDestinations.AiAsset.route) },
+                navigateToImageAsset = { navController.navigate(ScreenDestinations.ImageAsset.route) },
+                navigateToFrame = { navController.navigate(ScreenDestinations.Frame.route) },
+                navigateToPicture = { navController.navigate(ScreenDestinations.PictureMain.route) },
+            )
+        }
         composable(
             route = ScreenDestinations.Frame.route,
         ) {
@@ -22,6 +34,7 @@ fun NavGraphBuilder.FrameNavGraph(
                 hiltViewModel<FrameViewModel>(
                     navController.getBackStackEntry(graphRoute),
                 )
+
             FrameRoute(
                 modifier = modifier,
                 viewModel = viewModel,

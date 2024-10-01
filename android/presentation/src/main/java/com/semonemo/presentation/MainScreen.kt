@@ -26,11 +26,10 @@ import com.semonemo.presentation.screen.aiAsset.DrawAssetScreen
 import com.semonemo.presentation.screen.aiAsset.PromptAssetScreen
 import com.semonemo.presentation.screen.auction.AuctionProcessScreen
 import com.semonemo.presentation.screen.auction.AuctionScreen
-import com.semonemo.presentation.screen.frame.FrameNavGraph
+import com.semonemo.presentation.screen.frame.MomentGraph
 import com.semonemo.presentation.screen.imgAsset.ImageAssetScreen
 import com.semonemo.presentation.screen.imgAsset.ImageSelectRoute
 import com.semonemo.presentation.screen.login.LoginRoute
-import com.semonemo.presentation.screen.moment.MomentRoute
 import com.semonemo.presentation.screen.mypage.DetailScreen
 import com.semonemo.presentation.screen.mypage.MyPageRoute
 import com.semonemo.presentation.screen.picture.PictureMainScreen
@@ -203,18 +202,6 @@ fun MainNavHost(
         }
 
         composable(
-            route = ScreenDestinations.Moment.route,
-        ) {
-            MomentRoute(
-                modifier = modifier,
-                navigateToAiAsset = { navController.navigate(ScreenDestinations.AiAsset.route) },
-                navigateToImageAsset = { navController.navigate(ScreenDestinations.ImageAsset.route) },
-                navigateToFrame = { navController.navigate(ScreenDestinations.Frame.route) },
-                navigateToPicture = { navController.navigate(ScreenDestinations.PictureMain.route) },
-            )
-        }
-
-        composable(
             route = ScreenDestinations.Wallet.route,
         ) {
             WalletScreen(modifier = modifier)
@@ -333,7 +320,7 @@ fun MainNavHost(
             )
         }
 
-        FrameNavGraph(
+        MomentGraph(
             modifier = modifier,
             navController = navController,
             graphRoute = "frame_graph",
