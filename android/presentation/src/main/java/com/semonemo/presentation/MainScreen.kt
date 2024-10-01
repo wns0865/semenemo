@@ -21,7 +21,7 @@ import androidx.navigation.compose.rememberNavController
 import com.semonemo.presentation.navigation.CustomFAB
 import com.semonemo.presentation.navigation.ScreenDestinations
 import com.semonemo.presentation.screen.aiAsset.AiAssetScreen
-import com.semonemo.presentation.screen.aiAsset.AssetDoneScreen
+import com.semonemo.presentation.screen.aiAsset.AssetDoneRoute
 import com.semonemo.presentation.screen.aiAsset.DrawAssetScreen
 import com.semonemo.presentation.screen.aiAsset.PromptAssetScreen
 import com.semonemo.presentation.screen.auction.AuctionProcessScreen
@@ -262,7 +262,9 @@ fun MainNavHost(
                 modifier = modifier,
                 popUpBackStack = navController::popBackStack,
                 navigateToDone = { assetUrl ->
-                    navController.navigate(ScreenDestinations.AssetDone.createRoute(assetUrl))
+                    navController.navigate(ScreenDestinations.AssetDone.createRoute(assetUrl)) {
+                        popUpTo("imageAsset") { inclusive = true }
+                    }
                 },
             )
         }
@@ -270,11 +272,9 @@ fun MainNavHost(
         composable(
             route = ScreenDestinations.AssetDone.route,
             arguments = ScreenDestinations.AssetDone.arguments,
-        ) { navBackStackEntry ->
-            val assetUrl = navBackStackEntry.arguments?.getString("assetUrl")
-            AssetDoneScreen(
+        ) {
+            AssetDoneRoute(
                 modifier = modifier,
-                assetUrl = assetUrl,
                 popUpBackStack = navController::popBackStack,
                 navigateToMy = {
                     navController.navigate(ScreenDestinations.MyPage.route)
