@@ -35,9 +35,9 @@ fun SubScribeButton(
 ) {
     val (text, img) =
         if (isSubscribed) {
-            Pair("구독 중", R.drawable.ic_toggle_subscription_on)
+            Pair("팔로잉", R.drawable.ic_toggle_subscription_on)
         } else {
-            Pair("구독 안함", R.drawable.ic_toggle_subscription_off)
+            Pair("팔로우", R.drawable.ic_toggle_subscription_off)
         }
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Icon(
@@ -49,7 +49,7 @@ fun SubScribeButton(
                 } else {
                     painterResource(id = img)
                 },
-            contentDescription = if (isSubscribed) "구독 중" else "구독 안함",
+            contentDescription = if (isSubscribed) "팔로잉" else "팔로우",
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(text = text, style = Typography.labelSmall.copy(fontSize = 10.sp))
