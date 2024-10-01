@@ -9,4 +9,7 @@ sealed interface AssetDoneUiEvent {
     data class Error(
         val errorMessage: String,
     ) : AssetDoneUiEvent
+
+    @Immutable
+    data object Done : AssetDoneUiEvent
 }

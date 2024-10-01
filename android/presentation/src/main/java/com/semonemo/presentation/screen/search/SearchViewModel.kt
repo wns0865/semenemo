@@ -104,19 +104,19 @@ class SearchViewModel
                             listOf(
                                 Asset(
                                     assetId = 1,
-                                    imgUrl = "",
+                                    imageUrl = "",
                                 ),
                                 Asset(
                                     assetId = 2,
-                                    imgUrl = "",
+                                    imageUrl = "",
                                 ),
                                 Asset(
                                     assetId = 1,
-                                    imgUrl = "",
+                                    imageUrl = "",
                                 ),
                                 Asset(
                                     assetId = 2,
-                                    imgUrl = "",
+                                    imageUrl = "",
                                 ),
                             ),
                     )

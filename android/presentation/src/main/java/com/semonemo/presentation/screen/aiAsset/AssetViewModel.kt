@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.semonemo.domain.model.ApiResponse
 import com.semonemo.domain.repository.AiRepository
+import com.semonemo.domain.repository.AssetRepository
 import com.semonemo.domain.request.RemoveBgRequest
 import com.semonemo.presentation.base.BaseViewModel
 import com.semonemo.presentation.util.decodeBase64ToImage
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,6 +28,7 @@ class AssetViewModel
     constructor(
         private val aiRepository: AiRepository,
         private val savedStateHandle: SavedStateHandle,
+        private val assetRepository: AssetRepository,
     ) : BaseViewModel() {
         private val _uiState = MutableStateFlow(AssetDoneUiState())
         val uiState = _uiState.asStateFlow()
@@ -70,6 +73,21 @@ class AssetViewModel
                                 }
                             }
                         }
+                }
+            }
+        }
+
+        fun uploadAsset(file: File?) {
+            viewModelScope.launch {
+                if (file == null) {
+                    _uiEvent.emit(AssetDoneUiEvent.Error("file is not selected"))
+                } else {
+                    assetRepository.registerAsset(file).collectLatest { response ->
+                        when (response) {
+                            is ApiResponse.Error -> _uiEvent.emit(AssetDoneUiEvent.Error(response.errorMessage))
+                            is ApiResponse.Success -> _uiEvent.emit(AssetDoneUiEvent.Done)
+                        }
+                    }
                 }
             }
         }

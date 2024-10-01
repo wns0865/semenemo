@@ -264,7 +264,7 @@ fun MainNavHost(
                 modifier = modifier,
                 popUpBackStack = navController::popBackStack,
                 navigateToMy = {
-                    navController.navigate(ScreenDestinations.MyPage.route)
+                    navController.navigate(ScreenDestinations.MyPage.createRoute(it))
                 },
             )
         }

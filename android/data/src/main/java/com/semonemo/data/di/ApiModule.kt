@@ -1,6 +1,7 @@
 package com.semonemo.data.di
 
 import com.semonemo.data.network.api.AiApi
+import com.semonemo.data.network.api.AssetApi
 import com.semonemo.data.network.api.AuthApi
 import com.semonemo.data.network.api.IpfsApi
 import com.semonemo.data.network.api.NftApi
@@ -45,4 +46,10 @@ object ApiModule {
     fun provideNftApi(
         @NetworkModule.BaseClient retrofit: Retrofit,
     ): NftApi = retrofit.create()
+
+    @Provides
+    @Singleton
+    fun provideAssetApi(
+        @NetworkModule.BaseClient retrofit: Retrofit,
+    ): AssetApi = retrofit.create()
 }
