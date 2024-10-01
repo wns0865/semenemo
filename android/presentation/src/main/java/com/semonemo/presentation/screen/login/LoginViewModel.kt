@@ -25,10 +25,6 @@ class LoginViewModel
         private val _uiEvent = MutableSharedFlow<LoginUiEvent>()
         val uiEvent = _uiEvent.asSharedFlow()
 
-        init {
-            authLogin()
-        }
-
         private fun authLogin() {
             viewModelScope.launch {
                 authRepository.login().collectLatest { response ->
@@ -58,6 +54,7 @@ class LoginViewModel
                                         isWalletLoading = true,
                                         walletAddress = address,
                                     )
+                                authLogin()
                             } else {
                                 _uiEvent.emit(LoginUiEvent.RequiredRegister(address))
                             }
