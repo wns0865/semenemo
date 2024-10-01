@@ -43,15 +43,17 @@ import com.semonemo.presentation.component.LongWhiteButton
 import com.semonemo.presentation.theme.Gray02
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.util.addFocusCleaner
+import com.semonemo.presentation.util.saveBase64ParseImageToFile
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
+import java.io.File
 
 @Composable
 fun AssetDoneRoute(
     modifier: Modifier = Modifier,
     popUpBackStack: () -> Unit = {},
-    navigateToMy: () -> Unit = {},
+    navigateToMy: (Long) -> Unit = {},
     viewModel: AssetViewModel = hiltViewModel(),
     onErrorSnackBar: (String) -> Unit = {},
 ) {
@@ -64,6 +66,7 @@ fun AssetDoneRoute(
         onErrorSnackBar = onErrorSnackBar,
         uiEvent = viewModel.uiEvent,
         removeBackGround = viewModel::removeBackground,
+        uploadAsset = viewModel::uploadAsset,
     )
 }
 
@@ -71,16 +74,20 @@ fun AssetDoneRoute(
 fun AssetDoneContent(
     modifier: Modifier = Modifier,
     popUpBackStack: () -> Unit = {},
-    navigateToMy: () -> Unit = {},
+    navigateToMy: (Long) -> Unit = {},
     uiState: AssetDoneUiState,
     onErrorSnackBar: (String) -> Unit = {},
     uiEvent: SharedFlow<AssetDoneUiEvent>,
     removeBackGround: () -> Unit = {},
+    uploadAsset: (File?) -> Unit = {},
 ) {
     LaunchedEffect(uiEvent) {
         uiEvent.collectLatest { event ->
             when (event) {
                 is AssetDoneUiEvent.Error -> onErrorSnackBar(event.errorMessage)
+                AssetDoneUiEvent.Done -> {
+                    navigateToMy(-1)
+                }
             }
         }
     }
@@ -88,8 +95,8 @@ fun AssetDoneContent(
         modifier = modifier,
         assetUrl = uiState.assetUrl,
         popUpBackStack = popUpBackStack,
-        navigateToMy = navigateToMy,
         removeBackGround = removeBackGround,
+        uploadAsset = uploadAsset,
     )
 
     if (uiState.isLoading) {
@@ -105,8 +112,8 @@ fun AssetDoneScreen(
     modifier: Modifier = Modifier,
     assetUrl: String? = null,
     popUpBackStack: () -> Unit = {},
-    navigateToMy: () -> Unit = {},
     removeBackGround: () -> Unit = {},
+    uploadAsset: (File?) -> Unit = {},
 ) {
     val context = LocalContext.current
     val tags =
@@ -213,7 +220,14 @@ fun AssetDoneScreen(
                     modifier = Modifier.weight(1f),
                     icon = null,
                     text = stringResource(R.string.save_asset),
-                    onClick = navigateToMy,
+                    onClick = {
+                        assetUrl?.let {
+                            val uri = saveBase64ParseImageToFile(context, it)
+                            uri?.let {
+                                uploadAsset(File(uri.path))
+                            }
+                        }
+                    },
                 )
             }
 
