@@ -8,12 +8,10 @@ import com.semonemo.domain.request.UploadFrameRequest
 import kotlinx.coroutines.flow.Flow
 import java.io.File
 
-interface NFTRepository {
+interface IpfsRepository {
     suspend fun transfer(request: TransferRequest): Flow<Transaction?>
 
     suspend fun uploadImage(image: File): Flow<ApiResponse<IpfsResponse>>
 
     suspend fun uploadFrame(request: UploadFrameRequest): Flow<ApiResponse<IpfsResponse>>
-
-    suspend fun test(str: String): Flow<ApiResponse<IpfsResponse>>
 }

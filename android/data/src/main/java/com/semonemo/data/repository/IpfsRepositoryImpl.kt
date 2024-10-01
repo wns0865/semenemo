@@ -1,12 +1,11 @@
 package com.semonemo.data.repository
 
 import com.google.gson.Gson
-import com.semonemo.data.network.api.NFTApi
-import com.semonemo.data.util.toRequestBody
+import com.semonemo.data.network.api.IpfsApi
 import com.semonemo.domain.model.ApiResponse
 import com.semonemo.domain.model.IpfsResponse
 import com.semonemo.domain.model.Transaction
-import com.semonemo.domain.repository.NFTRepository
+import com.semonemo.domain.repository.IpfsRepository
 import com.semonemo.domain.request.TransferRequest
 import com.semonemo.domain.request.UploadFrameRequest
 import kotlinx.coroutines.flow.Flow
@@ -18,11 +17,11 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import javax.inject.Inject
 
-class NFTRepositoryImpl
+class IpfsRepositoryImpl
     @Inject
     constructor(
-        private val api: NFTApi,
-    ) : NFTRepository {
+        private val api: IpfsApi,
+    ) : IpfsRepository {
         override suspend fun transfer(request: TransferRequest): Flow<Transaction?> =
             flow {
                 runCatching {
@@ -72,25 +71,5 @@ class NFTRepositoryImpl
                             ),
                         )
                     }
-            }
-
-        override suspend fun test(str: String): Flow<ApiResponse<IpfsResponse>> =
-            flow {
-                val requestBody = str.toRequestBody("multipart/form-data".toMediaTypeOrNull())
-                val file = MultipartBody.Part.createFormData("file", str, requestBody)
-                runCatching {
-                    api.uploadImage(file)
-                }.onSuccess {
-                    it.body()?.let { ipfs ->
-                        emit(ApiResponse.Success(ipfs))
-                    }
-                }.onFailure {
-                    emit(
-                        ApiResponse.Error.ServerError(
-                            errorMessage = it.message ?: "",
-                            errorCode = it.cause.toString(),
-                        ),
-                    )
-                }
             }
     }

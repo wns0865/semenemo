@@ -11,5 +11,10 @@ sealed interface FrameUiEvent {
     ) : FrameUiEvent
 
     @Immutable
-    data object UploadFinish : FrameUiEvent
+    data class UploadFinish(
+        val imageHash: String,
+    ) : FrameUiEvent
+
+    @Immutable
+    data object NavigateToHome : FrameUiEvent
 }
