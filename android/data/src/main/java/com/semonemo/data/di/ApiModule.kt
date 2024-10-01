@@ -2,7 +2,7 @@ package com.semonemo.data.di
 
 import com.semonemo.data.network.api.AiApi
 import com.semonemo.data.network.api.AuthApi
-import com.semonemo.data.network.api.NFTApi
+import com.semonemo.data.network.api.IpfsApi
 import com.semonemo.data.network.api.UserApi
 import dagger.Module
 import dagger.Provides
@@ -19,7 +19,7 @@ object ApiModule {
     @Singleton
     fun provideNFTApi(
         @NetworkModule.NftUploadClient retrofit: Retrofit,
-    ): NFTApi = retrofit.create()
+    ): IpfsApi = retrofit.create()
 
     @Provides
     @Singleton

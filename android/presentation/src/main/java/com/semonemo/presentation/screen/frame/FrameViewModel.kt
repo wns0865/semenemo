@@ -4,10 +4,9 @@ import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.toMutableStateList
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.semonemo.domain.model.ApiResponse
-import com.semonemo.domain.repository.NFTRepository
+import com.semonemo.domain.repository.IpfsRepository
 import com.semonemo.domain.request.UploadFrameRequest
 import com.semonemo.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,8 +26,7 @@ import javax.inject.Inject
 class FrameViewModel
     @Inject
     constructor(
-        private val savedStateHandle: SavedStateHandle,
-        private val nftRepository: NFTRepository,
+        private val ipfsRepository: IpfsRepository,
     ) : BaseViewModel() {
         private val _uiState = MutableStateFlow(FrameUiState())
         val uiState = _uiState.asStateFlow()
@@ -43,7 +41,7 @@ class FrameViewModel
 
         fun uploadImage(file: File) {
             viewModelScope.launch {
-                nftRepository
+                ipfsRepository
                     .uploadImage(file)
                     .onStart {
                         _uiState.update { it.copy(isLoading = true) }
@@ -63,7 +61,7 @@ class FrameViewModel
         }
 
         private suspend fun uploadFrame(imageHash: String) {
-            nftRepository
+            ipfsRepository
                 .uploadFrame(
                     request =
                         UploadFrameRequest(
@@ -81,7 +79,9 @@ class FrameViewModel
                             _uiEvent.emit(FrameUiEvent.Error(response.errorMessage))
                         }
 
-                        is ApiResponse.Success -> {}
+                        is ApiResponse.Success -> {
+                            _uiEvent.emit(FrameUiEvent.UploadFinish(response.data.hash))
+                        }
                     }
                 }
         }
