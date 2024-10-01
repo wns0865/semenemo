@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.semonemo.presentation.navigation.BottomNavItem
+import com.semonemo.presentation.navigation.ScreenDestinations
 import com.semonemo.presentation.theme.Gray01
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.SemonemoTheme
@@ -54,7 +55,13 @@ fun BottomNavigationBar(
         containerColor = White,
     ) {
         items.forEachIndexed { index, item ->
-            val isSelected = currentRoute == item.route
+            val isSelected =
+                if (currentRoute == "mypage/{userId}") {
+                    item.route == "mypage/-1"
+                } else {
+                    currentRoute == item.route
+                }
+
             val icon = if (isSelected) item.iconSelected else item.icon
 
             if (index == 2) {
@@ -79,12 +86,16 @@ fun BottomNavigationBar(
                     )
                 },
                 onClick = {
-                    navController.navigate(item.route) {
-                        navController.graph.startDestinationRoute?.let {
-                            popUpTo(it) { saveState = true }
+                    if (item is BottomNavItem.MyPage) {
+                        navController.navigate(ScreenDestinations.MyPage.createRoute(-1))
+                    } else {
+                        navController.navigate(item.route) {
+                            navController.graph.startDestinationRoute?.let {
+                                popUpTo(it) { saveState = true }
+                            }
+                            launchSingleTop = true
+                            restoreState = true
                         }
-                        launchSingleTop = true
-                        restoreState = true
                     }
                 },
                 icon = {

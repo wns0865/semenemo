@@ -30,7 +30,7 @@ import com.semonemo.presentation.screen.frame.FrameNavGraph
 import com.semonemo.presentation.screen.imgAsset.ImageAssetScreen
 import com.semonemo.presentation.screen.imgAsset.ImageSelectRoute
 import com.semonemo.presentation.screen.login.LoginRoute
-import com.semonemo.presentation.screen.moment.MomentScreen
+import com.semonemo.presentation.screen.moment.MomentRoute
 import com.semonemo.presentation.screen.mypage.DetailScreen
 import com.semonemo.presentation.screen.mypage.MyPageRoute
 import com.semonemo.presentation.screen.picture.PictureMainScreen
@@ -57,7 +57,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
             mutableStateOf(false)
         }
     when (currentRoute) {
-        "mypage", "shop", "moment", "wallet", "auction", "storeFullView/{isFrame}" ->
+        "mypage/{userId}", "shop", "moment", "wallet", "auction", "storeFullView/{isFrame}" ->
             setVisible(
                 true,
             )
@@ -205,7 +205,7 @@ fun MainNavHost(
         composable(
             route = ScreenDestinations.Moment.route,
         ) {
-            MomentScreen(
+            MomentRoute(
                 modifier = modifier,
                 navigateToAiAsset = { navController.navigate(ScreenDestinations.AiAsset.route) },
                 navigateToImageAsset = { navController.navigate(ScreenDestinations.ImageAsset.route) },

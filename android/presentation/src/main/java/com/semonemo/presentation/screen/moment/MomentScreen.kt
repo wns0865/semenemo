@@ -22,6 +22,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BoldTextWithKeywords
 import com.semonemo.presentation.component.MomentBox
@@ -31,15 +33,34 @@ import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 
 @Composable
+fun MomentRoute(
+    modifier: Modifier = Modifier,
+    viewModel: MomentViewModel = hiltViewModel(),
+    navigateToAiAsset: () -> Unit = {},
+    navigateToImageAsset: () -> Unit = {},
+    navigateToFrame: () -> Unit = {},
+    navigateToPicture: () -> Unit = {},
+) {
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+    MomentScreen(
+        modifier = modifier,
+        navigateToAiAsset = navigateToAiAsset,
+        navigateToImageAsset = navigateToImageAsset,
+        navigateToFrame = navigateToFrame,
+        navigateToPicture = navigateToPicture,
+        uiState = uiState.value,
+    )
+}
+
+@Composable
 fun MomentScreen(
     modifier: Modifier = Modifier,
     navigateToAiAsset: () -> Unit = {},
     navigateToImageAsset: () -> Unit = {},
     navigateToFrame: () -> Unit = {},
     navigateToPicture: () -> Unit = {},
+    uiState: MomentUiState = MomentUiState(),
 ) {
-    val userName = "나갱갱"
-
     Box(
         modifier =
             modifier
@@ -61,8 +82,8 @@ fun MomentScreen(
                         .padding(start = 7.dp),
             ) {
                 BoldTextWithKeywords(
-                    fullText = "$userName 님,\n추억을 나만의 프레임에 담아 보세요",
-                    keywords = arrayListOf(userName, "나만의 프레임"),
+                    fullText = "${uiState.nickname} 님,\n추억을 나만의 프레임에 담아 보세요",
+                    keywords = arrayListOf(uiState.nickname, "나만의 프레임"),
                     brushFlag = arrayListOf(true, true),
                     boldStyle = Typography.titleSmall.copy(fontSize = 24.sp),
                     normalStyle = Typography.labelLarge.copy(fontSize = 24.sp),
