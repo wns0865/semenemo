@@ -21,16 +21,15 @@ import androidx.navigation.compose.rememberNavController
 import com.semonemo.presentation.navigation.CustomFAB
 import com.semonemo.presentation.navigation.ScreenDestinations
 import com.semonemo.presentation.screen.aiAsset.AiAssetScreen
-import com.semonemo.presentation.screen.aiAsset.AssetDoneScreen
+import com.semonemo.presentation.screen.aiAsset.AssetDoneRoute
 import com.semonemo.presentation.screen.aiAsset.DrawAssetScreen
 import com.semonemo.presentation.screen.aiAsset.PromptAssetScreen
 import com.semonemo.presentation.screen.auction.AuctionProcessScreen
 import com.semonemo.presentation.screen.auction.AuctionScreen
-import com.semonemo.presentation.screen.frame.FrameNavGraph
+import com.semonemo.presentation.screen.frame.MomentGraph
 import com.semonemo.presentation.screen.imgAsset.ImageAssetScreen
 import com.semonemo.presentation.screen.imgAsset.ImageSelectRoute
 import com.semonemo.presentation.screen.login.LoginRoute
-import com.semonemo.presentation.screen.moment.MomentRoute
 import com.semonemo.presentation.screen.mypage.DetailScreen
 import com.semonemo.presentation.screen.mypage.MyPageRoute
 import com.semonemo.presentation.screen.picture.PictureMainScreen
@@ -203,18 +202,6 @@ fun MainNavHost(
         }
 
         composable(
-            route = ScreenDestinations.Moment.route,
-        ) {
-            MomentRoute(
-                modifier = modifier,
-                navigateToAiAsset = { navController.navigate(ScreenDestinations.AiAsset.route) },
-                navigateToImageAsset = { navController.navigate(ScreenDestinations.ImageAsset.route) },
-                navigateToFrame = { navController.navigate(ScreenDestinations.Frame.route) },
-                navigateToPicture = { navController.navigate(ScreenDestinations.PictureMain.route) },
-            )
-        }
-
-        composable(
             route = ScreenDestinations.Wallet.route,
         ) {
             WalletScreen(modifier = modifier)
@@ -262,7 +249,9 @@ fun MainNavHost(
                 modifier = modifier,
                 popUpBackStack = navController::popBackStack,
                 navigateToDone = { assetUrl ->
-                    navController.navigate(ScreenDestinations.AssetDone.createRoute(assetUrl))
+                    navController.navigate(ScreenDestinations.AssetDone.createRoute(assetUrl)) {
+                        popUpTo("imageAsset") { inclusive = true }
+                    }
                 },
             )
         }
@@ -270,11 +259,9 @@ fun MainNavHost(
         composable(
             route = ScreenDestinations.AssetDone.route,
             arguments = ScreenDestinations.AssetDone.arguments,
-        ) { navBackStackEntry ->
-            val assetUrl = navBackStackEntry.arguments?.getString("assetUrl")
-            AssetDoneScreen(
+        ) {
+            AssetDoneRoute(
                 modifier = modifier,
-                assetUrl = assetUrl,
                 popUpBackStack = navController::popBackStack,
                 navigateToMy = {
                     navController.navigate(ScreenDestinations.MyPage.route)
@@ -333,7 +320,7 @@ fun MainNavHost(
             )
         }
 
-        FrameNavGraph(
+        MomentGraph(
             modifier = modifier,
             navController = navController,
             graphRoute = "frame_graph",
