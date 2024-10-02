@@ -22,12 +22,14 @@ interface IpfsApi {
     @POST("api/v0/add")
     suspend fun uploadImage(
         @Part file: MultipartBody.Part,
+        @Query("pin") pin: Boolean = false,
     ): Response<IpfsResponse>
 
     @Multipart
     @POST("api/v0/add")
     suspend fun uploadFrame(
         @Part file: MultipartBody.Part,
+        @Query("pin") pin: Boolean = false,
     ): Response<IpfsResponse>
 
     @POST("api/v0/pin/add")
