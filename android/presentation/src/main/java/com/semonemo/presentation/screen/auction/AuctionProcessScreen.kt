@@ -151,7 +151,7 @@ fun AuctionProcessScreen(
             onClick = {
                 scope.launch {
                     stompSession.value?.let { session ->
-                        webSocketManager.sendBid(session, BidRequest(1, 1, 3000))
+                        webSocketManager.sendBid(session, BidMessage(1, 1, 3000, 1))
                     }
                 }
             },

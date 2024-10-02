@@ -24,7 +24,7 @@ class WebSocketManager {
             .build()
 
     // AuctionUpdate 어댑터 생성
-    private val auctionUpdateAdapter = moshi.adapter(AuctionUpdate::class.java).lenient()
+    private val auctionUpdateAdapter = moshi.adapter(AuctionStatusMessage::class.java).lenient()
 
     suspend fun connectToAuction(auctionId: String): StompSession {
 //        val url = "ws://192.168.100.69:8090/ws/auction"
@@ -34,11 +34,11 @@ class WebSocketManager {
 
     suspend fun sendBid(
         stompSession: StompSession,
-        bidRequest: BidRequest,
+        bidRequest: BidMessage,
     ) {
         Log.d(TAG, "sendBid: 보내기!!")
         // BidRequest를 JSON 문자열로 변환
-        val bidRequestAdapter = moshi.adapter(BidRequest::class.java).lenient()
+        val bidRequestAdapter = moshi.adapter(BidMessage::class.java).lenient()
         val bidJson = bidRequestAdapter.toJson(bidRequest)
         val headers = StompSendHeaders("/app/auction/1/bid")
 
@@ -53,7 +53,7 @@ class WebSocketManager {
     suspend fun subscribeToAuction(
         stompSession: StompSession,
         headersUri: String,
-        onAuctionUpdate: (AuctionUpdate) -> Unit,
+        onAuctionUpdate: (AuctionStatusMessage) -> Unit,
     ) {
         // StompSubscribeHeaders를 사용해 헤더 생성
         val headers = StompSubscribeHeaders(headersUri)
@@ -61,10 +61,14 @@ class WebSocketManager {
 
         // 구독하고 메시지를 처리
         stompSession.subscribe(headers).collect { message ->
-            val body = message.body
-            if (body is FrameBody.Text) {
-                val textBody = body.text
-                Log.d(TAG, "subscribeToAuction: $textBody")
+            val msgHeaders = message.headers
+            val msgBody = message.body
+
+            if (msgBody is FrameBody.Text) {
+                val testHeaders = msgHeaders.destination
+                val textBody = msgBody.text
+                Log.d(TAG, "msgHeaders: $testHeaders")
+                Log.d(TAG, "msgBody: $textBody")
 
                 try {
                     val auctionUpdate = auctionUpdateAdapter.fromJson(textBody)
@@ -76,23 +80,36 @@ class WebSocketManager {
                 } catch (e: Exception) {
                     Log.e(TAG, "JSON 파싱 중 오류 발생", e)
                 }
-            } else if (body is FrameBody.Binary) {
+            } else if (msgBody is FrameBody.Binary) {
                 Log.e(TAG, "Binary frame received, expected text")
             }
         }
     }
 }
 
+enum class MessageType {
+    BID,
+    ENTRANCE,
+    AUCTION_STATUS,
+}
+
 @JsonClass(generateAdapter = true)
-data class BidRequest(
+data class BidMessage(
     val auctionId: Int,
     val userId: Int,
     val bidAmount: Int,
+    val endTime: Int,
 )
 
 @JsonClass(generateAdapter = true)
-data class AuctionUpdate(
+data class EntranceMessage(
     val auctionId: Int,
     val userId: Int,
-    val bidAmount: Int,
+    val status: Int,
+)
+
+@JsonClass(generateAdapter = true)
+data class AuctionStatusMessage(
+    val auctionId: Int,
+    val status: Int,
 )
