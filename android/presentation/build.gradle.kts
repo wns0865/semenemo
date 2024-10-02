@@ -120,4 +120,7 @@ dependencies {
 
     // Gson
     implementation("com.google.code.gson:gson:2.8.8")
+
+    // camera
+    implementation(libs.bundles.camera)
 }

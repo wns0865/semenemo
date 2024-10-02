@@ -1,6 +1,7 @@
 [versions]
 agp = "8.5.2"
 androidCoreVersion = "1.35.1"
+cameraExtensions = "1.3.4"
 capturable = "2.1.0"
 core = "4.9.7"
 kotlin = "1.9.0"
@@ -30,6 +31,10 @@ kotlinxSerializationCore = "1.5.1"
 web3walletVersion = "1.35.1"
 kotlinxCollectionsImmutableVersion = "0.3.5"
 [libraries]
+androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraExtensions" }
+androidx-camera-extensions = { module = "androidx.camera:camera-extensions", version.ref = "cameraExtensions" }
+androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraExtensions" }
+androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraExtensions" }
 capturable = { module = "dev.shreyaspatil:capturable", version.ref = "capturable" }
 web3j-core = { module = "org.web3j:core", version.ref = "core" }
 multifab = { module = "com.github.iamageo:MultiFab", version.ref = "multifab" }
@@ -70,6 +75,7 @@ converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref
 [bundles]
 network = ["retrofit", "okhttp-logging-interceptor", "gson", "kotlinx-serialization-json", "kotlinx-serialization-converter", "kotlinx-serialization-core","converter-gson"]
 coroutines = ["coroutines-android", "coroutines-core"]
+camera = ["androidx-camera-camera2", "androidx-camera-extensions", "androidx-camera-lifecycle", "androidx-camera-view"]
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
