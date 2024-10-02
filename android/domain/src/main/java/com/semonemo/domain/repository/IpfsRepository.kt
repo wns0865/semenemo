@@ -14,4 +14,6 @@ interface IpfsRepository {
     suspend fun uploadImage(image: File): Flow<ApiResponse<IpfsResponse>>
 
     suspend fun uploadFrame(request: UploadFrameRequest): Flow<ApiResponse<IpfsResponse>>
+
+    suspend fun pin(arg: String): Flow<ApiResponse<List<String>>>
 }
