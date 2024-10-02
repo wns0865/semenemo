@@ -156,7 +156,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
     ) { _ ->
         MainNavHost(
             navController = navController,
-            startDestination = ScreenDestinations.Moment.route,
+            startDestination = ScreenDestinations.Login.route,
             onShowErrorSnackBar = onShowErrorSnackBar,
             actionWithSnackBar = actionWithSnackBar,
         )
