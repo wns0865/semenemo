@@ -72,4 +72,22 @@ class IpfsRepositoryImpl
                         )
                     }
             }
+
+        override suspend fun pin(arg: String): Flow<ApiResponse<List<String>>> =
+            flow {
+                runCatching {
+                    api.pin(arg)
+                }.onSuccess {
+                    it.body()?.let { body ->
+                        emit(ApiResponse.Success(body.pins))
+                    }
+                }.onFailure {
+                    emit(
+                        ApiResponse.Error.ServerError(
+                            errorMessage = it.message ?: "",
+                            errorCode = it.cause.toString(),
+                        ),
+                    )
+                }
+            }
     }

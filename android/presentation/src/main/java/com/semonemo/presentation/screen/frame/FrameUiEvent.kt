@@ -16,5 +16,5 @@ sealed interface FrameUiEvent {
     ) : FrameUiEvent
 
     @Immutable
-    data object NavigateToHome : FrameUiEvent
+    data object NavigateMoment : FrameUiEvent
 }
