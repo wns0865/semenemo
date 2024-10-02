@@ -32,11 +32,11 @@ import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.WhiteGray
 import com.semonemo.presentation.util.noRippleClickable
 
-
 /**
  * TODO
  *
  * @param modifier
+ * @param searchKeyword : 기본값
  * @param onValueChanged : 값 변화할 때 람다식 -> 검색어 자동 반영
  * @param onSearchAction : 검색 버튼 누를 경우
  * @param placeHolder : 초기 텍스트 값
@@ -45,6 +45,7 @@ import com.semonemo.presentation.util.noRippleClickable
 @Composable
 fun SearchTextField(
     modifier: Modifier = Modifier,
+    searchKeyword: String = "",
     onValueChanged: (String) -> Unit = {},
     onSearchAction: (String) -> Unit = {},
     placeHolder: String = stringResource(R.string.search_placeholder),
@@ -52,10 +53,10 @@ fun SearchTextField(
 ) {
     val (keyword, setKeyword) =
         remember {
-            mutableStateOf("")
+            mutableStateOf(searchKeyword)
         }
     OutlinedTextField(
-        value = keyword,
+        value = searchKeyword,
         onValueChange = {
             setKeyword(it)
             onValueChanged(it)
@@ -123,9 +124,10 @@ fun SearchTextField(
 fun SearchTextFieldPreview() {
     SemonemoTheme {
         SearchTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 10.dp, vertical = 10.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp, vertical = 10.dp),
             focusManager = LocalFocusManager.current,
         )
     }
