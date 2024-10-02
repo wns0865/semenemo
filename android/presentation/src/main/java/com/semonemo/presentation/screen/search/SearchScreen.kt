@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -116,7 +117,6 @@ fun SearchScreen(
                     Modifier
                         .fillMaxWidth()
                         .padding(end = 5.dp),
-                searchKeyword = keyword,
                 focusManager = focusManager,
                 onSearchAction = {
                     keyword = it
@@ -338,6 +338,7 @@ fun SearchSuccessScreen(
                     modifier =
                         Modifier
                             .fillMaxWidth()
+                            .aspectRatio(1f)
                             .padding(8.dp)
                             .clip(shape = RoundedCornerShape(10.dp))
                             .border(
