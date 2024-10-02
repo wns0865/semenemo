@@ -1,0 +1,12 @@
+package com.semonemo.domain.repository
+
+import com.semonemo.domain.model.ApiResponse
+import com.semonemo.domain.model.SearchAsset
+import com.semonemo.domain.model.SearchUser
+import kotlinx.coroutines.flow.Flow
+
+interface SearchRepository {
+    suspend fun searchUser(keyword: String): Flow<ApiResponse<SearchUser>>
+
+    suspend fun searchAsset(keyword: String): Flow<ApiResponse<SearchAsset>>
+}
