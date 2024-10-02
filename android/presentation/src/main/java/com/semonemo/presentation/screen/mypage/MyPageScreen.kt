@@ -184,7 +184,7 @@ fun MyPageScreen(
     followUser: () -> Unit = {},
     unfollowUser: () -> Unit = {},
 ) {
-    val tabs = listOf("내 프레임", "에셋", "찜")
+    val tabs = listOf("프레임", "에셋", "찜")
     val selectedIndex = remember { mutableIntStateOf(0) }
     val singlePhotoPickerLauncher =
         rememberLauncherForActivityResult(
