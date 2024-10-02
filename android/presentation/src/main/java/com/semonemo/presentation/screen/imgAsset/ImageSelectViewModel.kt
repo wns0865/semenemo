@@ -105,11 +105,7 @@ class ImageSelectViewModel
                             is ApiResponse.Error -> _uiEvent.emit(ImageSelectUiEvent.Error(errorMessage = respone.errorMessage))
                             is ApiResponse.Success -> {
                                 _uiEvent.emit(
-                                    ImageSelectUiEvent.NavigateTo(
-                                        Uri
-                                            .encode(decodeBase64ToImage(respone.data).toString())
-                                            .toString(),
-                                    ),
+                                    ImageSelectUiEvent.NavigateTo(Uri.encode(decodeBase64ToImage(respone.data).toString())),
                                 )
                             }
                         }
