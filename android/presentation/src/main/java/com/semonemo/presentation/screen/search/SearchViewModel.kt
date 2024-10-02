@@ -2,8 +2,6 @@ package com.semonemo.presentation.screen.search
 
 import androidx.lifecycle.viewModelScope
 import com.semonemo.domain.model.ApiResponse
-import com.semonemo.domain.model.Asset
-import com.semonemo.domain.model.Frame
 import com.semonemo.domain.repository.SearchRepository
 import com.semonemo.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -64,28 +62,20 @@ class SearchViewModel
         // 프레임 (NFT) 검색
         fun frameSearch(keyword: String) {
             viewModelScope.launch {
-                _searchState.value =
-                    SearchState.Success(
-                        frameList =
-                            listOf(
-                                Frame(
-                                    frameId = 1,
-                                    imgUrl = "",
-                                ),
-                                Frame(
-                                    frameId = 2,
-                                    imgUrl = "",
-                                ),
-                                Frame(
-                                    frameId = 3,
-                                    imgUrl = "",
-                                ),
-                                Frame(
-                                    frameId = 4,
-                                    imgUrl = "",
-                                ),
-                            ),
-                    )
+                searchRepository.searchFrame(keyword).collectLatest { response ->
+                    when (response) {
+                        is ApiResponse.Error -> {
+                            _searchState.value = SearchState.Error(response.errorMessage)
+                        }
+
+                        is ApiResponse.Success -> {
+                            _searchState.value =
+                                SearchState.Success(
+                                    frameList = response.data.content,
+                                )
+                        }
+                    }
+                }
             }
         }
 
@@ -94,14 +84,14 @@ class SearchViewModel
             viewModelScope.launch {
                 searchRepository.searchAsset(keyword).collectLatest { response ->
                     when (response) {
-                        is ApiResponse.Error  -> {
+                        is ApiResponse.Error -> {
                             _searchState.value = SearchState.Error(response.errorMessage)
                         }
 
                         is ApiResponse.Success -> {
                             _searchState.value =
                                 SearchState.Success(
-                                    assetList = response.data.content
+                                    assetList = response.data.content,
                                 )
                         }
                     }

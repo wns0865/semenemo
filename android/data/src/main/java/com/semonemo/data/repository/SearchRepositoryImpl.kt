@@ -4,6 +4,7 @@ import com.semonemo.data.network.api.SearchApi
 import com.semonemo.data.network.response.emitApiResponse
 import com.semonemo.domain.model.ApiResponse
 import com.semonemo.domain.model.SearchAsset
+import com.semonemo.domain.model.SearchFrame
 import com.semonemo.domain.model.SearchUser
 import com.semonemo.domain.repository.SearchRepository
 import kotlinx.coroutines.flow.Flow
@@ -36,6 +37,18 @@ class SearchRepositoryImpl
                             )
                         },
                         default = SearchAsset(),
+                    )
+                emit(response)
+            }
+
+        override suspend fun searchFrame(keyword: String): Flow<ApiResponse<SearchFrame>> =
+            flow {
+                val response =
+                    emitApiResponse(
+                        apiResponse = {
+                            api.searchNft(keyword)
+                        },
+                        default = SearchFrame(),
                     )
                 emit(response)
             }

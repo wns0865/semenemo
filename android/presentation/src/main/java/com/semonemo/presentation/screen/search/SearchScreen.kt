@@ -50,8 +50,9 @@ import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.semonemo.domain.model.AssetDetail
-import com.semonemo.domain.model.Frame
+import com.semonemo.domain.model.FrameDetail
 import com.semonemo.domain.model.Profile
+import com.semonemo.presentation.BuildConfig
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BackButton
 import com.semonemo.presentation.component.CustomTab
@@ -65,6 +66,7 @@ import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.util.noRippleClickable
 import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.launch
 
 @Composable
 fun SearchRoute(
@@ -143,7 +145,6 @@ fun SearchScreen(
                     recentSearchList = testData,
                     hotSearchList = searchState.hotList,
                     onClickedKeyword = {
-                        Log.d("nakyung", "핫키워드 클릭: $it")
                         keyword = it
                         searchUser(it)
                     },
@@ -259,7 +260,7 @@ fun SearchTabScreen(
 fun SearchSuccessScreen(
     modifier: Modifier = Modifier,
     userList: List<Profile> = emptyList(),
-    frameList: List<Frame> = emptyList(),
+    frameList: List<FrameDetail> = emptyList(),
     assetList: List<AssetDetail> = emptyList(),
     navigateToProfile: (Long) -> Unit = {},
 ) {
@@ -288,37 +289,20 @@ fun SearchSuccessScreen(
                 Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
-                    .padding(horizontal = 10.dp),
+                    .padding(horizontal = 10.dp)
+                    .aspectRatio(1f / 2f),
             columns = GridCells.Fixed(2),
             state = rememberLazyGridState(),
         ) {
             items(frameList.size) { index ->
                 val frame = frameList[index]
-                // 실제 api 연결 후 코드는 아래와 같이
-//                GlideImage(
-//                    modifier =
-//                        Modifier
-//                            .fillMaxWidth()
-//                            .padding(8.dp)
-//                            .clip(shape = RoundedCornerShape(10.dp))
-//                            .border(
-//                                width = 1.dp,
-//                                shape = RoundedCornerShape(10.dp),
-//                                color = Gray03,
-//                            ),
-//                    imageModel = frame.imgUrl.toUri(),
-//                    contentScale = ContentScale.Crop,
-//                )
+                val ipfsUrl = BuildConfig.IPFS_READ_URL
+                val imgUrl = ipfsUrl + "ipfs/" + frame.nftInfo.data.image
 
-                // 임시
-                Image(
-                    painter = painterResource(id = R.drawable.img_example3),
-                    contentDescription = null,
-                    contentScale = ContentScale.Inside,
+                GlideImage(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .height(200.dp)
                             .padding(8.dp)
                             .clip(shape = RoundedCornerShape(10.dp))
                             .border(
@@ -326,6 +310,8 @@ fun SearchSuccessScreen(
                                 shape = RoundedCornerShape(10.dp),
                                 color = Gray03,
                             ),
+                    imageModel = imgUrl.toUri(),
+                    contentScale = ContentScale.Crop,
                 )
             }
         }
