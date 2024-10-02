@@ -86,7 +86,7 @@ fun FrameDoneRoute(
             nftViewModel.sendTransaction(
                 data,
                 onSuccess = {
-                    viewModel.publishNft(data)
+                    viewModel.publishNft(it)
                 },
                 onError = {
                     onErrorSnackBar(it)
