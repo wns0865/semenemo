@@ -21,8 +21,10 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.semonemo.presentation.R
 import com.semonemo.presentation.theme.Gray02
+import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Red
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
@@ -40,6 +42,7 @@ fun CustomTextField(
     containColor: Color = WhiteGray,
     borderColor: Color = Color.Transparent,
     roundDp: Int = 10,
+    fontSize: Int = 13,
 ) {
     Column(modifier = modifier) {
         OutlinedTextField(
@@ -51,7 +54,7 @@ fun CustomTextField(
                 if (input.isEmpty()) {
                     Text(
                         text = placeholder,
-                        style = Typography.labelSmall,
+                        style = Typography.labelSmall.copy(fontSize = fontSize.sp),
                     )
                 }
             },
@@ -66,7 +69,7 @@ fun CustomTextField(
                 KeyboardActions(onDone = {
                     focusManager.clearFocus()
                 }),
-            textStyle = Typography.labelSmall,
+            textStyle = Typography.labelSmall.copy(fontSize = fontSize.sp),
             trailingIcon = {
                 IconButton(
                     modifier = Modifier.testTag("clear_button"),
@@ -87,8 +90,8 @@ fun CustomTextField(
                     focusedContainerColor = containColor,
                     unfocusedContainerColor = containColor,
                     errorContainerColor = containColor,
-                    focusedTextColor = Gray02,
-                    unfocusedTextColor = Gray02,
+                    focusedTextColor = GunMetal,
+                    unfocusedTextColor = GunMetal,
                     unfocusedPlaceholderColor = Gray02,
                     focusedPlaceholderColor = Gray02,
                 ),
@@ -96,7 +99,7 @@ fun CustomTextField(
         Text(
             text = errorMessage,
             color = Red,
-            style = Typography.labelMedium,
+            style = Typography.labelMedium.copy(fontSize = fontSize.sp),
             modifier = Modifier.padding(top = 4.dp),
         )
     }

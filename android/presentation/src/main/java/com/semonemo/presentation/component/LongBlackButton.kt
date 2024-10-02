@@ -23,8 +23,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.semonemo.presentation.R
-import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.Main02
+import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.White
 
 /*
@@ -45,14 +45,17 @@ fun LongBlackButton(
         modifier =
             modifier
                 .fillMaxWidth(0.88f)
-                .height(53.dp),
+                .height(50.dp),
     ) {
         Box(
-            modifier = modifier.background(brush = Main02).padding(16.dp),
+            modifier =
+                Modifier
+                    .background(brush = Main02)
+                    .padding(16.dp),
             contentAlignment = Alignment.Center,
         ) {
             Row(
-                modifier = modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
             ) {

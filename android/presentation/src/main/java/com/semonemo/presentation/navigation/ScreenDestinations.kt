@@ -1,7 +1,12 @@
 package com.semonemo.presentation.navigation
 
+import android.net.Uri
+import android.os.Bundle
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.semonemo.domain.model.User
 
 /*
  추가 하는 방법
@@ -42,7 +47,37 @@ sealed class ScreenDestinations(
 
     data object Wallet : ScreenDestinations(route = "wallet")
 
-    data object MyPage : ScreenDestinations(route = "mypage")
+    data object MyPage : ScreenDestinations(route = "mypage") {
+        override val route: String
+            get() = "mypage/{userId}"
+        val arguments =
+            listOf(
+                navArgument(name = "userId") { type = NavType.LongType },
+            )
+
+        fun createRoute(userId: Long) = "mypage/$userId"
+    }
+
+    data object Setting : ScreenDestinations(route = "setting")
+
+    data object FollowList : ScreenDestinations(route = "followList") {
+        override val route: String
+            get() = "followList/{nickname}/{followerList}/{followingList}"
+        val arguments =
+            listOf(
+                navArgument(name = "nickname") { type = NavType.StringType },
+                navArgument(name = "followerList") { type = UserListNavType() },
+                navArgument(name = "followingList") { type = UserListNavType() },
+            )
+
+        fun createRoute(
+            nickname: String,
+            followerList: List<User>,
+            followingList: List<User>,
+        ) = "followList/$nickname/${
+            Uri.encode(Gson().toJson(followerList))
+        }/${Uri.encode(Gson().toJson(followingList))}"
+    }
 
     data object AiAsset : ScreenDestinations(route = "aiAsset")
 
@@ -100,7 +135,7 @@ sealed class ScreenDestinations(
         fun createRoute(auctionId: String) = "auctionProcess/$auctionId"
     }
 
-    data object StoreFullView: ScreenDestinations(route = "storeFullView") {
+    data object StoreFullView : ScreenDestinations(route = "storeFullView") {
         override val route: String
             get() = "storeFullView/{isFrame}"
         val arguments =
@@ -109,5 +144,30 @@ sealed class ScreenDestinations(
             )
 
         fun createRoute(isFrame: Boolean) = "storeFullView/$isFrame"
+    }
+
+    data object FrameDone : ScreenDestinations(route = "frameDone")
+
+    data object Search : ScreenDestinations(route = "search")
+}
+
+// 팔로워 / 팔로잉 목록 전달 위한 NavType 정의
+class UserListNavType : NavType<List<User>>(isNullableAllowed = false) {
+    override fun get(
+        bundle: Bundle,
+        key: String,
+    ): List<User>? = bundle.getParcelableArrayList(key)
+
+    override fun parseValue(value: String): List<User> {
+        val listType = object : TypeToken<List<User>>() {}.type
+        return Gson().fromJson(value, listType)
+    }
+
+    override fun put(
+        bundle: Bundle,
+        key: String,
+        value: List<User>,
+    ) {
+        bundle.putParcelableArrayList(key, ArrayList(value))
     }
 }

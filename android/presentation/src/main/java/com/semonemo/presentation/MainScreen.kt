@@ -14,31 +14,30 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.semonemo.domain.model.User
 import com.semonemo.presentation.navigation.CustomFAB
 import com.semonemo.presentation.navigation.ScreenDestinations
 import com.semonemo.presentation.screen.aiAsset.AiAssetScreen
-import com.semonemo.presentation.screen.aiAsset.AssetDoneScreen
+import com.semonemo.presentation.screen.aiAsset.AssetDoneRoute
 import com.semonemo.presentation.screen.aiAsset.DrawAssetScreen
 import com.semonemo.presentation.screen.aiAsset.PromptAssetScreen
 import com.semonemo.presentation.screen.auction.AuctionProcessScreen
 import com.semonemo.presentation.screen.auction.AuctionScreen
-import com.semonemo.presentation.screen.frame.FrameScreen
+import com.semonemo.presentation.screen.frame.MomentGraph
 import com.semonemo.presentation.screen.imgAsset.ImageAssetScreen
 import com.semonemo.presentation.screen.imgAsset.ImageSelectRoute
 import com.semonemo.presentation.screen.login.LoginRoute
-import com.semonemo.presentation.screen.moment.MomentScreen
 import com.semonemo.presentation.screen.mypage.DetailScreen
+import com.semonemo.presentation.screen.mypage.FollowListScreen
 import com.semonemo.presentation.screen.mypage.MyPageRoute
+import com.semonemo.presentation.screen.mypage.setting.SettingRoute
 import com.semonemo.presentation.screen.picture.PictureMainScreen
+import com.semonemo.presentation.screen.search.SearchRoute
 import com.semonemo.presentation.screen.signup.SignUpRoute
 import com.semonemo.presentation.screen.store.StoreFullViewScreen
 import com.semonemo.presentation.screen.store.StoreScreen
@@ -61,7 +60,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
             mutableStateOf(false)
         }
     when (currentRoute) {
-        "mypage", "shop", "moment", "wallet", "auction", "storeFullView/{isFrame}" ->
+        "mypage/{userId}", "shop", "moment", "wallet", "auction", "storeFullView/{isFrame}" ->
             setVisible(
                 true,
             )
@@ -175,6 +174,19 @@ fun MainNavHost(
                         ),
                     )
                 },
+                navigateToSearch = {
+                    navController.navigate(ScreenDestinations.Search.route)
+                },
+            )
+        }
+
+        composable(
+            route = ScreenDestinations.Search.route,
+        ) {
+            SearchRoute(
+                navigateToProfile = { userId ->
+                    navController.navigate(ScreenDestinations.MyPage.createRoute(userId))
+                },
             )
         }
 
@@ -194,18 +206,6 @@ fun MainNavHost(
         }
 
         composable(
-            route = ScreenDestinations.Moment.route,
-        ) {
-            MomentScreen(
-                modifier = modifier,
-                navigateToAiAsset = { navController.navigate(ScreenDestinations.AiAsset.route) },
-                navigateToImageAsset = { navController.navigate(ScreenDestinations.ImageAsset.route) },
-                navigateToFrame = { navController.navigate(ScreenDestinations.Frame.route) },
-                navigateToPicture = { navController.navigate(ScreenDestinations.PictureMain.route) },
-            )
-        }
-
-        composable(
             route = ScreenDestinations.Wallet.route,
         ) {
             WalletScreen(modifier = modifier)
@@ -213,7 +213,10 @@ fun MainNavHost(
 
         composable(
             route = ScreenDestinations.MyPage.route,
-        ) {
+            arguments = ScreenDestinations.MyPage.arguments,
+        ) { navBackStackEntry ->
+            val userId = navBackStackEntry.arguments?.getLong("userId")
+
             MyPageRoute(
                 modifier = modifier,
                 navigateToDetail = { imgUrl ->
@@ -223,7 +226,55 @@ fun MainNavHost(
                         ),
                     )
                 },
+                navigateToFollowList = { nickname, followerList, followingList ->
+                    navController.navigate(
+                        ScreenDestinations.FollowList.createRoute(
+                            nickname = nickname,
+                            followerList = followerList,
+                            followingList = followingList,
+                        ),
+                    )
+                },
+                navigateToSetting = {
+                    navController.navigate(ScreenDestinations.Setting.route)
+                },
                 onErrorSnackBar = onShowErrorSnackBar,
+                userId = userId ?: -1,
+            )
+        }
+
+        composable(
+            route = ScreenDestinations.Setting.route,
+        ) {
+            SettingRoute(
+                modifier = modifier,
+                popUpBackStack = navController::popBackStack,
+                navigateToLogin = {
+                    navController.navigate(ScreenDestinations.Login.route)
+                },
+                onShowSnackBar = onShowErrorSnackBar,
+            )
+        }
+
+        composable(
+            route = ScreenDestinations.FollowList.route,
+            arguments = ScreenDestinations.FollowList.arguments,
+        ) { navBackStackEntry ->
+            val nickname = navBackStackEntry.arguments?.getString("nickname")
+            val followerList =
+                navBackStackEntry.arguments?.getParcelableArrayList<User>("followerList")
+            val followingList =
+                navBackStackEntry.arguments?.getParcelableArrayList<User>("followingList")
+
+            FollowListScreen(
+                modifier = modifier,
+                nickname = nickname ?: "",
+                popUpBackStack = navController::popBackStack,
+                navigateToProfile = {
+                    navController.navigate(ScreenDestinations.MyPage.createRoute(it))
+                },
+                followerList = followerList ?: emptyList(),
+                followingList = followingList ?: emptyList(),
             )
         }
 
@@ -249,7 +300,9 @@ fun MainNavHost(
                 modifier = modifier,
                 popUpBackStack = navController::popBackStack,
                 navigateToDone = { assetUrl ->
-                    navController.navigate(ScreenDestinations.AssetDone.createRoute(assetUrl))
+                    navController.navigate(ScreenDestinations.AssetDone.createRoute(assetUrl)) {
+                        popUpTo("imageAsset") { inclusive = true }
+                    }
                 },
             )
         }
@@ -257,14 +310,12 @@ fun MainNavHost(
         composable(
             route = ScreenDestinations.AssetDone.route,
             arguments = ScreenDestinations.AssetDone.arguments,
-        ) { navBackStackEntry ->
-            val assetUrl = navBackStackEntry.arguments?.getString("assetUrl")
-            AssetDoneScreen(
+        ) {
+            AssetDoneRoute(
                 modifier = modifier,
-                assetUrl = assetUrl,
                 popUpBackStack = navController::popBackStack,
                 navigateToMy = {
-                    navController.navigate(ScreenDestinations.MyPage.route)
+                    navController.navigate(ScreenDestinations.MyPage.createRoute(it))
                 },
             )
         }
@@ -320,31 +371,13 @@ fun MainNavHost(
             )
         }
 
-        composable(
-            route = ScreenDestinations.Frame.route,
-        ) {
-            FrameScreen(
-                modifier = modifier,
-//                navigateToFrameDone = { frame ->
-//                    val base64String = Base64.encodeToString(frame, Base64.DEFAULT)
-//                    Log.d("test", "${frame}\n  $base64String")
-//                    navController.navigate(ScreenDestinations.FrameDone.createRoute("123"))
-                //              },
-            )
-        }
+        MomentGraph(
+            modifier = modifier,
+            navController = navController,
+            graphRoute = "frame_graph",
+            onErrorSnackBar = onShowErrorSnackBar,
+        )
 
-//        composable(
-//            route = ScreenDestinations.FrameDone.route,
-//            arguments = ScreenDestinations.FrameDone.arguments,
-//        ) { navBackStackEntry ->
-//            val frame = navBackStackEntry.arguments?.getString("frame") ?: ""
-//            val uri = decodeBase64ToImage(frame)!!
-//            val byteArray = Base64.decode(frame, Base64.DEFAULT)
-//            FrameDoneScreen(
-//                modifier = modifier,
-//                frame = "123".toUri(),
-//            )
-//        }
         composable(
             route = ScreenDestinations.AuctionProcess.route,
             arguments = ScreenDestinations.AuctionProcess.arguments,
@@ -359,22 +392,10 @@ fun MainNavHost(
             route = ScreenDestinations.StoreFullView.route,
             arguments = ScreenDestinations.StoreFullView.arguments,
         ) { navBackStackEntry ->
-
-            Log.d("test", "${navBackStackEntry.destination?.route}")
             StoreFullViewScreen(
                 modifier = modifier,
                 isFrame = navBackStackEntry.arguments?.getBoolean("isFrame") ?: false,
             )
         }
     }
-}
-
-@Composable
-inline fun <reified T : ViewModel> NavBackStackEntry.sharedViewModel(navController: NavController): T {
-    val navGraphRoute = destination.parent?.route ?: return hiltViewModel()
-    val parentEntry =
-        remember(this) {
-            navController.getBackStackEntry(navGraphRoute)
-        }
-    return hiltViewModel(parentEntry)
 }

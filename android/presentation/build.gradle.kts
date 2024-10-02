@@ -24,6 +24,10 @@ android {
         buildConfigField("String", "METAMASK_PACKAGE_NAME", properties["METAMASK_PACKAGE_NAME"] as String)
         buildConfigField("String", "METAMASK_PLAY_STORE_PATH", properties["METAMASK_PLAY_STORE_PATH"] as String)
         buildConfigField("String", "CONTRACT_ADDRESS", properties["CONTRACT_ADDRESS"] as String)
+        buildConfigField("String", "NFT_CONTRACT_ADDRESS", properties["NFT_CONTRACT_ADDRESS"] as String)
+        buildConfigField("String", "COIN_CONTRACT_ADDRESS", properties["COIN_CONTRACT_ADDRESS"] as String)
+        buildConfigField("String", "SYSTEM_CONTRACT_ADDRESS", properties["SYSTEM_CONTRACT_ADDRESS"] as String)
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
@@ -109,6 +113,12 @@ dependencies {
 
     // web3j
     implementation(libs.web3j.core)
+
+    // capture
+    implementation(libs.capturable)
+
+    // Gson
+    implementation("com.google.code.gson:gson:2.8.8")
 
     // websocket
     implementation(libs.krossbow.stomp.core)

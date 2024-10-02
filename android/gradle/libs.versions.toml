@@ -1,6 +1,7 @@
 [versions]
 agp = "8.5.2"
 androidCoreVersion = "1.35.1"
+capturable = "2.1.0"
 core = "4.9.7"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
@@ -31,6 +32,7 @@ kotlinxSerializationCore = "1.5.1"
 web3walletVersion = "1.35.1"
 kotlinxCollectionsImmutableVersion = "0.3.5"
 [libraries]
+capturable = { module = "dev.shreyaspatil:capturable", version.ref = "capturable" }
 krossbow-stomp-core = { module = "org.hildan.krossbow:krossbow-stomp-core", version.ref = "krossbowStompCore" }
 krossbow-stomp-moshi = { module = "org.hildan.krossbow:krossbow-stomp-moshi", version.ref = "krossbowStompCore" }
 krossbow-websocket-okhttp = { module = "org.hildan.krossbow:krossbow-websocket-okhttp", version.ref = "krossbowStompCore" }

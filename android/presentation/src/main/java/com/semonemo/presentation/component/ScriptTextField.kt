@@ -28,6 +28,7 @@ import com.semonemo.presentation.theme.WhiteGray
  * @param modifier
  * @param placeholder : 플레이스홀더 텍스트
  * @param height : 텍스트필드의 최소 높이
+ * @param fontSize : 폰트 사이즈
  * @param value : 입력된 텍스트
  * @param onValueChange : 입력 후 변화
  * @param focusManager : 포커스매니저
@@ -37,6 +38,7 @@ fun ScriptTextField(
     modifier: Modifier = Modifier,
     placeholder: String,
     height: Int,
+    fontSize: Int = 13,
     value: String,
     onValueChange: (String) -> Unit,
     focusManager: FocusManager,
@@ -53,12 +55,12 @@ fun ScriptTextField(
                     onValueChange(it)
                 }
             },
-            textStyle = Typography.labelSmall.copy(fontSize = 15.sp),
+            textStyle = Typography.labelSmall.copy(fontSize = fontSize.sp),
             placeholder = {
                 Text(
                     modifier = Modifier.align(Alignment.CenterStart),
                     text = placeholder,
-                    style = Typography.labelSmall.copy(fontSize = 15.sp),
+                    style = Typography.labelSmall.copy(fontSize = fontSize.sp),
                     color = Gray02,
                 )
             },

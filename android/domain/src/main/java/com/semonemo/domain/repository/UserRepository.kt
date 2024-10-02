@@ -13,4 +13,18 @@ interface UserRepository {
     ): Flow<ApiResponse<Unit>>
 
     suspend fun loadUserInfo(): Flow<ApiResponse<User>>
+
+    suspend fun delete(): Flow<ApiResponse<Unit>>
+
+    suspend fun loadFollowing(userId: Long): Flow<ApiResponse<List<User>>>
+
+    suspend fun loadFollowers(userId: Long): Flow<ApiResponse<List<User>>>
+
+    suspend fun loadOtherUserInfo(userId: Long): Flow<ApiResponse<User>>
+
+    suspend fun isFollow(userId: Long): Flow<ApiResponse<Boolean>>
+
+    suspend fun followUser(userId: Long): Flow<ApiResponse<Unit>>
+
+    suspend fun unfollowUser(userId: Long): Flow<ApiResponse<Unit>>
 }

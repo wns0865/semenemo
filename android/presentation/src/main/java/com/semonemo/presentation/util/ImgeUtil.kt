@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.util.Base64
 
 fun encodeImageToBase64FromUri(
@@ -36,4 +38,36 @@ fun decodeBase64ToImage(base64String: String): Uri? {
     return Uri.parse(
         "data:image/png;base64," + Base64.getEncoder().encodeToString(byteArray),
     )
+}
+
+fun saveBase64ParseImageToFile(
+    context: Context,
+    base64Uri: String,
+): Uri? {
+    val base64String = base64Uri.replace("data:image/png;base64,", "")
+    val imageBytes = Base64.getDecoder().decode(base64String)
+    val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+    return if (bitmap != null) {
+        saveBitmapToFile(context, bitmap, "image_${System.currentTimeMillis()}.png")
+    } else {
+        null
+    }
+}
+
+fun saveBitmapToFile(
+    context: Context,
+    bitmap: Bitmap,
+    fileName: String,
+): Uri? {
+    val file = File(context.cacheDir, fileName)
+    return try {
+        FileOutputStream(file).use { outputStream ->
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+            outputStream.flush()
+        }
+        Uri.fromFile(file)
+    } catch (e: IOException) {
+        e.printStackTrace()
+        null
+    }
 }
