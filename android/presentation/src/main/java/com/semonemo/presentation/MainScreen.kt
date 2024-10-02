@@ -186,6 +186,7 @@ fun MainNavHost(
                 navigateToProfile = { userId ->
                     navController.navigate(ScreenDestinations.MyPage.createRoute(userId))
                 },
+                popUpBackStack = navController::popBackStack,
             )
         }
 

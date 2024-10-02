@@ -5,6 +5,7 @@ import com.semonemo.data.network.api.AssetApi
 import com.semonemo.data.network.api.AuthApi
 import com.semonemo.data.network.api.IpfsApi
 import com.semonemo.data.network.api.NftApi
+import com.semonemo.data.network.api.SearchApi
 import com.semonemo.data.network.api.UserApi
 import dagger.Module
 import dagger.Provides
@@ -52,4 +53,10 @@ object ApiModule {
     fun provideAssetApi(
         @NetworkModule.BaseClient retrofit: Retrofit,
     ): AssetApi = retrofit.create()
+
+    @Provides
+    @Singleton
+    fun provideSearchApi(
+        @NetworkModule.BaseClient retrofit: Retrofit,
+    ): SearchApi = retrofit.create()
 }

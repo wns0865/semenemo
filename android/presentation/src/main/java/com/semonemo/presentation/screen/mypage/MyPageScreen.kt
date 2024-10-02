@@ -184,7 +184,7 @@ fun MyPageScreen(
     followUser: () -> Unit = {},
     unfollowUser: () -> Unit = {},
 ) {
-    val tabs = listOf("내 프레임", "에셋", "찜")
+    val tabs = listOf("프레임", "에셋", "찜")
     val selectedIndex = remember { mutableIntStateOf(0) }
     val singlePhotoPickerLauncher =
         rememberLauncherForActivityResult(
@@ -289,24 +289,26 @@ fun MyPageScreen(
                             .size(120.dp)
                             .clip(shape = CircleShape),
                 )
-                Image(
-                    modifier =
-                        Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(end = 5.dp, bottom = 10.dp)
-                            .background(Blue3, shape = CircleShape)
-                            .size(20.dp)
-                            .noRippleClickable {
-                                singlePhotoPickerLauncher.launch(
-                                    PickVisualMediaRequest(
-                                        ActivityResultContracts.PickVisualMedia.ImageOnly,
-                                    ),
-                                )
-                            },
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = "",
-                    colorFilter = ColorFilter.tint(Color.White),
-                )
+                if (isFollow == null) { // 마이페이지인 경우에만 버튼 나오도록
+                    Image(
+                        modifier =
+                            Modifier
+                                .align(Alignment.BottomEnd)
+                                .padding(end = 5.dp, bottom = 10.dp)
+                                .background(Blue3, shape = CircleShape)
+                                .size(20.dp)
+                                .noRippleClickable {
+                                    singlePhotoPickerLauncher.launch(
+                                        PickVisualMediaRequest(
+                                            ActivityResultContracts.PickVisualMedia.ImageOnly,
+                                        ),
+                                    )
+                                },
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "",
+                        colorFilter = ColorFilter.tint(Color.White),
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.fillMaxHeight(0.07f))

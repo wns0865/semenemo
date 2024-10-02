@@ -7,6 +7,7 @@ import com.semonemo.data.repository.AssetRepositoryImpl
 import com.semonemo.data.repository.AuthRepositoryImpl
 import com.semonemo.data.repository.IpfsRepositoryImpl
 import com.semonemo.data.repository.NftRepositoryImpl
+import com.semonemo.data.repository.SearchRepositoryImpl
 import com.semonemo.data.repository.UserRepositoryImpl
 import com.semonemo.domain.datasource.AuthDataSource
 import com.semonemo.domain.datasource.TokenDataSource
@@ -15,6 +16,7 @@ import com.semonemo.domain.repository.AssetRepository
 import com.semonemo.domain.repository.AuthRepository
 import com.semonemo.domain.repository.IpfsRepository
 import com.semonemo.domain.repository.NftRepository
+import com.semonemo.domain.repository.SearchRepository
 import com.semonemo.domain.repository.UserRepository
 import dagger.Binds
 import dagger.Module
@@ -47,4 +49,7 @@ interface RepositoryModule {
 
     @Binds
     fun bindTokenDataSource(tokenDataSourceImpl: TokenDataSourceImpl): TokenDataSource
+
+    @Binds
+    fun bindSearchRepository(searchRepositoryImpl: SearchRepositoryImpl): SearchRepository
 }

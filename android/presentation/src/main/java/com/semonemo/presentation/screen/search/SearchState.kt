@@ -2,9 +2,9 @@ package com.semonemo.presentation.screen.search
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
-import com.semonemo.domain.model.Asset
-import com.semonemo.domain.model.Frame
-import com.semonemo.domain.model.User
+import com.semonemo.domain.model.AssetDetail
+import com.semonemo.domain.model.FrameDetail
+import com.semonemo.domain.model.Profile
 
 @Stable
 sealed interface SearchState {
@@ -18,9 +18,9 @@ sealed interface SearchState {
 
     @Immutable
     data class Success(
-        val userList: List<User> = emptyList(),
-        val frameList: List<Frame> = emptyList(),
-        val assetList: List<Asset> = emptyList(),
+        val userList: List<Profile> = emptyList(),
+        val frameList: List<FrameDetail> = emptyList(),
+        val assetList: List<AssetDetail> = emptyList(),
     ) : SearchState
 
     @Immutable
