@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
+import java.util.Base64
 import javax.inject.Inject
 
 @HiltViewModel
@@ -45,9 +46,10 @@ class AssetViewModel
 
         fun removeBackground() {
             uiState.value.assetUrl?.let { assetUrl ->
+                val base64String = Uri.decode(assetUrl).replace("data:image/png;base64,", "")
                 viewModelScope.launch {
                     aiRepository
-                        .removeBg(RemoveBgRequest(inputImage = assetUrl))
+                        .removeBg(RemoveBgRequest(inputImage = base64String))
                         .onStart {
                             _uiState.update { it.copy(isLoading = true) }
                         }.onCompletion {
@@ -62,14 +64,10 @@ class AssetViewModel
                                     )
 
                                 is ApiResponse.Success -> {
-                                    val string = Uri
-                                        .encode(decodeBase64ToImage(response.data).toString())
+                                    val string = Base64.getDecoder().decode(response.data)
                                     _uiState.update {
-                                        it.copy(assetUrl = string.toString())
+                                        it.copy(assetUrl = decodeBase64ToImage(response.data).toString())
                                     }
-//                                    _uiState.update {
-//                                        it.copy(assetUrl = decodeBase64ToImage(response.data).toString())
-//                                    }
                                 }
                             }
                         }
