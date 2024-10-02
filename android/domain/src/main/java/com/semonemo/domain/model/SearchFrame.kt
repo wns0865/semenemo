@@ -29,7 +29,6 @@ data class FrameInfo(
     val tokenId: Long = 0,
     val creator: String = "",
     val currentOwner: String = "",
-    val tokenURI: String = "",
     val data: NftData = NftData()
 )
 
