@@ -289,8 +289,9 @@ fun MyPageScreen(
                             .size(120.dp)
                             .clip(shape = CircleShape),
                 )
-                Image(
-                    modifier =
+                if (isFollow == null) { // 마이페이지인 경우에만 버튼 나오도록
+                    Image(
+                        modifier =
                         Modifier
                             .align(Alignment.BottomEnd)
                             .padding(end = 5.dp, bottom = 10.dp)
@@ -303,10 +304,11 @@ fun MyPageScreen(
                                     ),
                                 )
                             },
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = "",
-                    colorFilter = ColorFilter.tint(Color.White),
-                )
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "",
+                        colorFilter = ColorFilter.tint(Color.White),
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.fillMaxHeight(0.07f))
