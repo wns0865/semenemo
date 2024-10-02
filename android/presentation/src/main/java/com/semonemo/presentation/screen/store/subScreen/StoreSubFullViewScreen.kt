@@ -42,6 +42,8 @@ fun StoreSubFullViewScreen(
         mutableStateOf(StoreFilter.entries.associateWith { null as Boolean? })
     }
     val frameDataList = getSampleFrameData(5)
+    var keyword by remember { mutableStateOf("") }
+
     Column(
         modifier = modifier,
     ) {
@@ -50,9 +52,12 @@ fun StoreSubFullViewScreen(
             title = {
                 SearchTextField(
                     modifier =
-                    Modifier
-                        .fillMaxWidth(0.95f)
-                        .padding(start = 30.dp),
+                        Modifier
+                            .fillMaxWidth(0.95f)
+                            .padding(start = 30.dp),
+                    keyword = keyword,
+                    onValueChanged = { keyword = it },
+                    onClearPressed = { keyword = "" },
                     focusManager = focusManager,
                 )
             },
@@ -83,9 +88,9 @@ fun StoreSubFullViewScreen(
             items(frameDataList) { storeItem ->
                 StoreItemCard(
                     modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(if (isFrame) 0.6f else 0.8f),
+                        Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(if (isFrame) 0.6f else 0.8f),
                     title = storeItem.title,
                     author = storeItem.author,
                     imgUrl = storeItem.imgUrl,
@@ -96,5 +101,4 @@ fun StoreSubFullViewScreen(
         }
     }
     CustomStoreFAB(modifier = modifier)
-
 }

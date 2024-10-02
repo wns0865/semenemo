@@ -117,10 +117,17 @@ fun SearchScreen(
                     Modifier
                         .fillMaxWidth()
                         .padding(end = 5.dp),
+                keyword = keyword,
+                onValueChanged = {
+                    keyword = it
+                },
                 focusManager = focusManager,
                 onSearchAction = {
                     keyword = it
                     searchUser(keyword)
+                },
+                onClearPressed = {
+                    keyword = ""
                 },
             )
         }
