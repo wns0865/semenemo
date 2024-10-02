@@ -27,12 +27,19 @@ import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 
 @Composable
-fun PictureMainScreen() {
+fun PictureMainRoute(modifier: Modifier = Modifier) {
+    PictureMainScreen(
+        modifier = modifier,
+    )
+}
+
+@Composable
+fun PictureMainScreen(modifier: Modifier = Modifier) {
     val scrollState = rememberScrollState()
 
     Box(
         modifier =
-            Modifier
+            modifier
                 .fillMaxSize()
                 .background(brush = Main01),
     ) {

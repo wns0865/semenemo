@@ -35,7 +35,7 @@ import com.semonemo.presentation.screen.mypage.DetailScreen
 import com.semonemo.presentation.screen.mypage.FollowListScreen
 import com.semonemo.presentation.screen.mypage.MyPageRoute
 import com.semonemo.presentation.screen.mypage.setting.SettingRoute
-import com.semonemo.presentation.screen.picture.PictureMainScreen
+import com.semonemo.presentation.screen.picture.PictureMainRoute
 import com.semonemo.presentation.screen.search.SearchRoute
 import com.semonemo.presentation.screen.signup.SignUpRoute
 import com.semonemo.presentation.screen.store.StoreFullViewScreen
@@ -337,7 +337,7 @@ fun MainNavHost(
         composable(
             route = ScreenDestinations.PictureMain.route,
         ) {
-            PictureMainScreen()
+            PictureMainRoute(modifier = modifier)
         }
 
         composable(
