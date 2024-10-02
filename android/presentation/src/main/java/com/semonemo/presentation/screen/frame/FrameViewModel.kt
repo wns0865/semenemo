@@ -149,7 +149,6 @@ class FrameViewModel
                         _uiState.update { it.copy(isLoading = true) }
                     }.onCompletion { _uiState.update { it.copy(isLoading = false) } }
                     .collectLatest { response ->
-                        Log.d("jaehan", "viewModel : $response")
                         when (response) {
                             is ApiResponse.Error -> _uiEvent.emit(FrameUiEvent.Error(response.errorMessage))
                             is ApiResponse.Success -> _uiEvent.emit(FrameUiEvent.NavigateToHome)
