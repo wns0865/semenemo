@@ -59,7 +59,7 @@ fun SettingRoute(
         onShowSnackBar = onShowSnackBar,
         logout = viewModel::logout,
         deleteUser = viewModel::deleteUser,
-        editNickname = viewModel::editNickname,
+        validateNickname = viewModel::validateNickname,
     )
 }
 
@@ -72,7 +72,7 @@ fun SettingContent(
     onShowSnackBar: (String) -> Unit,
     logout: () -> Unit,
     deleteUser: () -> Unit,
-    editNickname: (String) -> Unit,
+    validateNickname: (String) -> Unit,
 ) {
     LaunchedEffect(uiEvent) {
         uiEvent.collectLatest { event ->
@@ -91,7 +91,7 @@ fun SettingContent(
         popUpBackStack = popUpBackStack,
         logout = logout,
         deleteUser = deleteUser,
-        editNickname = editNickname,
+        editNickname = validateNickname,
     )
 }
 
