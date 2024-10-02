@@ -292,18 +292,18 @@ fun MyPageScreen(
                 if (isFollow == null) { // 마이페이지인 경우에만 버튼 나오도록
                     Image(
                         modifier =
-                        Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(end = 5.dp, bottom = 10.dp)
-                            .background(Blue3, shape = CircleShape)
-                            .size(20.dp)
-                            .noRippleClickable {
-                                singlePhotoPickerLauncher.launch(
-                                    PickVisualMediaRequest(
-                                        ActivityResultContracts.PickVisualMedia.ImageOnly,
-                                    ),
-                                )
-                            },
+                            Modifier
+                                .align(Alignment.BottomEnd)
+                                .padding(end = 5.dp, bottom = 10.dp)
+                                .background(Blue3, shape = CircleShape)
+                                .size(20.dp)
+                                .noRippleClickable {
+                                    singlePhotoPickerLauncher.launch(
+                                        PickVisualMediaRequest(
+                                            ActivityResultContracts.PickVisualMedia.ImageOnly,
+                                        ),
+                                    )
+                                },
                         imageVector = Icons.Filled.Add,
                         contentDescription = "",
                         colorFilter = ColorFilter.tint(Color.White),
