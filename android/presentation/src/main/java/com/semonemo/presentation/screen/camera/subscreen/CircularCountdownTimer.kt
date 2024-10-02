@@ -1,4 +1,4 @@
-package com.semonemo.presentation.screen.picture.subscreen
+package com.semonemo.presentation.screen.camera.subscreen
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -47,26 +47,31 @@ fun CircularCountdownTimer(
     onTimerEnd: () -> Unit = {},
 ) {
     var timeLeft by remember { mutableStateOf(totalTime) }
-    val (running, setRunning) = remember { mutableStateOf(false) }
+    var running by remember { mutableStateOf(false) }
     val progress by animateFloatAsState(
         targetValue = timeLeft / totalTime.toFloat(),
-        animationSpec = tween(durationMillis = 1000, easing = LinearEasing), // 1초마다 갱신
+        animationSpec = tween(durationMillis = 1000, easing = LinearEasing),
+        label = "",
     )
     LaunchedEffect(totalTime) {
         timeLeft = totalTime
+        running = false
     }
     LaunchedEffect(running, timeLeft) {
         if (running && timeLeft > 0) {
             delay(1000L)
             timeLeft -= 1000L
         } else if (timeLeft == 0L) {
+            delay(1000L)
             onTimerEnd()
+            timeLeft = totalTime
+            running = false
         }
     }
 
     Box(
         contentAlignment = Alignment.Center,
-        modifier = modifier.noRippleClickable { setRunning(running.not()) },
+        modifier = modifier.noRippleClickable { running = true },
     ) {
         Canvas(modifier = Modifier.size(50.dp)) {
             drawCircle(
