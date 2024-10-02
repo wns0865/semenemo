@@ -7,4 +7,6 @@ import java.io.File
 
 interface AssetRepository {
     suspend fun registerAsset(image: File): Flow<ApiResponse<Asset>>
+
+    suspend fun getMyAssets(cursorId: Long?): Flow<ApiResponse<List<Asset>>>
 }

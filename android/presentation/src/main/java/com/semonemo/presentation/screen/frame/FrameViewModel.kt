@@ -6,6 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.viewModelScope
 import com.semonemo.domain.model.ApiResponse
+import com.semonemo.domain.model.Asset
+import com.semonemo.domain.repository.AssetRepository
 import com.semonemo.domain.repository.IpfsRepository
 import com.semonemo.domain.repository.NftRepository
 import com.semonemo.domain.request.PublishNftRequest
@@ -30,6 +32,7 @@ class FrameViewModel
     constructor(
         private val ipfsRepository: IpfsRepository,
         private val nftRepository: NftRepository,
+        private val assetRepository: AssetRepository,
     ) : BaseViewModel() {
         private val _uiState = MutableStateFlow(FrameUiState())
         val uiState = _uiState.asStateFlow()
@@ -37,6 +40,19 @@ class FrameViewModel
             private set
         private val _uiEvent = MutableSharedFlow<FrameUiEvent>()
         val uiEvent = _uiEvent.asSharedFlow()
+        var assets = mutableStateOf<List<Asset>>(listOf())
+            private set
+
+        fun loadMyAssets() {
+            viewModelScope.launch {
+                assetRepository.getMyAssets(null).collectLatest { response ->
+                    when (response) {
+                        is ApiResponse.Error -> _uiEvent.emit(FrameUiEvent.Error(response.errorMessage))
+                        is ApiResponse.Success -> assets.value = response.data
+                    }
+                }
+            }
+        }
 
         fun updateFrame(bitmap: Bitmap) {
             _uiState.update { it.copy(bitmap = bitmap) }
