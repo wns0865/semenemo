@@ -56,12 +56,17 @@ fun AuctionProcessScreen(
         if (stompSession.value == null) {
             stompSession.value = webSocketManager.connectToAuction(auctionId)
         }
-
+        val headersUriStart = "/topic/auction/1"
+        val headersUriEnd = "/topic/auction/1/end"
         // 경매 업데이트를 구독
         stompSession.value?.let { session ->
-            webSocketManager.subscribeToAuction(session) { update ->
-                currentPrice = update.currentPrice
-                timeLeft = update.timeLeft
+            launch {
+                webSocketManager.subscribeToAuction(session, headersUriStart) { update ->
+                }
+            }
+            launch {
+                webSocketManager.subscribeToAuction(session, headersUriEnd) { update ->
+                }
             }
         }
     }
@@ -146,7 +151,7 @@ fun AuctionProcessScreen(
             onClick = {
                 scope.launch {
                     stompSession.value?.let { session ->
-                        webSocketManager.sendBid(session, currentPrice + 1000)
+                        webSocketManager.sendBid(session, BidRequest(1, 1, 3000))
                     }
                 }
             },
