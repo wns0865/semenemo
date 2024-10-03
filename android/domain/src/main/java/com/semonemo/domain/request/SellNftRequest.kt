@@ -5,5 +5,5 @@ import java.math.BigInteger
 data class SellNftRequest(
     val nftId: Long,
     val price: BigInteger,
-    val txHash : String,
+    val txHash: String,
 )
