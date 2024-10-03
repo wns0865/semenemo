@@ -86,7 +86,7 @@ fun FrameDoneRoute(
             nftViewModel.sendTransaction(
                 data,
                 onSuccess = {
-                    viewModel.publishNft(data)
+                    viewModel.publishNft(imageHash = it, ipfsHash = data)
                 },
                 onError = {
                     onErrorSnackBar(it)
@@ -117,7 +117,10 @@ fun FrameDoneContent(
             when (event) {
                 is FrameUiEvent.Error -> onErrorSnackBar(event.errorMessage)
                 is FrameUiEvent.UploadFinish -> sendTransaction(event.imageHash)
-                FrameUiEvent.NavigateToHome -> navigateToMoment
+                FrameUiEvent.NavigateMoment -> {
+                    onErrorSnackBar("프레임 제작에 성공했습니다.")
+                    navigateToMoment()
+                }
             }
         }
     }

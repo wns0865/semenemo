@@ -85,10 +85,25 @@ class AuthRepositoryImpl
             flow {
                 val address = authDataSource.getWalletAddress()
                 val password = authDataSource.getPassword()
-                if (password != null && address != null) {
-                    emit(ApiResponse.Success(data = true))
-                } else {
-                    emit(ApiResponse.Success(data = false))
+                if (address.isNullOrEmpty() || password.isNullOrEmpty()) {
+                    emit(ApiResponse.Success(false))
+                    return@flow
                 }
+                val response =
+                    emitApiResponse(
+                        apiResponse = {
+                            api.login(
+                                LoginRequest(
+                                    address = address,
+                                    password = password,
+                                ),
+                            )
+                        },
+                        default = JwtToken(),
+                    )
+                authDataSource.saveWalletAddress(address)
+                authDataSource.savePassword(password)
+                val isSuccess = response is ApiResponse.Success
+                emit(ApiResponse.Success(isSuccess))
             }
     }

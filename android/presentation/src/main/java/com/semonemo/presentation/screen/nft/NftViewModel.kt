@@ -1,10 +1,10 @@
 package com.semonemo.presentation.screen.nft
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.semonemo.domain.datasource.AuthDataSource
 import com.semonemo.domain.model.Transaction
 import com.semonemo.presentation.BuildConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -38,12 +38,21 @@ class NftViewModel
     constructor(
         private val ethereum: Ethereum,
         private val dApp: Dapp,
+        private val authDataSource: AuthDataSource,
     ) : ViewModel() {
         private val web3j =
             Web3j.build(HttpService("https://rpc.ssafy-blockchain.com/"))
         private val walletAddress = mutableStateOf("")
         private val _nftEvent = MutableSharedFlow<NftEvent>()
         val nftEvent = _nftEvent.asSharedFlow()
+
+        init {
+            viewModelScope.launch {
+                authDataSource.getWalletAddress()?.let {
+                    walletAddress.value = it
+                }
+            }
+        }
 
         private val ethereumState =
             MediatorLiveData<EthereumState>().apply {
@@ -194,15 +203,11 @@ class NftViewModel
                     method = EthereumMethod.ETH_SEND_TRANSACTION.value,
                     params = listOf(params),
                 )
-
-            Log.d("jaehan", "$transactionRequest")
             ethereum.sendRequest(transactionRequest) { result ->
                 if (result is String) {
-                    Log.d("jaehan", "Transaction Hash: $result")
                     onSuccess(result)
                 } else {
                     onError(result.toString())
-                    Log.d("jaehan", "Transaction failed or result is invalid: $result")
                 }
             }
         }

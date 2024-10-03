@@ -54,6 +54,7 @@ fun NavGraphBuilder.MomentGraph(
                 modifier = modifier,
                 viewModel = viewModel,
                 navigateToMoment = { navController.navigate(ScreenDestinations.Moment.route) },
+                onErrorSnackBar = onErrorSnackBar,
             )
         }
     }

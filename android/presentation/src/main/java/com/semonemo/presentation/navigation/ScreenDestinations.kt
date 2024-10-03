@@ -149,6 +149,19 @@ sealed class ScreenDestinations(
     data object FrameDone : ScreenDestinations(route = "frameDone")
 
     data object Search : ScreenDestinations(route = "search")
+
+    data object Camera : ScreenDestinations(route = "camera") {
+        override val route: String
+            get() = "camera/{amount}"
+        val arguments =
+            listOf(
+                navArgument(name = "amount") { type = NavType.IntType },
+            )
+
+        fun createRoute(amount: Int) = "camera/$amount"
+    }
+
+    data object PictureSelect : ScreenDestinations(route = "pictureSelect")
 }
 
 // 팔로워 / 팔로잉 목록 전달 위한 NavType 정의

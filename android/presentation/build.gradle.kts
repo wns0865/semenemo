@@ -27,6 +27,7 @@ android {
         buildConfigField("String", "NFT_CONTRACT_ADDRESS", properties["NFT_CONTRACT_ADDRESS"] as String)
         buildConfigField("String", "COIN_CONTRACT_ADDRESS", properties["COIN_CONTRACT_ADDRESS"] as String)
         buildConfigField("String", "SYSTEM_CONTRACT_ADDRESS", properties["SYSTEM_CONTRACT_ADDRESS"] as String)
+        buildConfigField("String", "IPFS_READ_URL", properties["IPFS_READ_URL"] as String)
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -119,6 +120,12 @@ dependencies {
 
     // Gson
     implementation("com.google.code.gson:gson:2.8.8")
+
+    // camera
+    implementation(libs.bundles.camera)
+
+    // PermissionState
+    implementation(libs.accompanist.permissions)
 
     // websocket
     implementation(libs.krossbow.stomp.core)

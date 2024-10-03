@@ -27,12 +27,26 @@ import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 
 @Composable
-fun PictureMainScreen() {
+fun PictureMainRoute(
+    modifier: Modifier = Modifier,
+    navigateToCamera: (Int) -> Unit,
+) {
+    PictureMainScreen(
+        modifier = modifier,
+        navigateToCamera = navigateToCamera,
+    )
+}
+
+@Composable
+fun PictureMainScreen(
+    modifier: Modifier = Modifier,
+    navigateToCamera: (Int) -> Unit = { },
+) {
     val scrollState = rememberScrollState()
 
     Box(
         modifier =
-            Modifier
+            modifier
                 .fillMaxSize()
                 .background(brush = Main01),
     ) {
@@ -78,6 +92,7 @@ fun PictureMainScreen() {
                         title = stringResource(R.string.frame_size1_title),
                         script = stringResource(R.string.frame_size1_script),
                         frameImg = R.drawable.img_frame_size_one_by_four,
+                        onClick = { navigateToCamera(4) },
                     )
                     FrameSizeBox(
                         modifier =
@@ -87,6 +102,7 @@ fun PictureMainScreen() {
                         title = stringResource(R.string.frame_size2_title),
                         script = stringResource(R.string.frame_size2_script),
                         frameImg = R.drawable.img_frame_size_two_by_two,
+                        onClick = { navigateToCamera(4) },
                     )
                     FrameSizeBox(
                         modifier =
@@ -96,6 +112,7 @@ fun PictureMainScreen() {
                         title = stringResource(R.string.frame_size3_title),
                         script = stringResource(R.string.frame_size3_script),
                         frameImg = R.drawable.img_frame_size_one_by_one,
+                        onClick = { navigateToCamera(1) },
                     )
                 }
             }

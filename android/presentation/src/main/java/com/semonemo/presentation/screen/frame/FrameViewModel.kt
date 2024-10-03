@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
@@ -42,6 +43,7 @@ class FrameViewModel
         val uiEvent = _uiEvent.asSharedFlow()
         var assets = mutableStateOf<List<Asset>>(listOf())
             private set
+        private val imageIpfsHash = mutableStateOf("")
 
         fun loadMyAssets() {
             viewModelScope.launch {
@@ -70,7 +72,11 @@ class FrameViewModel
                     }.collectLatest { response ->
                         Log.d("jaehan", "uploadImage : $response")
                         when (response) {
-                            is ApiResponse.Success -> uploadFrame(response.data.hash)
+                            is ApiResponse.Success -> {
+                                imageIpfsHash.value = response.data.hash
+                                uploadFrame(response.data.hash)
+                            }
+
                             is ApiResponse.Error -> {
                                 _uiEvent.emit(FrameUiEvent.Error(response.errorMessage))
                             }
@@ -137,7 +143,10 @@ class FrameViewModel
             }
         }
 
-        fun publishNft(imageHash: String) {
+        fun publishNft(
+            imageHash: String,
+            ipfsHash: String,
+        ) {
             viewModelScope.launch {
                 nftRepository
                     .publishNft(
@@ -149,12 +158,34 @@ class FrameViewModel
                         _uiState.update { it.copy(isLoading = true) }
                     }.onCompletion { _uiState.update { it.copy(isLoading = false) } }
                     .collectLatest { response ->
-                        Log.d("jaehan", "viewModel : $response")
                         when (response) {
                             is ApiResponse.Error -> _uiEvent.emit(FrameUiEvent.Error(response.errorMessage))
-                            is ApiResponse.Success -> _uiEvent.emit(FrameUiEvent.NavigateToHome)
+                            is ApiResponse.Success -> pin(ipfsHash)
                         }
                     }
+            }
+        }
+
+        private suspend fun pin(ipfsHash: String) {
+            combine(
+                ipfsRepository.pin(ipfsHash),
+                ipfsRepository.pin(imageIpfsHash.value),
+            ) { pin1, pin2 ->
+                if (pin1 is ApiResponse.Error) {
+                    _uiEvent.emit(FrameUiEvent.Error(pin1.errorMessage))
+                    return@combine
+                }
+
+                // pin2 처리
+                if (pin2 is ApiResponse.Error) {
+                    _uiEvent.emit(FrameUiEvent.Error(pin2.errorMessage))
+                    return@combine
+                }
+                if (pin1 is ApiResponse.Success && pin2 is ApiResponse.Success) {
+                    _uiEvent.emit(FrameUiEvent.NavigateMoment) // 성공 시 원하는 동작 수행
+                }
+            }.collectLatest { it ->
+                Log.d("jaehan", "$it")
             }
         }
     }

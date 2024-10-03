@@ -12,8 +12,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
@@ -32,32 +30,30 @@ import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.WhiteGray
 import com.semonemo.presentation.util.noRippleClickable
 
-
 /**
  * TODO
  *
  * @param modifier
+ * @param keyword : 기본값
  * @param onValueChanged : 값 변화할 때 람다식 -> 검색어 자동 반영
  * @param onSearchAction : 검색 버튼 누를 경우
+ * @param onClearPressed : x 버튼 누를 경우
  * @param placeHolder : 초기 텍스트 값
  * @param focusManager : 포커스 매니저
  */
 @Composable
 fun SearchTextField(
     modifier: Modifier = Modifier,
-    onValueChanged: (String) -> Unit = {},
+    keyword: String,
+    onValueChanged: (String) -> Unit,
     onSearchAction: (String) -> Unit = {},
+    onClearPressed: () -> Unit,
     placeHolder: String = stringResource(R.string.search_placeholder),
     focusManager: FocusManager,
 ) {
-    val (keyword, setKeyword) =
-        remember {
-            mutableStateOf("")
-        }
     OutlinedTextField(
         value = keyword,
         onValueChange = {
-            setKeyword(it)
             onValueChanged(it)
         },
         placeholder = {
@@ -86,7 +82,7 @@ fun SearchTextField(
         trailingIcon = {
             if (keyword.isEmpty().not()) {
                 IconButton(
-                    onClick = { setKeyword("") },
+                    onClick = onClearPressed,
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_search_cancel),
@@ -123,10 +119,14 @@ fun SearchTextField(
 fun SearchTextFieldPreview() {
     SemonemoTheme {
         SearchTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 10.dp, vertical = 10.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp, vertical = 10.dp),
+            keyword = "",
             focusManager = LocalFocusManager.current,
+            onClearPressed = {},
+            onValueChanged = {}
         )
     }
 }

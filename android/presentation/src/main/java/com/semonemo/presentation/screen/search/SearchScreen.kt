@@ -1,5 +1,6 @@
 package com.semonemo.presentation.screen.search
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -48,9 +49,10 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.semonemo.domain.model.Asset
-import com.semonemo.domain.model.Frame
-import com.semonemo.domain.model.User
+import com.semonemo.domain.model.AssetDetail
+import com.semonemo.domain.model.FrameDetail
+import com.semonemo.domain.model.Profile
+import com.semonemo.presentation.BuildConfig
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BackButton
 import com.semonemo.presentation.component.CustomTab
@@ -64,17 +66,20 @@ import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.util.noRippleClickable
 import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.launch
 
 @Composable
 fun SearchRoute(
     modifier: Modifier = Modifier,
     navigateToProfile: (Long) -> Unit,
+    popUpBackStack: () -> Unit,
     viewModel: SearchViewModel = hiltViewModel(),
 ) {
     val searchState by viewModel.searchState.collectAsStateWithLifecycle()
     SearchScreen(
         modifier = modifier,
         navigateToProfile = navigateToProfile,
+        popUpBackStack = popUpBackStack,
         searchState = searchState,
         searchUser = { viewModel.userSearch(it) },
         searchFrame = { viewModel.frameSearch(it) },
@@ -94,6 +99,7 @@ fun SearchScreen(
 ) {
     val focusManager = LocalFocusManager.current
     val testData = remember { mutableStateListOf("이나경", "이지언", "이준형", "최현성", "전형선", "이재한") }
+    var keyword by remember { mutableStateOf("") }
 
     Column(
         modifier =
@@ -113,9 +119,17 @@ fun SearchScreen(
                     Modifier
                         .fillMaxWidth()
                         .padding(end = 5.dp),
+                keyword = keyword,
+                onValueChanged = {
+                    keyword = it
+                },
                 focusManager = focusManager,
-                onSearchAction = { keyword ->
+                onSearchAction = {
+                    keyword = it
                     searchUser(keyword)
+                },
+                onClearPressed = {
+                    keyword = ""
                 },
             )
         }
@@ -130,10 +144,9 @@ fun SearchScreen(
                     modifier = modifier,
                     recentSearchList = testData,
                     hotSearchList = searchState.hotList,
-                    onClickedKeyword = { keyword ->
-                        // 키워드 검색
-                        // searchTextField에 해당 키워드 뜨도록
-                        searchUser(keyword)
+                    onClickedKeyword = {
+                        keyword = it
+                        searchUser(it)
                     },
                     onDeleteKeyword = {
                         testData.remove(it)
@@ -144,6 +157,7 @@ fun SearchScreen(
             is SearchState.Success -> {
                 Column(modifier = Modifier.fillMaxSize()) {
                     SearchTabScreen(
+                        keyword = keyword,
                         searchUser = { keyword ->
                             searchUser(keyword)
                         },
@@ -205,6 +219,7 @@ fun SearchInitScreen(
 @Composable
 fun SearchTabScreen(
     modifier: Modifier = Modifier,
+    keyword: String = "",
     searchUser: (String) -> Unit = {},
     searchFrame: (String) -> Unit = {},
     searchAsset: (String) -> Unit = {},
@@ -227,15 +242,15 @@ fun SearchTabScreen(
         )
         when (selectedIndex) {
             0 -> {
-                searchUser("닉네임")
+                searchUser(keyword)
             }
 
             1 -> {
-                searchFrame("프레임")
+                searchFrame(keyword)
             }
 
             2 -> {
-                searchAsset("에셋")
+                searchAsset(keyword)
             }
         }
     }
@@ -244,9 +259,9 @@ fun SearchTabScreen(
 @Composable
 fun SearchSuccessScreen(
     modifier: Modifier = Modifier,
-    userList: List<User> = emptyList(),
-    frameList: List<Frame> = emptyList(),
-    assetList: List<Asset> = emptyList(),
+    userList: List<Profile> = emptyList(),
+    frameList: List<FrameDetail> = emptyList(),
+    assetList: List<AssetDetail> = emptyList(),
     navigateToProfile: (Long) -> Unit = {},
 ) {
     if (userList.isNotEmpty()) {
@@ -262,7 +277,7 @@ fun SearchSuccessScreen(
                 val user = userList[index]
                 UserListItem(
                     userId = user.userId,
-                    profileImgUrl = user.profileImage,
+                    profileImgUrl = user.profileImageUrl,
                     nickname = user.nickname,
                     navigateToProfile = navigateToProfile,
                 )
@@ -274,37 +289,20 @@ fun SearchSuccessScreen(
                 Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
-                    .padding(horizontal = 10.dp),
+                    .padding(horizontal = 10.dp)
+                    .aspectRatio(1f / 2f),
             columns = GridCells.Fixed(2),
             state = rememberLazyGridState(),
         ) {
             items(frameList.size) { index ->
                 val frame = frameList[index]
-                // 실제 api 연결 후 코드는 아래와 같이
-//                GlideImage(
-//                    modifier =
-//                        Modifier
-//                            .fillMaxWidth()
-//                            .padding(8.dp)
-//                            .clip(shape = RoundedCornerShape(10.dp))
-//                            .border(
-//                                width = 1.dp,
-//                                shape = RoundedCornerShape(10.dp),
-//                                color = Gray03,
-//                            ),
-//                    imageModel = frame.imgUrl.toUri(),
-//                    contentScale = ContentScale.Crop,
-//                )
+                val ipfsUrl = BuildConfig.IPFS_READ_URL
+                val imgUrl = ipfsUrl + "ipfs/" + frame.nftInfo.data.image
 
-                // 임시
-                Image(
-                    painter = painterResource(id = R.drawable.img_example3),
-                    contentDescription = null,
-                    contentScale = ContentScale.Inside,
+                GlideImage(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .height(200.dp)
                             .padding(8.dp)
                             .clip(shape = RoundedCornerShape(10.dp))
                             .border(
@@ -312,6 +310,8 @@ fun SearchSuccessScreen(
                                 shape = RoundedCornerShape(10.dp),
                                 color = Gray03,
                             ),
+                    imageModel = imgUrl.toUri(),
+                    contentScale = ContentScale.Crop,
                 )
             }
         }
@@ -327,27 +327,7 @@ fun SearchSuccessScreen(
         ) {
             items(assetList.size) { index ->
                 val asset = assetList[index]
-                // 실제 api 연결 후 코드는 아래와 같이
-//                GlideImage(
-//                    modifier =
-//                        Modifier
-//                            .fillMaxWidth()
-//                            .padding(8.dp)
-//                            .clip(shape = RoundedCornerShape(10.dp))
-//                            .border(
-//                                width = 1.dp,
-//                                shape = RoundedCornerShape(10.dp),
-//                                color = Gray03,
-//                            ),
-//                    imageModel = asset.imgUrl.toUri(),
-//                    contentScale = ContentScale.Crop,
-//                )
-
-                // 임시
-                Image(
-                    painter = painterResource(id = R.drawable.asset_example),
-                    contentDescription = null,
-                    contentScale = ContentScale.Inside,
+                GlideImage(
                     modifier =
                         Modifier
                             .fillMaxWidth()
@@ -359,6 +339,8 @@ fun SearchSuccessScreen(
                                 shape = RoundedCornerShape(10.dp),
                                 color = Gray03,
                             ),
+                    imageModel = asset.imageUrls.toUri(),
+                    contentScale = ContentScale.Crop,
                 )
             }
         }
@@ -369,7 +351,7 @@ fun SearchSuccessScreen(
 fun UserListItem(
     modifier: Modifier = Modifier,
     userId: Long = 0L,
-    profileImgUrl: String = "",
+    profileImgUrl: String? = "",
     nickname: String = "",
     navigateToProfile: (Long) -> Unit = {},
 ) {
@@ -390,7 +372,7 @@ fun UserListItem(
                     .clip(CircleShape),
         ) {
             GlideImage(
-                imageModel = profileImgUrl.toUri(),
+                imageModel = profileImgUrl?.toUri(),
                 contentScale = ContentScale.Crop,
             )
         }
