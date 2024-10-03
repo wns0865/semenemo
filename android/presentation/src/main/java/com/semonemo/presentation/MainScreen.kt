@@ -41,6 +41,7 @@ import com.semonemo.presentation.screen.signup.SignUpRoute
 import com.semonemo.presentation.screen.store.StoreFullViewScreen
 import com.semonemo.presentation.screen.store.StoreScreen
 import com.semonemo.presentation.screen.store.assetSale.AssetSaleRoute
+import com.semonemo.presentation.screen.store.frame.FrameSaleRoute
 import com.semonemo.presentation.screen.wallet.WalletScreen
 import com.semonemo.presentation.theme.Gray01
 import com.semonemo.presentation.theme.GunMetal
@@ -177,8 +178,11 @@ fun MainNavHost(
                 navigateToSearch = {
                     navController.navigate(ScreenDestinations.Search.route)
                 },
-                navigateToSellAsset = {
+                navigateToAssetSale = {
                     navController.navigate(ScreenDestinations.AssetSale.route)
+                },
+                navigateToFrameSale = {
+                    navController.navigate(ScreenDestinations.FrameSale.route)
                 },
             )
         }
@@ -393,6 +397,16 @@ fun MainNavHost(
             StoreFullViewScreen(
                 modifier = modifier,
                 isFrame = navBackStackEntry.arguments?.getBoolean("isFrame") ?: false,
+            )
+        }
+
+        composable(
+            route = ScreenDestinations.FrameSale.route,
+        ) {
+            FrameSaleRoute(
+                modifier = modifier,
+                popUpBackStack = navController::popBackStack,
+                onShowSnackBar = onShowErrorSnackBar,
             )
         }
 

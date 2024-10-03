@@ -124,6 +124,10 @@ sealed class ScreenDestinations(
 
     data object Frame : ScreenDestinations(route = "frame")
 
+    data object FrameSale : ScreenDestinations(route = "frameSale")
+
+    data object AssetSale : ScreenDestinations(route = "assetSale")
+
     data object AuctionProcess : ScreenDestinations(route = "auctionProcess") {
         override val route: String
             get() = "auctionProcess/{auctionId}"
@@ -166,10 +170,10 @@ sealed class ScreenDestinations(
             get() = "pictureSelect/{type}"
         val arguments =
             listOf(
-                navArgument(name = "amount") { type = NavType.IntType },
+                navArgument(name = "type") { type = NavType.IntType },
             )
 
-        fun createRoute(amount: Int) = "camera/$amount"
+        fun createRoute(type: Int) = "pictureSelect/$type"
     }
 
     data object AssetSale : ScreenDestinations(route = "assetSale")

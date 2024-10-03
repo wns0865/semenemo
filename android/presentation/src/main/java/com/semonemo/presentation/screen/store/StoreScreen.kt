@@ -1,6 +1,5 @@
 package com.semonemo.presentation.screen.store
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,7 +18,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,12 +37,14 @@ import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.White
 import com.skydoves.landscapist.glide.GlideImage
 
+@Preview(showBackground = true)
 @Composable
 fun StoreScreen(
     modifier: Modifier = Modifier,
-    navigateToFullView: (Boolean) -> Unit,
-    navigateToSearch: () -> Unit,
-    navigateToSellAsset: () -> Unit,
+    navigateToFullView: (Boolean) -> Unit = {},
+    navigateToSearch: () -> Unit = {},
+    navigateToAssetSale: () -> Unit = {},
+    navigateToFrameSale: () -> Unit = {},
 ) {
     val verticalScrollState = rememberScrollState()
     Surface(
@@ -132,7 +132,8 @@ fun StoreScreen(
         }
         CustomStoreFAB(
             modifier = modifier,
-            navigateToSellAsset = navigateToSellAsset,
+            navigateToAssetSale = navigateToAssetSale,
+            navigateToFrameSale = navigateToFrameSale,
         )
     }
 }
@@ -166,7 +167,7 @@ fun HotRecentFrame(
     }
 }
 
-@Preview(showSystemUi = true)
+@Preview
 @Composable
 fun preview() {
     SemonemoTheme {
