@@ -103,6 +103,6 @@ fun StoreSubFullViewScreen(
     }
     CustomStoreFAB(
         modifier = modifier,
-        navigateToSellAsset = navigateToSellAsset,
+        navigateToAssetSale = navigateToSellAsset,
     )
 }
