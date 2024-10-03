@@ -33,6 +33,7 @@ fun NavGraphBuilder.PictureGraph(
             route = ScreenDestinations.Camera.route,
             arguments = ScreenDestinations.Camera.arguments,
         ) {
+            val amount = it.arguments?.getInt("amount") ?: -1
             val viewModel =
                 hiltViewModel<CameraViewModel>(
                     navController.getBackStackEntry(graphRoute),
@@ -40,6 +41,7 @@ fun NavGraphBuilder.PictureGraph(
 
             CameraRoute(
                 modifier = modifier,
+                amount = amount,
                 popUpBackStack = navController::popBackStack,
                 onShowSnackBar = onErrorSnackBar,
                 viewModel = viewModel,
