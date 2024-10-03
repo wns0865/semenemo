@@ -83,14 +83,6 @@ import dev.shreyaspatil.capturable.controller.CaptureController
 import dev.shreyaspatil.capturable.controller.rememberCaptureController
 import kotlinx.coroutines.launch
 
-enum class FrameType(
-    val idx: Int,
-) {
-    OneByOne(1),
-    TwoByTwo(2),
-    OneByFour(3),
-}
-
 data class OverlayAsset(
     val imageUrl: String,
     var scale: Float = 1f,
