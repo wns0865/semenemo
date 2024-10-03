@@ -83,10 +83,12 @@ import dev.shreyaspatil.capturable.controller.CaptureController
 import dev.shreyaspatil.capturable.controller.rememberCaptureController
 import kotlinx.coroutines.launch
 
-enum class FrameType {
-    OneByOne,
-    TwoByTwo,
-    OneByFour,
+enum class FrameType(
+    val idx: Int,
+) {
+    OneByOne(1),
+    TwoByTwo(2),
+    OneByFour(3),
 }
 
 data class OverlayAsset(
@@ -121,7 +123,7 @@ fun FrameRoute(
 fun FrameScreen(
     modifier: Modifier = Modifier,
     navigateToFrameDone: () -> Unit = {},
-    updateFrame: (Bitmap) -> Unit = {},
+    updateFrame: (Bitmap, FrameType) -> Unit = { _, _ -> },
     onErrorSnackBar: (String) -> Unit = {},
     assets: List<Asset> = listOf(),
 ) {
@@ -330,7 +332,7 @@ fun FrameScreen(
                         val bitmapAsync = captureController.captureAsync()
                         try {
                             val bitmap = bitmapAsync.await().asAndroidBitmap()
-                            updateFrame(bitmap)
+                            updateFrame(bitmap, frameType)
                         } catch (error: Throwable) {
                             onErrorSnackBar(error.message ?: "")
                         }
