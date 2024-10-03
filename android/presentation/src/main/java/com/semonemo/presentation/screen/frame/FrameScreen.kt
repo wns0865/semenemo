@@ -1,6 +1,7 @@
 package com.semonemo.presentation.screen.frame
 
 import android.graphics.Bitmap
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.rememberTransformableState
@@ -48,6 +49,7 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
@@ -90,7 +92,8 @@ enum class FrameType {
 }
 
 data class OverlayAsset(
-    val imageUrl: String,
+//    val imageUrl: String,
+    val imageUrl: Int,
     var scale: Float = 1f,
     var offsetX: Float = 0f,
     var offsetY: Float = 0f,
@@ -156,6 +159,13 @@ fun FrameScreen(
             PurpleGradient,
             BlueGradient,
             Rainbow,
+        )
+
+    val assets =
+        listOf(
+            R.drawable.asset_example,
+            R.drawable.asset_example2,
+            R.drawable.asset_example3,
         )
 
     var frameType by remember { mutableStateOf(FrameType.OneByOne) }
@@ -290,21 +300,8 @@ fun FrameScreen(
                         state = rememberLazyGridState(),
                     ) {
                         items(assets.size) { index ->
-                            GlideImage(
-                                imageModel = assets[index].imageUrl,
-                                contentScale = ContentScale.Crop,
-                                modifier =
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .aspectRatio(1f)
-                                        .padding(8.dp)
-                                        .clip(shape = RoundedCornerShape(10.dp))
-                                        .background(color = WhiteGray)
-                                        .clickable { overlayAssets.add(OverlayAsset(imageUrl = assets[index].imageUrl)) },
-                            )
-//                            Image(
-//                                painter = painterResource(id = assets[index]),
-//                                contentDescription = null,
+//                            GlideImage(
+//                                imageModel = assets[index].imageUrl,
 //                                contentScale = ContentScale.Crop,
 //                                modifier =
 //                                    Modifier
@@ -313,10 +310,23 @@ fun FrameScreen(
 //                                        .padding(8.dp)
 //                                        .clip(shape = RoundedCornerShape(10.dp))
 //                                        .background(color = WhiteGray)
-//                                        .clickable {
-//                                            overlayAssets.add(OverlayAsset(resourceId = assets[index]))
-//                                        },
+//                                        .clickable { overlayAssets.add(OverlayAsset(imageUrl = assets[index].imageUrl)) },
 //                            )
+                            Image(
+                                painter = painterResource(id = assets[index]),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .aspectRatio(1f)
+                                        .padding(8.dp)
+                                        .clip(shape = RoundedCornerShape(10.dp))
+                                        .background(color = WhiteGray)
+                                        .clickable {
+                                            overlayAssets.add(OverlayAsset(imageUrl = assets[index]))
+                                        },
+                            )
                         }
                     }
                 }
@@ -625,6 +635,7 @@ fun ShowAssets(
         GlideImage(
             modifier = assetModifier.wrapContentSize(),
             imageModel = asset.imageUrl,
+            contentScale = ContentScale.Inside,
         )
     }
 }
