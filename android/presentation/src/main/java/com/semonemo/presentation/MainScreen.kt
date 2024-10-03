@@ -40,6 +40,7 @@ import com.semonemo.presentation.screen.search.SearchRoute
 import com.semonemo.presentation.screen.signup.SignUpRoute
 import com.semonemo.presentation.screen.store.StoreFullViewScreen
 import com.semonemo.presentation.screen.store.StoreScreen
+import com.semonemo.presentation.screen.store.assetSale.AssetSaleRoute
 import com.semonemo.presentation.screen.wallet.WalletScreen
 import com.semonemo.presentation.theme.Gray01
 import com.semonemo.presentation.theme.GunMetal
@@ -175,6 +176,9 @@ fun MainNavHost(
                 },
                 navigateToSearch = {
                     navController.navigate(ScreenDestinations.Search.route)
+                },
+                navigateToSellAsset = {
+                    navController.navigate(ScreenDestinations.AssetSale.route)
                 },
             )
         }
@@ -398,5 +402,16 @@ fun MainNavHost(
             onErrorSnackBar = onShowErrorSnackBar,
             graphRoute = "picture_graph",
         )
+
+        composable(
+            route = ScreenDestinations.AssetSale.route,
+        ) {
+            AssetSaleRoute(
+                modifier = modifier,
+                navigateToStore = {
+                    navController.navigate(ScreenDestinations.Shop.route)
+                },
+            )
+        }
     }
 }

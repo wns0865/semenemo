@@ -45,7 +45,10 @@ import kotlinx.coroutines.delay
  * @param modifier
  */
 @Composable
-fun CustomStoreFAB(modifier: Modifier = Modifier) {
+fun CustomStoreFAB(
+    modifier: Modifier = Modifier,
+    navigateToSellAsset: () -> Unit,
+) {
     var expanded by remember { mutableStateOf(false) }
 
     Box(
@@ -62,6 +65,7 @@ fun CustomStoreFAB(modifier: Modifier = Modifier) {
                 delayMillis = 100,
                 textLabel = stringResource(id = R.string.fab_label_sell_asset),
                 imgRes = R.drawable.ic_fab_asset,
+                onClick = navigateToSellAsset,
             )
             CustomStoreSubFAB(
                 visible = expanded,
@@ -102,6 +106,7 @@ fun CustomStoreSubFAB(
     delayMillis: Int,
     textLabel: String,
     imgRes: Int,
+    onClick: () -> Unit = {},
 ) {
     var isVisible by remember { mutableStateOf(false) }
     var test by remember {
@@ -144,14 +149,15 @@ fun CustomStoreSubFAB(
                         .background(GunMetal, shape = RoundedCornerShape(8.dp))
                         .padding(horizontal = 8.dp, vertical = 4.dp),
             )
-
             Spacer(modifier = Modifier.width(8.dp))
-
             Box(
                 modifier =
                     modifier
                         .size(32.dp)
-                        .background(GunMetal, shape = CircleShape),
+                        .background(GunMetal, shape = CircleShape)
+                        .noRippleClickable {
+                            onClick()
+                        },
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
@@ -167,5 +173,5 @@ fun CustomStoreSubFAB(
 @Preview(showBackground = true)
 @Composable
 fun CustomStoreFABPreview() {
-    CustomStoreFAB()
+//    CustomStoreFAB()
 }

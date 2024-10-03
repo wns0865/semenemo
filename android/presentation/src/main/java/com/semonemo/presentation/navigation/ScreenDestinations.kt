@@ -162,6 +162,8 @@ sealed class ScreenDestinations(
     }
 
     data object PictureSelect : ScreenDestinations(route = "pictureSelect")
+
+    data object AssetSale : ScreenDestinations(route = "assetSale")
 }
 
 // 팔로워 / 팔로잉 목록 전달 위한 NavType 정의

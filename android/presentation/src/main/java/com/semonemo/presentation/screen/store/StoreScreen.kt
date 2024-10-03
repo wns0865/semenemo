@@ -42,8 +42,9 @@ import com.skydoves.landscapist.glide.GlideImage
 @Composable
 fun StoreScreen(
     modifier: Modifier = Modifier,
-    navigateToFullView: (Boolean) -> Unit = {},
-    navigateToSearch: () -> Unit = {},
+    navigateToFullView: (Boolean) -> Unit,
+    navigateToSearch: () -> Unit,
+    navigateToSellAsset: () -> Unit,
 ) {
     val verticalScrollState = rememberScrollState()
     Surface(
@@ -129,7 +130,10 @@ fun StoreScreen(
             )
             Spacer(modifier = Modifier.height(100.dp))
         }
-        CustomStoreFAB(modifier = modifier)
+        CustomStoreFAB(
+            modifier = modifier,
+            navigateToSellAsset = navigateToSellAsset,
+        )
     }
 }
 
@@ -166,6 +170,6 @@ fun HotRecentFrame(
 @Composable
 fun preview() {
     SemonemoTheme {
-        StoreScreen()
+//        StoreScreen()
     }
 }
