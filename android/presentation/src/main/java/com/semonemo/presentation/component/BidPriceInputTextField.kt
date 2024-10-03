@@ -25,10 +25,10 @@ import com.semonemo.presentation.theme.WhiteGray
 fun BidPriceInputTextField(
     modifier: Modifier = Modifier,
     onValueChange: (String) -> Unit,
-    bidPrice: String = "",
+    bidPrice: Int = 0,
     onClearPressed: () -> Unit = {},
 ) {
-    val (text, setText) =
+    val (price, setPrice) =
         remember {
             mutableStateOf("")
         }
@@ -36,9 +36,9 @@ fun BidPriceInputTextField(
         modifier =
             modifier
                 .fillMaxWidth(),
-        value = text,
+        value = price,
         onValueChange = {
-            setText(it)
+            setPrice(it)
             // onValueChange(it)
         },
         shape = RoundedCornerShape(10.dp),
