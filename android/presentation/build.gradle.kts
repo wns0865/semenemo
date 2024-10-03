@@ -123,4 +123,7 @@ dependencies {
 
     // camera
     implementation(libs.bundles.camera)
+
+    // PermissionState
+    implementation(libs.accompanist.permissions)
 }
