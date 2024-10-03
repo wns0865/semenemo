@@ -1,4 +1,4 @@
-package com.semonemo.presentation.screen.camera.subscreen
+package com.semonemo.presentation.screen.picture.camera.subscreen
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image

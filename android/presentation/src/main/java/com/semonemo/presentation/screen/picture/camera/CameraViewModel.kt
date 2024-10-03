@@ -1,6 +1,7 @@
-package com.semonemo.presentation.screen.camera
+package com.semonemo.presentation.screen.picture.camera
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -7,8 +7,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.semonemo.presentation.navigation.ScreenDestinations
-import com.semonemo.presentation.screen.camera.CameraRoute
-import com.semonemo.presentation.screen.camera.CameraViewModel
+import com.semonemo.presentation.screen.picture.camera.CameraRoute
+import com.semonemo.presentation.screen.picture.camera.CameraViewModel
 
 fun NavGraphBuilder.PictureGraph(
     modifier: Modifier,

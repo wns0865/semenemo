@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.TopAppBar
-import com.semonemo.presentation.screen.camera.CameraViewModel
+import com.semonemo.presentation.screen.picture.camera.CameraViewModel
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.theme.SemonemoTheme

@@ -1,4 +1,4 @@
-package com.semonemo.presentation.screen.camera
+package com.semonemo.presentation.screen.picture.camera
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -50,9 +50,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.TopAppBar
-import com.semonemo.presentation.screen.camera.subscreen.CameraPreviewWithPermission
-import com.semonemo.presentation.screen.camera.subscreen.CircularCountdownTimer
-import com.semonemo.presentation.screen.camera.subscreen.PicturesContent
+import com.semonemo.presentation.screen.picture.camera.subscreen.CameraPreviewWithPermission
+import com.semonemo.presentation.screen.picture.camera.subscreen.CircularCountdownTimer
+import com.semonemo.presentation.screen.picture.camera.subscreen.PicturesContent
 import com.semonemo.presentation.theme.Gray01
 import com.semonemo.presentation.theme.Gray02
 import com.semonemo.presentation.theme.Gray03
@@ -212,7 +212,7 @@ fun CameraScreen(
             ) {
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    modifier = Modifier.noRippleClickable { popUpBackStack() },
+                    modifier = Modifier.noRippleClickable { navigateToSelect() },
                     text = stringResource(id = R.string.mypage_cancel_tag),
                     style = Typography.bodyMedium.copy(color = White),
                 )
