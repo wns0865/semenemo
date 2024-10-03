@@ -18,10 +18,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -45,71 +45,77 @@ fun StoreScreen(
     navigateToSearch: () -> Unit = {},
 ) {
     val verticalScrollState = rememberScrollState()
-    Column(
+    Surface(
         modifier =
             modifier
-                .fillMaxSize()
-                .statusBarsPadding()
-                .navigationBarsPadding()
-                .verticalScroll(state = verticalScrollState),
+                .fillMaxSize(),
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .statusBarsPadding()
+                    .navigationBarsPadding()
+                    .verticalScroll(state = verticalScrollState),
         ) {
-            SectionHeader(text = "최근 인기 프레임")
-            Spacer(modifier.weight(1f))
-            Icon(
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                SectionHeader(text = "최근 인기 프레임")
+                Spacer(modifier.weight(1f))
+                Icon(
+                    modifier =
+                        Modifier
+                            .padding(end = 15.dp)
+                            .clickable {
+                                navigateToSearch()
+                            },
+                    painter = painterResource(id = R.drawable.ic_search_magnifier),
+                    contentDescription = null,
+                    tint = GunMetal,
+                )
+            }
+            // 아마 리스트형태로 뷰페이저로 들어갈듯
+            HotRecentFrame(
+                imgUrl = "https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNDA3MjhfMjQ5%2FMDAxNzIyMTc0NDI3NTUx.2i13wuVFmNnbi_PAAaWFaMoH8dnfMCELiKLi3FzWDowg.Jpv5rH4kLAXvpQvH7ZSiFATG9sCXuZxNlSx-Ac3hXlEg.JPEG%2FIMG%25A3%25DF2672.JPG&type=a340",
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                SectionHeader(text = stringResource(id = R.string.section_header_sell_frame))
+                SectionFullViewButton(onClick = {
+                    navigateToFullView(true)
+                })
+            }
+
+            StoreSubScreen(
                 modifier =
                     Modifier
-                        .padding(end = 15.dp)
-                        .clickable {
-                            navigateToSearch()
-                        },
-                painter = painterResource(id = R.drawable.ic_search_magnifier),
-                contentDescription = null,
-                tint = GunMetal,
+                        .height(300.dp)
+                        .fillMaxWidth(),
+                isFrame = true,
             )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                SectionHeader(text = stringResource(id = R.string.section_header_sell_asset))
+                SectionFullViewButton(onClick = { navigateToFullView(false) })
+            }
+            StoreSubScreen(
+                modifier =
+                    Modifier
+                        .height(400.dp)
+                        .fillMaxWidth(),
+                isFrame = false,
+            )
+            Spacer(modifier = Modifier.height(100.dp))
         }
-        // 아마 리스트형태로 뷰페이저로 들어갈듯
-        HotRecentFrame(
-            imgUrl = "https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNDA3MjhfMjQ5%2FMDAxNzIyMTc0NDI3NTUx.2i13wuVFmNnbi_PAAaWFaMoH8dnfMCELiKLi3FzWDowg.Jpv5rH4kLAXvpQvH7ZSiFATG9sCXuZxNlSx-Ac3hXlEg.JPEG%2FIMG%25A3%25DF2672.JPG&type=a340",
-        )
-        Row(
-            modifier = modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            SectionHeader(text = stringResource(id = R.string.section_header_sell_frame))
-            SectionFullViewButton(onClick = {
-                navigateToFullView(true)
-            })
-        }
-
-        StoreSubScreen(
-            modifier =
-                modifier
-                    .height(300.dp)
-                    .fillMaxWidth(),
-            isFrame = true,
-        )
-        Row(
-            modifier = modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            SectionHeader(text = stringResource(id = R.string.section_header_sell_asset))
-            SectionFullViewButton(onClick = { navigateToFullView(false) })
-        }
-        StoreSubScreen(
-            modifier =
-                modifier
-                    .height(400.dp)
-                    .fillMaxWidth(),
-            isFrame = false,
-        )
-        Spacer(modifier = Modifier.height(100.dp))
+        CustomStoreFAB(modifier = modifier)
     }
-    CustomStoreFAB(modifier = modifier)
 }
 
 @Composable

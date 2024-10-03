@@ -2,6 +2,9 @@
 <resources>
     <string name="in_progress_short_action">진행 중인 단기 경매</string>
     <string name="in_progress_long_action">진행 중인 장기 경매"</string>
+
+    <string name="fab_label_register_short_auction">단기경매 등록</string>
+    <string name="fab_label_register_long_auction">장기경매 등록</string>
     
     <string name="auction_register_title">경매 등록</string>
     <string name="auction_add_title">경매에 등록할\n프레임을 추가하세요</string>
