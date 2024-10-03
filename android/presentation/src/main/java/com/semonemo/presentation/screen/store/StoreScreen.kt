@@ -26,8 +26,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.semonemo.domain.model.FrameDetail
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.CustomStoreFAB
+import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.SectionFullViewButton
 import com.semonemo.presentation.component.SectionHeader
 import com.semonemo.presentation.screen.store.subScreen.StoreSubScreen
@@ -36,7 +40,48 @@ import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.White
 import com.skydoves.landscapist.glide.GlideImage
 
-@Preview(showBackground = true)
+@Composable
+fun StoreRoute(
+    modifier: Modifier = Modifier,
+    navigateToFullView: (Boolean) -> Unit = {},
+    navigateToSearch: () -> Unit = {},
+    navigateToAssetSale: () -> Unit = {},
+    navigateToFrameSale: () -> Unit = {},
+    viewModel: StoreViewModel = hiltViewModel(),
+) {
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+    StoreContent(
+        modifier = modifier,
+        navigateToAssetSale = navigateToAssetSale,
+        navigateToFrameSale = navigateToFrameSale,
+        navigateToFullView = navigateToFullView,
+        navigateToSearch = navigateToSearch,
+        uiState = uiState.value,
+    )
+}
+
+@Composable
+fun StoreContent(
+    modifier: Modifier = Modifier,
+    navigateToFullView: (Boolean) -> Unit = {},
+    navigateToSearch: () -> Unit = {},
+    navigateToAssetSale: () -> Unit = {},
+    navigateToFrameSale: () -> Unit = {},
+    uiState: StoreUiState,
+) {
+    if (uiState.isLoading) {
+        LoadingDialog()
+    }
+    StoreScreen(
+        modifier = modifier,
+        navigateToAssetSale = navigateToAssetSale,
+        navigateToFrameSale = navigateToFrameSale,
+        navigateToFullView = navigateToFullView,
+        navigateToSearch = navigateToSearch,
+        saleFrames = uiState.saleFrame,
+    )
+}
+
 @Composable
 fun StoreScreen(
     modifier: Modifier = Modifier,
@@ -44,6 +89,7 @@ fun StoreScreen(
     navigateToSearch: () -> Unit = {},
     navigateToAssetSale: () -> Unit = {},
     navigateToFrameSale: () -> Unit = {},
+    saleFrames: List<FrameDetail> = listOf(),
 ) {
     val verticalScrollState = rememberScrollState()
     Column(
@@ -92,6 +138,7 @@ fun StoreScreen(
                     .height(300.dp)
                     .fillMaxWidth(),
             isFrame = true,
+            saleFrames = saleFrames,
         )
         Row(
             modifier = modifier.fillMaxWidth(),
@@ -146,10 +193,10 @@ fun HotRecentFrame(
     }
 }
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun preview() {
     SemonemoTheme {
-        HotRecentFrame()
+        StoreScreen()
     }
 }

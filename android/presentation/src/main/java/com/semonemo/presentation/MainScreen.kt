@@ -40,7 +40,7 @@ import com.semonemo.presentation.screen.search.SearchRoute
 import com.semonemo.presentation.screen.signup.SignUpRoute
 import com.semonemo.presentation.screen.store.AssetSaleScreen
 import com.semonemo.presentation.screen.store.StoreFullViewScreen
-import com.semonemo.presentation.screen.store.StoreScreen
+import com.semonemo.presentation.screen.store.StoreRoute
 import com.semonemo.presentation.screen.store.frame.FrameSaleRoute
 import com.semonemo.presentation.screen.wallet.WalletScreen
 import com.semonemo.presentation.theme.Gray01
@@ -166,7 +166,7 @@ fun MainNavHost(
         composable(
             route = ScreenDestinations.Shop.route,
         ) {
-            StoreScreen(
+            StoreRoute(
                 modifier = modifier,
                 navigateToFullView = { isFrame ->
                     navController.navigate(
