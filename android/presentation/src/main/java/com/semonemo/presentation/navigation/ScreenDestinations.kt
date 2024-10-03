@@ -166,11 +166,13 @@ sealed class ScreenDestinations(
             get() = "pictureSelect/{type}"
         val arguments =
             listOf(
-                navArgument(name = "type") { type = NavType.IntType },
+                navArgument(name = "amount") { type = NavType.IntType },
             )
 
-        fun createRoute(type: Int) = "pictureSelect/$type"
+        fun createRoute(amount: Int) = "camera/$amount"
     }
+
+    data object AssetSale : ScreenDestinations(route = "assetSale")
 }
 
 // 팔로워 / 팔로잉 목록 전달 위한 NavType 정의
