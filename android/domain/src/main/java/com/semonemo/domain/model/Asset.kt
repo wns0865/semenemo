@@ -35,7 +35,6 @@ data class SellAssetDetail(
     val createAt: String = "",
     val hits: Long = 0,
     val likeCount: Long = 0,
-    val nickname: String = "",
     val price: Long = 0,
     val isLiked: Boolean = false,
     val tags: List<String> = emptyList(),

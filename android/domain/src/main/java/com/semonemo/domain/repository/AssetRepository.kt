@@ -24,7 +24,7 @@ interface AssetRepository {
 
     suspend fun getCreateAssets(userId: Long): Flow<ApiResponse<CreateAsset>>
 
-    suspend fun likeAsset(assetSellId: Long): Flow<ApiResponse<Unit>>
+    suspend fun likeAsset(assetSellId: Long): Flow<ApiResponse<Long>>
 
-    suspend fun unlikeAsset(assetSellId: Long): Flow<ApiResponse<Unit>>
+    suspend fun unlikeAsset(assetSellId: Long): Flow<ApiResponse<Long>>
 }
