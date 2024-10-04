@@ -28,4 +28,6 @@ interface NftRepository {
     suspend fun disLikeNft(marketId: Long): Flow<ApiResponse<Long>>
 
     suspend fun openNft(nftId: Long): Flow<ApiResponse<Unit>>
+
+    suspend fun getNftDetail(nftId: Long): Flow<ApiResponse<MyFrame>>
 }

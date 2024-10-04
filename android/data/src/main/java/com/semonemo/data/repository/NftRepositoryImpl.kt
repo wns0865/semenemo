@@ -126,4 +126,9 @@ class NftRepositoryImpl
             flow {
                 emit(emitApiResponse(apiResponse = { api.open(nftId) }, default = Unit))
             }
+
+        override suspend fun getNftDetail(nftId: Long): Flow<ApiResponse<MyFrame>> =
+            flow {
+                emit(emitApiResponse(apiResponse = { api.getNftDetail(nftId) }, default = MyFrame()))
+            }
     }
