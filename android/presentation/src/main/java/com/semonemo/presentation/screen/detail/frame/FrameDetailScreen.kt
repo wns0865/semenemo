@@ -107,7 +107,7 @@ fun FrameDetailContent(
         nickname = frame.seller.nickname,
         frameContent = frame.nftInfo.data.content,
         isLiked = uiState.isLiked,
-        heartCount = frame.likeCount,
+        heartCount = uiState.likedCount,
         price = frame.price.toDouble(),
         profileImageUrl = frame.seller.profileImage,
         onClickedLikeNft = onClickedLikeNft,
