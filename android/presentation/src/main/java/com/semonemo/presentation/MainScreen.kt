@@ -378,7 +378,7 @@ fun MainNavHost(
         ) {
             DetailRoute(
                 modifier = modifier,
-                onShowErrorSnackBar = onShowErrorSnackBar,
+                onShowSnackBar = onShowErrorSnackBar,
                 popUpBackStack = navController::popBackStack,
             )
         }
