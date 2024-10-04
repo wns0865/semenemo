@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,6 +32,28 @@ class DetailViewModel
 
         init {
             getNftDetail()
+        }
+
+        // NFT 공개, 비공개 전환
+        fun openNft() {
+            viewModelScope.launch {
+                if (nftId != -1L) {
+                    nftRepository.openNft(nftId).collectLatest { response ->
+                        when (response) {
+                            is ApiResponse.Error -> {
+                                _uiEvent.emit(DetailUiEvent.Error(response.errorMessage))
+                            }
+
+                            is ApiResponse.Success -> {
+                                _uiEvent.emit(DetailUiEvent.OpenSuccess("공개 여부가 전환되었습니다."))
+                                _uiState.update { currentState ->
+                                    currentState.copy(isOpen = !currentState.isOpen)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         // NFT 자세히 불러오기
