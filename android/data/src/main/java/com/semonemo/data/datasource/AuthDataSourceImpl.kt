@@ -87,7 +87,13 @@ class AuthDataSourceImpl
             dataStore.edit { prefs ->
                 val currentKeywords =
                     prefs[CURRENT_KEYWORD_KEY]?.split(",")?.toMutableList() ?: mutableListOf()
-                currentKeywords.add(0, keyword)
+
+                if (currentKeywords.contains(keyword)) {
+                    currentKeywords.remove(keyword)
+                    currentKeywords.add(0, keyword)
+                } else {
+                    currentKeywords.add(0, keyword)
+                }
 
                 prefs[CURRENT_KEYWORD_KEY] = currentKeywords.joinToString(",")
             }
