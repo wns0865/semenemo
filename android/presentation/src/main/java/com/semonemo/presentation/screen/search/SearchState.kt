@@ -14,6 +14,7 @@ sealed interface SearchState {
 
     @Immutable
     data class Init(
+        val recentList: List<String> = listOf(),
         val hotList: List<HotKeyword> = listOf(),
     ) : SearchState
 

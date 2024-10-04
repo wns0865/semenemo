@@ -1,6 +1,7 @@
 package com.semonemo.presentation.screen.search
 
 import androidx.lifecycle.viewModelScope
+import com.semonemo.domain.datasource.AuthDataSource
 import com.semonemo.domain.model.ApiResponse
 import com.semonemo.domain.repository.SearchRepository
 import com.semonemo.presentation.base.BaseViewModel
@@ -16,6 +17,7 @@ class SearchViewModel
     @Inject
     constructor(
         private val searchRepository: SearchRepository,
+        private val authDataSource: AuthDataSource,
     ) : BaseViewModel() {
         private val _searchState = MutableStateFlow<SearchState>(SearchState.Loading)
         val searchState = _searchState.asStateFlow()
@@ -25,7 +27,7 @@ class SearchViewModel
         }
 
         // 사람들이 많이 찾는 거 순위 불러오기
-        private fun loadHotSearch() {
+        fun loadHotSearch() {
             viewModelScope.launch {
                 searchRepository.getHotKeywords().collectLatest { response ->
                     when (response) {
@@ -36,11 +38,24 @@ class SearchViewModel
                         is ApiResponse.Success -> {
                             _searchState.value =
                                 SearchState.Init(
+                                    recentList = authDataSource.getCurrentKeyword(),
                                     hotList = response.data,
                                 )
                         }
                     }
                 }
+            }
+        }
+
+        fun removeKeyword(keyword: String) {
+            viewModelScope.launch {
+                authDataSource.removeKeyword(keyword)
+            }
+        }
+
+        fun addKeyword(keyword: String) {
+            viewModelScope.launch {
+                authDataSource.saveCurrentKeyword(keyword)
             }
         }
 
