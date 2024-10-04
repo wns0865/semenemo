@@ -122,7 +122,7 @@ fun FrameSaleRoute(
                         listOf<TypeReference<*>>(object : TypeReference<Uint256>() {}),
                     ),
                 onSuccess = { tx ->
-                    viewModel.sellRegisterFrame(price = price.toBigInteger(), hash = tx)
+                    viewModel.sellRegisterFrame(price = price.toLong(), hash = tx)
                 },
                 onError = {
                     onShowSnackBar(it)
