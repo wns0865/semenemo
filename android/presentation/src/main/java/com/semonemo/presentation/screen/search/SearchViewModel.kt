@@ -27,15 +27,20 @@ class SearchViewModel
         // 사람들이 많이 찾는 거 순위 불러오기
         private fun loadHotSearch() {
             viewModelScope.launch {
-                _searchState.value =
-                    SearchState.Init(
-                        hotList =
-                            listOf(
-                                "아이유",
-                                "도은호",
-                                "플레이브",
-                            ),
-                    )
+                searchRepository.getHotKeywords().collectLatest { response ->
+                    when (response) {
+                        is ApiResponse.Error -> {
+                            _searchState.value = SearchState.Error(response.errorMessage)
+                        }
+
+                        is ApiResponse.Success -> {
+                            _searchState.value =
+                                SearchState.Init(
+                                    hotList = response.data,
+                                )
+                        }
+                    }
+                }
             }
         }
 

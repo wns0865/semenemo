@@ -50,6 +50,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.semonemo.domain.model.AssetDetail
 import com.semonemo.domain.model.FrameDetail
+import com.semonemo.domain.model.HotKeyword
 import com.semonemo.domain.model.Profile
 import com.semonemo.presentation.BuildConfig
 import com.semonemo.presentation.R
@@ -186,8 +187,8 @@ fun SearchScreen(
 @Composable
 fun SearchInitScreen(
     modifier: Modifier = Modifier,
-    recentSearchList: List<String> = emptyList(),
-    hotSearchList: List<String> = emptyList(),
+    recentSearchList: List<String> = listOf(),
+    hotSearchList: List<HotKeyword> = listOf(),
     onClickedKeyword: (String) -> Unit,
     onDeleteKeyword: (String) -> Unit,
 ) {
@@ -457,7 +458,7 @@ fun HotKeywordSection(modifier: Modifier = Modifier) {
 
 @Composable
 fun HotKeywords(
-    keywords: List<String> = listOf(),
+    keywords: List<HotKeyword> = listOf(),
     onClick: (String) -> Unit = {},
 ) {
     Column(
@@ -469,10 +470,10 @@ fun HotKeywords(
             HotKeyWord(
                 modifier =
                     Modifier.noRippleClickable {
-                        onClick(item)
+                        onClick(item.keyword)
                     },
                 number = index + 1,
-                keyword = item,
+                keyword = item.keyword,
             )
         }
     }
