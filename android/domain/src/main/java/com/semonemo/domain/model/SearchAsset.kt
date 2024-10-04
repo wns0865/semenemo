@@ -16,7 +16,7 @@ data class SearchAsset(
 data class AssetDetail(
     val assetSellId: Long = 0,
     val assetId: Long = 0,
-    val creator: Long = 0,
+    val creator: User = User(),
     val imageUrls: String = "",
     val price: Long = 0,
     val hits: Long = 0,
