@@ -121,4 +121,14 @@ class AssetRepositoryImpl
                     is ApiResponse.Success -> emit(ApiResponse.Success(response.data.likedCount))
                 }
             }
+
+        override suspend fun getSaleAssetDetail(assetSellId: Long): Flow<ApiResponse<SellAssetDetail>> =
+            flow {
+                emit(
+                    emitApiResponse(
+                        apiResponse = { api.getSaleAssetDetail(assetSellId) },
+                        default = SellAssetDetail(),
+                    ),
+                )
+            }
     }

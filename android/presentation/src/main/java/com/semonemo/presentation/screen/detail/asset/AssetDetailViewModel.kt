@@ -1,10 +1,10 @@
-package com.semonemo.presentation.screen.detail.frame
+package com.semonemo.presentation.screen.detail.asset
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.semonemo.domain.model.ApiResponse
-import com.semonemo.domain.repository.NftRepository
+import com.semonemo.domain.repository.AssetRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,25 +18,25 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class FrameDetailViewModel
+class AssetDetailViewModel
     @Inject
     constructor(
-        private val nftRepository: NftRepository,
+        private val assetRepository: AssetRepository,
         private val savedStateHandle: SavedStateHandle,
     ) : ViewModel() {
-        private val _uiState = MutableStateFlow(FrameDetailUiState())
+        private val _uiState = MutableStateFlow(AssetDetailUiState())
         val uiState = _uiState.asStateFlow()
-        private val _uiEvent = MutableSharedFlow<FrameDetailUiEvent>()
+        private val _uiEvent = MutableSharedFlow<AssetDetailUiEvent>()
         val uiEvent = _uiEvent.asSharedFlow()
 
         init {
-            getSaleNftDetail(savedStateHandle["marketId"] ?: -1L)
+            getSaleNftDetail(savedStateHandle["assetSellId"] ?: -1L)
         }
 
-        private fun getSaleNftDetail(marketId: Long) {
+        private fun getSaleNftDetail(assetSellId: Long) {
             viewModelScope.launch {
-                nftRepository
-                    .getSaleNftDetail(marketId)
+                assetRepository
+                    .getSaleAssetDetail(assetSellId)
                     .onStart {
                         _uiState.update {
                             it.copy(isLoading = true)
@@ -46,13 +46,13 @@ class FrameDetailViewModel
                     }.collectLatest { response ->
                         when (response) {
                             is ApiResponse.Error -> {
-                                _uiEvent.emit(FrameDetailUiEvent.Error(response.errorMessage))
+                                _uiEvent.emit(AssetDetailUiEvent.Error(response.errorMessage))
                             }
 
                             is ApiResponse.Success -> {
                                 _uiState.update {
                                     it.copy(
-                                        frame = response.data,
+                                        asset = response.data,
                                         isLiked = response.data.isLiked,
                                         likedCount = response.data.likeCount,
                                     )
@@ -63,23 +63,23 @@ class FrameDetailViewModel
             }
         }
 
-        fun onClickedLikeNft(isLiked: Boolean) {
+        fun onLikedAsset(isLiked: Boolean) {
             _uiState.update { it.copy(isLiked = isLiked) }
-            val marketId = uiState.value.frame.marketId
+            val assetSellId = uiState.value.asset.assetSellId
             viewModelScope.launch {
                 if (isLiked) {
-                    likeNft(marketId)
+                    likeAsset(assetSellId)
                 } else {
-                    disLikeNft(marketId)
+                    disLikeAsset(assetSellId)
                 }
             }
         }
 
-        private suspend fun likeNft(marketId: Long) {
-            nftRepository.likeNft(marketId).collectLatest { response ->
+        private suspend fun likeAsset(assetSellId: Long) {
+            assetRepository.likeAsset(assetSellId).collectLatest { response ->
                 when (response) {
                     is ApiResponse.Error -> {
-                        _uiEvent.emit(FrameDetailUiEvent.Error(response.errorMessage))
+                        _uiEvent.emit(AssetDetailUiEvent.Error(response.errorMessage))
                     }
 
                     is ApiResponse.Success -> {
@@ -89,11 +89,11 @@ class FrameDetailViewModel
             }
         }
 
-        private suspend fun disLikeNft(marketId: Long) {
-            nftRepository.disLikeNft(marketId).collectLatest { response ->
+        private suspend fun disLikeAsset(assetSellId: Long) {
+            assetRepository.unlikeAsset(assetSellId).collectLatest { response ->
                 when (response) {
                     is ApiResponse.Error -> {
-                        _uiEvent.emit(FrameDetailUiEvent.Error(response.errorMessage))
+                        _uiEvent.emit(AssetDetailUiEvent.Error(response.errorMessage))
                     }
 
                     is ApiResponse.Success -> {

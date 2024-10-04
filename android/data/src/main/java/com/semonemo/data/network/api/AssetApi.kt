@@ -71,4 +71,9 @@ interface AssetApi {
     suspend fun unlikeAsset(
         @Path("assetSellId") assetSellId: Long,
     ): BaseResponse<LikeResponse>
+
+    @GET("api/asset/sell/{assetSellId}/detail")
+    suspend fun getSaleAssetDetail(
+        @Path("assetSellId") assetSellId: Long,
+    ): BaseResponse<SellAssetDetail>
 }
