@@ -57,7 +57,7 @@ fun StoreSubScreen(
                         Modifier
                             .fillMaxHeight()
                             .aspectRatio(1f),
-                    author = storeItem.nickname,
+                    author = storeItem.creator.nickname,
                     imgUrl = storeItem.imageUrl,
                     price = storeItem.price.toInt(),
                     isLiked = storeItem.isLiked,
