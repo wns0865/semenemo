@@ -44,7 +44,7 @@ interface NftApi {
     ): BaseResponse<SearchFrame>
 
     @GET("api/nft/{marketId}")
-    suspend fun getNftDetail(
+    suspend fun getSaleNftDetail(
         @Path("marketId") marketId: Long,
     ): BaseResponse<FrameDetail>
 
@@ -57,4 +57,9 @@ interface NftApi {
     suspend fun disLikeNft(
         @Path("marketId") marketId: Long,
     ): BaseResponse<LikeResponse>
+
+    @POST("api/nft/{nftId}/open")
+    suspend fun open(
+        @Path("nftId") nftId: Long,
+    ): BaseResponse<Unit>
 }
