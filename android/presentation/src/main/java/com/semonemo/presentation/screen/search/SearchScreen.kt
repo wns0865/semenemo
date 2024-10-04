@@ -356,7 +356,7 @@ fun SearchSuccessScreen(
                                 shape = RoundedCornerShape(10.dp),
                                 color = Gray03,
                             ),
-                    imageModel = asset.imageUrls.toUri(),
+                    imageModel = asset.imageUrl.toUri(),
                     contentScale = ContentScale.Crop,
                 )
             }

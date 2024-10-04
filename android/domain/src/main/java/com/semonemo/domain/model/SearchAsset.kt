@@ -17,17 +17,12 @@ data class AssetDetail(
     val assetSellId: Long = 0,
     val assetId: Long = 0,
     val creator: User = User(),
-    val imageUrls: String = "",
+    val imageUrl: String = "",
     val price: Long = 0,
     val hits: Long = 0,
     val createdAt: String = "",
     val likeCount: Long = 0,
-    val tags: List<Tag>,
+    val tags: List<String>,
     val isLiked: Boolean = false,
     val purchaseCount: Long = 0,
-)
-
-data class Tag(
-    val atagId: Long = 0,
-    val name: String = "",
 )
