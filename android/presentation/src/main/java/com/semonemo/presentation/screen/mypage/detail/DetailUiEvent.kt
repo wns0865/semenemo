@@ -9,6 +9,11 @@ sealed interface DetailUiEvent {
     data object Loading : DetailUiEvent
 
     @Immutable
+    data class OpenSuccess(
+        val message: String = "",
+    ) : DetailUiEvent
+
+    @Immutable
     data class Error(
         val errorMessage: String = "",
     ) : DetailUiEvent

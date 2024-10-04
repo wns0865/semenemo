@@ -56,22 +56,12 @@ enum class DialogType {
     SALE,
 }
 
-/**
- * TODO
- *
- * @param isPrivate : 비공개 - true, 공개 - false | 비공개일 경우, 판매 불가능 (자동으로 비판매)
- * @param isNotSale : 비판매 - true, 판매 가능 - false
- * @param onPublicClicked : 공개 NFT로 변경하기 버튼 클릭 시
- * @param onSaleClicked : 판매 가능한 NFT로 변경하기 버튼 클릭 시
- */
-
 @Composable
 fun DetailRoute(
     modifier: Modifier,
     viewModel: DetailViewModel = hiltViewModel(),
-    onPublicClicked: () -> Unit = {},
     onSaleClicked: () -> Unit = {},
-    onShowErrorSnackBar: (String) -> Unit,
+    onShowSnackBar: (String) -> Unit,
     popUpBackStack: () -> Unit,
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
@@ -80,9 +70,9 @@ fun DetailRoute(
         modifier = modifier,
         uiEvent = viewModel.uiEvent,
         uiState = uiState.value,
-        onPublicClicked = onPublicClicked,
+        onPublicClicked = viewModel::openNft,
         onSaleClicked = onSaleClicked,
-        onShowErrorSnackBar = onShowErrorSnackBar,
+        onShowSnackBar = onShowSnackBar,
         popUpBackStack = popUpBackStack,
     )
 }
@@ -94,7 +84,7 @@ fun DetailContent(
     uiState: DetailUiState,
     onPublicClicked: () -> Unit,
     onSaleClicked: () -> Unit,
-    onShowErrorSnackBar: (String) -> Unit,
+    onShowSnackBar: (String) -> Unit,
     popUpBackStack: () -> Unit,
 ) {
     var isLoading by remember { mutableStateOf(true) }
@@ -103,12 +93,16 @@ fun DetailContent(
         uiEvent.collectLatest { event ->
             when (event) {
                 is DetailUiEvent.Error -> {
-                    onShowErrorSnackBar(event.errorMessage)
+                    onShowSnackBar(event.errorMessage)
                     isLoading = false
                 }
 
                 DetailUiEvent.Loading -> {
                     isLoading = true
+                }
+
+                is DetailUiEvent.OpenSuccess -> {
+                    onShowSnackBar(event.message)
                 }
             }
         }
