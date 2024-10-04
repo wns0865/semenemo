@@ -2,8 +2,8 @@ package com.semonemo.domain.model
 
 data class Asset(
     val assetId: Long = 0L,
+    val creator: User = User(),
     val imageUrl: String = "",
-    val creator: Long = 0L,
     val isLiked: Boolean = false,
 )
 
@@ -30,7 +30,7 @@ data class AllSellAssets(
 data class SellAssetDetail(
     val assetId: Long = 0,
     val assetSellId: Long = 0,
-    val creator: Long = 0,
+    val creator: User = User(),
     val imageUrl: String = "",
     val createAt: String = "",
     val hits: Long = 0,
