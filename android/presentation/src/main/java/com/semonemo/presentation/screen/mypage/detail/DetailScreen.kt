@@ -1,5 +1,6 @@
 package com.semonemo.presentation.screen.mypage.detail
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -92,22 +93,23 @@ fun DetailContent(
     LaunchedEffect(uiEvent) {
         uiEvent.collectLatest { event ->
             when (event) {
+                is DetailUiEvent.OpenSuccess -> {
+                    onShowSnackBar(event.message)
+                }
+
                 is DetailUiEvent.Error -> {
                     onShowSnackBar(event.errorMessage)
                     isLoading = false
                 }
 
-                DetailUiEvent.Loading -> {
+                else -> {
                     isLoading = true
-                }
-
-                is DetailUiEvent.OpenSuccess -> {
-                    onShowSnackBar(event.message)
                 }
             }
         }
     }
     if (isLoading) {
+        Log.d("nakyung", "여기")
         LoadingDialog()
     }
 

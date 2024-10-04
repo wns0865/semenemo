@@ -38,6 +38,7 @@ class DetailViewModel
         fun openNft() {
             viewModelScope.launch {
                 if (nftId != -1L) {
+                    _uiEvent.emit(DetailUiEvent.Loading)
                     nftRepository.openNft(nftId).collectLatest { response ->
                         when (response) {
                             is ApiResponse.Error -> {
@@ -60,6 +61,7 @@ class DetailViewModel
         private fun getNftDetail() {
             viewModelScope.launch {
                 if (nftId != -1L) {
+                    _uiEvent.emit(DetailUiEvent.Loading)
                     nftRepository.getNftDetail(nftId).collectLatest { response ->
                         when (response) {
                             is ApiResponse.Error -> {
