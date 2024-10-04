@@ -60,7 +60,7 @@ class FrameSaleViewModel
         }
 
         fun sellRegisterFrame(
-            price: BigInteger,
+            price: Long,
             hash: String,
         ) {
             val selectFrame = _uiState.value.selectFrame
