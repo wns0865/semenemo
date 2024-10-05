@@ -17,4 +17,5 @@
     <string name="frame_loading_title">프레임을 열심히 제작하고 있어요!</string>
     <string name="frame_sale_register_title">프레임을 상점에 등록하고 있어요!</string>
     <string name="frame_purchase_loading_title">프레임 구매중이에요!</string>
+    <string name="frame_cancel_loading_title">프레임 판매 취소 처리중이에요!</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.semonemo.presentation.screen.mypage.detail
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -124,9 +125,6 @@ fun DetailContent(
             }
         }
     }
-    if (uiState.isLoading) {
-        LoadingDialog()
-    }
 
     DetailScreen(
         modifier = modifier,
@@ -142,6 +140,19 @@ fun DetailContent(
         popUpBackStack = popUpBackStack,
         sendTransaction = sendTransaction,
     )
+    if (uiState.isLoading) {
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .clickable(enabled = false) {},
+        )
+        LoadingDialog(
+            lottieRes = R.raw.normal_load,
+            loadingMessage = stringResource(R.string.frame_cancel_loading_title),
+            subMessage = stringResource(R.string.loading_sub_message),
+        )
+    }
 }
 
 @Composable
