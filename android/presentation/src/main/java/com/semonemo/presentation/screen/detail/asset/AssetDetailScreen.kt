@@ -147,7 +147,6 @@ fun AssetDetailScreen(
                 modifier
                     .statusBarsPadding()
                     .navigationBarsPadding(),
-//                    .padding(horizontal = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {

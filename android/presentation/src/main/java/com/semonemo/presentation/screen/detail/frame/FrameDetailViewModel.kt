@@ -33,7 +33,7 @@ class FrameDetailViewModel
         val uiEvent = _uiEvent.asSharedFlow()
 
         init {
-            getSaleNftDetail(savedStateHandle["marketId"] ?: -1L)
+            getSaleNftDetail(savedStateHandle["nftId"] ?: -1L)
         }
 
         fun getBalance(price: Long) {

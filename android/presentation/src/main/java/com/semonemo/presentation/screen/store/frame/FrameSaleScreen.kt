@@ -102,9 +102,9 @@ fun FrameSaleRoute(
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
     FrameSaleContent(
         modifier = modifier,
-        popUpBackStack = popUpBackStack,
         uiState = uiState.value,
         uiEvent = viewModel.uiEvent,
+        popUpBackStack = popUpBackStack,
         onShowSnackBar = onShowSnackBar,
         selectFrame = viewModel::selectFrame,
         sendTransaction = { price ->
@@ -137,9 +137,9 @@ fun FrameSaleRoute(
 @Composable
 fun FrameSaleContent(
     modifier: Modifier,
-    popUpBackStack: () -> Unit,
     uiState: FrameSaleUiState,
     uiEvent: SharedFlow<FrameSaleUiEvent>,
+    popUpBackStack: () -> Unit,
     onShowSnackBar: (String) -> Unit,
     selectFrame: (MyFrame) -> Unit,
     sendTransaction: (String) -> Unit = {},
@@ -148,9 +148,7 @@ fun FrameSaleContent(
         uiEvent.collectLatest { event ->
             when (event) {
                 is FrameSaleUiEvent.Error -> onShowSnackBar(event.errorMessage)
-                FrameSaleUiEvent.SaleDone -> {
-                    popUpBackStack()
-                }
+                FrameSaleUiEvent.SaleDone -> popUpBackStack()
             }
         }
     }
@@ -208,233 +206,239 @@ fun FrameSaleScreen(
             modifier =
                 Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 20.dp, vertical = 15.dp)
                     .statusBarsPadding()
-                    .navigationBarsPadding()
-                    .addFocusCleaner(
-                        focusManager = focusManager,
-                    ),
-            horizontalAlignment = Alignment.CenterHorizontally,
+                    .navigationBarsPadding(),
         ) {
+            Spacer(modifier = Modifier.height(10.dp))
             TopAppBar(modifier = Modifier, title = {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = stringResource(R.string.frame_register_title),
-                    style = Typography.bodyMedium.copy(fontSize = 20.sp),
+                    style = Typography.bodyMedium.copy(fontSize = 17.sp),
                     textAlign = TextAlign.Center,
                 )
             }, onNavigationClick = popUpBackStack)
-
-            Spacer(modifier = Modifier.height(30.dp))
-            Surface(
+            Column(
                 modifier =
                     Modifier
-                        .width(180.dp)
-                        .height(240.dp),
-                border = BorderStroke(width = 2.dp, color = Gray01),
-                shape = RoundedCornerShape(10.dp),
-                onClick = {
-                    showBottomSheet = true
-                },
+                        .fillMaxSize()
+                        .padding(horizontal = 20.dp, vertical = 15.dp)
+                        .addFocusCleaner(
+                            focusManager = focusManager,
+                        ),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                if (selectedFrame != null) {
-                    GlideImage(
-                        imageModel =
-                            selectedFrame.nftInfo.data.image
-                                .urlToIpfs(),
-                        contentScale = ContentScale.Fit,
-                    )
-                } else {
+                Spacer(modifier = Modifier.height(30.dp))
+                Surface(
+                    modifier =
+                        Modifier
+                            .width(180.dp)
+                            .height(240.dp),
+                    border = BorderStroke(width = 2.dp, color = Gray01),
+                    shape = RoundedCornerShape(10.dp),
+                    onClick = {
+                        showBottomSheet = true
+                    },
+                ) {
+                    if (selectedFrame != null) {
+                        GlideImage(
+                            imageModel =
+                                selectedFrame.nftInfo.data.image
+                                    .urlToIpfs(),
+                            contentScale = ContentScale.Fit,
+                        )
+                    } else {
+                        Column(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentHeight(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_frame_plus),
+                                contentDescription = "ic_frame_plus",
+                                tint = Color.Unspecified,
+                            )
+                            Spacer(modifier = Modifier.height(9.dp))
+                            Text(
+                                text = stringResource(R.string.frame_add_title),
+                                style = Typography.bodySmall.copy(fontSize = 15.sp),
+                                color = Gray02,
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(30.dp))
+                // 통신 성공인 경우
+                AnimatedVisibility(
+                    visible = selectedFrame != null,
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically(),
+                ) {
                     Column(
                         modifier =
                             Modifier
                                 .fillMaxWidth()
-                                .wrapContentHeight(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
+                                .animateContentSize(),
                     ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_frame_plus),
-                            contentDescription = "ic_frame_plus",
-                            tint = Color.Unspecified,
+                        Box(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentHeight(),
+                            contentAlignment = Alignment.CenterStart,
+                        ) {
+                            Text(
+                                text = stringResource(R.string.register_frame_title),
+                                style = Typography.titleMedium.copy(fontSize = 16.sp),
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Surface(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .height(48.dp),
+                            shape = RoundedCornerShape(10.dp),
+                            color = WhiteGray,
+                        ) {
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .fillMaxSize()
+                                        .padding(start = 14.dp, end = 14.dp),
+                                contentAlignment = Alignment.CenterStart,
+                            ) {
+                                selectedFrame?.let {
+                                    Text(
+                                        text = selectedFrame.nftInfo.data.title,
+                                        style = Typography.labelSmall.copy(fontSize = 13.sp),
+                                        color = Gray01,
+                                    )
+                                }
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(15.dp))
+                        Box(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentHeight(),
+                            contentAlignment = Alignment.CenterStart,
+                        ) {
+                            Text(
+                                text = stringResource(R.string.register_frame_discription),
+                                style = Typography.titleMedium.copy(fontSize = 16.sp),
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Surface(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .heightIn(min = 130.dp),
+                            shape = RoundedCornerShape(10.dp),
+                            color = WhiteGray,
+                        ) {
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .fillMaxSize()
+                                        .padding(14.dp),
+                                contentAlignment = Alignment.TopStart,
+                            ) {
+                                selectedFrame?.let {
+                                    Text(
+                                        text = selectedFrame.nftInfo.data.content,
+                                        style = Typography.labelSmall.copy(fontSize = 13.sp),
+                                        color = Gray01,
+                                    )
+                                }
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Box(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentHeight(),
+                            contentAlignment = Alignment.CenterStart,
+                        ) {
+                            Text(
+                                text = stringResource(R.string.register_tag),
+                                style = Typography.titleMedium.copy(fontSize = 16.sp),
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(10.dp))
+                        LazyRow(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentHeight(),
+                            horizontalArrangement = Arrangement.spacedBy(5.dp),
+                            content = {
+                                val tags =
+                                    selectedFrame?.let {
+                                        it.tags
+                                    } ?: listOf()
+                                items(tags.size) { index ->
+                                    HashTag(
+                                        keyword = tags[index],
+                                    )
+                                }
+                            },
                         )
-                        Spacer(modifier = Modifier.height(9.dp))
-                        Text(
-                            text = stringResource(R.string.frame_add_title),
-                            style = Typography.bodySmall.copy(fontSize = 15.sp),
-                            color = Gray02,
-                        )
+                        Spacer(modifier = Modifier.height(15.dp))
                     }
                 }
-            }
-            Spacer(modifier = Modifier.height(30.dp))
-            // 통신 성공인 경우
-            AnimatedVisibility(
-                visible = selectedFrame != null,
-                enter = fadeIn() + expandVertically(),
-                exit = fadeOut() + shrinkVertically(),
-            ) {
-                Column(
+                Box(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .animateContentSize(),
+                            .wrapContentHeight(),
+                    contentAlignment = Alignment.CenterStart,
                 ) {
-                    Box(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight(),
-                        contentAlignment = Alignment.CenterStart,
-                    ) {
-                        Text(
-                            text = stringResource(R.string.register_frame_title),
-                            style = Typography.titleMedium.copy(fontSize = 16.sp),
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Surface(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .height(48.dp),
-                        shape = RoundedCornerShape(10.dp),
-                        color = WhiteGray,
-                    ) {
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxSize()
-                                    .padding(start = 14.dp, end = 14.dp),
-                            contentAlignment = Alignment.CenterStart,
-                        ) {
-                            selectedFrame?.let {
-                                Text(
-                                    text = selectedFrame.nftInfo.data.title,
-                                    style = Typography.labelSmall.copy(fontSize = 13.sp),
-                                    color = Gray01,
-                                )
-                            }
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(15.dp))
-                    Box(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight(),
-                        contentAlignment = Alignment.CenterStart,
-                    ) {
-                        Text(
-                            text = stringResource(R.string.register_frame_discription),
-                            style = Typography.titleMedium.copy(fontSize = 16.sp),
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Surface(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .heightIn(min = 130.dp),
-                        shape = RoundedCornerShape(10.dp),
-                        color = WhiteGray,
-                    ) {
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxSize()
-                                    .padding(14.dp),
-                            contentAlignment = Alignment.TopStart,
-                        ) {
-                            selectedFrame?.let {
-                                Text(
-                                    text = selectedFrame.nftInfo.data.content,
-                                    style = Typography.labelSmall.copy(fontSize = 13.sp),
-                                    color = Gray01,
-                                )
-                            }
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Box(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight(),
-                        contentAlignment = Alignment.CenterStart,
-                    ) {
-                        Text(
-                            text = stringResource(R.string.register_tag),
-                            style = Typography.titleMedium.copy(fontSize = 16.sp),
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(10.dp))
-                    LazyRow(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight(),
-                        horizontalArrangement = Arrangement.spacedBy(5.dp),
-                        content = {
-                            val tags =
-                                selectedFrame?.let {
-                                    it.tags
-                                } ?: listOf()
-                            items(tags.size) { index ->
-                                HashTag(
-                                    keyword = tags[index],
-                                )
-                            }
-                        },
+                    Text(
+                        text = stringResource(R.string.register_price),
+                        style = Typography.titleMedium.copy(fontSize = 16.sp),
                     )
-                    Spacer(modifier = Modifier.height(15.dp))
                 }
-            }
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight(),
-                contentAlignment = Alignment.CenterStart,
-            ) {
-                Text(
-                    text = stringResource(R.string.register_price),
-                    style = Typography.titleMedium.copy(fontSize = 16.sp),
-                )
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            PriceTextField(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .height(48.dp),
-                price = price,
-                onPriceChange = { newPrice ->
-                    price = newPrice
-                },
-            )
-            // 프레임 불러오기 Success면 LongBlackButton
-            // 다른 상태면 LongUnableButton
-            Spacer(modifier = Modifier.height(30.dp))
-            if (selectedFrame != null) {
-                LongBlackButton(
+                Spacer(modifier = Modifier.height(10.dp))
+                PriceTextField(
                     modifier =
                         Modifier
-                            .fillMaxWidth(),
-                    text = stringResource(R.string.register_btn_title),
-                    icon = null,
-                    onClick = {
-                        sendTransaction(price)
+                            .fillMaxWidth()
+                            .height(48.dp),
+                    price = price,
+                    onPriceChange = { newPrice ->
+                        price = newPrice
                     },
                 )
-            } else {
-                LongUnableButton(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth(),
-                    text = stringResource(R.string.register_btn_title),
-                )
+                // 프레임 불러오기 Success면 LongBlackButton
+                // 다른 상태면 LongUnableButton
+                Spacer(modifier = Modifier.height(30.dp))
+                if (selectedFrame != null) {
+                    LongBlackButton(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth(),
+                        text = stringResource(R.string.register_btn_title),
+                        icon = null,
+                        onClick = {
+                            sendTransaction(price)
+                        },
+                    )
+                } else {
+                    LongUnableButton(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth(),
+                        text = stringResource(R.string.register_btn_title),
+                    )
+                }
+                Spacer(modifier = Modifier.height(10.dp))
             }
-            Spacer(modifier = Modifier.height(10.dp))
         }
         if (showBottomSheet) {
             ModalBottomSheet(
