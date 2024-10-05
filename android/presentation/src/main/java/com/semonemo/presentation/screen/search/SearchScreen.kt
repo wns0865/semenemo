@@ -54,7 +54,6 @@ import com.semonemo.domain.model.AssetDetail
 import com.semonemo.domain.model.FrameDetail
 import com.semonemo.domain.model.HotKeyword
 import com.semonemo.domain.model.UserInfoResponse
-import com.semonemo.presentation.BuildConfig
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BackButton
 import com.semonemo.presentation.component.CustomTab
@@ -67,6 +66,7 @@ import com.semonemo.presentation.theme.Gray03
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.util.noRippleClickable
+import com.semonemo.presentation.util.urlToIpfs
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
@@ -324,9 +324,6 @@ fun SearchSuccessScreen(
         ) {
             items(frameList.size) { index ->
                 val frame = frameList[index]
-                val ipfsUrl = BuildConfig.IPFS_READ_URL
-                val imgUrl = ipfsUrl + "ipfs/" + frame.nftInfo.data.image
-
                 GlideImage(
                     modifier =
                         Modifier
@@ -339,9 +336,11 @@ fun SearchSuccessScreen(
                                 shape = RoundedCornerShape(10.dp),
                                 color = Gray03,
                             ).clickable {
-                                navigateToFrameDetail(frame.nftId)
+                                navigateToFrameDetail(frame.marketId)
                             },
-                    imageModel = imgUrl.toUri(),
+                    imageModel =
+                        frame.nftInfo.data.image
+                            .urlToIpfs(),
                     contentScale = ContentScale.Fit,
                 )
             }
