@@ -8,6 +8,7 @@ import com.semonemo.domain.model.SearchFrame
 import com.semonemo.domain.model.myFrame.GetMyFrameResponse
 import com.semonemo.domain.model.myFrame.MyFrame
 import com.semonemo.domain.request.PublishNftRequest
+import com.semonemo.domain.request.PurchaseNftRequest
 import com.semonemo.domain.request.SellNftRequest
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -76,4 +77,9 @@ interface NftApi {
 
     @GET("api/nft/users/liked")
     suspend fun getSaleLikeNft(): BaseResponse<SearchFrame>
+
+    @POST("api/nft/purchase")
+    suspend fun purchaseNft(
+        @Body request: PurchaseNftRequest,
+    ): BaseResponse<MyFrame>
 }

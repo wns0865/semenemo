@@ -12,6 +12,7 @@ import com.semonemo.domain.model.myFrame.GetMyFrameResponse
 import com.semonemo.domain.model.myFrame.MyFrame
 import com.semonemo.domain.repository.NftRepository
 import com.semonemo.domain.request.PublishNftRequest
+import com.semonemo.domain.request.PurchaseNftRequest
 import com.semonemo.domain.request.SellNftRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -139,5 +140,10 @@ class NftRepositoryImpl
                     is ApiResponse.Error -> emit(response)
                     is ApiResponse.Success -> emit(ApiResponse.Success(data = response.data.content))
                 }
+            }
+
+        override suspend fun purchaseNft(request: PurchaseNftRequest): Flow<ApiResponse<MyFrame>> =
+            flow {
+                emit(emitApiResponse(apiResponse = { api.purchaseNft(request) }, default = MyFrame()))
             }
     }
