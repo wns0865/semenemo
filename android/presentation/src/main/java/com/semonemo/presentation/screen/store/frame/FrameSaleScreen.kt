@@ -94,7 +94,6 @@ import org.web3j.abi.datatypes.generated.Uint256
 @Composable
 fun FrameSaleRoute(
     modifier: Modifier,
-    navigateToStore: () -> Unit,
     popUpBackStack: () -> Unit,
     viewModel: FrameSaleViewModel = hiltViewModel(),
     nftViewModel: NftViewModel = hiltViewModel(),
@@ -105,7 +104,6 @@ fun FrameSaleRoute(
         modifier = modifier,
         uiState = uiState.value,
         uiEvent = viewModel.uiEvent,
-        navigateToStore = navigateToStore,
         popUpBackStack = popUpBackStack,
         onShowSnackBar = onShowSnackBar,
         selectFrame = viewModel::selectFrame,
@@ -141,7 +139,6 @@ fun FrameSaleContent(
     modifier: Modifier,
     uiState: FrameSaleUiState,
     uiEvent: SharedFlow<FrameSaleUiEvent>,
-    navigateToStore: () -> Unit,
     popUpBackStack: () -> Unit,
     onShowSnackBar: (String) -> Unit,
     selectFrame: (MyFrame) -> Unit,
@@ -151,7 +148,7 @@ fun FrameSaleContent(
         uiEvent.collectLatest { event ->
             when (event) {
                 is FrameSaleUiEvent.Error -> onShowSnackBar(event.errorMessage)
-                FrameSaleUiEvent.SaleDone -> navigateToStore()
+                FrameSaleUiEvent.SaleDone -> popUpBackStack()
             }
         }
     }
@@ -205,7 +202,13 @@ fun FrameSaleScreen(
                 .background(color = Color.White)
                 .verticalScroll(state = scrollState),
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .statusBarsPadding()
+                    .navigationBarsPadding(),
+        ) {
             Spacer(modifier = Modifier.height(10.dp))
             TopAppBar(modifier = Modifier, title = {
                 Text(
@@ -220,8 +223,6 @@ fun FrameSaleScreen(
                     Modifier
                         .fillMaxSize()
                         .padding(horizontal = 20.dp, vertical = 15.dp)
-                        .statusBarsPadding()
-                        .navigationBarsPadding()
                         .addFocusCleaner(
                             focusManager = focusManager,
                         ),

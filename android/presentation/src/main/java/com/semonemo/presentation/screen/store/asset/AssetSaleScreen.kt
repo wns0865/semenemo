@@ -81,7 +81,6 @@ import kotlinx.coroutines.flow.collectLatest
 fun AssetSaleRoute(
     modifier: Modifier,
     viewModel: AssetSaleViewModel = hiltViewModel(),
-    navigateToStore: () -> Unit,
     popUpBackStack: () -> Unit,
     onShowSnackBar: (String) -> Unit,
 ) {
@@ -93,7 +92,6 @@ fun AssetSaleRoute(
         uiEvent = viewModel.uiEvent,
         onSaleButtonClick = viewModel::sellAsset,
         onShowSnackBar = onShowSnackBar,
-        navigateToStore = navigateToStore,
         popUpBackStack = popUpBackStack,
     )
 }
@@ -105,14 +103,13 @@ fun AssetSaleContent(
     uiEvent: SharedFlow<AssetSaleUiEvent>,
     onSaleButtonClick: (SellAsset) -> Unit,
     onShowSnackBar: (String) -> Unit,
-    navigateToStore: () -> Unit,
     popUpBackStack: () -> Unit,
 ) {
     LaunchedEffect(uiEvent) {
         uiEvent.collectLatest { event ->
             when (event) {
                 is AssetSaleUiEvent.Error -> onShowSnackBar(event.message)
-                AssetSaleUiEvent.SellSuccess -> navigateToStore()
+                AssetSaleUiEvent.SellSuccess -> popUpBackStack()
             }
         }
     }
@@ -151,7 +148,13 @@ fun AssetSaleScreen(
                 .background(color = Color.White)
                 .verticalScroll(state = scrollState),
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .statusBarsPadding()
+                    .navigationBarsPadding(),
+        ) {
             Spacer(modifier = Modifier.height(10.dp))
             TopAppBar(modifier = Modifier, title = {
                 Text(
@@ -166,8 +169,6 @@ fun AssetSaleScreen(
                     Modifier
                         .fillMaxSize()
                         .padding(horizontal = 20.dp, vertical = 15.dp)
-                        .statusBarsPadding()
-                        .navigationBarsPadding()
                         .addFocusCleaner(
                             focusManager = focusManager,
                         ),

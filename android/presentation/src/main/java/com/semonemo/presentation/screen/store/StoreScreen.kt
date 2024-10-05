@@ -72,6 +72,7 @@ fun StoreRoute(
         navigateToFrameDetail = navigateToFrameDetail,
         uiEvent = viewModel.uiEvent,
         navigateToAssetDetail = navigateToAssetDetail,
+        loadInfo = viewModel::loadStoreInfo,
     )
 }
 
@@ -87,7 +88,12 @@ fun StoreContent(
     onShowError: (String) -> Unit = {},
     navigateToFrameDetail: (Long) -> Unit = {},
     navigateToAssetDetail: (Long) -> Unit = {},
+    loadInfo: () -> Unit,
 ) {
+    LaunchedEffect(Unit) {
+        loadInfo()
+    }
+
     LaunchedEffect(uiEvent) {
         uiEvent.collectLatest { event ->
             when (event) {
@@ -95,9 +101,11 @@ fun StoreContent(
             }
         }
     }
+
     if (uiState.isLoading) {
         LoadingDialog()
     }
+
     StoreScreen(
         modifier = modifier,
         navigateToAssetSale = navigateToAssetSale,
