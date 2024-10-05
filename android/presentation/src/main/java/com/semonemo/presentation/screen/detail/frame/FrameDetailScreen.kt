@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -119,7 +118,6 @@ fun FrameDetailContent(
             when (event) {
                 is FrameDetailUiEvent.Error -> onShowSnackBar(event.errorMessage)
                 is FrameDetailUiEvent.LoadCoin -> sendTransaction()
-
                 FrameDetailUiEvent.Success -> popUpBackStack()
             }
         }
@@ -143,12 +141,6 @@ fun FrameDetailContent(
         onClickedPurchase = onClickedPurchase,
     )
     if (uiState.isLoading) {
-        Box(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .clickable(enabled = false) {},
-        )
         LoadingDialog(
             lottieRes = R.raw.normal_load,
             loadingMessage = stringResource(R.string.frame_purchase_loading_title),
@@ -188,11 +180,16 @@ fun FrameDetailScreen(
                 .verticalScroll(state = scrollState),
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .statusBarsPadding()
+                    .navigationBarsPadding(),
         ) {
             Spacer(modifier = Modifier.height(10.dp))
             TopAppBar(
-                modifier = Modifier,
+                modifier =
+                Modifier,
                 title = {
                     Text(text = frameTitle, style = Typography.bodyLarge.copy(fontSize = 17.sp))
                 },
@@ -201,8 +198,6 @@ fun FrameDetailScreen(
             Column(
                 modifier =
                     modifier
-                        .statusBarsPadding()
-                        .navigationBarsPadding()
                         .padding(horizontal = 15.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -283,7 +278,7 @@ fun FrameDetailScreen(
                     modifier = Modifier.fillMaxWidth(),
                     painter = painterResource(id = R.drawable.price_graph),
                     contentDescription = "",
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 Row(
