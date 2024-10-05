@@ -11,6 +11,7 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import org.hildan.krossbow.stomp.StompClient
 import org.hildan.krossbow.stomp.StompSession
 import org.hildan.krossbow.stomp.frame.FrameBody
+import org.hildan.krossbow.stomp.frame.StompFrame
 import org.hildan.krossbow.stomp.headers.StompSendHeaders
 import org.hildan.krossbow.stomp.headers.StompSubscribeHeaders
 import org.hildan.krossbow.websocket.okhttp.OkHttpWebSocketClient
@@ -31,7 +32,9 @@ class WebSocketManager {
             .build()
 
     // AuctionUpdate 어댑터 생성
-    private val auctionUpdateAdapter = moshi.adapter(BidMessage::class.java).lenient()
+    private val startMessageJsonAdapter = moshi.adapter(StartMessage::class.java).lenient()
+    private val bidMessageJsonAdapter = moshi.adapter(BidMessage::class.java).lenient()
+    private val endMessageJsonAdapter = moshi.adapter(EndMessage::class.java).lenient()
 //    private val entranceAdapter = moshi.adapter()
 
     suspend fun connectToAuction(auctionId: Long): StompSession {
@@ -64,8 +67,9 @@ class WebSocketManager {
     suspend fun subscribeToAuction(
         stompSession: StompSession,
         headersUri: String,
-        onBidUpdate: (BidMessage) -> Unit,
-        onAuctionEnd: () -> Unit,
+        onAuctionStart: (StartMessage) -> Unit = {},
+        onBidUpdate: (BidMessage) -> Unit = {},
+        onAuctionEnd: () -> Unit = {},
     ) {
         // StompSubscribeHeaders를 사용해 헤더 생성
         val headers = StompSubscribeHeaders(headersUri)
@@ -73,35 +77,12 @@ class WebSocketManager {
 
         // 구독하고 메시지를 처리
         stompSession.subscribe(headers).collect { message ->
-            val msgHeaders = message.headers
-            val msgBody = message.body
-
-            if (msgBody is FrameBody.Text) {
-                val testHeaders = msgHeaders.destination
-                val textBody = msgBody.text
-                Log.d(TAG, "msgHeaders: $testHeaders")
-                Log.d(TAG, "msgBody: $textBody")
-                runCatching {
-                    auctionUpdateAdapter.fromJson(textBody)
-                }.onSuccess { auctionUpdate ->
-                    if (auctionUpdate != null) {
-                        when (msgHeaders.containsKey("end")) {
-                            true -> {
-                                onAuctionEnd()
-                            }
-                            else -> {
-                                onBidUpdate(auctionUpdate)
-                            }
-                        }
-                    } else {
-                        Log.e("AuctionProcess", "파싱 실패: JSON 데이터를 변환할 수 없습니다.")
-                    }
-                }.onFailure { exception ->
-                    Log.e("AuctionProcess", "JSON 파싱 중 오류 발생", exception)
-                }
-            } else if (msgBody is FrameBody.Binary) {
-                Log.e(TAG, "Binary frame received, expected text")
-            }
+            processMessage(
+                message,
+                onAuctionStart,
+                onBidUpdate,
+                onAuctionEnd,
+            )
         }
     }
 
@@ -111,6 +92,64 @@ class WebSocketManager {
         userId: Int,
     ) {
         val headers = StompSendHeaders("/app/auction/$auctionId/exit")
+    }
+
+    private fun processMessage(
+        message: StompFrame.Message,
+        onAuctionStart: (StartMessage) -> Unit = {},
+        onBidUpdate: (BidMessage) -> Unit = {},
+        onAuctionEnd: () -> Unit = {},
+    ) {
+        val msgHeaders = message.headers
+        val msgBody = message.body
+
+        if (msgBody is FrameBody.Text) {
+            val textHeaders = msgHeaders.destination
+            val textBody = msgBody.text
+            Log.d(TAG, "textHeaders: $textHeaders")
+            Log.d(TAG, "textBody: $textBody")
+            if (msgHeaders.containsKey("start") || textBody.contains("start")) {
+                runCatching {
+                    startMessageJsonAdapter.fromJson(textBody)
+                }.onSuccess { startMessage ->
+                    if (startMessage != null) {
+                        onAuctionStart(startMessage)
+                    } else {
+                        Log.e("AuctionProcess", "파싱 실패: startMessage")
+                    }
+                }.onFailure { exception ->
+                    Log.e("AuctionProcess", "JSON 파싱 중 오류 발생", exception)
+                }
+            } else if (msgHeaders.containsKey("end")) {
+                runCatching {
+                    endMessageJsonAdapter.fromJson(textBody)
+                }.onSuccess { endMessage ->
+                    if (endMessage != null) {
+                        onAuctionEnd()
+                    } else {
+                        Log.e("AuctionProcess", "파싱 실패: endMessage")
+                    }
+                }.onFailure { exception ->
+                    Log.e("AuctionProcess", "JSON 파싱 중 오류 발생", exception)
+                }
+            } else if (msgHeaders.containsKey("participants")) {
+                Log.d(TAG, "참가자 수: $textBody")
+            } else {
+                runCatching {
+                    bidMessageJsonAdapter.fromJson(textBody)
+                }.onSuccess { bidMessage ->
+                    if (bidMessage != null) {
+                        onBidUpdate(bidMessage)
+                    } else {
+                        Log.e("AuctionProcess", "파싱 실패: endMessage")
+                    }
+                }.onFailure { exception ->
+                    Log.e("AuctionProcess", "JSON 파싱 중 오류 발생", exception)
+                }
+            }
+        } else if (msgBody is FrameBody.Binary) {
+            Log.e(TAG, "Binary frame received, expected text")
+        }
     }
 }
 
@@ -129,6 +168,16 @@ fun BidMessage.toAuctionBidLog(): AuctionBidLog =
     )
 
 @JsonClass(generateAdapter = true)
+data class StartMessage(
+    val id: Long,
+    val startPrice: Long,
+    val currentBid: Long,
+    val currentBidder: Long?,
+    val startTime: LocalDateTime = LocalDateTime.now(),
+    val endTime: LocalDateTime = LocalDateTime.now(),
+)
+
+@JsonClass(generateAdapter = true)
 data class BidMessage(
     val userId: Long,
     val bidAmount: Long,
@@ -137,26 +186,18 @@ data class BidMessage(
 )
 
 @JsonClass(generateAdapter = true)
-data class BidMessageResponse(
-    val id: Long,
-    val startPrice: Long,
-    val currentBid: Long,
-    val currentBidder: Long,
-    val startTime: LocalDateTime = LocalDateTime.now(),
-    val endTime: LocalDateTime = LocalDateTime.now(),
+data class EndMessage(
+    val auctionId: Long,
+    val finalPrice: Long,
+    val winner: Long?,
+    val endTime: LocalDateTime,
 )
 
 @JsonClass(generateAdapter = true)
 data class EntranceMessage(
     val auctionId: Long,
-    val userId: Int,
-    val status: Int,
-)
-
-@JsonClass(generateAdapter = true)
-data class AuctionStatusMessage(
-    val auctionId: Long,
-    val status: Int,
+    val userId: Long,
+    val entranceTime: LocalDateTime = LocalDateTime.now(),
 )
 
 class LocalDateTimeAdapter {

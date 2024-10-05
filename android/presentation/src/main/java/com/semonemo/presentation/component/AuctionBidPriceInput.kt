@@ -53,7 +53,6 @@ fun AuctionBidPriceInput(
             )
         }
 
-
         Row(
             modifier = Modifier,
             verticalAlignment = Alignment.CenterVertically,
@@ -62,20 +61,20 @@ fun AuctionBidPriceInput(
                 text = String.format("( +%,d%% )", adjustedPercentage),
                 fontSize = 16.sp,
                 style =
-                Typography.bodyMedium.copy(
-                    fontFeatureSettings = "tnum",
-                    color = Gray02,
-                ),
+                    Typography.bodyMedium.copy(
+                        fontFeatureSettings = "tnum",
+                        color = Gray02,
+                    ),
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = String.format("%,d ${stringResource(id = R.string.coin_price_unit)}", finalPrice),
                 fontSize = 28.sp,
                 style =
-                Typography.bodyMedium.copy(
-                    fontFeatureSettings = "tnum",
-                    color = GunMetal,
-                ),
+                    Typography.bodyMedium.copy(
+                        fontFeatureSettings = "tnum",
+                        color = GunMetal,
+                    ),
             )
         }
     }
