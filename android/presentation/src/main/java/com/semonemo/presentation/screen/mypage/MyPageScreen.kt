@@ -14,6 +14,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -94,6 +95,7 @@ fun MyPageRoute(
     navigateToDetail: (Long) -> Unit,
     navigateToFollowList: (String, List<User>, List<User>) -> Unit,
     navigateToSetting: () -> Unit,
+    navigateToAssetDetail: (Long) -> Unit,
     viewModel: MyPageViewModel = hiltViewModel(),
     onErrorSnackBar: (String) -> Unit,
     userId: Long,
@@ -111,6 +113,7 @@ fun MyPageRoute(
         navigateToDetail = navigateToDetail,
         navigateToFollowList = navigateToFollowList,
         navigateToSetting = navigateToSetting,
+        navigateToAssetDetail = navigateToAssetDetail,
         updateProfileImage = { imageUri ->
             val image = File(imageUri.toAbsolutePath(context))
             viewModel.updateProfileImage(image, imageUri.toString())
@@ -147,6 +150,7 @@ fun HandleMyPageUi(
     navigateToDetail: (Long) -> Unit,
     navigateToFollowList: (String, List<User>, List<User>) -> Unit,
     navigateToSetting: () -> Unit,
+    navigateToAssetDetail: (Long) -> Unit,
     updateProfileImage: (Uri) -> Unit,
     followUser: () -> Unit,
     unfollowUser: () -> Unit,
@@ -159,6 +163,7 @@ fun HandleMyPageUi(
                 navigateToDetail = navigateToDetail,
                 navigateToFollowList = navigateToFollowList,
                 navigateToSetting = navigateToSetting,
+                navigateToAssetDetail = navigateToAssetDetail,
                 nickname = uiState.nickname,
                 profileImageUrl = uiState.profileImageUrl,
                 amount = uiState.amount,
@@ -183,6 +188,7 @@ fun MyPageScreen(
     navigateToDetail: (Long) -> Unit = {},
     navigateToFollowList: (String, List<User>, List<User>) -> Unit = { _, _, _ -> },
     navigateToSetting: () -> Unit = {},
+    navigateToAssetDetail: (Long) -> Unit = {},
     nickname: String = "짜이한",
     profileImageUrl: String = "",
     amount: Int = 0,
@@ -587,7 +593,9 @@ fun MyPageScreen(
                                                         width = 1.dp,
                                                         shape = RoundedCornerShape(10.dp),
                                                         color = Gray03,
-                                                    ),
+                                                    ).clickable {
+                                                        navigateToAssetDetail(asset.assetSellId)
+                                                    },
                                             imageModel = asset.imageUrl,
                                             contentScale = ContentScale.Inside,
                                         )
