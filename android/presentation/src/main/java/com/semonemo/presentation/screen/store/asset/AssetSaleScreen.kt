@@ -66,6 +66,7 @@ import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.component.LongUnableButton
 import com.semonemo.presentation.component.PriceTextField
+import com.semonemo.presentation.component.TopAppBar
 import com.semonemo.presentation.theme.Gray01
 import com.semonemo.presentation.theme.Gray02
 import com.semonemo.presentation.theme.Gray03
@@ -80,7 +81,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun AssetSaleRoute(
     modifier: Modifier,
     viewModel: AssetSaleViewModel = hiltViewModel(),
-    navigateToStore: () -> Unit,
+    popUpBackStack: () -> Unit,
     onShowSnackBar: (String) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -91,7 +92,7 @@ fun AssetSaleRoute(
         uiEvent = viewModel.uiEvent,
         onSaleButtonClick = viewModel::sellAsset,
         onShowSnackBar = onShowSnackBar,
-        navigateToStore = navigateToStore,
+        popUpBackStack = popUpBackStack,
     )
 }
 
@@ -102,13 +103,13 @@ fun AssetSaleContent(
     uiEvent: SharedFlow<AssetSaleUiEvent>,
     onSaleButtonClick: (SellAsset) -> Unit,
     onShowSnackBar: (String) -> Unit,
-    navigateToStore: () -> Unit,
+    popUpBackStack: () -> Unit,
 ) {
     LaunchedEffect(uiEvent) {
         uiEvent.collectLatest { event ->
             when (event) {
                 is AssetSaleUiEvent.Error -> onShowSnackBar(event.message)
-                AssetSaleUiEvent.SellSuccess -> navigateToStore()
+                AssetSaleUiEvent.SellSuccess -> popUpBackStack()
             }
         }
     }
@@ -119,6 +120,7 @@ fun AssetSaleContent(
         modifier = modifier,
         assets = uiState.assets,
         onSaleButtonClick = onSaleButtonClick,
+        popUpBackStack = popUpBackStack,
     )
 }
 
@@ -128,6 +130,7 @@ fun AssetSaleScreen(
     modifier: Modifier = Modifier,
     assets: List<Asset> = emptyList(),
     onSaleButtonClick: (SellAsset) -> Unit = {},
+    popUpBackStack: () -> Unit = {},
 ) {
     val focusManager = LocalFocusManager.current
     val scrollState = rememberScrollState()
@@ -149,169 +152,178 @@ fun AssetSaleScreen(
             modifier =
                 Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 20.dp, vertical = 15.dp)
                     .statusBarsPadding()
-                    .navigationBarsPadding()
-                    .addFocusCleaner(
-                        focusManager = focusManager,
-                    ),
-            horizontalAlignment = Alignment.CenterHorizontally,
+                    .navigationBarsPadding(),
         ) {
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = "에셋 판매",
-                style = Typography.bodyMedium.copy(fontSize = 20.sp),
-                textAlign = TextAlign.Center,
-            )
-            Spacer(modifier = Modifier.height(30.dp))
-            Surface(
+            Spacer(modifier = Modifier.height(10.dp))
+            TopAppBar(modifier = Modifier, title = {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = "에셋 판매",
+                    style = Typography.bodyMedium.copy(fontSize = 16.sp),
+                    textAlign = TextAlign.Center,
+                )
+            }, onNavigationClick = popUpBackStack)
+            Column(
                 modifier =
                     Modifier
-                        .width(180.dp)
-                        .height(240.dp),
-                border = BorderStroke(width = 2.dp, color = Gray01),
-                shape = RoundedCornerShape(10.dp),
-                onClick = {
-                    showBottomSheet = true
-                },
+                        .fillMaxSize()
+                        .padding(horizontal = 20.dp, vertical = 15.dp)
+                        .addFocusCleaner(
+                            focusManager = focusManager,
+                        ),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                if (selectedAsset != "") {
-                    GlideImage(
-                        imageModel = selectedAsset,
-                        contentScale = ContentScale.Crop,
-                    )
-                } else {
+                Spacer(modifier = Modifier.height(30.dp))
+                Surface(
+                    modifier =
+                        Modifier
+                            .width(180.dp)
+                            .height(240.dp),
+                    border = BorderStroke(width = 2.dp, color = Gray01),
+                    shape = RoundedCornerShape(10.dp),
+                    onClick = {
+                        showBottomSheet = true
+                    },
+                ) {
+                    if (selectedAsset != "") {
+                        GlideImage(
+                            imageModel = selectedAsset,
+                            contentScale = ContentScale.Crop,
+                        )
+                    } else {
+                        Column(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentHeight(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_frame_plus),
+                                contentDescription = "ic_frame_plus",
+                                tint = Color.Unspecified,
+                            )
+                            Spacer(modifier = Modifier.height(9.dp))
+                            Text(
+                                text = "에셋을 추가해 주세요",
+                                style = Typography.bodySmall.copy(fontSize = 15.sp),
+                                color = Gray02,
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(30.dp))
+                // 통신 성공인 경우
+                AnimatedVisibility(
+                    visible = selectedAsset != "",
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically(),
+                ) {
                     Column(
                         modifier =
                             Modifier
                                 .fillMaxWidth()
-                                .wrapContentHeight(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
+                                .animateContentSize(),
                     ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_frame_plus),
-                            contentDescription = "ic_frame_plus",
-                            tint = Color.Unspecified,
+                        Box(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentHeight(),
+                            contentAlignment = Alignment.CenterStart,
+                        ) {
+                            Text(
+                                text = stringResource(R.string.register_tag),
+                                style = Typography.titleMedium.copy(fontSize = 16.sp),
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(10.dp))
+                        HashTagTextField(
+                            focusManager = focusManager,
+                            onTagAddAction = { keyword ->
+                                if (keyword.isNotBlank()) {
+                                    tags.add(keyword)
+                                }
+                            },
                         )
-                        Spacer(modifier = Modifier.height(9.dp))
-                        Text(
-                            text = "에셋을 추가해 주세요",
-                            style = Typography.bodySmall.copy(fontSize = 15.sp),
-                            color = Gray02,
+                        Spacer(modifier = Modifier.height(8.dp))
+                        LazyRow(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentHeight(),
+                            horizontalArrangement = Arrangement.spacedBy(5.dp),
+                            content = {
+                                items(tags.size) { index ->
+                                    HashTag(
+                                        keyword = tags[index],
+                                        isEdit = true,
+                                        onCloseClicked = {
+                                            tags.remove(it)
+                                        },
+                                    )
+                                }
+                            },
                         )
+                        Spacer(modifier = Modifier.height(15.dp))
                     }
                 }
-            }
-            Spacer(modifier = Modifier.height(30.dp))
-            // 통신 성공인 경우
-            AnimatedVisibility(
-                visible = selectedAsset != "",
-                enter = fadeIn() + expandVertically(),
-                exit = fadeOut() + shrinkVertically(),
-            ) {
-                Column(
+                Box(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .animateContentSize(),
+                            .wrapContentHeight(),
+                    contentAlignment = Alignment.CenterStart,
                 ) {
-                    Box(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight(),
-                        contentAlignment = Alignment.CenterStart,
-                    ) {
-                        Text(
-                            text = stringResource(R.string.register_tag),
-                            style = Typography.titleMedium.copy(fontSize = 16.sp),
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(10.dp))
-                    HashTagTextField(
-                        focusManager = focusManager,
-                        onTagAddAction = { keyword ->
-                            if (keyword.isNotBlank()) {
-                                tags.add(keyword)
-                            }
-                        },
+                    Text(
+                        text = stringResource(R.string.register_price),
+                        style = Typography.titleMedium.copy(fontSize = 16.sp),
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    LazyRow(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight(),
-                        horizontalArrangement = Arrangement.spacedBy(5.dp),
-                        content = {
-                            items(tags.size) { index ->
-                                HashTag(
-                                    keyword = tags[index],
-                                    isEdit = true,
-                                    onCloseClicked = {
-                                        tags.remove(it)
-                                    },
-                                )
-                            }
-                        },
-                    )
-                    Spacer(modifier = Modifier.height(15.dp))
                 }
-            }
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight(),
-                contentAlignment = Alignment.CenterStart,
-            ) {
-                Text(
-                    text = stringResource(R.string.register_price),
-                    style = Typography.titleMedium.copy(fontSize = 16.sp),
-                )
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            PriceTextField(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .height(48.dp),
-                price = price,
-                onPriceChange = { newPrice ->
-                    price = newPrice
-                },
-            )
-            Spacer(modifier = Modifier.height(30.dp))
-            if (selectedAsset != "") {
-                LongBlackButton(
+                Spacer(modifier = Modifier.height(10.dp))
+                PriceTextField(
                     modifier =
                         Modifier
-                            .fillMaxWidth(),
-                    text = stringResource(R.string.register_btn_title),
-                    icon = null,
-                    onClick = {
-                        val sellAsset =
-                            asset?.let {
-                                SellAsset(
-                                    assetId = it.assetId,
-                                    price = price.toInt(),
-                                    tags = tags,
-                                )
-                            }
-                        sellAsset?.let {
-                            onSaleButtonClick(sellAsset)
-                        }
+                            .fillMaxWidth()
+                            .height(48.dp),
+                    price = price,
+                    onPriceChange = { newPrice ->
+                        price = newPrice
                     },
                 )
-            } else {
-                LongUnableButton(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth(),
-                    text = stringResource(R.string.register_btn_title),
-                )
+                Spacer(modifier = Modifier.height(30.dp))
+                if (selectedAsset != "") {
+                    LongBlackButton(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth(),
+                        text = stringResource(R.string.register_btn_title),
+                        icon = null,
+                        onClick = {
+                            val sellAsset =
+                                asset?.let {
+                                    SellAsset(
+                                        assetId = it.assetId,
+                                        price = price.toInt(),
+                                        tags = tags,
+                                    )
+                                }
+                            sellAsset?.let {
+                                onSaleButtonClick(sellAsset)
+                            }
+                        },
+                    )
+                } else {
+                    LongUnableButton(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth(),
+                        text = stringResource(R.string.register_btn_title),
+                    )
+                }
+                Spacer(modifier = Modifier.height(10.dp))
             }
-            Spacer(modifier = Modifier.height(10.dp))
         }
         if (showBottomSheet) {
             ModalBottomSheet(
@@ -364,7 +376,7 @@ fun AssetSaleScreen(
     }
 }
 
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 fun AssetSaleScreenPreview() {
     SemonemoTheme {

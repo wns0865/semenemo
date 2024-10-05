@@ -27,10 +27,6 @@ class StoreViewModel
         private val _uiEvent = MutableSharedFlow<StoreUiEvent>()
         val uiEvent = _uiEvent.asSharedFlow()
 
-        init {
-            loadStoreInfo()
-        }
-
         private fun loadLikeNft() {
             viewModelScope.launch {
                 nftRepository.getSaleLikeNft().collectLatest { response ->
@@ -42,7 +38,7 @@ class StoreViewModel
             }
         }
 
-        private fun loadStoreInfo() {
+        fun loadStoreInfo() {
             viewModelScope.launch {
                 combine(
                     nftRepository.getAllSaleNft(),

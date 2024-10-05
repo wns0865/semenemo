@@ -237,7 +237,7 @@ fun MyPageScreen(
         ) {
             Spacer(modifier = Modifier.height(10.dp))
             TopAppBar(
-                modifier = Modifier,
+                modifier = Modifier.fillMaxHeight(0.045f),
                 title = {
                     NameWithBadge(
                         name = nickname,
@@ -460,44 +460,46 @@ fun MyPageScreen(
 
                     2 -> {
                         // 찜
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 15.dp),
-                            contentAlignment = Alignment.CenterEnd,
-                        ) {
-                            CustomDropdownMenu(
-                                menuItems =
-                                    listOf(
-                                        "프레임" to {
-                                            // 찜한 프레임 불러 오기
-                                            likeCategory = "프레임"
-                                        },
-                                        "에셋" to {
-                                            // 찜한 에셋 불러오기
-                                            likeCategory = "에셋"
-                                        },
-                                    ),
-                                styles =
-                                    CustomDropdownMenuStyles(),
-                            )
-                        }
-                        when (likeCategory) {
-                            "프레임" -> {
-                                MyPageLikedFrames(
-                                    modifier = Modifier,
-                                    likedFrames = likedFrames,
-                                    navigateToSaleFrameDetail = navigateToSaleFrameDetail,
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 15.dp),
+                                contentAlignment = Alignment.CenterEnd,
+                            ) {
+                                CustomDropdownMenu(
+                                    menuItems =
+                                        listOf(
+                                            "프레임" to {
+                                                // 찜한 프레임 불러 오기
+                                                likeCategory = "프레임"
+                                            },
+                                            "에셋" to {
+                                                // 찜한 에셋 불러오기
+                                                likeCategory = "에셋"
+                                            },
+                                        ),
+                                    styles =
+                                        CustomDropdownMenuStyles(),
                                 )
                             }
+                            when (likeCategory) {
+                                "프레임" -> {
+                                    MyPageLikedFrames(
+                                        modifier = Modifier,
+                                        likedFrames = likedFrames,
+                                        navigateToSaleFrameDetail = navigateToSaleFrameDetail,
+                                    )
+                                }
 
-                            "에셋" -> {
-                                MyPageLikedAssets(
-                                    modifier = Modifier,
-                                    likeAssets = likeAssets,
-                                    navigateToAssetDetail = navigateToAssetDetail,
-                                )
+                                "에셋" -> {
+                                    MyPageLikedAssets(
+                                        modifier = Modifier,
+                                        likeAssets = likeAssets,
+                                        navigateToAssetDetail = navigateToAssetDetail,
+                                    )
+                                }
                             }
                         }
                     }

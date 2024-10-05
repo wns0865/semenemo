@@ -1,8 +1,8 @@
 package com.semonemo.presentation.screen.search
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -54,7 +54,6 @@ import com.semonemo.domain.model.AssetDetail
 import com.semonemo.domain.model.FrameDetail
 import com.semonemo.domain.model.HotKeyword
 import com.semonemo.domain.model.UserInfoResponse
-import com.semonemo.presentation.BuildConfig
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BackButton
 import com.semonemo.presentation.component.CustomTab
@@ -67,12 +66,15 @@ import com.semonemo.presentation.theme.Gray03
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.util.noRippleClickable
+import com.semonemo.presentation.util.urlToIpfs
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun SearchRoute(
     modifier: Modifier = Modifier,
     navigateToProfile: (Long) -> Unit,
+    navigateToAssetDetail: (Long) -> Unit,
+    navigateToFrameDetail: (Long) -> Unit,
     popUpBackStack: () -> Unit,
     viewModel: SearchViewModel = hiltViewModel(),
 ) {
@@ -81,6 +83,8 @@ fun SearchRoute(
     SearchScreen(
         modifier = modifier,
         navigateToProfile = navigateToProfile,
+        navigateToAssetDetail = navigateToAssetDetail,
+        navigateToFrameDetail = navigateToFrameDetail,
         popUpBackStack = popUpBackStack,
         searchState = searchState,
         loadHotSearch = { viewModel.loadHotSearch() },
@@ -98,6 +102,8 @@ fun SearchScreen(
     searchState: SearchState,
     popUpBackStack: () -> Unit = {},
     navigateToProfile: (Long) -> Unit = {},
+    navigateToAssetDetail: (Long) -> Unit = {},
+    navigateToFrameDetail: (Long) -> Unit = {},
     loadHotSearch: () -> Unit = {},
     searchUser: (String) -> Unit = {},
     searchFrame: (String) -> Unit = {},
@@ -150,7 +156,9 @@ fun SearchScreen(
             Spacer(modifier = Modifier.weight(0.05f))
             when (searchState) {
                 is SearchState.Loading -> {
-                    LoadingDialog()
+                    LoadingDialog(
+                        modifier = Modifier.fillMaxSize(),
+                    )
                 }
 
                 is SearchState.Init -> {
@@ -190,6 +198,8 @@ fun SearchScreen(
                             frameList = searchState.frameList,
                             assetList = searchState.assetList,
                             navigateToProfile = navigateToProfile,
+                            navigateToAssetDetail = navigateToAssetDetail,
+                            navigateToFrameDetail = navigateToFrameDetail,
                         )
                     }
                 }
@@ -280,6 +290,8 @@ fun SearchSuccessScreen(
     frameList: List<FrameDetail> = emptyList(),
     assetList: List<AssetDetail> = emptyList(),
     navigateToProfile: (Long) -> Unit = {},
+    navigateToAssetDetail: (Long) -> Unit = {},
+    navigateToFrameDetail: (Long) -> Unit = {},
 ) {
     if (userList.isNotEmpty()) {
         LazyColumn(
@@ -312,9 +324,6 @@ fun SearchSuccessScreen(
         ) {
             items(frameList.size) { index ->
                 val frame = frameList[index]
-                val ipfsUrl = BuildConfig.IPFS_READ_URL
-                val imgUrl = ipfsUrl + "ipfs/" + frame.nftInfo.data.image
-
                 GlideImage(
                     modifier =
                         Modifier
@@ -326,8 +335,12 @@ fun SearchSuccessScreen(
                                 width = 1.dp,
                                 shape = RoundedCornerShape(10.dp),
                                 color = Gray03,
-                            ),
-                    imageModel = imgUrl.toUri(),
+                            ).clickable {
+                                navigateToFrameDetail(frame.marketId)
+                            },
+                    imageModel =
+                        frame.nftInfo.data.image
+                            .urlToIpfs(),
                     contentScale = ContentScale.Fit,
                 )
             }
@@ -355,7 +368,9 @@ fun SearchSuccessScreen(
                                 width = 1.dp,
                                 shape = RoundedCornerShape(10.dp),
                                 color = Gray03,
-                            ),
+                            ).clickable {
+                                navigateToAssetDetail(asset.assetSellId)
+                            },
                     imageModel = asset.imageUrl.toUri(),
                     contentScale = ContentScale.Crop,
                 )
