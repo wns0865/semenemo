@@ -1,6 +1,5 @@
 package com.semonemo.presentation.screen.mypage.detail
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -44,12 +43,16 @@ import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.LongWhiteButton
 import com.semonemo.presentation.component.PrivateTag
 import com.semonemo.presentation.component.TopAppBar
+import com.semonemo.presentation.screen.nft.NftViewModel
 import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
+import org.web3j.abi.TypeReference
+import org.web3j.abi.datatypes.Function
+import org.web3j.abi.datatypes.generated.Uint256
 
 // 다이얼로그 타입
 enum class DialogType {
@@ -61,9 +64,9 @@ enum class DialogType {
 fun DetailRoute(
     modifier: Modifier,
     viewModel: DetailViewModel = hiltViewModel(),
-    onSaleClicked: () -> Unit = {},
     onShowSnackBar: (String) -> Unit,
     popUpBackStack: () -> Unit,
+    nftViewModel: NftViewModel = hiltViewModel(),
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -72,9 +75,29 @@ fun DetailRoute(
         uiEvent = viewModel.uiEvent,
         uiState = uiState.value,
         onPublicClicked = viewModel::openNft,
-        onSaleClicked = onSaleClicked,
         onShowSnackBar = onShowSnackBar,
         popUpBackStack = popUpBackStack,
+        sendTransaction = {
+            nftViewModel.sendTransaction(
+                function =
+                    Function(
+                        "cancelMarket",
+                        listOf(
+                            Uint256(
+                                uiState.value.tokenId,
+                            ),
+                        ),
+                        listOf<TypeReference<*>>(object : TypeReference<Uint256>() {}),
+                    ),
+                onSuccess = { txHash ->
+                    viewModel.cancelSaleNft(txHash = txHash, marketId = uiState.value.marketId)
+                },
+                onError = {
+                    onShowSnackBar(it)
+                },
+                contractAddress = BuildConfig.SYSTEM_CONTRACT_ADDRESS,
+            )
+        },
     )
 }
 
@@ -84,12 +107,10 @@ fun DetailContent(
     uiEvent: SharedFlow<DetailUiEvent>,
     uiState: DetailUiState,
     onPublicClicked: () -> Unit,
-    onSaleClicked: () -> Unit,
     onShowSnackBar: (String) -> Unit,
     popUpBackStack: () -> Unit,
+    sendTransaction: () -> Unit = {},
 ) {
-    var isLoading by remember { mutableStateOf(true) }
-
     LaunchedEffect(uiEvent) {
         uiEvent.collectLatest { event ->
             when (event) {
@@ -99,17 +120,11 @@ fun DetailContent(
 
                 is DetailUiEvent.Error -> {
                     onShowSnackBar(event.errorMessage)
-                    isLoading = false
-                }
-
-                else -> {
-                    isLoading = true
                 }
             }
         }
     }
-    if (isLoading) {
-        Log.d("nakyung", "여기")
+    if (uiState.isLoading) {
         LoadingDialog()
     }
 
@@ -124,8 +139,8 @@ fun DetailContent(
         content = uiState.content,
         frameImg = uiState.image,
         onPublicClicked = onPublicClicked,
-        onSaleClicked = onSaleClicked,
         popUpBackStack = popUpBackStack,
+        sendTransaction = sendTransaction,
     )
 }
 
@@ -141,8 +156,8 @@ fun DetailScreen(
     content: String = "",
     frameImg: String = "",
     onPublicClicked: () -> Unit = {},
-    onSaleClicked: () -> Unit = {},
     popUpBackStack: () -> Unit = {},
+    sendTransaction: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
     var showDialog by remember { mutableStateOf<DialogType?>(null) }
@@ -376,7 +391,7 @@ fun DetailScreen(
             showCustomDialog(
                 title = dialogTitle,
                 content = dialogContent,
-                onConfirmClicked = onSaleClicked,
+                onConfirmClicked = { sendTransaction() },
                 titleKeywords = titleKeywords,
                 contentKeywords = contentKeywords,
             )
