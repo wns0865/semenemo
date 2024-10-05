@@ -77,6 +77,11 @@ import com.semonemo.presentation.component.NameWithBadge
 import com.semonemo.presentation.component.SubScribeButton
 import com.semonemo.presentation.component.TopAppBar
 import com.semonemo.presentation.component.TopAppBarNavigationType
+import com.semonemo.presentation.screen.mypage.subscreen.MyPageLikedAssets
+import com.semonemo.presentation.screen.mypage.subscreen.MyPageLikedFrames
+import com.semonemo.presentation.screen.mypage.subscreen.MyPageOwnedAssets
+import com.semonemo.presentation.screen.mypage.subscreen.MyPageOwnedFrames
+import com.semonemo.presentation.screen.mypage.subscreen.MyPageSellFrames
 import com.semonemo.presentation.theme.Blue3
 import com.semonemo.presentation.theme.Gray03
 import com.semonemo.presentation.theme.Main01
@@ -92,10 +97,11 @@ import java.io.File
 @Composable
 fun MyPageRoute(
     modifier: Modifier = Modifier,
-    navigateToDetail: (Long) -> Unit,
+    navigateToDetail: (Long, Boolean) -> Unit,
     navigateToFollowList: (String, List<User>, List<User>) -> Unit,
     navigateToSetting: () -> Unit,
     navigateToAssetDetail: (Long) -> Unit,
+    navigateToSaleFrameDetail: (Long) -> Unit,
     viewModel: MyPageViewModel = hiltViewModel(),
     onErrorSnackBar: (String) -> Unit,
     userId: Long,
@@ -124,6 +130,7 @@ fun MyPageRoute(
         unfollowUser = {
             viewModel.unfollowUser(userId)
         },
+        navigateToSaleFrameDetail = navigateToSaleFrameDetail,
     )
 }
 
@@ -147,10 +154,11 @@ fun HandleMyPageEvent(
 fun HandleMyPageUi(
     modifier: Modifier = Modifier,
     uiState: MyPageUiState,
-    navigateToDetail: (Long) -> Unit,
+    navigateToDetail: (Long, Boolean) -> Unit,
     navigateToFollowList: (String, List<User>, List<User>) -> Unit,
     navigateToSetting: () -> Unit,
     navigateToAssetDetail: (Long) -> Unit,
+    navigateToSaleFrameDetail: (Long) -> Unit,
     updateProfileImage: (Uri) -> Unit,
     followUser: () -> Unit,
     unfollowUser: () -> Unit,
@@ -178,6 +186,8 @@ fun HandleMyPageUi(
                 sellFrameList = uiState.sellFrameList,
                 assetList = uiState.assetList,
                 likeAssets = uiState.likeAssets,
+                likedFrames = uiState.likedFrames,
+                navigateToSaleFrameDetail = navigateToSaleFrameDetail,
             )
     }
 }
@@ -185,10 +195,11 @@ fun HandleMyPageUi(
 @Composable
 fun MyPageScreen(
     modifier: Modifier = Modifier,
-    navigateToDetail: (Long) -> Unit = {},
+    navigateToDetail: (Long, Boolean) -> Unit = { _, _ -> },
     navigateToFollowList: (String, List<User>, List<User>) -> Unit = { _, _, _ -> },
     navigateToSetting: () -> Unit = {},
     navigateToAssetDetail: (Long) -> Unit = {},
+    navigateToSaleFrameDetail: (Long) -> Unit = {},
     nickname: String = "짜이한",
     profileImageUrl: String = "",
     amount: Int = 0,
@@ -203,6 +214,7 @@ fun MyPageScreen(
     sellFrameList: List<FrameDetail> = listOf(),
     assetList: List<Asset> = listOf(),
     likeAssets: List<SellAssetDetail> = listOf(),
+    likedFrames: List<FrameDetail> = listOf(),
 ) {
     val tabs = listOf("프레임", "에셋", "찜")
     val selectedIndex = remember { mutableIntStateOf(0) }
@@ -436,173 +448,66 @@ fun MyPageScreen(
                                 )
                             }
                             if (isSell) {
-                                LazyVerticalGrid(
-                                    modifier =
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .wrapContentHeight()
-                                            .padding(horizontal = 10.dp),
-                                    columns = GridCells.Fixed(2),
-                                    state = rememberLazyGridState(),
-                                ) {
-                                    items(sellFrameList.size) { index ->
-                                        val frame = sellFrameList[index]
-                                        val ipfsUrl = BuildConfig.IPFS_READ_URL
-                                        val imgUrl = ipfsUrl + "ipfs/" + frame.nftInfo.data.image
-
-                                        GlideImage(
-                                            modifier =
-                                                Modifier
-                                                    .fillMaxWidth()
-                                                    .aspectRatio(1f)
-                                                    .padding(8.dp)
-                                                    .clip(shape = RoundedCornerShape(10.dp))
-                                                    .border(
-                                                        width = 1.dp,
-                                                        shape = RoundedCornerShape(10.dp),
-                                                        color = Gray03,
-                                                    ).noRippleClickable {
-                                                        navigateToDetail(frame.nftId)
-                                                    },
-                                            imageModel = imgUrl,
-                                            contentScale = ContentScale.Inside,
-                                        )
-                                    }
-                                }
+                                MyPageSellFrames(
+                                    modifier = Modifier,
+                                    sellFrameList = sellFrameList,
+                                    navigateToDetail = navigateToDetail,
+                                )
                             } else {
-                                LazyVerticalGrid(
-                                    modifier =
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .wrapContentHeight()
-                                            .padding(horizontal = 10.dp),
-                                    columns = GridCells.Fixed(2),
-                                    state = rememberLazyGridState(),
-                                ) {
-                                    items(frameList.size) { index ->
-                                        val frame = frameList[index]
-                                        val ipfsUrl = BuildConfig.IPFS_READ_URL
-                                        val imgUrl = ipfsUrl + "ipfs/" + frame.nftInfo.data.image
-
-                                        GlideImage(
-                                            modifier =
-                                                Modifier
-                                                    .fillMaxWidth()
-                                                    .aspectRatio(1f)
-                                                    .padding(8.dp)
-                                                    .clip(shape = RoundedCornerShape(10.dp))
-                                                    .border(
-                                                        width = 1.dp,
-                                                        shape = RoundedCornerShape(10.dp),
-                                                        color = Gray03,
-                                                    ).noRippleClickable {
-                                                        navigateToDetail(frame.nftId)
-                                                    },
-                                            imageModel = imgUrl,
-                                            contentScale = ContentScale.Inside,
-                                        )
-                                    }
-                                }
+                                MyPageOwnedFrames(
+                                    modifier = Modifier,
+                                    frameList = frameList,
+                                    navigateToDetail = navigateToDetail,
+                                )
                             }
                         }
                     }
 
                     1 -> {
                         // 애셋
-                        LazyVerticalGrid(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight()
-                                    .padding(horizontal = 10.dp),
-                            columns = GridCells.Fixed(3),
-                            state = rememberLazyGridState(),
-                        ) {
-                            items(assetList.size) { index ->
-                                val asset = assetList[index]
-
-                                GlideImage(
-                                    modifier =
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .aspectRatio(1f)
-                                            .padding(8.dp)
-                                            .clip(shape = RoundedCornerShape(10.dp))
-                                            .border(
-                                                width = 1.dp,
-                                                shape = RoundedCornerShape(10.dp),
-                                                color = Gray03,
-                                            ),
-                                    imageModel = asset.imageUrl,
-                                    contentScale = ContentScale.Inside,
-                                )
-                            }
-                        }
+                        MyPageOwnedAssets(modifier = Modifier, assetList = assetList)
                     }
 
                     2 -> {
                         // 찜
-                        Column(modifier = Modifier.fillMaxWidth()) {
-                            Box(
-                                modifier =
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 15.dp),
-                                contentAlignment = Alignment.CenterEnd,
-                            ) {
-                                CustomDropdownMenu(
-                                    menuItems =
-                                        listOf(
-                                            "프레임" to {
-                                                // 찜한 프레임 불러 오기
-                                                likeCategory = "프레임"
-                                            },
-                                            "에셋" to {
-                                                // 찜한 에셋 불러오기
-                                                likeCategory = "에셋"
-                                            },
-                                        ),
-                                    styles =
-                                        CustomDropdownMenuStyles(),
+                        Box(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 15.dp),
+                            contentAlignment = Alignment.CenterEnd,
+                        ) {
+                            CustomDropdownMenu(
+                                menuItems =
+                                    listOf(
+                                        "프레임" to {
+                                            // 찜한 프레임 불러 오기
+                                            likeCategory = "프레임"
+                                        },
+                                        "에셋" to {
+                                            // 찜한 에셋 불러오기
+                                            likeCategory = "에셋"
+                                        },
+                                    ),
+                                styles =
+                                    CustomDropdownMenuStyles(),
+                            )
+                        }
+                        when (likeCategory) {
+                            "프레임" -> {
+                                MyPageLikedFrames(
+                                    modifier = Modifier,
+                                    likedFrames = likedFrames,
+                                    navigateToSaleFrameDetail = navigateToSaleFrameDetail,
                                 )
                             }
-                            when (likeCategory) {
-                                "프레임" -> {
-                                }
 
-                                "에셋" -> {
-                                    LazyVerticalGrid(
-                                        modifier =
-                                            Modifier
-                                                .fillMaxWidth()
-                                                .wrapContentHeight()
-                                                .padding(horizontal = 10.dp),
-                                        columns = GridCells.Fixed(3),
-                                        state = rememberLazyGridState(),
-                                    ) {
-                                        items(likeAssets.size) { index ->
-                                            val asset = likeAssets[index]
-
-                                            GlideImage(
-                                                modifier =
-                                                    Modifier
-                                                        .fillMaxWidth()
-                                                        .aspectRatio(1f)
-                                                        .padding(8.dp)
-                                                        .clip(shape = RoundedCornerShape(10.dp))
-                                                        .border(
-                                                            width = 1.dp,
-                                                            shape = RoundedCornerShape(10.dp),
-                                                            color = Gray03,
-                                                        ).clickable {
-                                                            navigateToAssetDetail(asset.assetSellId)
-                                                        },
-                                                imageModel = asset.imageUrl,
-                                                contentScale = ContentScale.Inside,
-                                            )
-                                        }
-                                    }
-                                }
+                            "에셋" -> {
+                                MyPageLikedAssets(
+                                    modifier = Modifier,
+                                    likeAssets = likeAssets,
+                                    navigateToAssetDetail = navigateToAssetDetail,
+                                )
                             }
                         }
                     }

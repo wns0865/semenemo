@@ -35,4 +35,9 @@ interface NftRepository {
     suspend fun getSaleLikeNft(): Flow<ApiResponse<List<FrameDetail>>>
 
     suspend fun purchaseNft(request: PurchaseNftRequest): Flow<ApiResponse<MyFrame>>
+
+    suspend fun cancelSaleNft(
+        txHash: String,
+        marketId: Long,
+    ): Flow<ApiResponse<Unit>>
 }
