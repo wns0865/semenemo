@@ -40,6 +40,7 @@ class MyPageViewModel
             if (userId == -1L) { // 마이페이지
                 loadUserInfo()
                 loadComponents()
+                loadLikeComponents()
             } else { // 타사용자 페이지
                 loadOtherUserInfo()
                 loadComponents()
@@ -196,8 +197,7 @@ class MyPageViewModel
                         nftRepository.getUserNft(userId.toLong()),
                         nftRepository.getSellNft(userId.toLong()),
                         assetRepository.getMyAssets(null),
-                        assetRepository.getLikeAssets(),
-                    ) { nftList, sellNftList, assetList, likeAssets ->
+                    ) { nftList, sellNftList, assetList ->
                         var currentState = MyPageUiState.Success()
 
                         currentState =
@@ -240,19 +240,6 @@ class MyPageViewModel
                                     )
                                 }
                             }
-                        currentState =
-                            when (likeAssets) {
-                                is ApiResponse.Error -> {
-                                    _uiEvent.emit(MyPageUiEvent.Error(likeAssets.errorMessage))
-                                    currentState
-                                }
-
-                                is ApiResponse.Success -> {
-                                    currentState.copy(
-                                        likeAssets = likeAssets.data.content,
-                                    )
-                                }
-                            }
                         currentState
                     }.collectLatest { updatedUiState ->
                         val state = _uiState.value
@@ -264,9 +251,55 @@ class MyPageViewModel
                                     frameList = updatedUiState.frameList,
                                     sellFrameList = updatedUiState.sellFrameList,
                                     assetList = updatedUiState.assetList,
-                                    likeAssets = updatedUiState.likeAssets,
                                 )
                         }
+                    }
+                }
+            }
+        }
+
+        fun loadLikeComponents() {
+            viewModelScope.launch {
+                combine(
+                    assetRepository.getLikeAssets(),
+                    nftRepository.getSaleLikeNft(),
+                ) { likeAssets, likeNfts ->
+                    var currentState = MyPageUiState.Success()
+                    currentState =
+                        when (likeAssets) {
+                            is ApiResponse.Error -> {
+                                _uiEvent.emit(MyPageUiEvent.Error(likeAssets.errorMessage))
+                                currentState
+                            }
+
+                            is ApiResponse.Success -> {
+                                currentState.copy(
+                                    likeAssets = likeAssets.data.content,
+                                )
+                            }
+                        }
+                    currentState =
+                        when (likeNfts) {
+                            is ApiResponse.Error -> {
+                                _uiEvent.emit(MyPageUiEvent.Error(likeNfts.errorMessage))
+                                currentState
+                            }
+
+                            is ApiResponse.Success -> {
+                                currentState.copy(likedFrames = likeNfts.data)
+                            }
+                        }
+                    currentState
+                }.collectLatest { updatedUiState ->
+                    val state = _uiState.value
+                    if (state is MyPageUiState.Loading) {
+                        _uiState.value = updatedUiState
+                    } else if (state is MyPageUiState.Success) {
+                        _uiState.value =
+                            state.copy(
+                                likedFrames = updatedUiState.likedFrames,
+                                likeAssets = updatedUiState.likeAssets,
+                            )
                     }
                 }
             }
