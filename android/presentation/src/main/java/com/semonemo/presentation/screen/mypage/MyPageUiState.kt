@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import com.semonemo.domain.model.Asset
 import com.semonemo.domain.model.FrameDetail
+import com.semonemo.domain.model.SellAssetDetail
 import com.semonemo.domain.model.User
 import com.semonemo.domain.model.myFrame.MyFrame
 
@@ -25,5 +26,6 @@ sealed interface MyPageUiState {
         val frameList: List<MyFrame> = listOf(),
         val sellFrameList: List<FrameDetail> = listOf(),
         val assetList: List<Asset> = listOf(),
+        val likeAssets: List<SellAssetDetail> = listOf(),
     ) : MyPageUiState
 }
