@@ -27,5 +27,6 @@ sealed interface MyPageUiState {
         val sellFrameList: List<FrameDetail> = listOf(),
         val assetList: List<Asset> = listOf(),
         val likeAssets: List<SellAssetDetail> = listOf(),
+        val likedFrames: List<FrameDetail> = listOf(),
     ) : MyPageUiState
 }
