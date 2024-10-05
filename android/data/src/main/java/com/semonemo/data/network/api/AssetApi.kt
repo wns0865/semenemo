@@ -5,6 +5,7 @@ import com.semonemo.data.network.response.GetAssetsResponse
 import com.semonemo.data.network.response.LikeResponse
 import com.semonemo.domain.model.AllSellAssets
 import com.semonemo.domain.model.Asset
+import com.semonemo.domain.model.CreateAiAsset
 import com.semonemo.domain.model.CreateAsset
 import com.semonemo.domain.model.SellAsset
 import com.semonemo.domain.model.SellAssetDetail
@@ -23,7 +24,7 @@ interface AssetApi {
     @POST("api/asset")
     suspend fun registerAsset(
         @Part image: MultipartBody.Part?,
-    ): BaseResponse<Asset>
+    ): BaseResponse<CreateAiAsset>
 
     @GET("api/asset/mine")
     suspend fun getMyAssets(
