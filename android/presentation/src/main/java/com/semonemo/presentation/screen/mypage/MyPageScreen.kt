@@ -235,7 +235,7 @@ fun MyPageScreen(
         ) {
             Spacer(modifier = Modifier.height(10.dp))
             TopAppBar(
-                modifier = Modifier,
+                modifier = Modifier.fillMaxHeight(0.045f),
                 title = {
                     NameWithBadge(
                         name = nickname,
@@ -542,63 +542,65 @@ fun MyPageScreen(
 
                     2 -> {
                         // 찜
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 15.dp),
-                            contentAlignment = Alignment.CenterEnd,
-                        ) {
-                            CustomDropdownMenu(
-                                menuItems =
-                                    listOf(
-                                        "프레임" to {
-                                            // 찜한 프레임 불러 오기
-                                            likeCategory = "프레임"
-                                        },
-                                        "에셋" to {
-                                            // 찜한 에셋 불러오기
-                                            likeCategory = "에셋"
-                                        },
-                                    ),
-                                styles =
-                                    CustomDropdownMenuStyles(),
-                            )
-                        }
-                        when (likeCategory) {
-                            "프레임" -> {
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 15.dp),
+                                contentAlignment = Alignment.CenterEnd,
+                            ) {
+                                CustomDropdownMenu(
+                                    menuItems =
+                                        listOf(
+                                            "프레임" to {
+                                                // 찜한 프레임 불러 오기
+                                                likeCategory = "프레임"
+                                            },
+                                            "에셋" to {
+                                                // 찜한 에셋 불러오기
+                                                likeCategory = "에셋"
+                                            },
+                                        ),
+                                    styles =
+                                        CustomDropdownMenuStyles(),
+                                )
                             }
+                            when (likeCategory) {
+                                "프레임" -> {
+                                }
 
-                            "에셋" -> {
-                                LazyVerticalGrid(
-                                    modifier =
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .wrapContentHeight()
-                                            .padding(horizontal = 10.dp),
-                                    columns = GridCells.Fixed(3),
-                                    state = rememberLazyGridState(),
-                                ) {
-                                    items(likeAssets.size) { index ->
-                                        val asset = likeAssets[index]
+                                "에셋" -> {
+                                    LazyVerticalGrid(
+                                        modifier =
+                                            Modifier
+                                                .fillMaxWidth()
+                                                .wrapContentHeight()
+                                                .padding(horizontal = 10.dp),
+                                        columns = GridCells.Fixed(3),
+                                        state = rememberLazyGridState(),
+                                    ) {
+                                        items(likeAssets.size) { index ->
+                                            val asset = likeAssets[index]
 
-                                        GlideImage(
-                                            modifier =
-                                                Modifier
-                                                    .fillMaxWidth()
-                                                    .aspectRatio(1f)
-                                                    .padding(8.dp)
-                                                    .clip(shape = RoundedCornerShape(10.dp))
-                                                    .border(
-                                                        width = 1.dp,
-                                                        shape = RoundedCornerShape(10.dp),
-                                                        color = Gray03,
-                                                    ).clickable {
-                                                        navigateToAssetDetail(asset.assetSellId)
-                                                    },
-                                            imageModel = asset.imageUrl,
-                                            contentScale = ContentScale.Inside,
-                                        )
+                                            GlideImage(
+                                                modifier =
+                                                    Modifier
+                                                        .fillMaxWidth()
+                                                        .aspectRatio(1f)
+                                                        .padding(8.dp)
+                                                        .clip(shape = RoundedCornerShape(10.dp))
+                                                        .border(
+                                                            width = 1.dp,
+                                                            shape = RoundedCornerShape(10.dp),
+                                                            color = Gray03,
+                                                        ).clickable {
+                                                            navigateToAssetDetail(asset.assetSellId)
+                                                        },
+                                                imageModel = asset.imageUrl,
+                                                contentScale = ContentScale.Inside,
+                                            )
+                                        }
                                     }
                                 }
                             }
