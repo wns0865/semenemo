@@ -2,9 +2,9 @@ package com.semonemo.domain.request.makeAiAsset
 
 sealed class PaintingStyle(
     open val title: String,
-    open val prompt: String,
-    open val negativePrompt: String,
-    open val model: String,
+    open val prompt: String = "",
+    open val negativePrompt: String = "",
+    open val model: String = "",
 ) {
     sealed class Realistic(
         override val title: String = "실사",
@@ -69,4 +69,8 @@ sealed class PaintingStyle(
             negativePrompt = "(worst quality, low quality, normal quality:2), ugly, BadDream, (UnrealisticDream:1.2), (nsfw:1.5), (naked:1.5), (nude:1.5), bad-artist, bad-artist-anime, bad_prompt_version2, badhandv4, EasyNegative, ng_deepnegative_v1_75t",
         )
     }
+
+    data class None(
+        override val title: String = "없음",
+    ) : PaintingStyle(title)
 }

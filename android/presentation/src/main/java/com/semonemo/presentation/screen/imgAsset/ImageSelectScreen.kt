@@ -41,6 +41,7 @@ import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.White
 import com.semonemo.presentation.util.encodeImageToBase64FromUri
+import com.semonemo.presentation.util.toAbsolutePath
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -93,7 +94,6 @@ fun ImageSelectContent(
         ImageSelectScreen(
             modifier = Modifier,
             navigateToDone = navigateToDone,
-            popUpBackStack = popUpBackStack,
             makeAiAsset = makeAiAsset,
             imageUri = imageUri,
             updateImage = updateImage,
@@ -120,7 +120,6 @@ fun ImageSelectContent(
 @Composable
 fun ImageSelectScreen(
     modifier: Modifier = Modifier,
-    popUpBackStack: () -> Unit = {},
     navigateToDone: (String) -> Unit = {},
     makeAiAsset: (String) -> Unit = {},
     imageUri: Uri? = null,
@@ -130,6 +129,7 @@ fun ImageSelectScreen(
 ) {
     val titles =
         listOf(
+            "없음",
             "실사",
             "카툰",
             "애니메이션",
@@ -173,25 +173,25 @@ fun ImageSelectScreen(
                         .fillMaxHeight(0.5f),
                 contentScale = ContentScale.Fit,
             )
-            Spacer(modifier = Modifier.weight(0.5f))
+            Spacer(modifier = Modifier.weight(0.4f))
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(R.string.img_select_title),
-                style = Typography.labelLarge.copy(fontSize = 20.sp),
-                textAlign = TextAlign.Start,
+                style = Typography.labelLarge.copy(fontSize = 15.sp),
+                textAlign = TextAlign.Center,
             )
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(R.string.img_select_style),
-                style = Typography.labelLarge.copy(fontSize = 20.sp),
-                textAlign = TextAlign.Start,
+                style = Typography.labelLarge.copy(fontSize = 15.sp),
+                textAlign = TextAlign.Center,
             )
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             Box(
                 modifier =
                     Modifier
                         .fillMaxWidth(),
-                contentAlignment = Alignment.CenterStart,
+                contentAlignment = Alignment.Center,
             ) {
                 AssetButtonList(
                     titles = titles,
@@ -205,8 +205,14 @@ fun ImageSelectScreen(
                 icon = null,
                 text = stringResource(R.string.img_select_confirm),
                 onClick = {
-                    encodeImageToBase64FromUri(context = context, uri = imageUri)?.let {
-                        makeAiAsset(it)
+                    if (paintingStyle == "없음") {
+                        imageUri?.let{
+                            navigateToDone(Uri.encode(it.toAbsolutePath(context)))
+                        }
+                    } else {
+                        encodeImageToBase64FromUri(context = context, uri = imageUri)?.let {
+                            makeAiAsset(it)
+                        }
                     }
                     // AI 배경 제거 작업 후 완료 화면으로 이동
                     // S3 url 전달

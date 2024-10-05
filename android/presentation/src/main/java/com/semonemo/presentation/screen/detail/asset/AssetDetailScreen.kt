@@ -92,9 +92,6 @@ fun AssetDetailContent(
         }
     }
 
-    if (uiState.isLoading) {
-        LoadingDialog()
-    }
     val asset = uiState.asset
     AssetDetailScreen(
         modifier = modifier,
@@ -109,6 +106,13 @@ fun AssetDetailContent(
         profileImageUrl = asset.creator.profileImage,
         onClickedAsset = onClickedLikeAsset,
     )
+    if (uiState.isLoading) {
+        LoadingDialog(
+            lottieRes = R.raw.normal_load,
+            loadingMessage = stringResource(R.string.frame_loading_title),
+            subMessage = stringResource(R.string.loading_sub_message),
+        )
+    }
 }
 
 @Composable

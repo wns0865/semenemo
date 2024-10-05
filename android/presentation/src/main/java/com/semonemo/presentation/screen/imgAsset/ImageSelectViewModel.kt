@@ -60,6 +60,7 @@ class ImageSelectViewModel
                 when (style) {
                     "실사" -> PaintingStyle.Realistic.People
                     "카툰" -> PaintingStyle.Cartoon.People
+                    "없음" -> PaintingStyle.None()
                     else -> PaintingStyle.Anime.People
                 }
             _uiState.update {
@@ -100,12 +101,12 @@ class ImageSelectViewModel
                         _uiState.update { it.copy(isLoading = true) }
                     }.onCompletion {
                         _uiState.update { it.copy(isLoading = false) }
-                    }.collectLatest { respone ->
-                        when (respone) {
-                            is ApiResponse.Error -> _uiEvent.emit(ImageSelectUiEvent.Error(errorMessage = respone.errorMessage))
+                    }.collectLatest { response ->
+                        when (response) {
+                            is ApiResponse.Error -> _uiEvent.emit(ImageSelectUiEvent.Error(errorMessage = response.errorMessage))
                             is ApiResponse.Success -> {
                                 _uiEvent.emit(
-                                    ImageSelectUiEvent.NavigateTo(Uri.encode(decodeBase64ToImage(respone.data).toString())),
+                                    ImageSelectUiEvent.NavigateTo(Uri.encode(decodeBase64ToImage(response.data).toString())),
                                 )
                             }
                         }
