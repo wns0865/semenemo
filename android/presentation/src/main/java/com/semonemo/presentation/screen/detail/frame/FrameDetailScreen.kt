@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -187,148 +188,157 @@ fun FrameDetailScreen(
                 .verticalScroll(state = scrollState),
     ) {
         Column(
-            modifier =
-                modifier
-                    .statusBarsPadding()
-                    .navigationBarsPadding()
-                    .padding(horizontal = 10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(20.dp),
+            modifier = Modifier.fillMaxSize(),
         ) {
             Spacer(modifier = Modifier.height(10.dp))
             TopAppBar(
                 modifier = Modifier,
                 title = {
-                    Text(text = frameTitle, style = Typography.bodyLarge.copy(fontSize = 20.sp))
+                    Text(text = frameTitle, style = Typography.bodyLarge.copy(fontSize = 17.sp))
                 },
                 onNavigationClick = popUpBackStack,
             )
-            GlideImage(
-                imageModel = frameUrl.toUri(),
-                contentScale = ContentScale.Fit,
+            Column(
                 modifier =
-                    Modifier
-                        .padding(horizontal = 20.dp)
-                        .size(width = 265.dp, height = 365.dp),
-            )
-            LazyRow(
-                modifier =
-                    Modifier
-                        .wrapContentHeight()
-                        .align(Alignment.Start),
-                horizontalArrangement = Arrangement.spacedBy(5.dp),
-                content = {
-                    items(hashTag.size) { index ->
-                        HashTag(
-                            keyword = hashTag[index],
-                        )
-                    }
-                },
-            )
-            Row(
-                modifier = Modifier.align(Alignment.Start),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                    modifier
+                        .statusBarsPadding()
+                        .navigationBarsPadding()
+                        .padding(horizontal = 15.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
                 GlideImage(
-                    imageModel = profileImageUrl.toUri(),
-                    contentScale = ContentScale.Crop,
+                    imageModel = frameUrl.toUri(),
+                    contentScale = ContentScale.Fit,
                     modifier =
                         Modifier
-                            .size(30.dp)
-                            .clip(shape = CircleShape),
+                            .padding(horizontal = 20.dp)
+                            .size(width = 265.dp, height = 365.dp),
                 )
-
-                if (hasBadge) {
-                    NameWithBadge(
-                        name = nickname,
-                        size = 18,
-                    )
-                } else {
-                    Text(
-                        text = nickname,
-                        style = Typography.bodySmall.copy(fontSize = 14.sp, color = GunMetal),
-                    )
-                }
-            }
-            Row(modifier = Modifier) {
-                Text(
+                LazyRow(
                     modifier =
                         Modifier
-                            .weight(1f)
-                            .clickable { isExpanded(expanded.not()) },
-                    text = frameContent,
-                    maxLines = if (expanded) Int.MAX_VALUE else maxLines, // expanded 상태에 따라 줄 수 제한
-                    overflow = TextOverflow.Ellipsis,
+                            .wrapContentHeight()
+                            .align(Alignment.Start),
+                    horizontalArrangement = Arrangement.spacedBy(5.dp),
+                    content = {
+                        items(hashTag.size) { index ->
+                            HashTag(
+                                keyword = hashTag[index],
+                            )
+                        }
+                    },
                 )
-            }
-            Row(
-                modifier = Modifier.align(Alignment.Start),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Image(
-                    modifier = Modifier,
-                    painter = painterResource(id = R.drawable.img_graph),
-                    contentDescription = "",
-                )
-
-                Text(text = stringResource(R.string.price_chart), style = Typography.bodyLarge)
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            Image(
-                modifier = Modifier,
-                painter = painterResource(id = R.drawable.price_graph),
-                contentDescription = "",
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            Row(
-                modifier = Modifier.align(Alignment.Start),
-                verticalAlignment = Alignment.Bottom,
-            ) {
-                Spacer(modifier = Modifier.weight(0.05f))
-                Column(modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(
+                Row(
+                    modifier = Modifier.align(Alignment.Start),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(5.dp),
+                ) {
+                    GlideImage(
+                        imageModel = profileImageUrl.toUri(),
+                        contentScale = ContentScale.Crop,
                         modifier =
                             Modifier
-                                .size(25.dp)
-                                .noRippleClickable {
-                                    if (isLiked.not()) {
-                                        onClickedLikeNft(true)
-                                    } else {
-                                        onClickedLikeNft(false)
-                                    }
-                                },
-                        painter =
-                            if (isLiked.not()) {
-                                painterResource(id = R.drawable.ic_toggle_heart_off)
-                            } else {
-                                painterResource(
-                                    id = R.drawable.ic_toggle_heart_on,
-                                )
-                            },
-                        contentDescription = "",
-                        tint = if (isLiked.not()) GunMetal else Red,
+                                .size(30.dp)
+                                .clip(shape = CircleShape),
                     )
+
+                    if (hasBadge) {
+                        NameWithBadge(
+                            name = nickname,
+                            size = 18,
+                        )
+                    } else {
+                        Text(
+                            text = nickname,
+                            style = Typography.bodySmall.copy(fontSize = 14.sp, color = GunMetal),
+                        )
+                    }
+                }
+                Row(modifier = Modifier) {
                     Text(
-                        text = String.format(Locale.KOREAN, "%,.0f", heartCount.toDouble()),
-                        style = Typography.bodySmall,
+                        modifier =
+                            Modifier
+                                .weight(1f)
+                                .clickable { isExpanded(expanded.not()) },
+                        text = frameContent,
+                        maxLines = if (expanded) Int.MAX_VALUE else maxLines, // expanded 상태에 따라 줄 수 제한
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
-                Spacer(modifier = Modifier.weight(0.05f))
-                LongBlackButton(
-                    modifier =
-                        Modifier
-                            .weight(1f)
-                            .height(45.dp),
-                    icon = R.drawable.ic_color_sene_coin,
-                    text =
-                        String.format(
-                            Locale.KOREAN,
-                            "%,.0f ",
-                            price,
-                        ) + stringResource(id = R.string.buy_price_message),
-                    onClick = { onClickedPurchase(price.toLong()) },
+                Row(
+                    modifier = Modifier.align(Alignment.Start),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Image(
+                        modifier = Modifier,
+                        painter = painterResource(id = R.drawable.img_graph),
+                        contentDescription = "",
+                    )
+
+                    Text(text = stringResource(R.string.price_chart), style = Typography.bodyLarge)
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                Image(
+                    modifier = Modifier.fillMaxWidth(),
+                    painter = painterResource(id = R.drawable.price_graph),
+                    contentDescription = "",
+                    contentScale = ContentScale.Crop
                 )
+                Spacer(modifier = Modifier.height(10.dp))
+                Row(
+                    modifier = Modifier.align(Alignment.Start),
+                    verticalAlignment = Alignment.Bottom,
+                ) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Column(
+                        modifier = Modifier,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Icon(
+                            modifier =
+                                Modifier
+                                    .size(25.dp)
+                                    .noRippleClickable {
+                                        if (isLiked.not()) {
+                                            onClickedLikeNft(true)
+                                        } else {
+                                            onClickedLikeNft(false)
+                                        }
+                                    },
+                            painter =
+                                if (isLiked.not()) {
+                                    painterResource(id = R.drawable.ic_toggle_heart_off)
+                                } else {
+                                    painterResource(
+                                        id = R.drawable.ic_toggle_heart_on,
+                                    )
+                                },
+                            contentDescription = "",
+                            tint = if (isLiked.not()) GunMetal else Red,
+                        )
+                        Text(
+                            text = String.format(Locale.KOREAN, "%,.0f", heartCount.toDouble()),
+                            style = Typography.bodySmall,
+                        )
+                    }
+                    Spacer(modifier = Modifier.weight(0.05f))
+                    LongBlackButton(
+                        modifier =
+                            Modifier
+                                .weight(1f)
+                                .height(50.dp),
+                        icon = R.drawable.ic_color_sene_coin,
+                        text =
+                            String.format(
+                                Locale.KOREAN,
+                                "%,.0f ",
+                                price,
+                            ) + stringResource(id = R.string.buy_price_message),
+                        onClick = { onClickedPurchase(price.toLong()) },
+                    )
+                }
+                Spacer(modifier = Modifier.height(5.dp))
             }
         }
     }
