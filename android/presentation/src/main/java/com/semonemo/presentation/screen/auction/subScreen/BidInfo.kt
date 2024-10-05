@@ -13,8 +13,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.semonemo.domain.model.AuctionBidLog
 import com.semonemo.presentation.R
 import com.semonemo.presentation.theme.Gray02
 import com.semonemo.presentation.theme.GunMetal
@@ -22,22 +24,32 @@ import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.util.spToDp
 
 @Composable
-fun BindInfo(
+fun BidInfo(
     modifier: Modifier = Modifier,
-    topBidders: List<Pair<Int, Int>>,
+    bidLogList: List<AuctionBidLog>,
+    startPrice: Long, // 추가된 파라미터
 ) {
     Column(
         modifier = modifier,
     ) {
-        // 첫 번째 항목을 특별히 처리하여 텍스트를 더 크게 설정
-        topBidders.firstOrNull()?.let { (bidder, bidPrice) ->
+        // 입찰 기록이 있을 때 입찰자 목록 표시
+
+        // 상위 입찰자 표시
+        // bidAmount 기준으로 내림차순 정렬
+        val sortedBidLog = bidLogList.sortedByDescending { it.bidAmount }
+
+        if (bidLogList.isNotEmpty()) {
+            val topBidder = sortedBidLog.first()
+            sortedBidLog.drop(1)
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .fillMaxWidth(),
             ) {
                 Text(
-                    text = String.format("%03d번", bidder),
-                    fontSize = 32.sp, // 더 큰 텍스트 크기
+                    text = String.format("%03d번", topBidder.userId),
+                    fontSize = 24.sp, // 적절한 텍스트 크기 조정
                     style =
                         Typography.bodyMedium.copy(
                             fontFeatureSettings = "tnum",
@@ -45,8 +57,42 @@ fun BindInfo(
                         ),
                 )
                 Text(
-                    text = String.format("%,d ${stringResource(id = R.string.coin_price_unit)}", bidPrice),
-                    fontSize = 32.sp, // 더 큰 텍스트 크기
+                    text =
+                        String.format(
+                            "%,d ${stringResource(id = R.string.coin_price_unit)}",
+                            topBidder.bidAmount,
+                        ),
+                    fontSize = 24.sp, // 적절한 텍스트 크기 조정
+                    style =
+                        Typography.bodyMedium.copy(
+                            fontFeatureSettings = "tnum",
+                            color = GunMetal,
+                        ),
+                )
+            }
+        } else {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier =
+                    Modifier
+                        .fillMaxWidth(),
+            ) {
+                Text(
+                    text = "기준가",
+                    fontSize = 24.sp, // 적절한 텍스트 크기 조정
+                    style =
+                        Typography.bodyMedium.copy(
+                            fontFeatureSettings = "tnum",
+                            color = GunMetal,
+                        ),
+                )
+                Text(
+                    text =
+                        String.format(
+                            "%,d ${stringResource(id = R.string.coin_price_unit)}",
+                            startPrice,
+                        ),
+                    fontSize = 24.sp, // 적절한 텍스트 크기 조정
                     style =
                         Typography.bodyMedium.copy(
                             fontFeatureSettings = "tnum",
@@ -55,18 +101,21 @@ fun BindInfo(
                 )
             }
         }
-        Spacer(modifier = modifier.height(8.dp))
 
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // 나머지 입찰자 리스트 표시
         val itemHeight = 24.sp.spToDp() + 8.dp // 텍스트 크기 + 패딩으로 높이 계산
 
         LazyColumn(
             modifier =
-                modifier
+                Modifier
                     .fillMaxWidth()
                     .height(itemHeight * 4),
+            // 원하는 높이 설정 (필요에 따라 조정 가능)
         ) {
-            // 나머지 항목들 처리 - LazyColumn으로 구현
-            items(topBidders.drop(1)) { (bidder, bidPrice) ->
+
+            items(if(bidLogList.isNotEmpty())sortedBidLog.drop(1) else sortedBidLog) { bidder ->
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
@@ -74,11 +123,10 @@ fun BindInfo(
                         Modifier
                             .fillMaxWidth()
                             .height(itemHeight),
-                    // 동적으로 계산된 항목 높이 적용
                 ) {
                     Text(
-                        text = String.format("%03d번", bidder),
-                        fontSize = 24.sp, // 기본 텍스트 크기
+                        text = String.format("%03d번", bidder.userId),
+                        fontSize = 20.sp, // 기본 텍스트 크기
                         style =
                             Typography.labelMedium.copy(
                                 fontFeatureSettings = "tnum",
@@ -86,8 +134,12 @@ fun BindInfo(
                             ),
                     )
                     Text(
-                        text = String.format("%,d ${stringResource(id = R.string.coin_price_unit)}", bidPrice),
-                        fontSize = 24.sp, // 기본 텍스트 크기
+                        text =
+                            String.format(
+                                "%,d ${stringResource(id = R.string.coin_price_unit)}",
+                                bidder.bidAmount,
+                            ),
+                        fontSize = 20.sp, // 기본 텍스트 크기
                         style =
                             Typography.labelMedium.copy(
                                 fontFeatureSettings = "tnum",
@@ -98,4 +150,31 @@ fun BindInfo(
             }
         }
     }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun BidInfoPreview_NoBids() {
+    BidInfo(
+        bidLogList = emptyList(),
+        startPrice = 10000, // 예시 기준가
+    )
+}
+
+@Composable
+@Preview(showBackground = true)
+fun BidInfoPreview_WithBids() {
+    val sampleBidLogs =
+        listOf(
+            AuctionBidLog(userId = 101, bidAmount = 15000),
+            AuctionBidLog(userId = 102, bidAmount = 12000),
+            AuctionBidLog(userId = 103, bidAmount = 11000),
+            AuctionBidLog(userId = 103, bidAmount = 10000),
+            AuctionBidLog(userId = 103, bidAmount = 8000),
+            AuctionBidLog(userId = 103, bidAmount = 7000),
+        )
+    BidInfo(
+        bidLogList = sampleBidLogs,
+        startPrice = 10000, // 예시 기준가
+    )
 }

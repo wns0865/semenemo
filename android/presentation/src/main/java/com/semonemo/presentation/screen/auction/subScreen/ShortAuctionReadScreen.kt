@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ShortAuctionReadScreen(
     modifier: Modifier = Modifier,
-    navigateToAuctionProcess: (String) -> Unit = {},
+    navigateToAuctionProcess: (Long) -> Unit = {},
 ) {
     Column(
         modifier =

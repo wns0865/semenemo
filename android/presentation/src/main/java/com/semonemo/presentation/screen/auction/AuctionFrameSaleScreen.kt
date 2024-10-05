@@ -77,7 +77,10 @@ import com.semonemo.presentation.util.addFocusCleaner
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AuctionFrameSaleScreen() {
+fun AuctionFrameSaleScreen(
+    modifier: Modifier = Modifier,
+    isShort: Boolean = true,
+) {
     val focusManager = LocalFocusManager.current
     val scrollState = rememberScrollState()
 
@@ -143,7 +146,7 @@ fun AuctionFrameSaleScreen() {
         ) {
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = stringResource(R.string.auction_register_title),
+                text = stringResource(if (isShort) R.string.fab_label_register_short_auction else R.string.fab_label_register_long_auction),
                 style = Typography.bodyMedium.copy(fontSize = 20.sp),
                 textAlign = TextAlign.Center,
             )
