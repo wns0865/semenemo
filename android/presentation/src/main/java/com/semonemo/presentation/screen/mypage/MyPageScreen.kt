@@ -96,6 +96,7 @@ fun MyPageRoute(
     navigateToFollowList: (String, List<User>, List<User>) -> Unit,
     navigateToSetting: () -> Unit,
     navigateToAssetDetail: (Long) -> Unit,
+    navigateToSaleFrameDetail: (Long) -> Unit,
     viewModel: MyPageViewModel = hiltViewModel(),
     onErrorSnackBar: (String) -> Unit,
     userId: Long,
@@ -124,6 +125,7 @@ fun MyPageRoute(
         unfollowUser = {
             viewModel.unfollowUser(userId)
         },
+        navigateToSaleFrameDetail = navigateToSaleFrameDetail,
     )
 }
 
@@ -151,6 +153,7 @@ fun HandleMyPageUi(
     navigateToFollowList: (String, List<User>, List<User>) -> Unit,
     navigateToSetting: () -> Unit,
     navigateToAssetDetail: (Long) -> Unit,
+    navigateToSaleFrameDetail: (Long) -> Unit,
     updateProfileImage: (Uri) -> Unit,
     followUser: () -> Unit,
     unfollowUser: () -> Unit,
@@ -178,6 +181,8 @@ fun HandleMyPageUi(
                 sellFrameList = uiState.sellFrameList,
                 assetList = uiState.assetList,
                 likeAssets = uiState.likeAssets,
+                likedFrames = uiState.likedFrames,
+                navigateToSaleFrameDetail = navigateToSaleFrameDetail,
             )
     }
 }
@@ -189,6 +194,7 @@ fun MyPageScreen(
     navigateToFollowList: (String, List<User>, List<User>) -> Unit = { _, _, _ -> },
     navigateToSetting: () -> Unit = {},
     navigateToAssetDetail: (Long) -> Unit = {},
+    navigateToSaleFrameDetail: (Long) -> Unit = {},
     nickname: String = "짜이한",
     profileImageUrl: String = "",
     amount: Int = 0,
@@ -203,6 +209,7 @@ fun MyPageScreen(
     sellFrameList: List<FrameDetail> = listOf(),
     assetList: List<Asset> = listOf(),
     likeAssets: List<SellAssetDetail> = listOf(),
+    likedFrames: List<FrameDetail> = listOf(),
 ) {
     val tabs = listOf("프레임", "에셋", "찜")
     val selectedIndex = remember { mutableIntStateOf(0) }
@@ -567,6 +574,39 @@ fun MyPageScreen(
                         }
                         when (likeCategory) {
                             "프레임" -> {
+                                LazyVerticalGrid(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .wrapContentHeight()
+                                            .padding(horizontal = 10.dp),
+                                    columns = GridCells.Fixed(2),
+                                    state = rememberLazyGridState(),
+                                ) {
+                                    items(likedFrames.size) { index ->
+                                        val frame = likedFrames[index]
+                                        val ipfsUrl = BuildConfig.IPFS_READ_URL
+                                        val imgUrl = ipfsUrl + "ipfs/" + frame.nftInfo.data.image
+
+                                        GlideImage(
+                                            modifier =
+                                                Modifier
+                                                    .fillMaxWidth()
+                                                    .aspectRatio(1f)
+                                                    .padding(8.dp)
+                                                    .clip(shape = RoundedCornerShape(10.dp))
+                                                    .border(
+                                                        width = 1.dp,
+                                                        shape = RoundedCornerShape(10.dp),
+                                                        color = Gray03,
+                                                    ).noRippleClickable {
+                                                        navigateToSaleFrameDetail(frame.marketId)
+                                                    },
+                                            imageModel = imgUrl,
+                                            contentScale = ContentScale.Inside,
+                                        )
+                                    }
+                                }
                             }
 
                             "에셋" -> {

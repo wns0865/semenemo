@@ -258,6 +258,9 @@ fun MainNavHost(
                 navigateToAssetDetail = { assetSellId ->
                     navController.navigate(ScreenDestinations.AssetDetail.createRoute(assetSellId))
                 },
+                navigateToSaleFrameDetail = { marketId ->
+                    navController.navigate(ScreenDestinations.FrameDetail.createRoute(marketId))
+                },
                 onErrorSnackBar = onShowErrorSnackBar,
                 userId = userId ?: -1,
             )
