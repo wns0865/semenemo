@@ -14,6 +14,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -63,6 +64,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.semonemo.domain.model.Asset
 import com.semonemo.domain.model.FrameDetail
+import com.semonemo.domain.model.SellAssetDetail
 import com.semonemo.domain.model.User
 import com.semonemo.domain.model.myFrame.MyFrame
 import com.semonemo.presentation.BuildConfig
@@ -93,6 +95,7 @@ fun MyPageRoute(
     navigateToDetail: (Long) -> Unit,
     navigateToFollowList: (String, List<User>, List<User>) -> Unit,
     navigateToSetting: () -> Unit,
+    navigateToAssetDetail: (Long) -> Unit,
     viewModel: MyPageViewModel = hiltViewModel(),
     onErrorSnackBar: (String) -> Unit,
     userId: Long,
@@ -110,6 +113,7 @@ fun MyPageRoute(
         navigateToDetail = navigateToDetail,
         navigateToFollowList = navigateToFollowList,
         navigateToSetting = navigateToSetting,
+        navigateToAssetDetail = navigateToAssetDetail,
         updateProfileImage = { imageUri ->
             val image = File(imageUri.toAbsolutePath(context))
             viewModel.updateProfileImage(image, imageUri.toString())
@@ -146,6 +150,7 @@ fun HandleMyPageUi(
     navigateToDetail: (Long) -> Unit,
     navigateToFollowList: (String, List<User>, List<User>) -> Unit,
     navigateToSetting: () -> Unit,
+    navigateToAssetDetail: (Long) -> Unit,
     updateProfileImage: (Uri) -> Unit,
     followUser: () -> Unit,
     unfollowUser: () -> Unit,
@@ -158,6 +163,7 @@ fun HandleMyPageUi(
                 navigateToDetail = navigateToDetail,
                 navigateToFollowList = navigateToFollowList,
                 navigateToSetting = navigateToSetting,
+                navigateToAssetDetail = navigateToAssetDetail,
                 nickname = uiState.nickname,
                 profileImageUrl = uiState.profileImageUrl,
                 amount = uiState.amount,
@@ -171,6 +177,7 @@ fun HandleMyPageUi(
                 frameList = uiState.frameList,
                 sellFrameList = uiState.sellFrameList,
                 assetList = uiState.assetList,
+                likeAssets = uiState.likeAssets,
             )
     }
 }
@@ -181,6 +188,7 @@ fun MyPageScreen(
     navigateToDetail: (Long) -> Unit = {},
     navigateToFollowList: (String, List<User>, List<User>) -> Unit = { _, _, _ -> },
     navigateToSetting: () -> Unit = {},
+    navigateToAssetDetail: (Long) -> Unit = {},
     nickname: String = "짜이한",
     profileImageUrl: String = "",
     amount: Int = 0,
@@ -194,6 +202,7 @@ fun MyPageScreen(
     frameList: List<MyFrame> = listOf(),
     sellFrameList: List<FrameDetail> = listOf(),
     assetList: List<Asset> = listOf(),
+    likeAssets: List<SellAssetDetail> = listOf(),
 ) {
     val tabs = listOf("프레임", "에셋", "찜")
     val selectedIndex = remember { mutableIntStateOf(0) }
@@ -206,7 +215,9 @@ fun MyPageScreen(
                 }
             },
         )
+
     var isSell by remember { mutableStateOf(false) }
+    var likeCategory by remember { mutableStateOf("프레임") }
 
     Surface(
         modifier =
@@ -431,7 +442,7 @@ fun MyPageScreen(
                                             .fillMaxWidth()
                                             .wrapContentHeight()
                                             .padding(horizontal = 10.dp),
-                                    columns = GridCells.Fixed(3),
+                                    columns = GridCells.Fixed(2),
                                     state = rememberLazyGridState(),
                                 ) {
                                     items(sellFrameList.size) { index ->
@@ -465,7 +476,7 @@ fun MyPageScreen(
                                             .fillMaxWidth()
                                             .wrapContentHeight()
                                             .padding(horizontal = 10.dp),
-                                    columns = GridCells.Fixed(3),
+                                    columns = GridCells.Fixed(2),
                                     state = rememberLazyGridState(),
                                 ) {
                                     items(frameList.size) { index ->
@@ -541,19 +552,56 @@ fun MyPageScreen(
                             CustomDropdownMenu(
                                 menuItems =
                                     listOf(
-                                        "판매중" to {
-                                            // 통신 (판매 중인 찜한 프레임 불러 오기)
-                                        },
-                                        "경매중" to {
-                                            // 통신 (경매 중인 찜한 프레임 불러 오기)
+                                        "프레임" to {
+                                            // 찜한 프레임 불러 오기
+                                            likeCategory = "프레임"
                                         },
                                         "에셋" to {
-                                            // 통신 (찜한 에셋 불러 오기)
+                                            // 찜한 에셋 불러오기
+                                            likeCategory = "에셋"
                                         },
                                     ),
                                 styles =
                                     CustomDropdownMenuStyles(),
                             )
+                        }
+                        when (likeCategory) {
+                            "프레임" -> {
+                            }
+
+                            "에셋" -> {
+                                LazyVerticalGrid(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .wrapContentHeight()
+                                            .padding(horizontal = 10.dp),
+                                    columns = GridCells.Fixed(3),
+                                    state = rememberLazyGridState(),
+                                ) {
+                                    items(likeAssets.size) { index ->
+                                        val asset = likeAssets[index]
+
+                                        GlideImage(
+                                            modifier =
+                                                Modifier
+                                                    .fillMaxWidth()
+                                                    .aspectRatio(1f)
+                                                    .padding(8.dp)
+                                                    .clip(shape = RoundedCornerShape(10.dp))
+                                                    .border(
+                                                        width = 1.dp,
+                                                        shape = RoundedCornerShape(10.dp),
+                                                        color = Gray03,
+                                                    ).clickable {
+                                                        navigateToAssetDetail(asset.assetSellId)
+                                                    },
+                                            imageModel = asset.imageUrl,
+                                            contentScale = ContentScale.Inside,
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }

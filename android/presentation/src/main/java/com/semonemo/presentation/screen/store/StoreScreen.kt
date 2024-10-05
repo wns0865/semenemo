@@ -2,6 +2,7 @@ package com.semonemo.presentation.screen.store
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +20,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -39,8 +41,10 @@ import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.SectionFullViewButton
 import com.semonemo.presentation.component.SectionHeader
 import com.semonemo.presentation.screen.store.subScreen.StoreSubScreen
+import com.semonemo.presentation.theme.Gray02
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.SemonemoTheme
+import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.White
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.flow.SharedFlow
@@ -125,9 +129,7 @@ fun StoreScreen(
     val assetHeight = if (saleAssets.isEmpty()) 0.dp else 400.dp
 
     Surface(
-        modifier =
-            modifier
-                .fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         color = Color.White,
     ) {
         Column(
@@ -150,11 +152,9 @@ fun StoreScreen(
                 Spacer(Modifier.weight(1f))
                 Icon(
                     modifier =
-                        Modifier
-                            .padding(10.dp)
-                            .clickable {
-                                navigateToSearch()
-                            },
+                        Modifier.padding(10.dp).clickable {
+                            navigateToSearch()
+                        },
                     painter = painterResource(id = R.drawable.ic_search_magnifier),
                     contentDescription = null,
                     tint = GunMetal,
@@ -178,37 +178,59 @@ fun StoreScreen(
                     navigateToFullView(true)
                 })
             }
-
-            StoreSubScreen(
-                modifier =
-                    Modifier
-                        .height(frameHeight)
-                        .fillMaxWidth(),
-                isFrame = true,
-                saleFrames = saleFrames,
-                navigateToFrameDetail = navigateToFrameDetail,
-            )
+            if (saleFrames.isEmpty()) {
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(100.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "현재 판매 중인 프레임이 없어요! 🥲",
+                        style = Typography.labelLarge,
+                        color = Gray02,
+                    )
+                }
+            } else {
+                StoreSubScreen(
+                    modifier = Modifier.height(frameHeight).fillMaxWidth(),
+                    isFrame = true,
+                    saleFrames = saleFrames,
+                    navigateToFrameDetail = navigateToFrameDetail,
+                )
+            }
             Spacer(modifier = Modifier.height(10.dp))
             Row(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp),
+                modifier = Modifier.fillMaxWidth().padding(10.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 SectionHeader(text = stringResource(id = R.string.section_header_sell_asset))
                 SectionFullViewButton(onClick = { navigateToFullView(false) })
             }
-            StoreSubScreen(
-                modifier =
-                    Modifier
-                        .height(assetHeight)
-                        .fillMaxWidth(),
-                isFrame = false,
-                saleAssets = saleAssets,
-                navigateToAssetDetail = navigateToAssetDetail,
-            )
+            if (saleAssets.isEmpty()) {
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(100.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "현재 판매 중인 에셋이 없어요! 🥲",
+                        style = Typography.labelLarge,
+                        color = Gray02,
+                    )
+                }
+            } else {
+                StoreSubScreen(
+                    modifier = Modifier.height(assetHeight).fillMaxWidth(),
+                    isFrame = false,
+                    saleAssets = saleAssets,
+                    navigateToAssetDetail = navigateToAssetDetail,
+                )
+            }
             Spacer(modifier = Modifier.height(100.dp))
         }
         CustomStoreFAB(
@@ -231,18 +253,12 @@ fun HotRecentFrame(
         colors = CardDefaults.cardColors(containerColor = White),
     ) {
         Column(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
+            modifier = Modifier.fillMaxWidth().wrapContentHeight(),
         ) {
             GlideImage(
                 imageModel = imgUrl,
                 contentScale = ContentScale.Crop,
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
+                modifier = Modifier.fillMaxWidth().weight(1f),
             )
         }
     }

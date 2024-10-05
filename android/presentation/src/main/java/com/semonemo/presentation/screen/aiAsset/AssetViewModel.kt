@@ -9,6 +9,7 @@ import com.semonemo.domain.repository.AssetRepository
 import com.semonemo.domain.request.RemoveBgRequest
 import com.semonemo.presentation.base.BaseViewModel
 import com.semonemo.presentation.util.decodeBase64ToImage
+import com.semonemo.presentation.util.encodeImageToBase64
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,7 +47,11 @@ class AssetViewModel
 
         fun removeBackground() {
             uiState.value.assetUrl?.let { assetUrl ->
-                val base64String = Uri.decode(assetUrl).replace("data:image/png;base64,", "")
+                val base64String = if(assetUrl.contains("data:image/png;base64,")){
+                    Uri.decode(assetUrl).replace("data:image/png;base64,", "")
+                } else {
+                    encodeImageToBase64(assetUrl)
+                }
                 viewModelScope.launch {
                     aiRepository
                         .removeBg(RemoveBgRequest(inputImage = base64String))

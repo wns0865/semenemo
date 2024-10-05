@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.util.Base64
@@ -60,4 +61,12 @@ fun saveBitmapToFile(
         e.printStackTrace()
         null
     }
+}
+
+fun encodeImageToBase64(imagePath: String): String {
+    val file = File(imagePath)
+    val fileInputStreamReader = FileInputStream(file)
+    val byteArray = ByteArray(file.length().toInt())
+    fileInputStreamReader.read(byteArray)
+    return Base64.getEncoder().encodeToString(byteArray)
 }

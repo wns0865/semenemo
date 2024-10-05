@@ -1,6 +1,5 @@
 package com.semonemo.presentation.screen.mypage
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.semonemo.domain.datasource.AuthDataSource
@@ -35,14 +34,15 @@ class MyPageViewModel
         val uiState = _uiState.asStateFlow()
         private val _uiEvent = MutableSharedFlow<MyPageUiEvent>()
         val uiEvent = _uiEvent.asSharedFlow()
-        private val userId = savedStateHandle.get<Long>("userId") ?: -1
+        private var userId = savedStateHandle.get<Long>("userId") ?: -1
 
         init {
             if (userId == -1L) { // 마이페이지
                 loadUserInfo()
-                loadMyComponents()
+                loadComponents()
             } else { // 타사용자 페이지
                 loadOtherUserInfo()
+                loadComponents()
             }
         }
 
@@ -189,19 +189,15 @@ class MyPageViewModel
             }
         }
 
-        private fun loadMyComponents() {
+        private fun loadComponents() {
             viewModelScope.launch {
                 authDataSource.getUserId()?.let { userId ->
                     combine(
                         nftRepository.getUserNft(userId.toLong()),
                         nftRepository.getSellNft(userId.toLong()),
                         assetRepository.getMyAssets(null),
-                    ) { nftList, sellNftList, assetList ->
-
-                        Log.d("nakyung", "nftList: " + nftList.toString())
-                        Log.d("nakyung", "sellNftList: " + sellNftList.toString())
-                        Log.d("nakyung", "assetList: " + assetList.toString())
-
+                        assetRepository.getLikeAssets(),
+                    ) { nftList, sellNftList, assetList, likeAssets ->
                         var currentState = MyPageUiState.Success()
 
                         currentState =
@@ -244,6 +240,19 @@ class MyPageViewModel
                                     )
                                 }
                             }
+                        currentState =
+                            when (likeAssets) {
+                                is ApiResponse.Error -> {
+                                    _uiEvent.emit(MyPageUiEvent.Error(likeAssets.errorMessage))
+                                    currentState
+                                }
+
+                                is ApiResponse.Success -> {
+                                    currentState.copy(
+                                        likeAssets = likeAssets.data.content,
+                                    )
+                                }
+                            }
                         currentState
                     }.collectLatest { updatedUiState ->
                         val state = _uiState.value
@@ -255,6 +264,7 @@ class MyPageViewModel
                                     frameList = updatedUiState.frameList,
                                     sellFrameList = updatedUiState.sellFrameList,
                                     assetList = updatedUiState.assetList,
+                                    likeAssets = updatedUiState.likeAssets,
                                 )
                         }
                     }

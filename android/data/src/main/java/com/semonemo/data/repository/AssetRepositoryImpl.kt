@@ -131,4 +131,14 @@ class AssetRepositoryImpl
                     ),
                 )
             }
+
+        override suspend fun getLikeAssets(): Flow<ApiResponse<AllSellAssets>> =
+            flow {
+                val response =
+                    emitApiResponse(
+                        apiResponse = { api.getLikeAssets() },
+                        default = AllSellAssets(),
+                    )
+                emit(response)
+            }
     }
