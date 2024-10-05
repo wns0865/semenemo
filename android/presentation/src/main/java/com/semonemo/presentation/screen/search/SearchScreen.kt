@@ -1,8 +1,8 @@
 package com.semonemo.presentation.screen.search
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -73,6 +73,8 @@ import com.skydoves.landscapist.glide.GlideImage
 fun SearchRoute(
     modifier: Modifier = Modifier,
     navigateToProfile: (Long) -> Unit,
+    navigateToAssetDetail: (Long) -> Unit,
+    navigateToFrameDetail: (Long) -> Unit,
     popUpBackStack: () -> Unit,
     viewModel: SearchViewModel = hiltViewModel(),
 ) {
@@ -81,6 +83,8 @@ fun SearchRoute(
     SearchScreen(
         modifier = modifier,
         navigateToProfile = navigateToProfile,
+        navigateToAssetDetail = navigateToAssetDetail,
+        navigateToFrameDetail = navigateToFrameDetail,
         popUpBackStack = popUpBackStack,
         searchState = searchState,
         loadHotSearch = { viewModel.loadHotSearch() },
@@ -98,6 +102,8 @@ fun SearchScreen(
     searchState: SearchState,
     popUpBackStack: () -> Unit = {},
     navigateToProfile: (Long) -> Unit = {},
+    navigateToAssetDetail: (Long) -> Unit = {},
+    navigateToFrameDetail: (Long) -> Unit = {},
     loadHotSearch: () -> Unit = {},
     searchUser: (String) -> Unit = {},
     searchFrame: (String) -> Unit = {},
@@ -150,7 +156,9 @@ fun SearchScreen(
             Spacer(modifier = Modifier.weight(0.05f))
             when (searchState) {
                 is SearchState.Loading -> {
-                    LoadingDialog()
+                    LoadingDialog(
+                        modifier = Modifier.fillMaxSize(),
+                    )
                 }
 
                 is SearchState.Init -> {
@@ -190,6 +198,8 @@ fun SearchScreen(
                             frameList = searchState.frameList,
                             assetList = searchState.assetList,
                             navigateToProfile = navigateToProfile,
+                            navigateToAssetDetail = navigateToAssetDetail,
+                            navigateToFrameDetail = navigateToFrameDetail,
                         )
                     }
                 }
@@ -280,6 +290,8 @@ fun SearchSuccessScreen(
     frameList: List<FrameDetail> = emptyList(),
     assetList: List<AssetDetail> = emptyList(),
     navigateToProfile: (Long) -> Unit = {},
+    navigateToAssetDetail: (Long) -> Unit = {},
+    navigateToFrameDetail: (Long) -> Unit = {},
 ) {
     if (userList.isNotEmpty()) {
         LazyColumn(
@@ -326,7 +338,9 @@ fun SearchSuccessScreen(
                                 width = 1.dp,
                                 shape = RoundedCornerShape(10.dp),
                                 color = Gray03,
-                            ),
+                            ).clickable {
+                                navigateToFrameDetail(frame.nftId)
+                            },
                     imageModel = imgUrl.toUri(),
                     contentScale = ContentScale.Fit,
                 )
@@ -355,7 +369,9 @@ fun SearchSuccessScreen(
                                 width = 1.dp,
                                 shape = RoundedCornerShape(10.dp),
                                 color = Gray03,
-                            ),
+                            ).clickable {
+                                navigateToAssetDetail(asset.assetSellId)
+                            },
                     imageModel = asset.imageUrl.toUri(),
                     contentScale = ContentScale.Crop,
                 )

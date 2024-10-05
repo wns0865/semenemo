@@ -202,6 +202,12 @@ fun MainNavHost(
                 navigateToProfile = { userId ->
                     navController.navigate(ScreenDestinations.MyPage.createRoute(userId))
                 },
+                navigateToAssetDetail = { sellId ->
+                    navController.navigate(ScreenDestinations.AssetDetail.createRoute(sellId))
+                },
+                navigateToFrameDetail = { nftId ->
+                    navController.navigate(ScreenDestinations.FrameDetail.createRoute(nftId))
+                },
                 popUpBackStack = navController::popBackStack,
             )
         }
@@ -436,9 +442,7 @@ fun MainNavHost(
         ) {
             AssetSaleRoute(
                 modifier = modifier,
-                navigateToStore = {
-                    navController.navigate(ScreenDestinations.Shop.route)
-                },
+                popUpBackStack = navController::popBackStack,
                 onShowSnackBar = onShowErrorSnackBar,
             )
         }
