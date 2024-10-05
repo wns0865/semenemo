@@ -6,5 +6,5 @@ import com.semonemo.domain.request.makeAiAsset.PaintingStyle
 data class ImageSelectUiState(
     val imageUrl: Uri? = null,
     val isLoading: Boolean = false,
-    val style: PaintingStyle = PaintingStyle.Realistic.People,
+    val style: PaintingStyle = PaintingStyle.None(),
 )
