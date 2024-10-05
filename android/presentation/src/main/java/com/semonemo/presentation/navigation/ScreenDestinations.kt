@@ -129,10 +129,10 @@ sealed class ScreenDestinations(
             get() = "auctionProcess/{auctionId}"
         val arguments =
             listOf(
-                navArgument("auctionId") { type = NavType.StringType },
+                navArgument("auctionId") { type = NavType.LongType },
             )
 
-        fun createRoute(auctionId: String) = "auctionProcess/$auctionId"
+        fun createRoute(auctionId: Long) = "auctionProcess/$auctionId"
     }
 
     data object StoreFullView : ScreenDestinations(route = "storeFullView") {

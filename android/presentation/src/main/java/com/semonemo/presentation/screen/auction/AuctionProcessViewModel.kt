@@ -1,6 +1,7 @@
 package com.semonemo.presentation.screen.auction
 
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,7 +26,13 @@ class AuctionProcessViewModel
     ) : ViewModel() {
         var auctionBidLog = mutableStateOf<List<AuctionBidLog>>(listOf())
             private set
-        var topPrice = mutableIntStateOf(0)
+        var topPrice = mutableLongStateOf(0L)
+            private set
+        var myPercentage = mutableIntStateOf(0)
+            private set
+        var myBidPrice = mutableLongStateOf(0L)
+            private set
+        var endTime = mutableStateOf(LocalDateTime.now().plusSeconds(15))
             private set
         var auctionId = saveStateHandle["auctionId"] ?: -1L
             private set
@@ -57,11 +65,26 @@ class AuctionProcessViewModel
             }
         }
 
-        private fun updateBidLog(bidLog: AuctionBidLog)  {
+        fun updateBidLog(bidLog: AuctionBidLog) {
             auctionBidLog.value += bidLog
+            topPrice.longValue = bidLog.bidAmount
+            endTime.value = bidLog.endTime
         }
 
-        private fun exitBidLog(bidLog: AuctionBidLog)  {
+        fun adjustClear() {
+            myBidPrice.longValue = 0
+            myPercentage.intValue = 0
+        }
+
+        fun adjustBidPrice(
+            price: Long,
+            percentage: Int,
+        ) {
+            myBidPrice.longValue += price
+            myPercentage.intValue += percentage
+        }
+
+        fun exitBidLog(bidLog: AuctionBidLog) {
             auctionBidLog.value -= bidLog
         }
     }

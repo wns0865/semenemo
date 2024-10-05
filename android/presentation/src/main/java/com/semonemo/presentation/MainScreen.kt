@@ -378,7 +378,7 @@ fun MainNavHost(
         ) {
             AuctionProcessScreen(
                 modifier = modifier,
-                auctionId = it.arguments?.getString("auctionId") ?: "",
+                auctionId = it.arguments?.getLong("auctionId") ?: -1L,
             )
         }
 

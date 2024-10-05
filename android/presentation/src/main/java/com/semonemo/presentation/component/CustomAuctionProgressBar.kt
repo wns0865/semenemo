@@ -9,7 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -25,21 +25,22 @@ import com.semonemo.presentation.theme.ProgressYellow
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.WhiteGray
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.ZoneId
 import kotlin.math.max
 
 @Composable
 fun CustomAuctionProgressBar(
     modifier: Modifier = Modifier,
-    initialTime: Float = 15f, // 초기 시간 설정
-    currentTimeMillis: () -> Long = { System.currentTimeMillis() }, // 시스템 시간을 가져오는 함수
+    initialTime: Float = 15f, // 초기 시간 설정 (초 단위)
+    endTime: LocalDateTime = LocalDateTime.now().plusSeconds(15)
 ) {
-    val startTime = remember { currentTimeMillis() } // 시작 시간
-    val endTime = remember { startTime + (initialTime * 1000).toLong() } // 종료 시간
-    val timeLeftFlow = remember { MutableStateFlow(initialTime) }
-    var timeLeft by remember { mutableFloatStateOf(initialTime) }
+    // endTime을 epoch millis로 변환 (타임존을 지정)
+    val endTimeMillis = remember(endTime) {
+        endTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+    }
+
+    var timeLeft by remember { mutableStateOf(initialTime) }
 
     val progress = timeLeft / initialTime // 진행률
 
@@ -49,45 +50,34 @@ fun CustomAuctionProgressBar(
             else -> lerp(ProgressYellow, ProgressRed, (0.5f - progress) * 2)
         }
 
-    LaunchedEffect(Unit) {
-        launch {
-            timeLeftFlow.collectLatest { newTimeLeft ->
-                timeLeft = newTimeLeft
-            }
-        }
-    }
-
-    // 시간 업데이트 로직, 시스템 시간을 기반으로 실시간 업데이트
-    LaunchedEffect(Unit) {
-        launch {
-            while (timeLeft > 0) {
-                val currentTime = currentTimeMillis()
-                val updatedTime = max(0f, (endTime - currentTime) / 1000f)
-                timeLeftFlow.emit(updatedTime)
-                delay(100L)
-            }
+    LaunchedEffect(endTimeMillis) {
+        while (timeLeft > 0) {
+            val currentTimeMillis = System.currentTimeMillis()
+            val updatedTime = max(0f, (endTimeMillis - currentTimeMillis) / 1000f)
+            timeLeft = updatedTime
+            delay(100L) // 0.1초마다 업데이트
         }
     }
 
     Box(
         contentAlignment = Alignment.CenterEnd,
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .height(30.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .height(30.dp),
     ) {
         // 커스텀 프로그레스바
         Canvas(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .height(30.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(30.dp),
         ) {
+            // 배경
             drawRoundRect(
                 color = WhiteGray,
                 size = size,
                 cornerRadius = CornerRadius(10.dp.toPx()),
             )
+            // 진행 바
             drawRoundRect(
                 color = progressColor, // 남은 진행 바 색상
                 size = size.copy(width = size.width * progress),
@@ -99,17 +89,22 @@ fun CustomAuctionProgressBar(
         Text(
             modifier = Modifier.padding(end = 8.dp),
             text = String.format("%.1fs", timeLeft),
-            style =
-                Typography.bodyMedium.copy(
-                    fontFeatureSettings = "tnum",
-                ),
+            style = Typography.bodyMedium.copy(
+                fontFeatureSettings = "tnum",
+            ),
             color = GunMetal,
         )
     }
 }
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun CustomAuctionProgressBarPreview() {
-    CustomAuctionProgressBar(modifier = Modifier.padding(16.dp))
+    // 예시 종료 시간: 현재 시간으로부터 15초 후
+    val exampleEndTime = LocalDateTime.now().plusSeconds(15)
+    CustomAuctionProgressBar(
+        modifier = Modifier.padding(16.dp),
+        initialTime = 15f,
+        endTime = exampleEndTime
+    )
 }
