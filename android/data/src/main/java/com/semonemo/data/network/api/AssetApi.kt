@@ -72,8 +72,13 @@ interface AssetApi {
         @Path("assetSellId") assetSellId: Long,
     ): BaseResponse<LikeResponse>
 
+    // 에셋 자세히 보기
     @GET("api/asset/sell/{assetSellId}/detail")
     suspend fun getSaleAssetDetail(
         @Path("assetSellId") assetSellId: Long,
     ): BaseResponse<SellAssetDetail>
+
+    // 좋아요한 에셋 목록
+    @GET("api/asset/like")
+    suspend fun getLikeAssets(): BaseResponse<AllSellAssets>
 }
