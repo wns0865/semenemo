@@ -12,4 +12,8 @@ data class DetailUiState(
     val title: String = "",
     val content: String = "",
     val image: String = "",
+    val isLoading: Boolean = false,
+    val marketId: Long = 0L,
+    val tokenId: Long = 0L,
+    val nftId: Long = 0L,
 )
