@@ -14,6 +14,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -147,13 +148,13 @@ fun FrameSaleContent(
         uiEvent.collectLatest { event ->
             when (event) {
                 is FrameSaleUiEvent.Error -> onShowSnackBar(event.errorMessage)
-                FrameSaleUiEvent.SaleDone -> popUpBackStack()
+                FrameSaleUiEvent.SaleDone -> {
+                    popUpBackStack()
+                }
             }
         }
     }
-    if (uiState.isLoading) {
-        LoadingDialog()
-    }
+
     FrameSaleScreen(
         modifier = modifier,
         popUpBackStack = popUpBackStack,
@@ -162,6 +163,19 @@ fun FrameSaleContent(
         selectedFrame = uiState.selectFrame,
         sendTransaction = sendTransaction,
     )
+    if (uiState.isLoading) {
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .clickable(enabled = false) {},
+        )
+        LoadingDialog(
+            lottieRes = R.raw.normal_load,
+            loadingMessage = stringResource(R.string.frame_sale_register_title),
+            subMessage = stringResource(R.string.loading_sub_message),
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

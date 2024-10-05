@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -39,12 +40,15 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.semonemo.domain.model.FrameDetail
+import com.semonemo.presentation.BuildConfig
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.HashTag
 import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.component.NameWithBadge
 import com.semonemo.presentation.component.TopAppBar
+import com.semonemo.presentation.screen.nft.NftViewModel
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Red
 import com.semonemo.presentation.theme.SemonemoTheme
@@ -54,6 +58,9 @@ import com.semonemo.presentation.util.urlToIpfs
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
+import org.web3j.abi.TypeReference
+import org.web3j.abi.datatypes.Function
+import org.web3j.abi.datatypes.generated.Uint256
 import java.util.Locale
 
 @Composable
@@ -62,6 +69,7 @@ fun FrameDetailRoute(
     popUpBackStack: () -> Unit = {},
     onShowSnackBar: (String) -> Unit = {},
     viewModel: FrameDetailViewModel = hiltViewModel(),
+    nftViewModel: NftViewModel = hiltViewModel(),
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
     FrameDetailContent(
@@ -71,6 +79,25 @@ fun FrameDetailRoute(
         uiState = uiState.value,
         uiEvent = viewModel.uiEvent,
         onClickedLikeNft = viewModel::onClickedLikeNft,
+        onClickedPurchase = viewModel::getBalance,
+        sendTransaction = {
+            nftViewModel.sendTransaction(
+                function =
+                    Function(
+                        "buyMarket",
+                        listOf(Uint256(uiState.value.frame.nftInfo.tokenId)),
+                        listOf<TypeReference<*>>(object : TypeReference<Uint256>() {}),
+                    ),
+                onSuccess = { hash ->
+                    viewModel.purchaseNft(txHash = hash, marketId = uiState.value.frame.marketId)
+                },
+                onError = {
+                    onShowSnackBar(it)
+                },
+                contractAddress = BuildConfig.SYSTEM_CONTRACT_ADDRESS,
+            )
+        },
+        frame = uiState.value.frame,
     )
 }
 
@@ -82,19 +109,20 @@ fun FrameDetailContent(
     uiEvent: SharedFlow<FrameDetailUiEvent>,
     uiState: FrameDetailUiState,
     onClickedLikeNft: (Boolean) -> Unit = {},
+    onClickedPurchase: (Long) -> Unit = {},
+    sendTransaction: () -> Unit = {},
+    frame: FrameDetail = FrameDetail(),
 ) {
     LaunchedEffect(uiEvent) {
         uiEvent.collectLatest { event ->
             when (event) {
                 is FrameDetailUiEvent.Error -> onShowSnackBar(event.errorMessage)
+                is FrameDetailUiEvent.LoadCoin -> sendTransaction()
+
+                FrameDetailUiEvent.Success -> popUpBackStack()
             }
         }
     }
-
-    if (uiState.isLoading) {
-        LoadingDialog()
-    }
-    val frame = uiState.frame
     FrameDetailScreen(
         modifier = modifier,
         popUpBackStack = popUpBackStack,
@@ -111,7 +139,21 @@ fun FrameDetailContent(
         price = frame.price.toDouble(),
         profileImageUrl = frame.seller.profileImage,
         onClickedLikeNft = onClickedLikeNft,
+        onClickedPurchase = onClickedPurchase,
     )
+    if (uiState.isLoading) {
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .clickable(enabled = false) {},
+        )
+        LoadingDialog(
+            lottieRes = R.raw.normal_load,
+            loadingMessage = stringResource(R.string.frame_purchase_loading_title),
+            subMessage = stringResource(R.string.loading_sub_message),
+        )
+    }
 }
 
 @Composable
@@ -129,13 +171,14 @@ fun FrameDetailScreen(
     heartCount: Long = 100000,
     price: Double = 100.1,
     onClickedLikeNft: (Boolean) -> Unit = {},
+    onClickedPurchase: (Long) -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
     val (expanded, isExpanded) =
         remember {
             mutableStateOf(false)
         }
-    val maxLines = 2 // 2줄 이상일 때 아이콘 표시
+    val maxLines = 2
     Surface(
         modifier =
             Modifier
@@ -284,6 +327,7 @@ fun FrameDetailScreen(
                             "%,.0f ",
                             price,
                         ) + stringResource(id = R.string.buy_price_message),
+                    onClick = { onClickedPurchase(price.toLong()) },
                 )
             }
         }

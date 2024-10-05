@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.semonemo.domain.model.ApiResponse
 import com.semonemo.domain.repository.CoinRepository
 import com.semonemo.domain.repository.NftRepository
+import com.semonemo.domain.request.PurchaseNftRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,12 +36,24 @@ class FrameDetailViewModel
             getSaleNftDetail(savedStateHandle["marketId"] ?: -1L)
         }
 
-        private fun getBalance() {
+        fun getBalance(price: Long) {
             viewModelScope.launch {
                 coinRepository.getBalance().collectLatest { response ->
                     when (response) {
-                        is ApiResponse.Error -> {}
-                        is ApiResponse.Success -> {}
+                        is ApiResponse.Error -> {
+                            _uiEvent.emit(FrameDetailUiEvent.Error(response.errorMessage))
+                        }
+
+                        is ApiResponse.Success -> {
+                            val balance = response.data.payableBalance
+                            val event =
+                                if (balance < price) {
+                                    FrameDetailUiEvent.Error("가격이 모자릅니다!!")
+                                } else {
+                                    FrameDetailUiEvent.LoadCoin(response.data)
+                                }
+                            _uiEvent.emit(event)
+                        }
                     }
                 }
             }
@@ -113,6 +126,33 @@ class FrameDetailViewModel
                         _uiState.update { it.copy(likedCount = response.data) }
                     }
                 }
+            }
+        }
+
+        fun purchaseNft(
+            txHash: String,
+            marketId: Long,
+        ) {
+            viewModelScope.launch {
+                nftRepository
+                    .purchaseNft(
+                        request =
+                            PurchaseNftRequest(
+                                txHash = txHash,
+                                marketId = marketId,
+                            ),
+                    ).onStart {
+                        _uiState.update {
+                            it.copy(isLoading = true)
+                        }
+                    }.onCompletion {
+                        _uiState.update { it.copy(isLoading = false) }
+                    }.collectLatest { response ->
+                        when (response) {
+                            is ApiResponse.Error -> _uiEvent.emit(FrameDetailUiEvent.Error(response.errorMessage))
+                            is ApiResponse.Success -> _uiEvent.emit(FrameDetailUiEvent.Success)
+                        }
+                    }
             }
         }
     }
