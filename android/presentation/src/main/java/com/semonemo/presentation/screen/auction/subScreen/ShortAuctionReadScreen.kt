@@ -106,7 +106,7 @@ fun ShortAuctionReadScreen(
                         Modifier
                             .width(160.dp) // 카드의 너비 설정
                             .height(300.dp),
-                    onClick = navigateToAuctionProcess
+                    onClick = navigateToAuctionProcess,
                 )
             }
         }

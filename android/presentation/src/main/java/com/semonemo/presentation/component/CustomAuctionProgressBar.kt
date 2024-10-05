@@ -33,12 +33,13 @@ import kotlin.math.max
 fun CustomAuctionProgressBar(
     modifier: Modifier = Modifier,
     initialTime: Float = 15f, // 초기 시간 설정 (초 단위)
-    endTime: LocalDateTime = LocalDateTime.now().plusSeconds(15)
+    endTime: LocalDateTime = LocalDateTime.now().plusSeconds(15),
 ) {
     // endTime을 epoch millis로 변환 (타임존을 지정)
-    val endTimeMillis = remember(endTime) {
-        endTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-    }
+    val endTimeMillis =
+        remember(endTime) {
+            endTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        }
 
     var timeLeft by remember { mutableStateOf(initialTime) }
 
@@ -61,15 +62,17 @@ fun CustomAuctionProgressBar(
 
     Box(
         contentAlignment = Alignment.CenterEnd,
-        modifier = modifier
-            .fillMaxWidth()
-            .height(30.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .height(30.dp),
     ) {
         // 커스텀 프로그레스바
         Canvas(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(30.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(30.dp),
         ) {
             // 배경
             drawRoundRect(
@@ -89,9 +92,10 @@ fun CustomAuctionProgressBar(
         Text(
             modifier = Modifier.padding(end = 8.dp),
             text = String.format("%.1fs", timeLeft),
-            style = Typography.bodyMedium.copy(
-                fontFeatureSettings = "tnum",
-            ),
+            style =
+                Typography.bodyMedium.copy(
+                    fontFeatureSettings = "tnum",
+                ),
             color = GunMetal,
         )
     }
@@ -105,6 +109,6 @@ fun CustomAuctionProgressBarPreview() {
     CustomAuctionProgressBar(
         modifier = Modifier.padding(16.dp),
         initialTime = 15f,
-        endTime = exampleEndTime
+        endTime = exampleEndTime,
     )
 }

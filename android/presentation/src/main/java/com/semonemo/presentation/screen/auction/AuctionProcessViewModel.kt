@@ -16,6 +16,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import javax.inject.Inject
+import kotlin.math.log10
+import kotlin.math.pow
 
 @HiltViewModel
 class AuctionProcessViewModel
@@ -24,7 +26,11 @@ class AuctionProcessViewModel
         private val auctionRepository: AuctionRepository,
         private val saveStateHandle: SavedStateHandle,
     ) : ViewModel() {
+        var currentParticipant = mutableIntStateOf(0)
+            private set
         var auctionBidLog = mutableStateOf<List<AuctionBidLog>>(listOf())
+            private set
+        var bidPriceUnit = mutableLongStateOf(1L)
             private set
         var topPrice = mutableLongStateOf(0L)
             private set
@@ -63,6 +69,22 @@ class AuctionProcessViewModel
                     }
                 }
             }
+        }
+
+        fun updateStartMessage(startMessage: StartMessage) {
+            topPrice.longValue = startMessage.currentBid
+        }
+
+        fun updateParticipants(participants: Int) {
+            currentParticipant.intValue = participants
+        }
+
+        fun updateBidPriceUnit() {
+            val unit = log10(topPrice.longValue.toDouble()).toInt() - 1
+            bidPriceUnit.longValue = 10.0.pow(unit).toLong()
+        }
+
+        fun calculateBidPriceUnit() {
         }
 
         fun updateBidLog(bidLog: AuctionBidLog) {
