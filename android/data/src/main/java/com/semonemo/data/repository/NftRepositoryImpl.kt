@@ -146,4 +146,19 @@ class NftRepositoryImpl
             flow {
                 emit(emitApiResponse(apiResponse = { api.purchaseNft(request) }, default = MyFrame()))
             }
+
+        override suspend fun cancelSaleNft(
+            txHash: String,
+            marketId: Long,
+        ): Flow<ApiResponse<Unit>> =
+            flow {
+                emit(
+                    emitApiResponse(apiResponse = {
+                        api.cancelSaleNft(
+                            txHash = txHash,
+                            marketId = marketId,
+                        )
+                    }, default = Unit),
+                )
+            }
     }

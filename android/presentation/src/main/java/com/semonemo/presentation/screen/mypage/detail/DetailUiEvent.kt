@@ -6,9 +6,6 @@ import androidx.compose.runtime.Stable
 @Stable
 sealed interface DetailUiEvent {
     @Immutable
-    data object Loading : DetailUiEvent
-
-    @Immutable
     data class OpenSuccess(
         val message: String = "",
     ) : DetailUiEvent
