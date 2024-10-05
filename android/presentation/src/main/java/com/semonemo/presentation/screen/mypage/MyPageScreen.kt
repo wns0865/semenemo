@@ -92,7 +92,7 @@ import java.io.File
 @Composable
 fun MyPageRoute(
     modifier: Modifier = Modifier,
-    navigateToDetail: (Long) -> Unit,
+    navigateToDetail: (Long, Boolean) -> Unit,
     navigateToFollowList: (String, List<User>, List<User>) -> Unit,
     navigateToSetting: () -> Unit,
     navigateToAssetDetail: (Long) -> Unit,
@@ -147,7 +147,7 @@ fun HandleMyPageEvent(
 fun HandleMyPageUi(
     modifier: Modifier = Modifier,
     uiState: MyPageUiState,
-    navigateToDetail: (Long) -> Unit,
+    navigateToDetail: (Long, Boolean) -> Unit,
     navigateToFollowList: (String, List<User>, List<User>) -> Unit,
     navigateToSetting: () -> Unit,
     navigateToAssetDetail: (Long) -> Unit,
@@ -185,7 +185,7 @@ fun HandleMyPageUi(
 @Composable
 fun MyPageScreen(
     modifier: Modifier = Modifier,
-    navigateToDetail: (Long) -> Unit = {},
+    navigateToDetail: (Long, Boolean) -> Unit = { _, _ -> },
     navigateToFollowList: (String, List<User>, List<User>) -> Unit = { _, _, _ -> },
     navigateToSetting: () -> Unit = {},
     navigateToAssetDetail: (Long) -> Unit = {},
@@ -462,7 +462,7 @@ fun MyPageScreen(
                                                         shape = RoundedCornerShape(10.dp),
                                                         color = Gray03,
                                                     ).noRippleClickable {
-                                                        navigateToDetail(frame.nftId)
+                                                        navigateToDetail(frame.marketId, true)
                                                     },
                                             imageModel = imgUrl,
                                             contentScale = ContentScale.Inside,
@@ -496,7 +496,7 @@ fun MyPageScreen(
                                                         shape = RoundedCornerShape(10.dp),
                                                         color = Gray03,
                                                     ).noRippleClickable {
-                                                        navigateToDetail(frame.nftId)
+                                                        navigateToDetail(frame.nftId, false)
                                                     },
                                             imageModel = imgUrl,
                                             contentScale = ContentScale.Inside,

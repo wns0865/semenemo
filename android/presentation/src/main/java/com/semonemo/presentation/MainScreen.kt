@@ -235,10 +235,11 @@ fun MainNavHost(
 
             MyPageRoute(
                 modifier = modifier,
-                navigateToDetail = { nftId ->
+                navigateToDetail = { id, isSale ->
                     navController.navigate(
                         ScreenDestinations.Detail.createRoute(
-                            nftId,
+                            id,
+                            isSale,
                         ),
                     )
                 },

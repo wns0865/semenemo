@@ -82,4 +82,10 @@ interface NftApi {
     suspend fun purchaseNft(
         @Body request: PurchaseNftRequest,
     ): BaseResponse<MyFrame>
+
+    @DELETE("api/nft/sell/{marketId}/{txHash}")
+    suspend fun cancelSaleNft(
+        @Path("marketId") marketId: Long,
+        @Path("txHash") txHash: String,
+    ): BaseResponse<Unit>
 }
