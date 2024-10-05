@@ -336,6 +336,7 @@ fun MainNavHost(
                 navigateToMy = {
                     navController.navigate(ScreenDestinations.MyPage.createRoute(it))
                 },
+                onErrorSnackBar = onShowErrorSnackBar,
             )
         }
 

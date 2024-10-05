@@ -7,6 +7,11 @@ data class Asset(
     val isLiked: Boolean = false,
 )
 
+data class CreateAiAsset(
+    val creator: Long = 0,
+    val imageUrl: String = "",
+)
+
 data class SellAsset(
     val assetId: Long = 0,
     val price: Int = 0,

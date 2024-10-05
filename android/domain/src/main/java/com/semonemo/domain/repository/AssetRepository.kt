@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import java.io.File
 
 interface AssetRepository {
-    suspend fun registerAsset(image: File): Flow<ApiResponse<Asset>>
+    suspend fun registerAsset(image: File): Flow<ApiResponse<Unit>>
 
     suspend fun getMyAssets(cursorId: Long?): Flow<ApiResponse<List<Asset>>>
 
