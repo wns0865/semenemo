@@ -103,7 +103,7 @@ fun StoreContent(
     }
 
     if (uiState.isLoading) {
-        LoadingDialog()
+        LoadingDialog(modifier = Modifier.fillMaxSize())
     }
 
     StoreScreen(

@@ -13,14 +13,11 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,13 +26,8 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
@@ -67,7 +59,6 @@ import com.semonemo.domain.model.FrameDetail
 import com.semonemo.domain.model.SellAssetDetail
 import com.semonemo.domain.model.User
 import com.semonemo.domain.model.myFrame.MyFrame
-import com.semonemo.presentation.BuildConfig
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.CustomDropdownMenu
 import com.semonemo.presentation.component.CustomDropdownMenuStyles
@@ -83,7 +74,6 @@ import com.semonemo.presentation.screen.mypage.subscreen.MyPageOwnedAssets
 import com.semonemo.presentation.screen.mypage.subscreen.MyPageOwnedFrames
 import com.semonemo.presentation.screen.mypage.subscreen.MyPageSellFrames
 import com.semonemo.presentation.theme.Blue3
-import com.semonemo.presentation.theme.Gray03
 import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
@@ -470,44 +460,46 @@ fun MyPageScreen(
 
                     2 -> {
                         // 찜
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 15.dp),
-                            contentAlignment = Alignment.CenterEnd,
-                        ) {
-                            CustomDropdownMenu(
-                                menuItems =
-                                    listOf(
-                                        "프레임" to {
-                                            // 찜한 프레임 불러 오기
-                                            likeCategory = "프레임"
-                                        },
-                                        "에셋" to {
-                                            // 찜한 에셋 불러오기
-                                            likeCategory = "에셋"
-                                        },
-                                    ),
-                                styles =
-                                    CustomDropdownMenuStyles(),
-                            )
-                        }
-                        when (likeCategory) {
-                            "프레임" -> {
-                                MyPageLikedFrames(
-                                    modifier = Modifier,
-                                    likedFrames = likedFrames,
-                                    navigateToSaleFrameDetail = navigateToSaleFrameDetail,
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 15.dp),
+                                contentAlignment = Alignment.CenterEnd,
+                            ) {
+                                CustomDropdownMenu(
+                                    menuItems =
+                                        listOf(
+                                            "프레임" to {
+                                                // 찜한 프레임 불러 오기
+                                                likeCategory = "프레임"
+                                            },
+                                            "에셋" to {
+                                                // 찜한 에셋 불러오기
+                                                likeCategory = "에셋"
+                                            },
+                                        ),
+                                    styles =
+                                        CustomDropdownMenuStyles(),
                                 )
                             }
+                            when (likeCategory) {
+                                "프레임" -> {
+                                    MyPageLikedFrames(
+                                        modifier = Modifier,
+                                        likedFrames = likedFrames,
+                                        navigateToSaleFrameDetail = navigateToSaleFrameDetail,
+                                    )
+                                }
 
-                            "에셋" -> {
-                                MyPageLikedAssets(
-                                    modifier = Modifier,
-                                    likeAssets = likeAssets,
-                                    navigateToAssetDetail = navigateToAssetDetail,
-                                )
+                                "에셋" -> {
+                                    MyPageLikedAssets(
+                                        modifier = Modifier,
+                                        likeAssets = likeAssets,
+                                        navigateToAssetDetail = navigateToAssetDetail,
+                                    )
+                                }
                             }
                         }
                     }
