@@ -27,19 +27,23 @@ import com.semonemo.presentation.screen.aiAsset.DrawAssetScreen
 import com.semonemo.presentation.screen.aiAsset.PromptAssetScreen
 import com.semonemo.presentation.screen.auction.AuctionProcessScreen
 import com.semonemo.presentation.screen.auction.AuctionScreen
+import com.semonemo.presentation.screen.detail.asset.AssetDetailRoute
+import com.semonemo.presentation.screen.detail.frame.FrameDetailRoute
 import com.semonemo.presentation.screen.frame.MomentGraph
 import com.semonemo.presentation.screen.imgAsset.ImageAssetScreen
 import com.semonemo.presentation.screen.imgAsset.ImageSelectRoute
 import com.semonemo.presentation.screen.login.LoginRoute
-import com.semonemo.presentation.screen.mypage.DetailScreen
 import com.semonemo.presentation.screen.mypage.FollowListScreen
 import com.semonemo.presentation.screen.mypage.MyPageRoute
+import com.semonemo.presentation.screen.mypage.detail.DetailRoute
 import com.semonemo.presentation.screen.mypage.setting.SettingRoute
 import com.semonemo.presentation.screen.picture.PictureGraph
 import com.semonemo.presentation.screen.search.SearchRoute
 import com.semonemo.presentation.screen.signup.SignUpRoute
 import com.semonemo.presentation.screen.store.StoreFullViewScreen
-import com.semonemo.presentation.screen.store.StoreScreen
+import com.semonemo.presentation.screen.store.StoreRoute
+import com.semonemo.presentation.screen.store.asset.AssetSaleRoute
+import com.semonemo.presentation.screen.store.frame.FrameSaleRoute
 import com.semonemo.presentation.screen.wallet.WalletScreen
 import com.semonemo.presentation.theme.Gray01
 import com.semonemo.presentation.theme.GunMetal
@@ -164,7 +168,7 @@ fun MainNavHost(
         composable(
             route = ScreenDestinations.Shop.route,
         ) {
-            StoreScreen(
+            StoreRoute(
                 modifier = modifier,
                 navigateToFullView = { isFrame ->
                     navController.navigate(
@@ -175,6 +179,18 @@ fun MainNavHost(
                 },
                 navigateToSearch = {
                     navController.navigate(ScreenDestinations.Search.route)
+                },
+                navigateToAssetSale = {
+                    navController.navigate(ScreenDestinations.AssetSale.route)
+                },
+                navigateToFrameSale = {
+                    navController.navigate(ScreenDestinations.FrameSale.route)
+                },
+                navigateToFrameDetail = { marketId ->
+                    navController.navigate(ScreenDestinations.FrameDetail.createRoute(marketId))
+                },
+                navigateToAssetDetail = { assetSellId ->
+                    navController.navigate(ScreenDestinations.AssetDetail.createRoute(assetSellId))
                 },
             )
         }
@@ -219,10 +235,10 @@ fun MainNavHost(
 
             MyPageRoute(
                 modifier = modifier,
-                navigateToDetail = { imgUrl ->
+                navigateToDetail = { nftId ->
                     navController.navigate(
                         ScreenDestinations.Detail.createRoute(
-                            imgUrl,
+                            nftId,
                         ),
                     )
                 },
@@ -237,6 +253,9 @@ fun MainNavHost(
                 },
                 navigateToSetting = {
                     navController.navigate(ScreenDestinations.Setting.route)
+                },
+                navigateToAssetDetail = { assetSellId ->
+                    navController.navigate(ScreenDestinations.AssetDetail.createRoute(assetSellId))
                 },
                 onErrorSnackBar = onShowErrorSnackBar,
                 userId = userId ?: -1,
@@ -358,10 +377,12 @@ fun MainNavHost(
 
         composable(
             route = ScreenDestinations.Detail.route,
+            arguments = ScreenDestinations.Detail.arguments,
         ) {
-            DetailScreen(
+            DetailRoute(
                 modifier = modifier,
-                imgUrl = it.arguments?.getString("imgUrl"),
+                onShowSnackBar = onShowErrorSnackBar,
+                popUpBackStack = navController::popBackStack,
             )
         }
 
@@ -392,11 +413,55 @@ fun MainNavHost(
             )
         }
 
+        composable(
+            route = ScreenDestinations.FrameSale.route,
+        ) {
+            FrameSaleRoute(
+                modifier = modifier,
+                popUpBackStack = navController::popBackStack,
+                onShowSnackBar = onShowErrorSnackBar,
+            )
+        }
+
         PictureGraph(
             modifier = modifier,
             navController = navController,
             onErrorSnackBar = onShowErrorSnackBar,
             graphRoute = "picture_graph",
         )
+
+        composable(
+            route = ScreenDestinations.AssetSale.route,
+        ) {
+            AssetSaleRoute(
+                modifier = modifier,
+                navigateToStore = {
+                    navController.navigate(ScreenDestinations.Shop.route)
+                },
+                onShowSnackBar = onShowErrorSnackBar,
+            )
+        }
+
+        composable(
+            route = ScreenDestinations.FrameDetail.route,
+            arguments = ScreenDestinations.FrameDetail.arguments,
+        ) {
+            FrameDetailRoute(
+                modifier = modifier,
+                popUpBackStack = navController::popBackStack,
+                onShowSnackBar = onShowErrorSnackBar,
+            )
+        }
+
+        composable(
+            route = ScreenDestinations.AssetDetail.route,
+            arguments = ScreenDestinations.AssetDetail.arguments,
+        ) {
+            AssetDetailRoute(
+                modifier = modifier,
+                popUpBackStack = navController::popBackStack,
+                onShowSnackBar = onShowErrorSnackBar,
+            )
+        }
     }
 }

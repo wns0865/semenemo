@@ -43,10 +43,8 @@ fun FollowListScreen(
     var selectedIndex by remember { mutableIntStateOf(0) }
 
     Surface(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .background(color = Color.White),
+        modifier = modifier.fillMaxSize(),
+        color = Color.White
     ) {
         Column(
             modifier =
@@ -89,7 +87,7 @@ fun FollowListScreen(
                             UserListItem(
                                 modifier = Modifier.fillMaxWidth(),
                                 userId = follower.userId,
-                                profileImgUrl = follower.profileImage ?: "",
+                                profileImgUrl = follower.profileImage,
                                 nickname = follower.nickname,
                                 navigateToProfile = {
                                     navigateToProfile(follower.userId)
@@ -113,7 +111,7 @@ fun FollowListScreen(
                             UserListItem(
                                 modifier = Modifier.fillMaxWidth(),
                                 userId = following.userId,
-                                profileImgUrl = following.profileImage ?: "",
+                                profileImgUrl = following.profileImage,
                                 nickname = following.nickname,
                                 navigateToProfile = {
                                     navigateToProfile(following.userId)

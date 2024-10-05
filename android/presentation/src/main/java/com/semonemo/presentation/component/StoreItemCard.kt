@@ -35,7 +35,6 @@ import com.skydoves.landscapist.glide.GlideImage
 @Composable
 fun StoreItemCard(
     modifier: Modifier = Modifier,
-    title: String,
     author: String,
     imgUrl: String,
     price: Int,
@@ -68,11 +67,11 @@ fun StoreItemCard(
             Spacer(modifier = Modifier.height(8.dp))
             GlideImage(
                 imageModel = imgUrl,
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Fit,
                 modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
             )
             Spacer(modifier = Modifier.height(8.dp))
             Row(
@@ -89,10 +88,10 @@ fun StoreItemCard(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "${price} ${stringResource(id = R.string.coin_price_unit)}",
+                        text = "$price ${stringResource(id = R.string.coin_price_unit)}",
                         fontWeight = FontWeight.Bold,
                         style = Typography.bodyMedium,
-                        fontSize = 12.sp
+                        fontSize = 12.sp,
                     )
                 }
                 Icon(
@@ -110,7 +109,6 @@ fun StoreItemCard(
 @Composable
 fun StoreItemCardPreview() {
     StoreItemCard(
-        title = "Sample Title",
         author = "Sample Author",
         imgUrl = "https://example.com/sample_image.jpg",
         price = 100,

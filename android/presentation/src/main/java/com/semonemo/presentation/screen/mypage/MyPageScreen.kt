@@ -14,6 +14,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,8 +45,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,7 +62,12 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.semonemo.domain.model.Asset
+import com.semonemo.domain.model.FrameDetail
+import com.semonemo.domain.model.SellAssetDetail
 import com.semonemo.domain.model.User
+import com.semonemo.domain.model.myFrame.MyFrame
+import com.semonemo.presentation.BuildConfig
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.CustomDropdownMenu
 import com.semonemo.presentation.component.CustomDropdownMenuStyles
@@ -85,9 +92,10 @@ import java.io.File
 @Composable
 fun MyPageRoute(
     modifier: Modifier = Modifier,
-    navigateToDetail: (String) -> Unit,
+    navigateToDetail: (Long) -> Unit,
     navigateToFollowList: (String, List<User>, List<User>) -> Unit,
     navigateToSetting: () -> Unit,
+    navigateToAssetDetail: (Long) -> Unit,
     viewModel: MyPageViewModel = hiltViewModel(),
     onErrorSnackBar: (String) -> Unit,
     userId: Long,
@@ -105,6 +113,7 @@ fun MyPageRoute(
         navigateToDetail = navigateToDetail,
         navigateToFollowList = navigateToFollowList,
         navigateToSetting = navigateToSetting,
+        navigateToAssetDetail = navigateToAssetDetail,
         updateProfileImage = { imageUri ->
             val image = File(imageUri.toAbsolutePath(context))
             viewModel.updateProfileImage(image, imageUri.toString())
@@ -138,9 +147,10 @@ fun HandleMyPageEvent(
 fun HandleMyPageUi(
     modifier: Modifier = Modifier,
     uiState: MyPageUiState,
-    navigateToDetail: (String) -> Unit,
+    navigateToDetail: (Long) -> Unit,
     navigateToFollowList: (String, List<User>, List<User>) -> Unit,
     navigateToSetting: () -> Unit,
+    navigateToAssetDetail: (Long) -> Unit,
     updateProfileImage: (Uri) -> Unit,
     followUser: () -> Unit,
     unfollowUser: () -> Unit,
@@ -153,6 +163,7 @@ fun HandleMyPageUi(
                 navigateToDetail = navigateToDetail,
                 navigateToFollowList = navigateToFollowList,
                 navigateToSetting = navigateToSetting,
+                navigateToAssetDetail = navigateToAssetDetail,
                 nickname = uiState.nickname,
                 profileImageUrl = uiState.profileImageUrl,
                 amount = uiState.amount,
@@ -163,6 +174,10 @@ fun HandleMyPageUi(
                 isFollow = uiState.isFollow,
                 followUser = followUser,
                 unfollowUser = unfollowUser,
+                frameList = uiState.frameList,
+                sellFrameList = uiState.sellFrameList,
+                assetList = uiState.assetList,
+                likeAssets = uiState.likeAssets,
             )
     }
 }
@@ -170,9 +185,10 @@ fun HandleMyPageUi(
 @Composable
 fun MyPageScreen(
     modifier: Modifier = Modifier,
-    navigateToDetail: (String) -> Unit = {},
+    navigateToDetail: (Long) -> Unit = {},
     navigateToFollowList: (String, List<User>, List<User>) -> Unit = { _, _, _ -> },
     navigateToSetting: () -> Unit = {},
+    navigateToAssetDetail: (Long) -> Unit = {},
     nickname: String = "짜이한",
     profileImageUrl: String = "",
     amount: Int = 0,
@@ -183,6 +199,10 @@ fun MyPageScreen(
     isFollow: Boolean? = null,
     followUser: () -> Unit = {},
     unfollowUser: () -> Unit = {},
+    frameList: List<MyFrame> = listOf(),
+    sellFrameList: List<FrameDetail> = listOf(),
+    assetList: List<Asset> = listOf(),
+    likeAssets: List<SellAssetDetail> = listOf(),
 ) {
     val tabs = listOf("프레임", "에셋", "찜")
     val selectedIndex = remember { mutableIntStateOf(0) }
@@ -195,36 +215,9 @@ fun MyPageScreen(
                 }
             },
         )
-    val images = remember { mutableStateListOf<Int>() }
-    // 더미 이미지 데이터들
-    val frames =
-        listOf(
-            R.drawable.img_example,
-            R.drawable.img_example2,
-            R.drawable.img_example3,
-            R.drawable.img_example,
-            R.drawable.img_example2,
-            R.drawable.img_example3,
-        )
-    val frames2 =
-        listOf(
-            R.drawable.img_example,
-            R.drawable.img_example2,
-            R.drawable.img_example3,
-        )
 
-    val assets =
-        listOf(
-            R.drawable.img_example3,
-            R.drawable.img_example2,
-            R.drawable.img_example,
-            R.drawable.img_example3,
-            R.drawable.img_example2,
-            R.drawable.img_example,
-            R.drawable.img_example3,
-            R.drawable.img_example2,
-            R.drawable.img_example,
-        )
+    var isSell by remember { mutableStateOf(false) }
+    var likeCategory by remember { mutableStateOf("프레임") }
 
     Surface(
         modifier =
@@ -420,79 +413,135 @@ fun MyPageScreen(
             ) { targetIndex ->
                 when (targetIndex) {
                     0 -> {
-                        // 기본 보유중 프레임 불러오기
-                        images.clear()
-                        images.addAll(frames)
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 15.dp),
+                                contentAlignment = Alignment.CenterEnd,
+                            ) {
+                                CustomDropdownMenu(
+                                    menuItems =
+                                        listOf(
+                                            "보유중" to {
+                                                isSell = false
+                                            },
+                                            "판매중" to {
+                                                isSell = true
+                                            },
+                                        ),
+                                    styles =
+                                        CustomDropdownMenuStyles(),
+                                )
+                            }
+                            if (isSell) {
+                                LazyVerticalGrid(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .wrapContentHeight()
+                                            .padding(horizontal = 10.dp),
+                                    columns = GridCells.Fixed(2),
+                                    state = rememberLazyGridState(),
+                                ) {
+                                    items(sellFrameList.size) { index ->
+                                        val frame = sellFrameList[index]
+                                        val ipfsUrl = BuildConfig.IPFS_READ_URL
+                                        val imgUrl = ipfsUrl + "ipfs/" + frame.nftInfo.data.image
 
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 15.dp),
-                            contentAlignment = Alignment.CenterEnd,
-                        ) {
-                            CustomDropdownMenu(
-                                menuItems =
-                                    listOf(
-                                        "보유중" to {
-                                            // 통신 (보유 중인 프레임 불러 오기)
-                                            images.clear()
-                                            images.addAll(frames)
-                                        },
-                                        "판매중" to {
-                                            // 통신 (판매 중인 프레임 불러 오기)
-                                            images.clear()
-                                            images.addAll(frames2)
-                                        },
-                                        "경매중" to {
-                                            // 통신 (경매 중인 프레임 불러 오기)
-                                            images.clear()
-                                            images.addAll(frames)
-                                        },
-                                    ),
-                                styles =
-                                    CustomDropdownMenuStyles(),
-                            )
+                                        GlideImage(
+                                            modifier =
+                                                Modifier
+                                                    .fillMaxWidth()
+                                                    .aspectRatio(1f)
+                                                    .padding(8.dp)
+                                                    .clip(shape = RoundedCornerShape(10.dp))
+                                                    .border(
+                                                        width = 1.dp,
+                                                        shape = RoundedCornerShape(10.dp),
+                                                        color = Gray03,
+                                                    ).noRippleClickable {
+                                                        navigateToDetail(frame.nftId)
+                                                    },
+                                            imageModel = imgUrl,
+                                            contentScale = ContentScale.Inside,
+                                        )
+                                    }
+                                }
+                            } else {
+                                LazyVerticalGrid(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .wrapContentHeight()
+                                            .padding(horizontal = 10.dp),
+                                    columns = GridCells.Fixed(2),
+                                    state = rememberLazyGridState(),
+                                ) {
+                                    items(frameList.size) { index ->
+                                        val frame = frameList[index]
+                                        val ipfsUrl = BuildConfig.IPFS_READ_URL
+                                        val imgUrl = ipfsUrl + "ipfs/" + frame.nftInfo.data.image
+
+                                        GlideImage(
+                                            modifier =
+                                                Modifier
+                                                    .fillMaxWidth()
+                                                    .aspectRatio(1f)
+                                                    .padding(8.dp)
+                                                    .clip(shape = RoundedCornerShape(10.dp))
+                                                    .border(
+                                                        width = 1.dp,
+                                                        shape = RoundedCornerShape(10.dp),
+                                                        color = Gray03,
+                                                    ).noRippleClickable {
+                                                        navigateToDetail(frame.nftId)
+                                                    },
+                                            imageModel = imgUrl,
+                                            contentScale = ContentScale.Inside,
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
 
                     1 -> {
-                        // 에셋 불러오기
-                        images.clear()
-                        images.addAll(frames)
-
-                        Box(
+                        // 애셋
+                        LazyVerticalGrid(
                             modifier =
                                 Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 15.dp),
-                            contentAlignment = Alignment.CenterEnd,
+                                    .wrapContentHeight()
+                                    .padding(horizontal = 10.dp),
+                            columns = GridCells.Fixed(3),
+                            state = rememberLazyGridState(),
                         ) {
-                            CustomDropdownMenu(
-                                menuItems =
-                                    listOf(
-                                        "보유중" to {
-                                            // 통신 (보유 중인 에셋 불러 오기)
-                                            images.clear()
-                                            images.addAll(frames)
-                                        },
-                                        "판매중" to {
-                                            // 통신 (판매 중인 에셋 불러 오기)
-                                            images.clear()
-                                            images.addAll(frames2)
-                                        },
-                                    ),
-                                styles =
-                                    CustomDropdownMenuStyles(),
-                            )
+                            items(assetList.size) { index ->
+                                val asset = assetList[index]
+
+                                GlideImage(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .aspectRatio(1f)
+                                            .padding(8.dp)
+                                            .clip(shape = RoundedCornerShape(10.dp))
+                                            .border(
+                                                width = 1.dp,
+                                                shape = RoundedCornerShape(10.dp),
+                                                color = Gray03,
+                                            ),
+                                    imageModel = asset.imageUrl,
+                                    contentScale = ContentScale.Inside,
+                                )
+                            }
                         }
                     }
 
                     2 -> {
-                        // 에셋 불러오기
-                        images.clear()
-                        images.addAll(frames)
-
+                        // 찜
                         Box(
                             modifier =
                                 Modifier
@@ -503,57 +552,58 @@ fun MyPageScreen(
                             CustomDropdownMenu(
                                 menuItems =
                                     listOf(
-                                        "판매중" to {
-                                            // 통신 (판매 중인 찜한 프레임 불러 오기)
-                                            images.clear()
-                                            images.addAll(frames)
-                                        },
-                                        "경매중" to {
-                                            // 통신 (경매 중인 찜한 프레임 불러 오기)
-                                            images.clear()
-                                            images.addAll(frames2)
+                                        "프레임" to {
+                                            // 찜한 프레임 불러 오기
+                                            likeCategory = "프레임"
                                         },
                                         "에셋" to {
-                                            // 통신 (찜한 에셋 불러 오기)
-                                            images.clear()
-                                            images.addAll(assets)
+                                            // 찜한 에셋 불러오기
+                                            likeCategory = "에셋"
                                         },
                                     ),
                                 styles =
                                     CustomDropdownMenuStyles(),
                             )
                         }
+                        when (likeCategory) {
+                            "프레임" -> {
+                            }
+
+                            "에셋" -> {
+                                LazyVerticalGrid(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .wrapContentHeight()
+                                            .padding(horizontal = 10.dp),
+                                    columns = GridCells.Fixed(3),
+                                    state = rememberLazyGridState(),
+                                ) {
+                                    items(likeAssets.size) { index ->
+                                        val asset = likeAssets[index]
+
+                                        GlideImage(
+                                            modifier =
+                                                Modifier
+                                                    .fillMaxWidth()
+                                                    .aspectRatio(1f)
+                                                    .padding(8.dp)
+                                                    .clip(shape = RoundedCornerShape(10.dp))
+                                                    .border(
+                                                        width = 1.dp,
+                                                        shape = RoundedCornerShape(10.dp),
+                                                        color = Gray03,
+                                                    ).clickable {
+                                                        navigateToAssetDetail(asset.assetSellId)
+                                                    },
+                                            imageModel = asset.imageUrl,
+                                            contentScale = ContentScale.Inside,
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
-                }
-            }
-            LazyVerticalGrid(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .padding(horizontal = 10.dp),
-                columns = GridCells.Fixed(3),
-                state = rememberLazyGridState(),
-            ) {
-                items(images.size) { index ->
-                    Image(
-                        painter = painterResource(id = images[index]),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .aspectRatio(1f)
-                                .padding(8.dp)
-                                .clip(shape = RoundedCornerShape(10.dp))
-                                .border(
-                                    width = 1.dp,
-                                    shape = RoundedCornerShape(10.dp),
-                                    color = Gray03,
-                                ).noRippleClickable {
-                                    navigateToDetail(images[index].toString())
-                                },
-                    )
                 }
             }
         }

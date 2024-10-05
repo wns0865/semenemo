@@ -1,18 +1,12 @@
-package com.semonemo.presentation.screen.store
+package com.semonemo.presentation.screen.store.asset
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -25,7 +19,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -44,8 +37,9 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -61,9 +55,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.semonemo.domain.model.Asset
+import com.semonemo.domain.model.SellAsset
 import com.semonemo.presentation.R
-import com.semonemo.presentation.component.CustomTab
 import com.semonemo.presentation.component.HashTag
+import com.semonemo.presentation.component.HashTagTextField
+import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.component.LongUnableButton
 import com.semonemo.presentation.component.PriceTextField
@@ -72,59 +71,76 @@ import com.semonemo.presentation.theme.Gray02
 import com.semonemo.presentation.theme.Gray03
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
-import com.semonemo.presentation.theme.WhiteGray
 import com.semonemo.presentation.util.addFocusCleaner
+import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collectLatest
+
+@Composable
+fun AssetSaleRoute(
+    modifier: Modifier,
+    viewModel: AssetSaleViewModel = hiltViewModel(),
+    navigateToStore: () -> Unit,
+    onShowSnackBar: (String) -> Unit,
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    AssetSaleContent(
+        modifier = modifier,
+        uiState = uiState,
+        uiEvent = viewModel.uiEvent,
+        onSaleButtonClick = viewModel::sellAsset,
+        onShowSnackBar = onShowSnackBar,
+        navigateToStore = navigateToStore,
+    )
+}
+
+@Composable
+fun AssetSaleContent(
+    modifier: Modifier,
+    uiState: AssetSaleUiState,
+    uiEvent: SharedFlow<AssetSaleUiEvent>,
+    onSaleButtonClick: (SellAsset) -> Unit,
+    onShowSnackBar: (String) -> Unit,
+    navigateToStore: () -> Unit,
+) {
+    LaunchedEffect(uiEvent) {
+        uiEvent.collectLatest { event ->
+            when (event) {
+                is AssetSaleUiEvent.Error -> onShowSnackBar(event.message)
+                AssetSaleUiEvent.SellSuccess -> navigateToStore()
+            }
+        }
+    }
+    if (uiState.isLoading) {
+        LoadingDialog()
+    }
+    AssetSaleScreen(
+        modifier = modifier,
+        assets = uiState.assets,
+        onSaleButtonClick = onSaleButtonClick,
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FrameSaleScreen() {
+fun AssetSaleScreen(
+    modifier: Modifier = Modifier,
+    assets: List<Asset> = emptyList(),
+    onSaleButtonClick: (SellAsset) -> Unit = {},
+) {
     val focusManager = LocalFocusManager.current
     val scrollState = rememberScrollState()
 
     var price by remember { mutableStateOf("") } // 판매가
     var showBottomSheet by remember { mutableStateOf(false) } // bottomSheet 보임 여부
-    var selectedIndex by remember { mutableIntStateOf(0) } // bottomSheet 선택된 탭 index
-    var selectedFrame by remember { mutableIntStateOf(-1) } // 선택된 프레임
-
-    // 더미 데이터
-    val tags = listOf("플레이브", "도은호")
-    val tabs = listOf("1x1", "1x4", "2x2")
-
-    val frames1 =
-        listOf(
-            R.drawable.img_example,
-            R.drawable.img_example2,
-            R.drawable.img_example3,
-            R.drawable.img_example,
-            R.drawable.img_example2,
-            R.drawable.img_example3,
-        )
-
-    val frames2 =
-        listOf(
-            R.drawable.img_example3,
-            R.drawable.img_example2,
-            R.drawable.img_example,
-            R.drawable.img_example3,
-            R.drawable.img_example2,
-            R.drawable.img_example,
-            R.drawable.img_example3,
-            R.drawable.img_example2,
-            R.drawable.img_example,
-        )
-
-    val frames3 =
-        listOf(
-            R.drawable.img_example,
-            R.drawable.img_example2,
-            R.drawable.img_example3,
-        )
-
-    val frames = listOf(frames1, frames2, frames3)
+    var selectedAsset by remember { mutableStateOf("") } // 선택된 에셋
+    var asset by remember { mutableStateOf<Asset?>(null) }
+    val tags = remember { mutableStateListOf<String>() }
 
     Surface(
         modifier =
-            Modifier
+            modifier
                 .fillMaxSize()
                 .background(color = Color.White)
                 .verticalScroll(state = scrollState),
@@ -143,7 +159,7 @@ fun FrameSaleScreen() {
         ) {
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = stringResource(R.string.frame_register_title),
+                text = "에셋 판매",
                 style = Typography.bodyMedium.copy(fontSize = 20.sp),
                 textAlign = TextAlign.Center,
             )
@@ -159,10 +175,9 @@ fun FrameSaleScreen() {
                     showBottomSheet = true
                 },
             ) {
-                if (selectedFrame != -1) {
-                    Image(
-                        painter = painterResource(id = selectedFrame),
-                        contentDescription = "img_example",
+                if (selectedAsset != "") {
+                    GlideImage(
+                        imageModel = selectedAsset,
                         contentScale = ContentScale.Crop,
                     )
                 } else {
@@ -180,7 +195,7 @@ fun FrameSaleScreen() {
                         )
                         Spacer(modifier = Modifier.height(9.dp))
                         Text(
-                            text = stringResource(R.string.frame_add_title),
+                            text = "에셋을 추가해 주세요",
                             style = Typography.bodySmall.copy(fontSize = 15.sp),
                             color = Gray02,
                         )
@@ -190,7 +205,7 @@ fun FrameSaleScreen() {
             Spacer(modifier = Modifier.height(30.dp))
             // 통신 성공인 경우
             AnimatedVisibility(
-                visible = selectedFrame != -1,
+                visible = selectedAsset != "",
                 enter = fadeIn() + expandVertically(),
                 exit = fadeOut() + shrinkVertically(),
             ) {
@@ -208,83 +223,20 @@ fun FrameSaleScreen() {
                         contentAlignment = Alignment.CenterStart,
                     ) {
                         Text(
-                            text = stringResource(R.string.register_frame_title),
-                            style = Typography.titleMedium.copy(fontSize = 16.sp),
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Surface(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .height(48.dp),
-                        shape = RoundedCornerShape(10.dp),
-                        color = WhiteGray,
-                    ) {
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxSize()
-                                    .padding(start = 14.dp, end = 14.dp),
-                            contentAlignment = Alignment.CenterStart,
-                        ) {
-                            Text(
-                                text = "도은호 레전드 프레임",
-                                style = Typography.labelSmall.copy(fontSize = 13.sp),
-                                color = Gray01,
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(15.dp))
-                    Box(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight(),
-                        contentAlignment = Alignment.CenterStart,
-                    ) {
-                        Text(
-                            text = stringResource(R.string.register_frame_discription),
-                            style = Typography.titleMedium.copy(fontSize = 16.sp),
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Surface(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .heightIn(min = 130.dp),
-                        shape = RoundedCornerShape(10.dp),
-                        color = WhiteGray,
-                    ) {
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxSize()
-                                    .padding(14.dp),
-                            contentAlignment = Alignment.TopStart,
-                        ) {
-                            Text(
-                                text = "도은호랑 같이 사진 찍을 수 있는 레전드 프레임 ㄷㄷ",
-                                style = Typography.labelSmall.copy(fontSize = 13.sp),
-                                color = Gray01,
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Box(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight(),
-                        contentAlignment = Alignment.CenterStart,
-                    ) {
-                        Text(
                             text = stringResource(R.string.register_tag),
                             style = Typography.titleMedium.copy(fontSize = 16.sp),
                         )
                     }
                     Spacer(modifier = Modifier.height(10.dp))
+                    HashTagTextField(
+                        focusManager = focusManager,
+                        onTagAddAction = { keyword ->
+                            if (keyword.isNotBlank()) {
+                                tags.add(keyword)
+                            }
+                        },
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
                     LazyRow(
                         modifier =
                             Modifier
@@ -295,6 +247,10 @@ fun FrameSaleScreen() {
                             items(tags.size) { index ->
                                 HashTag(
                                     keyword = tags[index],
+                                    isEdit = true,
+                                    onCloseClicked = {
+                                        tags.remove(it)
+                                    },
                                 )
                             }
                         },
@@ -325,17 +281,27 @@ fun FrameSaleScreen() {
                     price = newPrice
                 },
             )
-            // 프레임 불러오기 Success면 LongBlackButton
-            // 다른 상태면 LongUnableButton
             Spacer(modifier = Modifier.height(30.dp))
-            if (selectedFrame != -1) {
+            if (selectedAsset != "") {
                 LongBlackButton(
                     modifier =
                         Modifier
                             .fillMaxWidth(),
                     text = stringResource(R.string.register_btn_title),
                     icon = null,
-                    onClick = { },
+                    onClick = {
+                        val sellAsset =
+                            asset?.let {
+                                SellAsset(
+                                    assetId = it.assetId,
+                                    price = price.toInt(),
+                                    tags = tags,
+                                )
+                            }
+                        sellAsset?.let {
+                            onSaleButtonClick(sellAsset)
+                        }
+                    },
                 )
             } else {
                 LongUnableButton(
@@ -360,67 +326,48 @@ fun FrameSaleScreen() {
                             .fillMaxHeight(0.45f),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Spacer(modifier = Modifier.height(10.dp))
-                    CustomTab(
-                        tabList = tabs,
-                        selectedIndex = selectedIndex,
-                        onTabSelected = { tab -> selectedIndex = tab },
-                    )
-                    AnimatedContent(
-                        targetState = selectedIndex,
-                        transitionSpec = {
-                            (slideInHorizontally { width -> width } + fadeIn())
-                                .togetherWith(
-                                    slideOutHorizontally { width -> -width } + fadeOut(),
-                                ).using(
-                                    SizeTransform(clip = false),
-                                )
-                        },
-                        label = "",
-                    ) { targetIndex ->
-                        LazyVerticalGrid(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight()
-                                    .padding(horizontal = 20.dp, vertical = 20.dp),
-                            columns = GridCells.Fixed(4),
-                            state = rememberLazyGridState(),
-                        ) {
-                            items(frames[targetIndex].size) { index ->
-                                Image(
-                                    painter = painterResource(id = frames[targetIndex][index]),
-                                    contentDescription = null,
-                                    contentScale = ContentScale.Crop,
-                                    modifier =
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .aspectRatio(1f)
-                                            .padding(8.dp)
-                                            .clip(shape = RoundedCornerShape(10.dp))
-                                            .border(
-                                                width = 1.dp,
-                                                shape = RoundedCornerShape(10.dp),
-                                                color = Gray03,
-                                            ).clickable {
-                                                selectedFrame = frames[targetIndex][index]
-                                                showBottomSheet = false
-                                            },
-                                )
-                            }
+                    LazyVerticalGrid(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .padding(horizontal = 20.dp, vertical = 20.dp),
+                        columns = GridCells.Fixed(4),
+                        state = rememberLazyGridState(),
+                    ) {
+                        items(assets.size) { index ->
+                            GlideImage(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .aspectRatio(1f)
+                                        .padding(8.dp)
+                                        .clip(shape = RoundedCornerShape(10.dp))
+                                        .border(
+                                            width = 1.dp,
+                                            shape = RoundedCornerShape(10.dp),
+                                            color = Gray03,
+                                        ).clickable {
+                                            selectedAsset = assets[index].imageUrl
+                                            asset = assets[index]
+                                            showBottomSheet = false
+                                        },
+                                imageModel = assets[index].imageUrl,
+                                contentScale = ContentScale.Crop,
+                            )
                         }
                     }
-                    Spacer(modifier = Modifier.height(20.dp))
                 }
+                Spacer(modifier = Modifier.height(20.dp))
             }
         }
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview
 @Composable
-fun RegisterScreenPreview() {
+fun AssetSaleScreenPreview() {
     SemonemoTheme {
-        FrameSaleScreen()
+        AssetSaleScreen()
     }
 }

@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.semonemo.presentation.BuildConfig
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.CustomTextField
 import com.semonemo.presentation.component.HashTag
@@ -60,6 +61,10 @@ import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.util.converterFile
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
+import org.web3j.abi.TypeReference
+import org.web3j.abi.datatypes.Function
+import org.web3j.abi.datatypes.Utf8String
+import org.web3j.abi.datatypes.generated.Uint256
 import java.io.File
 
 @Composable
@@ -84,13 +89,19 @@ fun FrameDoneRoute(
         deleteTags = viewModel::deleteTag,
         sendTransaction = { data ->
             nftViewModel.sendTransaction(
-                data,
+                function =
+                    Function(
+                        "mintNFT",
+                        listOf(Utf8String(data)),
+                        listOf<TypeReference<*>>(object : TypeReference<Uint256>() {}),
+                    ),
                 onSuccess = {
                     viewModel.publishNft(imageHash = it, ipfsHash = data)
                 },
                 onError = {
                     onErrorSnackBar(it)
                 },
+                contractAddress = BuildConfig.NFT_CONTRACT_ADDRESS,
             )
         },
         nftEvent = nftViewModel.nftEvent,
@@ -153,7 +164,7 @@ fun FrameDoneContent(
         )
         LoadingDialog(
             lottieRes = R.raw.normal_load,
-            loadingMessage = stringResource(R.string.loading_message),
+            loadingMessage = stringResource(R.string.frame_loading_title),
             subMessage = stringResource(R.string.loading_sub_message),
         )
     }
@@ -180,8 +191,8 @@ fun FrameDoneScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(color = Color.White)
                 .verticalScroll(state = scrollState),
+        color = Color.White
     ) {
         Column(
             modifier =
@@ -191,7 +202,7 @@ fun FrameDoneScreen(
                     .statusBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(30.dp))
             Row(
                 modifier = Modifier.wrapContentSize(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -291,6 +302,7 @@ fun FrameDoneScreen(
                 style = Typography.bodySmall.copy(fontSize = 13.sp),
                 color = Gray02,
             )
+            Spacer(modifier = Modifier.height(15.dp))
         }
     }
 }

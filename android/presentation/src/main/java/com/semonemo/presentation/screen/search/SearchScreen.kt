@@ -27,17 +27,18 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
@@ -51,7 +52,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.semonemo.domain.model.AssetDetail
 import com.semonemo.domain.model.FrameDetail
-import com.semonemo.domain.model.Profile
+import com.semonemo.domain.model.HotKeyword
+import com.semonemo.domain.model.UserInfoResponse
 import com.semonemo.presentation.BuildConfig
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BackButton
@@ -66,7 +68,6 @@ import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.util.noRippleClickable
 import com.skydoves.landscapist.glide.GlideImage
-import kotlinx.coroutines.launch
 
 @Composable
 fun SearchRoute(
@@ -76,14 +77,18 @@ fun SearchRoute(
     viewModel: SearchViewModel = hiltViewModel(),
 ) {
     val searchState by viewModel.searchState.collectAsStateWithLifecycle()
+
     SearchScreen(
         modifier = modifier,
         navigateToProfile = navigateToProfile,
         popUpBackStack = popUpBackStack,
         searchState = searchState,
+        loadHotSearch = { viewModel.loadHotSearch() },
         searchUser = { viewModel.userSearch(it) },
         searchFrame = { viewModel.frameSearch(it) },
         searchAsset = { viewModel.assetSearch(it) },
+        addKeyword = { viewModel.addKeyword(it) },
+        removeKeyword = { viewModel.removeKeyword(it) },
     )
 }
 
@@ -93,93 +98,104 @@ fun SearchScreen(
     searchState: SearchState,
     popUpBackStack: () -> Unit = {},
     navigateToProfile: (Long) -> Unit = {},
+    loadHotSearch: () -> Unit = {},
     searchUser: (String) -> Unit = {},
     searchFrame: (String) -> Unit = {},
     searchAsset: (String) -> Unit = {},
+    addKeyword: (String) -> Unit = {},
+    removeKeyword: (String) -> Unit = {},
 ) {
     val focusManager = LocalFocusManager.current
-    val testData = remember { mutableStateListOf("이나경", "이지언", "이준형", "최현성", "전형선", "이재한") }
     var keyword by remember { mutableStateOf("") }
 
-    Column(
+    Surface(
         modifier =
             modifier
-                .navigationBarsPadding()
-                .statusBarsPadding()
-                .pointerInput(Unit) {
-                    detectTapGestures(onTap = {
-                        focusManager.clearFocus()
-                    })
-                },
+                .fillMaxSize(),
+        color = Color.White,
     ) {
-        Row(modifier = Modifier) {
-            BackButton(popUpBackStack = popUpBackStack)
-            SearchTextField(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(end = 5.dp),
-                keyword = keyword,
-                onValueChanged = {
-                    keyword = it
-                },
-                focusManager = focusManager,
-                onSearchAction = {
-                    keyword = it
-                    searchUser(keyword)
-                },
-                onClearPressed = {
-                    keyword = ""
-                },
-            )
-        }
-        Spacer(modifier = Modifier.weight(0.05f))
-        when (searchState) {
-            is SearchState.Loading -> {
-                LoadingDialog()
-            }
-
-            is SearchState.Init -> {
-                SearchInitScreen(
-                    modifier = modifier,
-                    recentSearchList = testData,
-                    hotSearchList = searchState.hotList,
-                    onClickedKeyword = {
-                        keyword = it
-                        searchUser(it)
+        Column(
+            modifier =
+                modifier
+                    .navigationBarsPadding()
+                    .statusBarsPadding()
+                    .pointerInput(Unit) {
+                        detectTapGestures(onTap = {
+                            focusManager.clearFocus()
+                        })
                     },
-                    onDeleteKeyword = {
-                        testData.remove(it)
+        ) {
+            Row(modifier = Modifier) {
+                BackButton(popUpBackStack = popUpBackStack)
+                SearchTextField(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(end = 5.dp),
+                    keyword = keyword,
+                    onValueChanged = {
+                        keyword = it
+                    },
+                    focusManager = focusManager,
+                    onSearchAction = {
+                        keyword = it
+                        addKeyword(keyword)
+                        searchUser(keyword)
+                    },
+                    onClearPressed = {
+                        keyword = ""
                     },
                 )
             }
+            Spacer(modifier = Modifier.weight(0.05f))
+            when (searchState) {
+                is SearchState.Loading -> {
+                    LoadingDialog()
+                }
 
-            is SearchState.Success -> {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    SearchTabScreen(
-                        keyword = keyword,
-                        searchUser = { keyword ->
-                            searchUser(keyword)
-                        },
-                        searchFrame = { keyword ->
-                            searchFrame(keyword)
-                        },
-                        searchAsset = { keyword ->
-                            searchAsset(keyword)
-                        },
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-                    SearchSuccessScreen(
+                is SearchState.Init -> {
+                    SearchInitScreen(
                         modifier = modifier,
-                        userList = searchState.userList,
-                        frameList = searchState.frameList,
-                        assetList = searchState.assetList,
-                        navigateToProfile = navigateToProfile,
+                        recentSearchList = searchState.recentList,
+                        hotSearchList = searchState.hotList,
+                        onClickedKeyword = {
+                            keyword = it
+                            searchUser(it)
+                        },
+                        onDeleteKeyword = {
+                            removeKeyword(it)
+                            loadHotSearch()
+                        },
                     )
                 }
-            }
 
-            is SearchState.Error -> {
+                is SearchState.Success -> {
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        SearchTabScreen(
+                            keyword = keyword,
+                            searchUser = { keyword ->
+                                searchUser(keyword)
+                            },
+                            searchFrame = { keyword ->
+                                searchFrame(keyword)
+                            },
+                            searchAsset = { keyword ->
+                                searchAsset(keyword)
+                            },
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        SearchSuccessScreen(
+                            modifier = modifier,
+                            userList = searchState.userList,
+                            frameList = searchState.frameList,
+                            assetList = searchState.assetList,
+                            navigateToProfile = navigateToProfile,
+                        )
+                    }
+                }
+
+                is SearchState.Error -> {
+                }
             }
         }
     }
@@ -188,8 +204,8 @@ fun SearchScreen(
 @Composable
 fun SearchInitScreen(
     modifier: Modifier = Modifier,
-    recentSearchList: List<String> = emptyList(),
-    hotSearchList: List<String> = emptyList(),
+    recentSearchList: List<String> = listOf(),
+    hotSearchList: List<HotKeyword> = listOf(),
     onClickedKeyword: (String) -> Unit,
     onDeleteKeyword: (String) -> Unit,
 ) {
@@ -205,12 +221,13 @@ fun SearchInitScreen(
                 .padding(horizontal = 8.dp),
         verticalArrangement = Arrangement.Center,
     ) {
-        Spacer(modifier = Modifier.weight(0.06f))
+        Spacer(modifier = Modifier.weight(0.1f))
         RecentSearchSection(setEdit, isEdit)
+        Spacer(modifier = Modifier.weight(0.01f))
         RecentSearchKeywords(isEdit, recentSearchList, onClickedKeyword, onDeleteKeyword)
-        Spacer(modifier = Modifier.weight(0.08f))
+        Spacer(modifier = Modifier.weight(0.15f))
         HotKeywordSection(modifier = Modifier)
-        Spacer(modifier = Modifier.weight(0.06f))
+        Spacer(modifier = Modifier.weight(0.1f))
         HotKeywords(keywords = hotSearchList, onClick = onClickedKeyword)
         Spacer(modifier = Modifier.weight(1f))
     }
@@ -259,7 +276,7 @@ fun SearchTabScreen(
 @Composable
 fun SearchSuccessScreen(
     modifier: Modifier = Modifier,
-    userList: List<Profile> = emptyList(),
+    userList: List<UserInfoResponse> = emptyList(),
     frameList: List<FrameDetail> = emptyList(),
     assetList: List<AssetDetail> = emptyList(),
     navigateToProfile: (Long) -> Unit = {},
@@ -276,9 +293,9 @@ fun SearchSuccessScreen(
             items(userList.size) { index ->
                 val user = userList[index]
                 UserListItem(
-                    userId = user.userId,
-                    profileImgUrl = user.profileImageUrl,
-                    nickname = user.nickname,
+                    userId = user.userInfoResponseDTO.userId,
+                    profileImgUrl = user.userInfoResponseDTO.profileImage,
+                    nickname = user.userInfoResponseDTO.nickname,
                     navigateToProfile = navigateToProfile,
                 )
             }
@@ -289,8 +306,7 @@ fun SearchSuccessScreen(
                 Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
-                    .padding(horizontal = 10.dp)
-                    .aspectRatio(1f / 2f),
+                    .padding(horizontal = 10.dp),
             columns = GridCells.Fixed(2),
             state = rememberLazyGridState(),
         ) {
@@ -303,6 +319,7 @@ fun SearchSuccessScreen(
                     modifier =
                         Modifier
                             .fillMaxWidth()
+                            .aspectRatio(3f / 4f)
                             .padding(8.dp)
                             .clip(shape = RoundedCornerShape(10.dp))
                             .border(
@@ -311,7 +328,7 @@ fun SearchSuccessScreen(
                                 color = Gray03,
                             ),
                     imageModel = imgUrl.toUri(),
-                    contentScale = ContentScale.Crop,
+                    contentScale = ContentScale.Fit,
                 )
             }
         }
@@ -339,7 +356,7 @@ fun SearchSuccessScreen(
                                 shape = RoundedCornerShape(10.dp),
                                 color = Gray03,
                             ),
-                    imageModel = asset.imageUrls.toUri(),
+                    imageModel = asset.imageUrl.toUri(),
                     contentScale = ContentScale.Crop,
                 )
             }
@@ -393,7 +410,10 @@ private fun RecentSearchKeywords(
 ) {
     LazyHorizontalGrid(
         rows = GridCells.Fixed(1),
-        modifier = Modifier.height(50.dp),
+        modifier =
+            Modifier
+                .height(50.dp)
+                .padding(start = 5.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         content = {
             items(recentSearchList) { item ->
@@ -421,7 +441,7 @@ private fun RecentSearchSection(
             stringResource(id = R.string.edit_false_text)
         }
     Row(
-        modifier = Modifier,
+        modifier = Modifier.padding(start = 3.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(
@@ -459,7 +479,7 @@ fun HotKeywordSection(modifier: Modifier = Modifier) {
 
 @Composable
 fun HotKeywords(
-    keywords: List<String> = listOf(),
+    keywords: List<HotKeyword> = listOf(),
     onClick: (String) -> Unit = {},
 ) {
     Column(
@@ -471,10 +491,10 @@ fun HotKeywords(
             HotKeyWord(
                 modifier =
                     Modifier.noRippleClickable {
-                        onClick(item)
+                        onClick(item.keyword)
                     },
                 number = index + 1,
-                keyword = item,
+                keyword = item.keyword,
             )
         }
     }

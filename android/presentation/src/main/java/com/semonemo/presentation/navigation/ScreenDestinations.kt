@@ -113,16 +113,20 @@ sealed class ScreenDestinations(
 
     data object Detail : ScreenDestinations(route = "detail") {
         override val route: String
-            get() = "detail/{imgUrl}"
+            get() = "detail/{nftId}"
         val arguments =
             listOf(
-                navArgument(name = "imgUrl") { type = NavType.StringType },
+                navArgument(name = "nftId") { type = NavType.LongType },
             )
 
-        fun createRoute(imgUrl: String) = "detail/$imgUrl"
+        fun createRoute(nftId: Long) = "detail/$nftId"
     }
 
     data object Frame : ScreenDestinations(route = "frame")
+
+    data object FrameSale : ScreenDestinations(route = "frameSale")
+
+    data object AssetSale : ScreenDestinations(route = "assetSale")
 
     data object AuctionProcess : ScreenDestinations(route = "auctionProcess") {
         override val route: String
@@ -144,6 +148,22 @@ sealed class ScreenDestinations(
             )
 
         fun createRoute(isFrame: Boolean) = "storeFullView/$isFrame"
+    }
+
+    data object FrameDetail : ScreenDestinations(route = "frameDetail") {
+        override val route: String
+            get() = "frameDetail/{marketId}"
+        val arguments = listOf(navArgument(name = "marketId") { type = NavType.LongType })
+
+        fun createRoute(marketId: Long) = "frameDetail/$marketId"
+    }
+
+    data object AssetDetail : ScreenDestinations(route = "assetDetail") {
+        override val route: String
+            get() = "assetDetail/{assetSellId}"
+        val arguments = listOf(navArgument(name = "assetSellId") { type = NavType.LongType })
+
+        fun createRoute(assetSellId: Long) = "assetDetail/$assetSellId"
     }
 
     data object FrameDone : ScreenDestinations(route = "frameDone")

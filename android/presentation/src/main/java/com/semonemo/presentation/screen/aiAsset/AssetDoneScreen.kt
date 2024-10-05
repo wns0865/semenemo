@@ -1,10 +1,10 @@
 package com.semonemo.presentation.screen.aiAsset
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,13 +13,10 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,8 +32,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BoldTextWithKeywords
-import com.semonemo.presentation.component.HashTag
-import com.semonemo.presentation.component.HashTagTextField
 import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.component.LongWhiteButton
@@ -116,23 +111,15 @@ fun AssetDoneScreen(
     uploadAsset: (File?) -> Unit = {},
 ) {
     val context = LocalContext.current
-    val tags =
-        remember {
-            mutableStateListOf(
-                "로봇",
-                "이모지",
-                "삐빅",
-            )
-        }
 
     val focusManager = LocalFocusManager.current
     Column(
         modifier =
             modifier
                 .fillMaxSize()
+                .background(color = Color.White)
                 .statusBarsPadding()
                 .navigationBarsPadding()
-                .background(color = Color.White)
                 .addFocusCleaner(
                     focusManager = focusManager,
                 ),
@@ -174,38 +161,14 @@ fun AssetDoneScreen(
                 color = Gray02,
                 style = Typography.labelLarge.copy(fontSize = 16.sp),
             )
-            Spacer(modifier = Modifier.height(13.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             GlideImage(
                 imageModel = assetUrl,
                 modifier =
                     Modifier
-                        .fillMaxWidth(0.5f)
-                        .fillMaxHeight(0.4f),
-                contentScale = ContentScale.Crop,
-            )
-
-            Spacer(modifier = Modifier.fillMaxHeight(0.05f))
-            HashTagTextField(
-                modifier = Modifier.fillMaxWidth(0.88f),
-                onTagAddAction = { keyword ->
-                    if (keyword.isNotBlank()) {
-                        tags.add(keyword)
-                    }
-                },
-                focusManager = focusManager,
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(0.88f),
-                horizontalArrangement = Arrangement.spacedBy(7.dp),
-                content = {
-                    items(count = tags.size) { index ->
-                        HashTag(
-                            keyword = tags[index],
-                            isEdit = true,
-                        )
-                    }
-                },
+                        .fillMaxWidth()
+                        .aspectRatio(1f),
+                contentScale = ContentScale.Fit,
             )
             Spacer(modifier = Modifier.fillMaxHeight(0.1f))
             Row(modifier = Modifier.fillMaxWidth(0.88f)) {
@@ -215,7 +178,7 @@ fun AssetDoneScreen(
                     text = "배경 제거할래요",
                     onClick = removeBackGround,
                 )
-                Spacer(modifier = Modifier.weight(0.2f))
+                Spacer(modifier = Modifier.weight(0.08f))
                 LongBlackButton(
                     modifier = Modifier.weight(1f),
                     icon = null,
@@ -230,15 +193,12 @@ fun AssetDoneScreen(
                     },
                 )
             }
-
-            Spacer(modifier = Modifier.height(13.dp))
-
             Spacer(modifier = Modifier.height(13.dp))
             LongWhiteButton(
                 icon = null,
                 text = stringResource(R.string.remake_asset),
                 onClick = {
-                    popUpBackStack
+                    popUpBackStack()
                 },
             )
         }

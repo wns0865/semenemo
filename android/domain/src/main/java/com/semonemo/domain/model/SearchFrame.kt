@@ -17,28 +17,23 @@ data class SearchFrame(
 data class FrameDetail(
     val marketId: Long = 0,
     val nftId: Long = 0,
-    val seller: Long = 0,
-    val price: Long = 0,
+    val seller: User = User(),
+    val price: Long = 0L,
     val likeCount: Long = 0,
     val isLiked: Boolean = false,
     val nftInfo: FrameInfo = FrameInfo(),
-    val tags: List<NTag> = emptyList(),
+    val tags: List<String> = emptyList(),
 )
 
 data class FrameInfo(
     val tokenId: Long = 0,
     val creator: String = "",
     val currentOwner: String = "",
-    val data: NftData = NftData()
+    val data: NftData = NftData(),
 )
 
 data class NftData(
     val title: String = "",
     val content: String = "",
     val image: String = "",
-)
-
-data class NTag(
-    val ntagId: Long = 0,
-    val name: String = "",
 )

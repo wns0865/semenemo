@@ -6,6 +6,7 @@ import com.semonemo.data.repository.AiRepositoryImpl
 import com.semonemo.data.repository.AssetRepositoryImpl
 import com.semonemo.data.repository.AuctionRepositoryImpl
 import com.semonemo.data.repository.AuthRepositoryImpl
+import com.semonemo.data.repository.CoinRepositoryImpl
 import com.semonemo.data.repository.IpfsRepositoryImpl
 import com.semonemo.data.repository.NftRepositoryImpl
 import com.semonemo.data.repository.SearchRepositoryImpl
@@ -16,6 +17,7 @@ import com.semonemo.domain.repository.AiRepository
 import com.semonemo.domain.repository.AssetRepository
 import com.semonemo.domain.repository.AuctionRepository
 import com.semonemo.domain.repository.AuthRepository
+import com.semonemo.domain.repository.CoinRepository
 import com.semonemo.domain.repository.IpfsRepository
 import com.semonemo.domain.repository.NftRepository
 import com.semonemo.domain.repository.SearchRepository
@@ -54,6 +56,9 @@ interface RepositoryModule {
 
     @Binds
     fun bindSearchRepository(searchRepositoryImpl: SearchRepositoryImpl): SearchRepository
+
+    @Binds
+    fun bindCoinRepository(coinRepositoryImpl: CoinRepositoryImpl): CoinRepository
 
     @Binds
     fun bindAuctionRepository(auctionRepositoryImpl: AuctionRepositoryImpl): AuctionRepository

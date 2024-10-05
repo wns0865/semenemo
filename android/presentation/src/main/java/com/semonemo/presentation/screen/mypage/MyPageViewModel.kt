@@ -2,7 +2,10 @@ package com.semonemo.presentation.screen.mypage
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.semonemo.domain.datasource.AuthDataSource
 import com.semonemo.domain.model.ApiResponse
+import com.semonemo.domain.repository.AssetRepository
+import com.semonemo.domain.repository.NftRepository
 import com.semonemo.domain.repository.UserRepository
 import com.semonemo.domain.request.EditUserRequest
 import com.semonemo.presentation.base.BaseViewModel
@@ -22,19 +25,24 @@ class MyPageViewModel
     @Inject
     constructor(
         private val userRepository: UserRepository,
+        private val nftRepository: NftRepository,
+        private val assetRepository: AssetRepository,
+        private val authDataSource: AuthDataSource,
         private val savedStateHandle: SavedStateHandle,
     ) : BaseViewModel() {
         private val _uiState = MutableStateFlow<MyPageUiState>(MyPageUiState.Loading)
         val uiState = _uiState.asStateFlow()
         private val _uiEvent = MutableSharedFlow<MyPageUiEvent>()
         val uiEvent = _uiEvent.asSharedFlow()
-        private val userId = savedStateHandle.get<Long>("userId") ?: -1
+        private var userId = savedStateHandle.get<Long>("userId") ?: -1
 
         init {
             if (userId == -1L) { // 마이페이지
                 loadUserInfo()
+                loadComponents()
             } else { // 타사용자 페이지
                 loadOtherUserInfo()
+                loadComponents()
             }
         }
 
@@ -119,6 +127,7 @@ class MyPageViewModel
                     userRepository.loadFollowing(userId),
                     userRepository.loadFollowers(userId),
                 ) { userInfo, followingInfo, followerInfo ->
+
                     var currentState = MyPageUiState.Success()
                     currentState =
                         when (userInfo) {
@@ -163,7 +172,102 @@ class MyPageViewModel
                         }
                     currentState
                 }.collectLatest { updatedUiState ->
-                    _uiState.value = updatedUiState
+                    val state = _uiState.value
+                    if (state is MyPageUiState.Loading) {
+                        _uiState.value = updatedUiState
+                    } else if (state is MyPageUiState.Success) {
+                        _uiState.value =
+                            state.copy(
+                                userId = updatedUiState.userId,
+                                profileImageUrl = updatedUiState.profileImageUrl,
+                                nickname = updatedUiState.nickname,
+                                following = updatedUiState.following,
+                                follower = updatedUiState.follower,
+                            )
+                    }
+                }
+            }
+        }
+
+        private fun loadComponents() {
+            viewModelScope.launch {
+                authDataSource.getUserId()?.let { userId ->
+                    combine(
+                        nftRepository.getUserNft(userId.toLong()),
+                        nftRepository.getSellNft(userId.toLong()),
+                        assetRepository.getMyAssets(null),
+                        assetRepository.getLikeAssets(),
+                    ) { nftList, sellNftList, assetList, likeAssets ->
+                        var currentState = MyPageUiState.Success()
+
+                        currentState =
+                            when (nftList) {
+                                is ApiResponse.Error -> {
+                                    _uiEvent.emit(MyPageUiEvent.Error(nftList.errorMessage))
+                                    currentState
+                                }
+
+                                is ApiResponse.Success -> {
+                                    currentState.copy(
+                                        frameList = nftList.data,
+                                    )
+                                }
+                            }
+
+                        currentState =
+                            when (sellNftList) {
+                                is ApiResponse.Error -> {
+                                    _uiEvent.emit(MyPageUiEvent.Error(sellNftList.errorMessage))
+                                    currentState
+                                }
+
+                                is ApiResponse.Success -> {
+                                    currentState.copy(
+                                        sellFrameList = sellNftList.data,
+                                    )
+                                }
+                            }
+                        currentState =
+                            when (assetList) {
+                                is ApiResponse.Error -> {
+                                    _uiEvent.emit(MyPageUiEvent.Error(assetList.errorMessage))
+                                    currentState
+                                }
+
+                                is ApiResponse.Success -> {
+                                    currentState.copy(
+                                        assetList = assetList.data,
+                                    )
+                                }
+                            }
+                        currentState =
+                            when (likeAssets) {
+                                is ApiResponse.Error -> {
+                                    _uiEvent.emit(MyPageUiEvent.Error(likeAssets.errorMessage))
+                                    currentState
+                                }
+
+                                is ApiResponse.Success -> {
+                                    currentState.copy(
+                                        likeAssets = likeAssets.data.content,
+                                    )
+                                }
+                            }
+                        currentState
+                    }.collectLatest { updatedUiState ->
+                        val state = _uiState.value
+                        if (state is MyPageUiState.Loading) {
+                            _uiState.value = updatedUiState
+                        } else if (state is MyPageUiState.Success) {
+                            _uiState.value =
+                                state.copy(
+                                    frameList = updatedUiState.frameList,
+                                    sellFrameList = updatedUiState.sellFrameList,
+                                    assetList = updatedUiState.assetList,
+                                    likeAssets = updatedUiState.likeAssets,
+                                )
+                        }
+                    }
                 }
             }
         }
