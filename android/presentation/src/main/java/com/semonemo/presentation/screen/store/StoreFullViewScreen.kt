@@ -5,13 +5,18 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.semonemo.presentation.screen.store.subScreen.StoreSubFullViewScreen
+import com.semonemo.presentation.screen.store.subScreen.StoreSubFullViewRoute
 
 @Composable
 fun StoreFullViewScreen(
     modifier: Modifier = Modifier,
     isFrame: Boolean,
+    popUpBackStack: () -> Unit,
+    navigateToFrameDetail: (Long) -> Unit,
+    navigateToAssetDetail: (Long) -> Unit,
+    navigateToFrameSale: () -> Unit,
+    navigateToAssetSale: () -> Unit,
+    onShowErrorSnackBar: (String) -> Unit,
 ) {
     Column(
         modifier =
@@ -19,15 +24,15 @@ fun StoreFullViewScreen(
                 .navigationBarsPadding()
                 .statusBarsPadding(),
     ) {
-        StoreSubFullViewScreen(
-            modifier = Modifier,
+        StoreSubFullViewRoute(
+            modifier = modifier,
             isFrame = isFrame,
+            popUpBackStack = popUpBackStack,
+            navigateToFrameDetail = navigateToFrameDetail,
+            navigateToAssetDetail = navigateToAssetDetail,
+            navigateToAssetSale = navigateToAssetSale,
+            navigateToFrameSale = navigateToFrameSale,
+            onShowErrorSnackBar = onShowErrorSnackBar,
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun StoreFullViewScreenPreview() {
-    StoreFullViewScreen(isFrame = true)
 }

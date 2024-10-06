@@ -154,7 +154,7 @@ fun HandleMyPageUi(
     unfollowUser: () -> Unit,
 ) {
     when (uiState) {
-        MyPageUiState.Loading -> LoadingDialog()
+        MyPageUiState.Loading -> LoadingDialog(modifier = Modifier.fillMaxSize())
         is MyPageUiState.Success ->
             MyPageScreen(
                 modifier = modifier,

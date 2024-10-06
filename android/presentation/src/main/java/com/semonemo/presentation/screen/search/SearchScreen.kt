@@ -131,6 +131,7 @@ fun SearchScreen(
                         })
                     },
         ) {
+            Spacer(modifier = Modifier.height(5.dp))
             Row(modifier = Modifier) {
                 BackButton(popUpBackStack = popUpBackStack)
                 SearchTextField(

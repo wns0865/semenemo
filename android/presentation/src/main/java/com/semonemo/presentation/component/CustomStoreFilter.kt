@@ -28,6 +28,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.semonemo.presentation.R
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.SemonemoTheme
@@ -66,18 +67,18 @@ fun FilterButton(
     Box(
         modifier =
             modifier
-                .height(40.dp)
+                .height(32.dp)
                 .background(backgroundColor, shape = RoundedCornerShape(10.dp))
                 .padding(horizontal = 12.dp, vertical = 8.dp)
                 .noRippleClickable { onClick() }
                 .animateContentSize(),
-        contentAlignment = Alignment.Center // 요소들을 가운데 정렬
+        contentAlignment = Alignment.Center, // 요소들을 가운데 정렬
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = text,
-                style = Typography.labelMedium,
-                color = contentColor
+                style = Typography.labelMedium.copy(fontSize = 13.sp),
+                color = contentColor,
             )
             // 아이콘의 가시성을 애니메이션으로 처리
             AnimatedVisibility(
@@ -118,13 +119,9 @@ fun CustomStoreFilter(
                 onClick = {
                     // 클릭 시 해당 필터의 상태 변경 로직
                     val newState =
-                        when (state) {
-                            true -> false
-                            false -> null
-                            else -> true
-                        }
+                        state?.let { !it } ?: false // Only toggle between true and false
 
-                    // 상태 업데이트 - 하나만 활성화되도록, 나머지는 모두 null
+                    // 상태 업데이트 - 하나만 활성화되도록, 나머지는 모두 false
                     onFilterChange(filter, newState)
                 },
             )
