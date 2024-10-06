@@ -48,10 +48,11 @@ enum class AuctionStatus {
 @Composable
 fun AuctionDetailScreen(
     modifier: Modifier = Modifier,
-    auctionId: Long = 3L,
+    auctionId: Long = 0L,
     testAuctionId: Long = 12L,
     viewModel: AuctionDetailViewModel = hiltViewModel(),
 ) {
+//    val auctionId = viewModel.auctionId
     val viewModelAuctionBidLog = viewModel.auctionBidLog.value
     val viewModelTopPrice = viewModel.topPrice.longValue
     val viewModelMyBidPrice = viewModel.myBidPrice.longValue
@@ -77,11 +78,11 @@ fun AuctionDetailScreen(
         if (stompSession.value == null) {
             stompSession.value = webSocketManager?.connectToAuction()
         }
-        val headersUriMain = "/topic/auction/$testAuctionId"
-        val headersUriStart = "/topic/auction/$testAuctionId/start"
-        val headersUriBid = "/topic/auction/$testAuctionId/bid"
-        val headersUriEnd = "/topic/auction/$testAuctionId/end"
-        val headersUriParticipants = "/topic/auction/$testAuctionId/participants"
+        val headersUriMain = "/topic/auction/$auctionId"
+        val headersUriStart = "/topic/auction/$auctionId/start"
+        val headersUriBid = "/topic/auction/$auctionId/bid"
+        val headersUriEnd = "/topic/auction/$auctionId/end"
+        val headersUriParticipants = "/topic/auction/$auctionId/participants"
         // 경매 업데이트를 구독
         stompSession.value?.let { session ->
             launch {
