@@ -374,18 +374,20 @@ fun PictureSelectScreen(
                 horizontalArrangement = Arrangement.spacedBy(5.dp),
                 content = {
                     items(count = pictures.size) { index ->
+                        val isSelected = selectedPictures.value.contains(pictures[index])
                         Image(
                             modifier =
                                 Modifier
                                     .clip(RoundedCornerShape((10.dp)))
                                     .width(70.dp)
                                     .height(70.dp)
+                                    .graphicsLayer(alpha = if (isSelected) 0.5f else 1f)
                                     .noRippleClickable {
                                         selectedPictures.value =
                                             selectedPictures.value
                                                 .toMutableList()
                                                 .apply {
-                                                    if (contains(pictures[index])) {
+                                                    if (isSelected) {
                                                         remove(pictures[index])
                                                     } else {
                                                         add(pictures[index])
