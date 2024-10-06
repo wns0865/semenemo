@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.semonemo.domain.datasource.AuthDataSource
 import com.semonemo.domain.model.ApiResponse
 import com.semonemo.domain.repository.CoinRepository
+import com.semonemo.domain.request.ExchangePayableRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -90,6 +91,30 @@ class WalletViewModel
                                 coinHistory = updateState.coinHistory,
                                 userCoin = updateState.userCoin,
                             )
+                        }
+                    }
+            }
+        }
+
+        fun exchangePayableCoin(
+            amount: Long,
+            txHash: String,
+        ) {
+            viewModelScope.launch {
+                coinRepository
+                    .exchangePayableCoin(
+                        request =
+                            ExchangePayableRequest(
+                                txHash = txHash,
+                                amount = amount,
+                            ),
+                    ).onStart {
+                        _uiState.update { it.copy(isLoading = true) }
+                    }.onCompletion { _uiState.update { it.copy(isLoading = false) } }
+                    .collectLatest { response ->
+                        when (response) {
+                            is ApiResponse.Error -> _uiEvent.emit(WalletUiEvent.Error(response.errorMessage))
+                            is ApiResponse.Success -> loadCoinHistory()
                         }
                     }
             }
