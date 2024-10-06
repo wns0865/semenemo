@@ -13,6 +13,6 @@ fun String.urlToIpfs() = BuildConfig.IPFS_READ_URL + "ipfs/" + this
 
 fun BigInteger.toPrice() = this * BigInteger.TEN.pow(18)
 
-private val dateFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
+val dateFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
 
 fun getTodayDate() = LocalDate.now().format(dateFormatter)
