@@ -25,7 +25,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.semonemo.presentation.BuildConfig
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.CustomAuctionFAB
 import com.semonemo.presentation.component.SectionHeader
@@ -42,8 +41,6 @@ fun AuctionScreen(
     viewModel: AuctionViewModel = hiltViewModel(),
     navigateToAuctionProcess: (Long) -> Unit = {},
 ) {
-    val ipfsUrl = BuildConfig.IPFS_READ_URL
-    val imgUrl = ipfsUrl + "ipfs/"
 //    val verticalScrollState = rememberScrollState()
     Surface(
         modifier =

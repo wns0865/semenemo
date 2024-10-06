@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.semonemo.presentation.BuildConfig
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.AuctionBidMessage
 import com.semonemo.presentation.screen.auction.subScreen.AuctionEndScreen
@@ -61,7 +62,8 @@ fun AuctionDetailScreen(
 
     val pagerState = rememberPagerState(pageCount = { AuctionStatus.entries.size })
 //    val (price, setPrice) = remember { mutableIntStateOf(0) }
-
+    val ipfsUrl = BuildConfig.IPFS_READ_URL
+    val imgUrl = ipfsUrl + "ipfs/" + viewModel.nftImageUrl.value
     // Context 접근
     val context = LocalContext.current
 
@@ -153,8 +155,8 @@ fun AuctionDetailScreen(
     ) {
         Spacer(modifier = modifier.height(30.dp))
         GlideImage(
-            imageModel = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQL4Xl-3MO5y2aaLELSf9nlsbS4DPkA2hokFtTkU2S4Zrj5_3JzNBWudLaf5Uz4NeXmzF0&usqp=CAU",
-            contentScale = ContentScale.Crop,
+            imageModel = imgUrl,
+            contentScale = ContentScale.Fit,
             modifier =
                 modifier
                     .height(360.dp)

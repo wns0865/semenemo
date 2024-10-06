@@ -39,10 +39,10 @@ class AuctionDetailViewModel
         var auctionId = saveStateHandle["auctionId"] ?: -1L // 경매 번호
             private set
         var userId: Long = 0L // 유저 ID
-        var imgUrl = mutableStateOf("")
+        var nftImageUrl = mutableStateOf("")
         var anonym = mutableIntStateOf(1) // 익명 번호
             private set
-        var currentParticipant = mutableIntStateOf(0) // 참여자 수
+        var participant = mutableIntStateOf(0) // 참여자 수
             private set
         var auctionBidLog = mutableStateOf<List<AuctionBidLog>>(listOf()) // 경매 로그
             private set
@@ -65,10 +65,34 @@ class AuctionDetailViewModel
         init {
             viewModelScope.launch {
                 userId = authDataSource.getUserId()?.toLong() ?: 0L
+                Log.d(TAG, "userId: $userId")
             }
             initWebSocketManager()
             initStompSession()
+            loadAuctionDetail()
 //            joinAuction()
+        }
+
+        private fun loadAuctionDetail() {
+            if (auctionId == -1L) {
+                viewModelScope.launch {
+                    _uiEvent.emit(AuctionUiEvent.Error("경매가 종료되었습니다."))
+                }
+                return
+            }
+            viewModelScope.launch {
+                auctionRepository.getAuction(auctionId).collectLatest { response ->
+                    when (response) {
+                        is ApiResponse.Error -> {
+                            _uiEvent.emit(AuctionUiEvent.Error(response.errorMessage))
+                        }
+                        is ApiResponse.Success -> {
+                            nftImageUrl.value = response.data.nftImageUrl
+                            participant.intValue = response.data.participants
+                        }
+                    }
+                }
+            }
         }
 
         private fun joinAuction() {
@@ -111,7 +135,7 @@ class AuctionDetailViewModel
         }
 
         fun updateParticipants(participants: Int) {
-            currentParticipant.intValue = participants
+            participant.intValue = participants
         }
 
         /** log10을 통해 10%의 입찰 단가를 계산 */
