@@ -320,6 +320,33 @@ fun PictureSelectScreen(
                         }
 
                         FrameType.OneByFour -> {
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .wrapContentSize(),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxSize(),
+                                ) {
+                                    Column(
+                                        modifier =
+                                            Modifier
+                                                .fillMaxSize().padding(vertical = 5.dp),
+                                    ) {
+                                        for (i in 0 until FrameType.OneByFour.amount) {
+                                            RenderImage(
+                                                modifier = Modifier.fillMaxWidth().weight(1f),
+                                                index = i,
+                                                selectedPictures = selectedPictures.value,
+                                            )
+                                        }
+                                        Spacer(modifier = Modifier.height(30.dp))
+                                    }
+                                }
+                            }
                         }
                     }
                 }
