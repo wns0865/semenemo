@@ -88,9 +88,9 @@ fun StoreSubFullContent(
 ) {
     LaunchedEffect(Unit) {
         if (isFrame) {
-            loadNftList("oldest")
+            loadNftList("latest")
         } else {
-            loadAssetList("oldest")
+            loadAssetList("latest")
         }
     }
     LaunchedEffect(uiEvent) {
