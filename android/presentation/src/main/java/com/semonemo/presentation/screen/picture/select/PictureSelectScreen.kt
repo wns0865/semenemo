@@ -44,6 +44,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -250,14 +251,27 @@ fun PictureSelectScreen(
                                 },
                     )
                     if (check.value) {
+                        val (textStyle, alignment) =
+                            if (type == FrameType.OneByFour) {
+                                Pair(
+                                    Typography.bodyMedium.copy(color = selectedColor),
+                                    Alignment.BottomCenter,
+                                )
+                            } else {
+                                Pair(
+                                    Typography.labelSmall.copy(color = selectedColor),
+                                    Alignment.BottomEnd,
+                                )
+                            }
+
                         Text(
                             modifier =
                                 Modifier
                                     .wrapContentHeight()
-                                    .align(Alignment.BottomEnd)
+                                    .align(alignment)
                                     .padding(7.dp),
                             text = getTodayDate(),
-                            style = Typography.bodyMedium.copy(color = selectedColor),
+                            style = textStyle,
                             textAlign = TextAlign.End,
                         )
                     }
@@ -334,7 +348,7 @@ fun PictureSelectScreen(
                                     Column(
                                         modifier =
                                             Modifier
-                                                .fillMaxSize().padding(vertical = 5.dp),
+                                                .fillMaxSize(),
                                     ) {
                                         for (i in 0 until FrameType.OneByFour.amount) {
                                             RenderImage(
@@ -343,7 +357,7 @@ fun PictureSelectScreen(
                                                 selectedPictures = selectedPictures.value,
                                             )
                                         }
-                                        Spacer(modifier = Modifier.height(30.dp))
+                                        Spacer(modifier = Modifier.height(40.dp))
                                     }
                                 }
                             }

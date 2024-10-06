@@ -53,7 +53,7 @@ fun RenderImageRow(
 @Composable
 fun RenderImage(
     modifier: Modifier,
-    index : Int,
+    index: Int,
     selectedPictures: List<Bitmap>,
 ) {
     Box(
@@ -61,7 +61,7 @@ fun RenderImage(
             modifier
                 .fillMaxWidth(),
     ) {
-        if(selectedPictures.size > index) {
+        if (selectedPictures.size > index) {
             Image(
                 bitmap = selectedPictures[index].asImageBitmap(),
                 contentDescription = null,
