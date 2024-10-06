@@ -30,6 +30,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,10 +45,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.semonemo.domain.model.Coin
 import com.semonemo.domain.model.CoinHistory
+import com.semonemo.presentation.BuildConfig
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BoldTextWithKeywords
 import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.screen.nft.NftViewModel
+import com.semonemo.presentation.screen.wallet.subscreen.WalletDialog
 import com.semonemo.presentation.theme.Blue1
 import com.semonemo.presentation.theme.Blue2
 import com.semonemo.presentation.theme.Blue3
@@ -56,8 +60,12 @@ import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.White
 import com.semonemo.presentation.util.noRippleClickable
+import com.semonemo.presentation.util.toPrice
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
+import org.web3j.abi.TypeReference
+import org.web3j.abi.datatypes.Function
+import org.web3j.abi.datatypes.generated.Uint256
 import java.time.LocalDateTime
 import java.util.Locale
 
@@ -82,6 +90,25 @@ fun WalletRoute(
         uiState = uiState.value,
         uiEvent = viewModel.uiEvent,
         onShowSnackBar = onShowSnackBar,
+        sendTransaction = { amount ->
+            nftViewModel.sendTransaction(
+                function =
+                    Function(
+                        "deposit",
+                        listOf(
+                            Uint256(amount.toBigInteger().toPrice()),
+                        ),
+                        listOf<TypeReference<*>>(object : TypeReference<Uint256>() {}),
+                    ),
+                onSuccess = { txHash ->
+                    viewModel.exchangePayableCoin(amount = amount.toLong(), txHash = txHash)
+                },
+                onError = {
+                    onShowSnackBar(it)
+                },
+                contractAddress = BuildConfig.SYSTEM_CONTRACT_ADDRESS,
+            )
+        },
     )
 }
 
@@ -92,6 +119,7 @@ fun WalletContent(
     uiState: WalletUiState,
     uiEvent: SharedFlow<WalletUiEvent>,
     onShowSnackBar: (String) -> Unit,
+    sendTransaction: (String) -> Unit,
 ) {
     LaunchedEffect(uiEvent) {
         uiEvent.collectLatest { event ->
@@ -108,6 +136,8 @@ fun WalletContent(
         userCoin = uiState.userCoin,
         userId = uiState.userId,
         navigateToCoinDetail = navigateToCoinDetail,
+        sendTransaction = sendTransaction,
+        onShowSnackBar = onShowSnackBar,
     )
 
     if (uiState.isLoading) {
@@ -119,7 +149,7 @@ fun WalletContent(
         )
         LoadingDialog(
             lottieRes = R.raw.normal_load,
-            loadingMessage = stringResource(R.string.hisotry_loading_message),
+            loadingMessage = stringResource(R.string.wallet_loading_message),
             subMessage = stringResource(R.string.loading_sub_message),
         )
     }
@@ -136,6 +166,8 @@ fun WalletScreen(
     changePrice: Double = 8300.0,
     coinHistory: List<CoinHistory> = listOf(),
     userId: Long = 0L,
+    sendTransaction: (String) -> Unit = {},
+    onShowSnackBar: (String) -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
 
@@ -154,6 +186,8 @@ fun WalletScreen(
             userName = userName,
             userCoin = userCoin,
             navigateToCoinDetail = navigateToCoinDetail,
+            sendTransaction = sendTransaction,
+            onShowSnackBar = onShowSnackBar,
         )
         Spacer(modifier = Modifier.height(10.dp))
         WalletCoinBox(
@@ -196,7 +230,31 @@ fun WalletCardBox(
     userName: String,
     userCoin: Coin,
     navigateToCoinDetail: () -> Unit,
+    onShowSnackBar: (String) -> Unit,
+    sendTransaction: (String) -> Unit,
 ) {
+    val (showExchange, setShowExchange) =
+        remember {
+            mutableStateOf(false)
+        }
+    if (showExchange) {
+        WalletDialog(
+            title = "보유 코인을 환전하시겠습니까?",
+            onDismissMessage = "취소",
+            onConfirmMessage = "변경",
+            onConfirm = {
+                if (userCoin.coinBalance < it) {
+                    onShowSnackBar("잔여코인이 부족합니다")
+                } else {
+                    sendTransaction(it.toString())
+                }
+                setShowExchange(false)
+            },
+            onDismiss = {
+                setShowExchange(false)
+            },
+        )
+    }
     Box(
         modifier =
             modifier
@@ -230,18 +288,27 @@ fun WalletCardBox(
                     verticalArrangement = Arrangement.spacedBy(5.dp),
                 ) {
                     Spacer(modifier = Modifier.weight(1f))
-                    Image(
+                    Column(
                         modifier =
                             Modifier
-                                .size(20.dp)
-                                .noRippleClickable { {} },
-                        painter = painterResource(id = R.drawable.ic_coin_exchange),
-                        contentDescription = null,
-                    )
-                    Text(
-                        text = stringResource(id = R.string.exchange),
-                        style = Typography.labelMedium.copy(color = White),
-                    )
+                                .wrapContentSize()
+                                .noRippleClickable { setShowExchange(true) },
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Image(
+                            modifier =
+                                Modifier
+                                    .size(20.dp),
+                            painter = painterResource(id = R.drawable.ic_coin_exchange),
+                            contentDescription = null,
+                        )
+                        Spacer(modifier = Modifier.height(5.dp))
+                        Text(
+                            text = stringResource(id = R.string.exchange),
+                            style = Typography.labelMedium.copy(color = White),
+                        )
+                    }
+
                     Spacer(modifier = Modifier.weight(1f))
                     HorizontalDivider(
                         modifier =
@@ -251,18 +318,25 @@ fun WalletCardBox(
                         color = White,
                     )
                     Spacer(modifier = Modifier.weight(1f))
-                    Image(
-                        modifier =
-                            Modifier
-                                .size(20.dp)
-                                .noRippleClickable { {} },
-                        painter = painterResource(id = R.drawable.ic_coin_plus),
-                        contentDescription = null,
-                    )
-                    Text(
-                        text = stringResource(id = R.string.recharge),
-                        style = Typography.labelMedium.copy(color = White),
-                    )
+                    Column(
+                        modifier = Modifier.wrapContentSize().noRippleClickable { },
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Image(
+                            modifier =
+                                Modifier
+                                    .size(20.dp)
+                                    .noRippleClickable { {} },
+                            painter = painterResource(id = R.drawable.ic_coin_plus),
+                            contentDescription = null,
+                        )
+                        Spacer(modifier = Modifier.height(5.dp))
+                        Text(
+                            text = stringResource(id = R.string.recharge),
+                            style = Typography.labelMedium.copy(color = White),
+                        )
+                    }
+
                     Spacer(modifier = Modifier.weight(1f))
                 }
             }

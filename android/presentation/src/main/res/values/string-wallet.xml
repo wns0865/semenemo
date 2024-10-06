@@ -4,4 +4,5 @@
     <string name="fluctuation_rate">등락율</string>
     <string name="recent_transaction_history">최근 거래내역이에요</string>
     <string name="hisotry_loading_message">거래 내역을 불러오는 중이에요!</string>
+    <string name="wallet_loading_message">코인 거래를 처리중이에요!</string>
 </resources>
