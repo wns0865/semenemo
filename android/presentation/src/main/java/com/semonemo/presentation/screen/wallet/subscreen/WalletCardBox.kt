@@ -46,13 +46,19 @@ fun WalletCardBox(
     userCoin: Coin,
     navigateToCoinDetail: () -> Unit,
     onShowSnackBar: (String) -> Unit,
-    sendTransaction: (String) -> Unit,
+    sendExchangePayableTransaction: (String) -> Unit,
+    sendExchangeCoinTransaction: (String) -> Unit,
 ) {
-    val (showExchange, setShowExchange) =
+    val (showExchangeCoinPayable, setShowExchangeCoinPayable) =
         remember {
             mutableStateOf(false)
         }
-    if (showExchange) {
+    val (showExchangePayableCoin, setShowExchangePayableCoin) =
+        remember {
+            mutableStateOf(false)
+        }
+
+    if (showExchangeCoinPayable) {
         WalletDialog(
             title = "보유 코인을 환전하시겠습니까?",
             onDismissMessage = "취소",
@@ -61,15 +67,35 @@ fun WalletCardBox(
                 if (userCoin.coinBalance < it) {
                     onShowSnackBar("잔여코인이 부족합니다")
                 } else {
-                    sendTransaction(it.toString())
+                    sendExchangePayableTransaction(it.toString())
                 }
-                setShowExchange(false)
+                setShowExchangeCoinPayable(false)
             },
             onDismiss = {
-                setShowExchange(false)
+                setShowExchangeCoinPayable(false)
             },
         )
     }
+
+    if (showExchangePayableCoin) {
+        WalletDialog(
+            title = "지불 가능한 코인을 환전하시겠습니까?",
+            onDismissMessage = "취소",
+            onConfirmMessage = "변경",
+            onConfirm = {
+                if (userCoin.payableBalance < it) {
+                    onShowSnackBar("잔여코인이 부족합니다")
+                } else {
+                    sendExchangeCoinTransaction(it.toString())
+                }
+                setShowExchangePayableCoin(false)
+            },
+            onDismiss = {
+                setShowExchangePayableCoin(false)
+            },
+        )
+    }
+
     Box(
         modifier =
             modifier
@@ -107,7 +133,7 @@ fun WalletCardBox(
                         modifier =
                             Modifier
                                 .wrapContentSize()
-                                .noRippleClickable { setShowExchange(true) },
+                                .noRippleClickable { setShowExchangeCoinPayable(true) },
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Image(
@@ -141,7 +167,7 @@ fun WalletCardBox(
                             modifier =
                                 Modifier
                                     .size(20.dp)
-                                    .noRippleClickable { {} },
+                                    .noRippleClickable { setShowExchangePayableCoin(true) },
                             painter = painterResource(id = R.drawable.ic_coin_plus),
                             contentDescription = null,
                         )

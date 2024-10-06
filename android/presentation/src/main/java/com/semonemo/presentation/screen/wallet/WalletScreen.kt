@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -63,11 +62,30 @@ fun WalletRoute(
         uiState = uiState.value,
         uiEvent = viewModel.uiEvent,
         onShowSnackBar = onShowSnackBar,
-        sendTransaction = { amount ->
+        sendExchangePayableTransaction = { amount ->
             nftViewModel.sendTransaction(
                 function =
                     Function(
                         "deposit",
+                        listOf(
+                            Uint256(amount.toBigInteger().toPrice()),
+                        ),
+                        listOf<TypeReference<*>>(object : TypeReference<Uint256>() {}),
+                    ),
+                onSuccess = { txHash ->
+                    viewModel.exchangeCoinPayable(amount = amount.toLong(), txHash = txHash)
+                },
+                onError = {
+                    onShowSnackBar(it)
+                },
+                contractAddress = BuildConfig.SYSTEM_CONTRACT_ADDRESS,
+            )
+        },
+        sendExchangeCoinTransaction = { amount ->
+            nftViewModel.sendTransaction(
+                function =
+                    Function(
+                        "withdraw",
                         listOf(
                             Uint256(amount.toBigInteger().toPrice()),
                         ),
@@ -92,7 +110,8 @@ fun WalletContent(
     uiState: WalletUiState,
     uiEvent: SharedFlow<WalletUiEvent>,
     onShowSnackBar: (String) -> Unit,
-    sendTransaction: (String) -> Unit,
+    sendExchangePayableTransaction: (String) -> Unit,
+    sendExchangeCoinTransaction: (String) -> Unit,
 ) {
     LaunchedEffect(uiEvent) {
         uiEvent.collectLatest { event ->
@@ -109,8 +128,9 @@ fun WalletContent(
         userCoin = uiState.userCoin,
         userId = uiState.userId,
         navigateToCoinDetail = navigateToCoinDetail,
-        sendTransaction = sendTransaction,
+        sendExchangePayableTransaction = sendExchangePayableTransaction,
         onShowSnackBar = onShowSnackBar,
+        sendExchangeCoinTransaction = sendExchangeCoinTransaction,
     )
 
     if (uiState.isLoading) {
@@ -139,7 +159,8 @@ fun WalletScreen(
     changePrice: Double = 8300.0,
     coinHistory: List<CoinHistory> = listOf(),
     userId: Long = 0L,
-    sendTransaction: (String) -> Unit = {},
+    sendExchangePayableTransaction: (String) -> Unit = {},
+    sendExchangeCoinTransaction: (String) -> Unit = {},
     onShowSnackBar: (String) -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
@@ -159,7 +180,8 @@ fun WalletScreen(
             userName = userName,
             userCoin = userCoin,
             navigateToCoinDetail = navigateToCoinDetail,
-            sendTransaction = sendTransaction,
+            sendExchangePayableTransaction = sendExchangePayableTransaction,
+            sendExchangeCoinTransaction = sendExchangeCoinTransaction,
             onShowSnackBar = onShowSnackBar,
         )
         Spacer(modifier = Modifier.height(10.dp))
