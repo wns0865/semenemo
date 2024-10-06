@@ -37,11 +37,19 @@ import kotlinx.coroutines.launch
 
 private const val TAG = "AuctionDetailScreen"
 
+// 경매 상태 관리
 enum class AuctionStatus {
     READY,
     PROGRESS,
     END,
     CANCEL,
+}
+// 유저 상태 관리
+enum class UserStatus {
+    NOT_READY,      // 준비 전
+    READY,          // 준비
+    IN_PROGRESS,    // 플레이 중
+    COMPLETED       // 종료
 }
 
 @Preview

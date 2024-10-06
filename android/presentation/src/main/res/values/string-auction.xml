@@ -8,7 +8,12 @@
     <string name="fab_label_register_short_auction">단기경매 등록</string>
     <string name="fab_label_register_long_auction">장기경매 등록</string>
     <string name="frame_auction_register_title">프레임을 경매에 등록하고 있어요!</string>
-    
+
+    <!-- 경매 pager !-->
+    <string name="auction_start_button_title">경매 시작</string>
+    <string name="user_ready_button_title">READY</string>
+    <string name="user_start_button_title">START</string>
+
     <string name="short_auction_register_title">단기 경매</string>
     <string name="long_auction_register_title">장기 경매</string>
     <string name="auction_add_title">경매에 등록할\n프레임을 추가하세요</string>
