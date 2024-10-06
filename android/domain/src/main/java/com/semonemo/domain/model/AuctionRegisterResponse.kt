@@ -1,13 +1,13 @@
 package com.semonemo.domain.model
 
-data class Auction(
+data class AuctionRegisterResponse(
     val id: Long = 0L,
-    val status: String = "",
     val nftId: Long = 0L,
-    val nftImageUrl: String = "",
-    val participants: Int = 0,
+    val status: String = "",
     val startPrice: Long = 0L,
-    val currentBid: Long = 0L,
+    val winner: String? = null,
+    val finalPrice: Long? = null,
     val startTime: String? = null,
     val endTime: String? = null,
+    val createdAt: String? = null,
 )

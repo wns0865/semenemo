@@ -25,7 +25,7 @@ import com.semonemo.presentation.screen.aiAsset.AiAssetScreen
 import com.semonemo.presentation.screen.aiAsset.AssetDoneRoute
 import com.semonemo.presentation.screen.aiAsset.DrawAssetScreen
 import com.semonemo.presentation.screen.aiAsset.PromptAssetScreen
-import com.semonemo.presentation.screen.auction.AuctionProcessScreen
+import com.semonemo.presentation.screen.auction.AuctionDetailScreen
 import com.semonemo.presentation.screen.auction.AuctionScreen
 import com.semonemo.presentation.screen.detail.asset.AssetDetailRoute
 import com.semonemo.presentation.screen.detail.frame.FrameDetailRoute
@@ -213,7 +213,7 @@ fun MainNavHost(
                 modifier = modifier,
                 navigateToAuctionProcess = { auctionId ->
                     navController.navigate(
-                        ScreenDestinations.AuctionProcess.createRoute(
+                        ScreenDestinations.AuctionDetail.createRoute(
                             auctionId,
                         ),
                     )
@@ -394,10 +394,10 @@ fun MainNavHost(
         )
 
         composable(
-            route = ScreenDestinations.AuctionProcess.route,
-            arguments = ScreenDestinations.AuctionProcess.arguments,
+            route = ScreenDestinations.AuctionDetail.route,
+            arguments = ScreenDestinations.AuctionDetail.arguments,
         ) {
-            AuctionProcessScreen(
+            AuctionDetailScreen(
                 modifier = modifier,
                 auctionId = it.arguments?.getLong("auctionId") ?: -1L,
             )

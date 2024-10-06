@@ -1,6 +1,5 @@
 package com.semonemo.presentation.component
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,13 +20,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.semonemo.presentation.BuildConfig
 import com.semonemo.presentation.R
 import com.semonemo.presentation.animation.LiveAnimation
 import com.semonemo.presentation.theme.GunMetal
-import com.semonemo.presentation.theme.Red
 import com.semonemo.presentation.util.noRippleClickable
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -35,20 +35,26 @@ private const val TAG = "LiveAuctionCard"
 
 @Composable
 fun LiveAuctionCard(
-    viewerCount: Int,
-    likeCount: Int,
-    price: Int,
-    imageUrl: String,
-    modifier: Modifier = Modifier, // 이 줄을 추가합니다
+    modifier: Modifier = Modifier,
+    id: Long,
+    status: String,
+    nftId: Long,
+    nftImageUrl: String,
+    participants: Int,
+    startPrice: Long,
+    currentBid: Long,
+    startTime: String?,
+    endTime: String?,
     onClick: (Long) -> Unit = {},
 ) {
+    val ipfsUrl = BuildConfig.IPFS_READ_URL
+    val imgUrl = ipfsUrl + "ipfs/" + nftImageUrl
     Card(
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         modifier = modifier.noRippleClickable { onClick(-1L) },
     ) {
-        Log.d(TAG, "LiveAuctionCard: $imageUrl")
         // Overlay content
         Column(
             modifier =
@@ -77,20 +83,19 @@ fun LiveAuctionCard(
                         modifier = Modifier.size(20.dp),
                     )
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("$viewerCount", color = GunMetal)
+                    Text("$participants", color = GunMetal)
                 }
             }
             Spacer(modifier = Modifier.height(4.dp))
             GlideImage(
-                imageModel = imageUrl,
-                contentScale = ContentScale.Crop,
+                imageModel = imgUrl,
+                contentScale = ContentScale.Fit,
                 modifier =
                     Modifier
                         .fillMaxWidth()
                         .weight(1f),
             )
 
-//            Spacer(modifier = Modifier.weight(1f))
             Spacer(modifier = Modifier.height(4.dp))
             // Bottom row
             Row(
@@ -102,14 +107,14 @@ fun LiveAuctionCard(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(4.dp),
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_toggle_heart_on),
-                        contentDescription = "Likes",
-                        tint = Red,
-                        modifier = Modifier.size(20.dp),
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("$likeCount", color = GunMetal)
+//                    Icon(
+//                        painter = painterResource(id = R.drawable.ic_toggle_heart_on),
+//                        contentDescription = "Likes",
+//                        tint = Red,
+//                        modifier = Modifier.size(20.dp),
+//                    )
+//                    Spacer(modifier = Modifier.width(4.dp))
+//                    Text("$likeCount", color = GunMetal)
                 }
 
                 // Price
@@ -126,7 +131,11 @@ fun LiveAuctionCard(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "${price}SN",
+                        text =
+                        String.format(
+                            "%,d ${stringResource(id = R.string.coin_price_unit)}",
+                            currentBid,
+                        ),
                         color = GunMetal,
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
