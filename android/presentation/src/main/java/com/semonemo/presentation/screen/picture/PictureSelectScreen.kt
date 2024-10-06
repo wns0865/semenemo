@@ -1,10 +1,11 @@
 package com.semonemo.presentation.screen.picture
 
 import android.graphics.Bitmap
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,11 +30,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,17 +42,20 @@ import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.semonemo.domain.model.myFrame.MyFrame
-import com.semonemo.presentation.BuildConfig
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.TopAppBar
+import com.semonemo.presentation.screen.frame.FrameType
 import com.semonemo.presentation.screen.picture.camera.CameraViewModel
+import com.semonemo.presentation.theme.Gray02
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.util.noRippleClickable
+import com.semonemo.presentation.util.urlToIpfs
 import com.skydoves.landscapist.glide.GlideImage
+import dev.shreyaspatil.capturable.controller.rememberCaptureController
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
 
@@ -102,32 +106,55 @@ fun PictureSelectContent(
             }
         }
     }
-    if (uiState.isLoading) {
-        LoadingDialog()
-    }
     PictureSelectScreen(
         modifier = modifier,
         popUpBackStack = popUpBackStack,
         pictures = uiState.bitmaps,
         frames = uiState.frames,
+        type = type,
     )
+    if (uiState.isLoading) {
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .clickable(enabled = false) {},
+        )
+        LoadingDialog(
+            lottieRes = R.raw.normal_load,
+            loadingMessage = stringResource(R.string.frame_loading_title),
+            subMessage = stringResource(R.string.loading_sub_message),
+        )
+    }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun PictureSelectScreen(
     modifier: Modifier = Modifier,
     popUpBackStack: () -> Unit = {},
     pictures: List<Bitmap> = listOf(),
     frames: List<MyFrame> = listOf(),
+    type: Int = 0,
 ) {
+    val captureController = rememberCaptureController()
     var check =
         remember {
             mutableStateOf(false)
         }
     var selectFrameUrl =
         remember {
-            mutableStateOf<Uri?>(null)
+            mutableStateOf(
+                frames.firstOrNull()?.let {
+                    it.nftInfo.data.image
+                        .urlToIpfs()
+                }
+                    ?: run {
+                        null
+                    },
+            )
         }
+    val selectedPictures = remember { mutableStateOf(mutableListOf<Bitmap>()) }
     Surface(
         modifier =
             modifier
@@ -145,27 +172,61 @@ fun PictureSelectScreen(
             Spacer(modifier = Modifier.height(20.dp))
             TopAppBar(modifier = Modifier, onNavigationClick = popUpBackStack)
             Spacer(modifier = Modifier.height(10.dp))
-            if (selectFrameUrl.value != null) {
-                GlideImage(
-                    imageModel = selectFrameUrl.value,
-                    contentScale = ContentScale.Fit,
-                    modifier =
-                        Modifier
-                            .clip(RoundedCornerShape(10.dp))
-                            .height(200.dp)
-                            .aspectRatio(1f)
-                            .noRippleClickable {
-                            },
-                )
-            } else {
-                Image(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth(0.8f)
-                            .fillMaxHeight(0.4f),
-                    painter = painterResource(id = R.drawable.img_frame_size_one_by_four),
-                    contentDescription = null,
-                )
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxWidth(0.8f)
+                        .fillMaxHeight(0.4f),
+                contentAlignment = Alignment.Center,
+            ) {
+                if (selectFrameUrl.value == null) {
+                    Text(
+                        text = "프레임을 선택해주세요! 📸",
+                        style = Typography.bodyLarge,
+                        color = Gray02,
+                    )
+                    selectedPictures.value.clear()
+                } else {
+                    GlideImage(
+                        imageModel = selectFrameUrl.value,
+                        contentScale = ContentScale.Fit,
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(10.dp))
+                                .noRippleClickable {
+                                },
+                    )
+                    when (type) {
+                        FrameType.OneByOne.idx -> {
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .fillMaxSize()
+                                        .padding(top = 5.dp, bottom = 50.dp),
+                            ) {
+                                selectedPictures.value.forEach { bitmap ->
+                                    Image(
+                                        bitmap = bitmap.asImageBitmap(),
+                                        contentDescription = null,
+                                        contentScale = ContentScale.Fit,
+                                        modifier =
+                                            Modifier
+                                                .fillMaxSize()
+                                                .clip(RoundedCornerShape(10.dp))
+                                                .align(Alignment.Center),
+                                    )
+                                }
+                            }
+                        }
+
+                        FrameType.TwoByTwo.idx -> {
+                        }
+
+                        FrameType.OneByFour.idx -> {
+                        }
+                    }
+                }
             }
             Spacer(modifier = Modifier.height(20.dp))
             LazyRow(
@@ -181,7 +242,17 @@ fun PictureSelectScreen(
                                 Modifier
                                     .clip(RoundedCornerShape((10.dp)))
                                     .width(70.dp)
-                                    .height(70.dp),
+                                    .height(70.dp)
+                                    .noRippleClickable {
+                                        selectedPictures.value =
+                                            selectedPictures.value.toMutableList().apply {
+                                                if (contains(pictures[index])) {
+                                                    remove(pictures[index])
+                                                } else {
+                                                    add(pictures[index])
+                                                }
+                                            }
+                                    },
                             bitmap = pictures[index].asImageBitmap(),
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
@@ -224,8 +295,9 @@ fun PictureSelectScreen(
                 content = {
                     items(frames.size) { index ->
                         val frame = frames[index]
-                        val ipfsUrl = BuildConfig.IPFS_READ_URL
-                        val imgUrl = ipfsUrl + "ipfs/" + frame.nftInfo.data.image
+                        val imgUrl =
+                            frame.nftInfo.data.image
+                                .urlToIpfs()
                         GlideImage(
                             imageModel = imgUrl.toUri(),
                             contentScale = ContentScale.Fit,
@@ -235,10 +307,10 @@ fun PictureSelectScreen(
                                     .height(200.dp)
                                     .aspectRatio(1f)
                                     .noRippleClickable {
-                                        if (selectFrameUrl.value == imgUrl.toUri()) {
+                                        if (selectFrameUrl.value == imgUrl) {
                                             selectFrameUrl.value = null
                                         } else {
-                                            selectFrameUrl.value = imgUrl.toUri()
+                                            selectFrameUrl.value = imgUrl
                                         }
                                     },
                         )
