@@ -132,15 +132,15 @@ sealed class ScreenDestinations(
 
     data object AssetSale : ScreenDestinations(route = "assetSale")
 
-    data object AuctionProcess : ScreenDestinations(route = "auctionProcess") {
+    data object AuctionDetail : ScreenDestinations(route = "auctionDetail") {
         override val route: String
-            get() = "auctionProcess/{auctionId}"
+            get() = "auctionDetail/{auctionId}"
         val arguments =
             listOf(
                 navArgument("auctionId") { type = NavType.LongType },
             )
 
-        fun createRoute(auctionId: Long) = "auctionProcess/$auctionId"
+        fun createRoute(auctionId: Long) = "auctionDetail/$auctionId"
     }
 
     data object StoreFullView : ScreenDestinations(route = "storeFullView") {

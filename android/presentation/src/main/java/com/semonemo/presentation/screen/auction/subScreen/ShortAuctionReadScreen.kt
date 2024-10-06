@@ -23,7 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.semonemo.presentation.component.LiveAuctionCard
+import com.semonemo.presentation.screen.auction.AuctionViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -31,7 +33,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun ShortAuctionReadScreen(
     modifier: Modifier = Modifier,
-    navigateToAuctionProcess: (Long) -> Unit = {},
+    viewModel: AuctionViewModel = hiltViewModel(),
+    navigateToAuctionDetail: (Long) -> Unit = {},
 ) {
     Column(
         modifier =
@@ -46,7 +49,7 @@ fun ShortAuctionReadScreen(
         // 사용자가 마지막으로 스크롤한 시간을 추적
         var lastInteractionTime by remember { mutableStateOf(System.currentTimeMillis()) }
         // 경매 데이터
-        val auctionDataList = getSampleAuctionData()
+        val auctionDataList = viewModel.shortAuctionList.value
 
         // 사용자가 1초 동안 상호작용하지 않았을 때 자동으로 스크롤 시작
         LaunchedEffect(lastInteractionTime) {
@@ -96,17 +99,22 @@ fun ShortAuctionReadScreen(
                         }
                     },
         ) {
-            items(auctionDataList) { auctionData ->
+            items(auctionDataList) { data ->
                 LiveAuctionCard(
-                    viewerCount = auctionData.viewerCount,
-                    likeCount = auctionData.likeCount,
-                    price = auctionData.price,
-                    imageUrl = auctionData.imageUrl,
                     modifier =
                         Modifier
                             .width(160.dp) // 카드의 너비 설정
                             .height(300.dp),
-                    onClick = navigateToAuctionProcess,
+                    id = data.id,
+                    status = data.status,
+                    nftId = data.nftId,
+                    nftImageUrl = data.nftImageUrl,
+                    participants = data.participants,
+                    startPrice = data.startPrice,
+                    currentBid = data.currentBid,
+                    startTime = data.startTime,
+                    endTime = data.endTime,
+                    onClick = navigateToAuctionDetail,
                 )
             }
         }

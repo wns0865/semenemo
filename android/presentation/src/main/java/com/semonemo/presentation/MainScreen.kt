@@ -18,10 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -32,16 +28,15 @@ import com.semonemo.presentation.navigation.CustomFAB
 import com.semonemo.presentation.navigation.ScreenDestinations
 import com.semonemo.presentation.screen.aiAsset.AiAssetScreen
 import com.semonemo.presentation.screen.aiAsset.AssetDoneRoute
+import com.semonemo.presentation.screen.aiAsset.PromptAssetScreen
 import com.semonemo.presentation.screen.aiAsset.draw.DrawAssetRoute
-import com.semonemo.presentation.screen.aiAsset.draw.DrawAssetScreen
 import com.semonemo.presentation.screen.aiAsset.prompt.PromptAssetScreen
-import com.semonemo.presentation.screen.auction.AuctionProcessScreen
+import com.semonemo.presentation.screen.auction.AuctionDetailScreen
 import com.semonemo.presentation.screen.auction.AuctionScreen
 import com.semonemo.presentation.screen.coin.CoinRoute
 import com.semonemo.presentation.screen.detail.asset.AssetDetailRoute
 import com.semonemo.presentation.screen.detail.frame.FrameDetailRoute
 import com.semonemo.presentation.screen.frame.MomentGraph
-import com.semonemo.presentation.screen.frame.FrameScreen
 import com.semonemo.presentation.screen.imgAsset.ImageAssetScreen
 import com.semonemo.presentation.screen.imgAsset.ImageSelectRoute
 import com.semonemo.presentation.screen.login.LoginRoute
@@ -453,10 +448,10 @@ fun MainNavHost(
         )
 
         composable(
-            route = ScreenDestinations.AuctionProcess.route,
-            arguments = ScreenDestinations.AuctionProcess.arguments,
+            route = ScreenDestinations.AuctionDetail.route,
+            arguments = ScreenDestinations.AuctionDetail.arguments,
         ) {
-            AuctionProcessScreen(
+            AuctionDetailScreen(
                 modifier = modifier,
                 auctionId = it.arguments?.getLong("auctionId") ?: -1L,
             )
