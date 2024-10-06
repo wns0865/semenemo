@@ -26,7 +26,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.semonemo.domain.model.FrameDetail
 import com.semonemo.domain.model.SellAssetDetail
-import com.semonemo.presentation.component.CustomStoreFAB
 import com.semonemo.presentation.component.CustomStoreFilter
 import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.StoreFilter
@@ -287,9 +286,4 @@ fun StoreSubFullViewScreen(
             }
         }
     }
-    CustomStoreFAB(
-        modifier = modifier,
-        navigateToFrameSale = navigateToFrameSale,
-        navigateToAssetSale = navigateToAssetSale,
-    )
 }
