@@ -32,6 +32,11 @@ class AuctionDetailViewModel
         private val saveStateHandle: SavedStateHandle,
         private val authDataSource: AuthDataSource,
     ) : ViewModel() {
+        // 경매 상태 관리
+        var auctionStatus = mutableStateOf(AuctionStatus.READY)
+            private set
+        var userStatus = mutableStateOf(UserStatus.NOT_READY)
+            private set
         var webSocketManager = mutableStateOf<WebSocketManager?>(null)
             private set
         var stompSession = mutableStateOf<StompSession?>(null)
@@ -86,6 +91,7 @@ class AuctionDetailViewModel
                         is ApiResponse.Error -> {
                             _uiEvent.emit(AuctionUiEvent.Error(response.errorMessage))
                         }
+
                         is ApiResponse.Success -> {
                             nftImageUrl.value = response.data.nftImageUrl
                             participant.intValue = response.data.participants
@@ -95,7 +101,35 @@ class AuctionDetailViewModel
             }
         }
 
-        private fun joinAuction() {
+        /**
+         * 경매를 시작
+         */
+        fun startAuction() {
+            if (auctionId == -1L) {
+                viewModelScope.launch {
+                    _uiEvent.emit(AuctionUiEvent.Error("경매가 종료되었습니다."))
+                }
+                return
+            }
+            viewModelScope.launch {
+                auctionRepository.startAuction(auctionId).collectLatest { response ->
+                    when (response) {
+                        is ApiResponse.Error -> {
+                            _uiEvent.emit(AuctionUiEvent.Error(response.errorMessage))
+                        }
+
+                        is ApiResponse.Success -> {
+                            auctionStatus.value = AuctionStatus.PROGRESS
+                        }
+                    }
+                }
+            }
+        }
+
+        /**
+         * 해당 경매에 참여
+         */
+        fun joinAuction() {
             if (auctionId == -1L) {
                 viewModelScope.launch {
                     _uiEvent.emit(AuctionUiEvent.Error("경매가 종료되었습니다."))
@@ -112,6 +146,7 @@ class AuctionDetailViewModel
                         is ApiResponse.Success -> {
                             Log.d(TAG, "joinAuction: ${response.data}")
                             auctionBidLog.value = response.data.bidLogs
+                            userStatus.value = UserStatus.READY
                         }
                     }
                 }
