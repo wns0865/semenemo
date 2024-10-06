@@ -1,7 +1,6 @@
 package com.semonemo.presentation.component
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -26,10 +25,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.semonemo.presentation.R
-import com.semonemo.presentation.theme.SemonemoTheme
-import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.Gray03
 import com.semonemo.presentation.theme.GunMetal
+import com.semonemo.presentation.theme.SemonemoTheme
+import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.White
 
 /*
@@ -42,7 +41,6 @@ fun AuctionBidMessage(
     modifier: Modifier = Modifier,
     icon: Int?,
     bidPrice: Long = 0L,
-
 ) {
     Surface(
         shape = RoundedCornerShape(14.dp), // 모서리 반경 10dp
@@ -74,16 +72,16 @@ fun AuctionBidMessage(
                 Text(
                     modifier = Modifier.wrapContentSize(),
                     text =
-                    String.format(
-                        "%,d ${stringResource(id = R.string.coin_price_unit)}",
-                        bidPrice,
-                    ) + "입찰 성공",
+                        String.format(
+                            "%,d ${stringResource(id = R.string.coin_price_unit)}",
+                            bidPrice,
+                        ) + "입찰 성공",
                     style =
-                    Typography.bodyMedium.copy(
-                        fontFeatureSettings = "tnum",
-                        color = GunMetal,
-                        fontSize = 16.sp,
-                    ),
+                        Typography.bodyMedium.copy(
+                            fontFeatureSettings = "tnum",
+                            color = GunMetal,
+                            fontSize = 16.sp,
+                        ),
                     textAlign = TextAlign.Center,
                 )
             }
