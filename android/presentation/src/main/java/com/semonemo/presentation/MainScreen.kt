@@ -49,7 +49,7 @@ import com.semonemo.presentation.screen.store.StoreFullViewScreen
 import com.semonemo.presentation.screen.store.StoreRoute
 import com.semonemo.presentation.screen.store.asset.AssetSaleRoute
 import com.semonemo.presentation.screen.store.frame.FrameSaleRoute
-import com.semonemo.presentation.screen.wallet.WalletScreen
+import com.semonemo.presentation.screen.wallet.WalletRoute
 import com.semonemo.presentation.theme.Gray01
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Typography
@@ -261,7 +261,11 @@ fun MainNavHost(
         composable(
             route = ScreenDestinations.Wallet.route,
         ) {
-            WalletScreen(modifier = modifier)
+            WalletRoute(
+                modifier = modifier,
+                navigateToCoinDetail = {},
+                onShowSnackBar = onShowErrorSnackBar,
+            )
         }
 
         composable(

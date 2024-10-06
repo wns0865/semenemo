@@ -2,6 +2,7 @@ package com.semonemo.presentation.screen.wallet
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +29,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,25 +39,27 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.semonemo.domain.model.Coin
+import com.semonemo.domain.model.CoinHistory
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BoldTextWithKeywords
-import com.semonemo.presentation.theme.SemonemoTheme
-import com.semonemo.presentation.theme.Typography
+import com.semonemo.presentation.component.LoadingDialog
+import com.semonemo.presentation.screen.nft.NftViewModel
 import com.semonemo.presentation.theme.Blue1
 import com.semonemo.presentation.theme.Blue2
 import com.semonemo.presentation.theme.Blue3
 import com.semonemo.presentation.theme.Gray02
 import com.semonemo.presentation.theme.Main02
+import com.semonemo.presentation.theme.SemonemoTheme
+import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.White
 import com.semonemo.presentation.util.noRippleClickable
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collectLatest
+import java.time.LocalDateTime
 import java.util.Locale
-
-data class Trancation(
-    val date: String,
-    val isSell: Boolean = true,
-    val price: Double,
-    val product: String,
-)
 
 data class ProductInfo(
     val message: String,
@@ -63,30 +67,75 @@ data class ProductInfo(
     val color: Color,
 )
 
-val testData =
-    listOf(
-        Trancation(date = "2024.09.09", isSell = true, price = 100000.0, product = "프레임"),
-        Trancation(date = "2024.09.09", isSell = false, price = -103.2, product = "에셋"),
-        Trancation(date = "2024.09.08", isSell = false, price = +10000.0, product = "코인"),
-        Trancation(date = "2024.09.08", isSell = true, price = -10000.0, product = "코인"),
-    )
-
 @Composable
-fun WalletRoute() {
+fun WalletRoute(
+    modifier: Modifier,
+    navigateToCoinDetail: () -> Unit,
+    viewModel: WalletViewModel = hiltViewModel(),
+    nftViewModel: NftViewModel = hiltViewModel(),
+    onShowSnackBar: (String) -> Unit,
+) {
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+    WalletContent(
+        modifier = modifier,
+        navigateToCoinDetail = navigateToCoinDetail,
+        uiState = uiState.value,
+        uiEvent = viewModel.uiEvent,
+        onShowSnackBar = onShowSnackBar,
+    )
 }
 
 @Composable
-fun WalletContent() {
+fun WalletContent(
+    modifier: Modifier,
+    navigateToCoinDetail: () -> Unit,
+    uiState: WalletUiState,
+    uiEvent: SharedFlow<WalletUiEvent>,
+    onShowSnackBar: (String) -> Unit,
+) {
+    LaunchedEffect(uiEvent) {
+        uiEvent.collectLatest { event ->
+            when (event) {
+                is WalletUiEvent.Error -> onShowSnackBar(event.errorMessage)
+            }
+        }
+    }
+    WalletScreen(
+        modifier = modifier,
+        userName = uiState.nickname,
+        coinPrice = uiState.coinPrice.toDouble(),
+        coinHistory = uiState.coinHistory,
+        userCoin = uiState.userCoin,
+        userId = uiState.userId,
+        navigateToCoinDetail = navigateToCoinDetail,
+    )
+
+    if (uiState.isLoading) {
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .clickable(enabled = false) {},
+        )
+        LoadingDialog(
+            lottieRes = R.raw.normal_load,
+            loadingMessage = stringResource(R.string.hisotry_loading_message),
+            subMessage = stringResource(R.string.loading_sub_message),
+        )
+    }
 }
 
 @Composable
 fun WalletScreen(
     modifier: Modifier = Modifier,
+    navigateToCoinDetail: () -> Unit = {},
     userName: String = "짜이한",
-    userCoin: Double = 100000.0,
+    userCoin: Coin = Coin(),
     coinPrice: Double = 100000.0,
     changePercent: Double = 8.7,
     changePrice: Double = 8300.0,
+    coinHistory: List<CoinHistory> = listOf(),
+    userId: Long = 0L,
 ) {
     val scrollState = rememberScrollState()
 
@@ -100,7 +149,12 @@ fun WalletScreen(
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Spacer(modifier = Modifier.height(20.dp))
-        WalltetCardBox(modifier = modifier, userName = userName, userCoin = userCoin)
+        WalletCardBox(
+            modifier = modifier,
+            userName = userName,
+            userCoin = userCoin,
+            navigateToCoinDetail = navigateToCoinDetail,
+        )
         Spacer(modifier = Modifier.height(10.dp))
         WalletCoinBox(
             modifier = modifier,
@@ -114,14 +168,21 @@ fun WalletScreen(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            repeat(testData.size) { index ->
-                val item = testData[index]
+            repeat(coinHistory.size) { index ->
+                val item = coinHistory[index]
+                val isSell =
+                    item.toUser?.let {
+                        it.userId == userId
+                    } ?: false
+                val product = item.tradeType.split(" ").first()
+                val originalDateTime = LocalDateTime.parse(item.createdAt)
+                val dateOnly = originalDateTime.toLocalDate()
                 transactionHistoryBox(
                     modifier = modifier,
-                    date = item.date,
-                    isSell = item.isSell,
-                    product = item.product,
-                    price = item.price,
+                    date = dateOnly.toString(),
+                    isSell = isSell,
+                    product = product,
+                    price = item.amount.toDouble(),
                 )
             }
         }
@@ -130,10 +191,11 @@ fun WalletScreen(
 }
 
 @Composable
-fun WalltetCardBox(
+fun WalletCardBox(
     modifier: Modifier = Modifier,
     userName: String,
-    userCoin: Double,
+    userCoin: Coin,
+    navigateToCoinDetail: () -> Unit,
 ) {
     Box(
         modifier =
@@ -225,7 +287,10 @@ fun WalltetCardBox(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .wrapContentHeight(),
+                            .wrapContentHeight()
+                            .noRippleClickable {
+                                navigateToCoinDetail()
+                            },
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
                     BoldTextWithKeywords(
@@ -245,7 +310,37 @@ fun WalltetCardBox(
                             contentDescription = "",
                         )
                         Text(
-                            text = String.format(Locale.KOREAN, "%,.0f", userCoin),
+                            text =
+                                String.format(
+                                    Locale.KOREAN,
+                                    "%,.0f",
+                                    userCoin.payableBalance.toDouble(),
+                                ),
+                            style = Typography.bodyLarge,
+                            fontSize = 20.sp,
+                        )
+
+                        Text(
+                            text = "${stringResource(R.string.coin_unit_name)}(Pay)",
+                            style = Typography.labelMedium,
+                        )
+                    }
+                    Spacer(modifier = Modifier.weight(1f))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_color_sene_coin),
+                            contentDescription = "",
+                        )
+                        Text(
+                            text =
+                                String.format(
+                                    Locale.KOREAN,
+                                    "%,.0f",
+                                    userCoin.coinBalance.toDouble(),
+                                ),
                             style = Typography.bodyLarge,
                             fontSize = 20.sp,
                         )
@@ -255,6 +350,7 @@ fun WalltetCardBox(
                             style = Typography.labelMedium,
                         )
                     }
+                    Spacer(modifier = Modifier.weight(1f))
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                     Image(
@@ -373,53 +469,47 @@ fun transactionHistoryBox(
     product: String = "프레임",
 ) {
     val productInfo =
-        when (product) {
-            stringResource(R.string.coin) -> {
-                if (isSell) {
-                    ProductInfo(
-                        stringResource(R.string.exchange),
-                        R.drawable.ic_outline_coin,
-                        color = Blue3,
-                    )
-                } else {
-                    ProductInfo(
-                        stringResource(R.string.recharge),
-                        R.drawable.ic_outline_coin,
-                        color = Blue3,
-                    )
-                }
+        if (product.contains("코인")) {
+            if (isSell) {
+                ProductInfo(
+                    stringResource(R.string.exchange),
+                    R.drawable.ic_outline_coin,
+                    color = Blue3,
+                )
+            } else {
+                ProductInfo(
+                    stringResource(R.string.recharge),
+                    R.drawable.ic_outline_coin,
+                    color = Blue3,
+                )
             }
-
-            stringResource(R.string.frame) -> {
-                if (isSell) {
-                    ProductInfo(
-                        stringResource(R.string.sell),
-                        R.drawable.ic_fab_frame,
-                        color = Blue2,
-                    )
-                } else {
-                    ProductInfo(
-                        stringResource(R.string.buy),
-                        R.drawable.ic_fab_frame,
-                        color = Blue2,
-                    )
-                }
+        } else if (product.contains("NFT")) {
+            if (isSell) {
+                ProductInfo(
+                    stringResource(R.string.sell),
+                    R.drawable.ic_fab_frame,
+                    color = Blue2,
+                )
+            } else {
+                ProductInfo(
+                    stringResource(R.string.buy),
+                    R.drawable.ic_fab_frame,
+                    color = Blue2,
+                )
             }
-
-            else -> {
-                if (isSell) {
-                    ProductInfo(
-                        stringResource(R.string.sell),
-                        R.drawable.ic_fab_asset,
-                        color = Blue1,
-                    )
-                } else {
-                    ProductInfo(
-                        stringResource(R.string.buy),
-                        R.drawable.ic_fab_asset,
-                        color = Blue1,
-                    )
-                }
+        } else {
+            if (isSell) {
+                ProductInfo(
+                    stringResource(R.string.sell),
+                    R.drawable.ic_fab_asset,
+                    color = Blue1,
+                )
+            } else {
+                ProductInfo(
+                    stringResource(R.string.buy),
+                    R.drawable.ic_fab_asset,
+                    color = Blue1,
+                )
             }
         }
 
@@ -465,12 +555,8 @@ fun transactionHistoryBox(
             Spacer(modifier = Modifier.weight(1f))
             Text(
                 text =
-                    if (price > 0) {
-                        String.format(Locale.KOREAN, "%,.0f", price)
-                    } else {
-                        String.format(Locale.KOREAN, "%,.0f", price)
-                    },
-                color = if (price > 0) Color.Red else Color.Blue,
+                    String.format(Locale.KOREAN, "%,.0f", price),
+                color = if (isSell) Color.Red else Color.Blue,
                 style = Typography.bodyLarge,
             )
 
@@ -485,7 +571,10 @@ fun transactionHistoryBox(
 fun WalletScreenPreview() {
     SemonemoTheme {
         Scaffold { innerPadding ->
-            WalletScreen(modifier = Modifier.padding(innerPadding))
+            WalletScreen(
+                modifier = Modifier.padding(innerPadding),
+                coinHistory = listOf(CoinHistory()),
+            )
         }
     }
 }
