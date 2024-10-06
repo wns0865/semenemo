@@ -254,12 +254,12 @@ fun PictureSelectScreen(
                         val (textStyle, alignment) =
                             if (type == FrameType.OneByFour) {
                                 Pair(
-                                    Typography.bodyMedium.copy(color = selectedColor),
+                                    Typography.bodySmall.copy(color = selectedColor),
                                     Alignment.BottomCenter,
                                 )
                             } else {
                                 Pair(
-                                    Typography.labelSmall.copy(color = selectedColor),
+                                    Typography.bodyMedium.copy(color = selectedColor),
                                     Alignment.BottomEnd,
                                 )
                             }
