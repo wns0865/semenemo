@@ -9,4 +9,5 @@ data class AssetDetailUiState(
     val asset: SellAssetDetail = SellAssetDetail(),
     val isLiked: Boolean = false,
     val likedCount: Long = 0L,
+    val userId: Long = 0L,
 )

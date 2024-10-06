@@ -13,6 +13,7 @@ import com.semonemo.domain.model.CreateAsset
 import com.semonemo.domain.model.SellAsset
 import com.semonemo.domain.model.SellAssetDetail
 import com.semonemo.domain.repository.AssetRepository
+import com.semonemo.domain.request.PurchaseAssetRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.io.File
@@ -144,5 +145,15 @@ class AssetRepositoryImpl
                         default = AllSellAssets(),
                     )
                 emit(response)
+            }
+
+        override suspend fun purchaseAsset(request: PurchaseAssetRequest): Flow<ApiResponse<Unit>> =
+            flow {
+                emit(
+                    emitApiResponse(
+                        apiResponse = { api.purchaseAsset(request) },
+                        default = Unit,
+                    ),
+                )
             }
     }
