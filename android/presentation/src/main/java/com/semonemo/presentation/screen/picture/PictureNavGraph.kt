@@ -9,6 +9,7 @@ import androidx.navigation.navigation
 import com.semonemo.presentation.navigation.ScreenDestinations
 import com.semonemo.presentation.screen.picture.camera.CameraRoute
 import com.semonemo.presentation.screen.picture.camera.CameraViewModel
+import com.semonemo.presentation.screen.picture.select.PictureSelectRoute
 
 fun NavGraphBuilder.PictureGraph(
     modifier: Modifier,

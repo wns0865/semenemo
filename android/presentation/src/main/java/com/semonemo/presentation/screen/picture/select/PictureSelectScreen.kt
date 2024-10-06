@@ -1,4 +1,4 @@
-package com.semonemo.presentation.screen.picture
+package com.semonemo.presentation.screen.picture.select
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
@@ -26,16 +27,25 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.ExperimentalComposeApi
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -43,21 +53,29 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.semonemo.domain.model.myFrame.MyFrame
 import com.semonemo.presentation.R
+import com.semonemo.presentation.component.ColorPalette
 import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.TopAppBar
 import com.semonemo.presentation.screen.frame.FrameType
+import com.semonemo.presentation.screen.picture.PictureUiEvent
+import com.semonemo.presentation.screen.picture.PictureUiState
 import com.semonemo.presentation.screen.picture.camera.CameraViewModel
+import com.semonemo.presentation.screen.picture.select.subscreen.CreatePictureButton
 import com.semonemo.presentation.theme.Gray02
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
+import com.semonemo.presentation.theme.frameBackGroundColor
 import com.semonemo.presentation.util.noRippleClickable
+import com.semonemo.presentation.util.saveBitmapToGallery
 import com.semonemo.presentation.util.urlToIpfs
 import com.skydoves.landscapist.glide.GlideImage
+import dev.shreyaspatil.capturable.capturable
 import dev.shreyaspatil.capturable.controller.rememberCaptureController
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @Composable
 fun PictureSelectRoute(
@@ -111,7 +129,8 @@ fun PictureSelectContent(
         popUpBackStack = popUpBackStack,
         pictures = uiState.bitmaps,
         frames = uiState.frames,
-        type = type,
+        type = FrameType.fromIdx(type),
+        onShowSnackBar = onShowSnackBar,
     )
     if (uiState.isLoading) {
         Box(
@@ -128,33 +147,29 @@ fun PictureSelectContent(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalComposeApi::class)
 @Composable
 fun PictureSelectScreen(
     modifier: Modifier = Modifier,
     popUpBackStack: () -> Unit = {},
     pictures: List<Bitmap> = listOf(),
     frames: List<MyFrame> = listOf(),
-    type: Int = 0,
+    type: FrameType = FrameType.OneByOne,
+    onShowSnackBar: (String) -> Unit = {},
 ) {
     val captureController = rememberCaptureController()
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     var check =
         remember {
             mutableStateOf(false)
         }
-    var selectFrameUrl =
+    var selectedFrameIndex =
         remember {
-            mutableStateOf(
-                frames.firstOrNull()?.let {
-                    it.nftInfo.data.image
-                        .urlToIpfs()
-                }
-                    ?: run {
-                        null
-                    },
-            )
+            mutableIntStateOf(-1)
         }
     val selectedPictures = remember { mutableStateOf(mutableListOf<Bitmap>()) }
+    var selectedColor by remember { mutableStateOf(Color.Black) }
     Surface(
         modifier =
             modifier
@@ -175,30 +190,45 @@ fun PictureSelectScreen(
             Box(
                 modifier =
                     Modifier
-                        .fillMaxWidth(0.8f)
-                        .fillMaxHeight(0.4f),
+                        .fillMaxWidth(0.5f)
+                        .fillMaxHeight(0.4f)
+                        .capturable(captureController),
                 contentAlignment = Alignment.Center,
             ) {
-                if (selectFrameUrl.value == null) {
+                if (selectedFrameIndex.value == -1) {
                     Text(
                         text = "프레임을 선택해주세요! 📸",
-                        style = Typography.bodyLarge,
+                        style = Typography.bodyMedium,
                         color = Gray02,
                     )
                     selectedPictures.value.clear()
                 } else {
                     GlideImage(
-                        imageModel = selectFrameUrl.value,
+                        imageModel =
+                            frames[selectedFrameIndex.value]
+                                .nftInfo.data.image
+                                .urlToIpfs(),
                         contentScale = ContentScale.Fit,
                         modifier =
                             Modifier
                                 .fillMaxSize()
-                                .clip(RoundedCornerShape(10.dp))
                                 .noRippleClickable {
                                 },
                     )
+                    if (check.value) {
+                        Text(
+                            modifier =
+                                Modifier
+                                    .wrapContentHeight()
+                                    .align(Alignment.BottomEnd)
+                                    .padding(7.dp),
+                            text = "2025.10.06",
+                            style = Typography.bodyMedium.copy(color = selectedColor),
+                            textAlign = TextAlign.End,
+                        )
+                    }
                     when (type) {
-                        FrameType.OneByOne.idx -> {
+                        FrameType.OneByOne -> {
                             Box(
                                 modifier =
                                     Modifier
@@ -220,10 +250,10 @@ fun PictureSelectScreen(
                             }
                         }
 
-                        FrameType.TwoByTwo.idx -> {
+                        FrameType.TwoByTwo -> {
                         }
 
-                        FrameType.OneByFour.idx -> {
+                        FrameType.OneByFour -> {
                         }
                     }
                 }
@@ -268,11 +298,21 @@ fun PictureSelectScreen(
             )
             Spacer(modifier = Modifier.height(10.dp))
             Row(
-                modifier = Modifier.align(Alignment.Start),
+                modifier = Modifier.align(Alignment.Start).fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Checkbox(checked = check.value, onCheckedChange = { check.value = !check.value })
                 Text(text = stringResource(R.string.picture_date), style = Typography.bodySmall)
+                Spacer(modifier = Modifier.width(20.dp))
+                ColorPalette(
+                    colors = frameBackGroundColor,
+                    circleSize = 25,
+                    selectedColor = selectedColor,
+                    onColorSelected = {
+                        selectedColor = it
+                    },
+                )
+                Spacer(modifier = Modifier.weight(1f))
             }
 
             Text(
@@ -307,10 +347,10 @@ fun PictureSelectScreen(
                                     .height(200.dp)
                                     .aspectRatio(1f)
                                     .noRippleClickable {
-                                        if (selectFrameUrl.value == imgUrl) {
-                                            selectFrameUrl.value = null
+                                        if (selectedFrameIndex.value == index) {
+                                            selectedFrameIndex.value = -1
                                         } else {
-                                            selectFrameUrl.value = imgUrl
+                                            selectedFrameIndex.value = index
                                         }
                                     },
                         )
