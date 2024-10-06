@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
@@ -68,6 +69,7 @@ import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.frameBackGroundColor
+import com.semonemo.presentation.util.getTodayDate
 import com.semonemo.presentation.util.noRippleClickable
 import com.semonemo.presentation.util.saveBitmapToGallery
 import com.semonemo.presentation.util.urlToIpfs
@@ -254,7 +256,7 @@ fun PictureSelectScreen(
                                     .wrapContentHeight()
                                     .align(Alignment.BottomEnd)
                                     .padding(7.dp),
-                            text = "2025.10.06",
+                            text = getTodayDate(),
                             style = Typography.bodyMedium.copy(color = selectedColor),
                             textAlign = TextAlign.End,
                         )
@@ -275,7 +277,6 @@ fun PictureSelectScreen(
                                         modifier =
                                             Modifier
                                                 .fillMaxSize()
-                                                .clip(RoundedCornerShape(10.dp))
                                                 .align(Alignment.Center),
                                     )
                                 }
@@ -283,6 +284,39 @@ fun PictureSelectScreen(
                         }
 
                         FrameType.TwoByTwo -> {
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .wrapContentSize(),
+                            ) {
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxSize(),
+                                ) {
+                                    Column(
+                                        modifier = Modifier.fillMaxSize(),
+                                    ) {
+                                        RenderImageRow(
+                                            modifier = Modifier.weight(1f),
+                                            startIndex = 0,
+                                            selectedPictures = selectedPictures.value,
+                                        )
+
+                                        RenderImageRow(
+                                            modifier = Modifier.weight(1f),
+                                            startIndex = 2,
+                                            selectedPictures = selectedPictures.value,
+                                        )
+                                        Spacer(
+                                            modifier =
+                                                Modifier
+                                                    .fillMaxWidth()
+                                                    .height(50.dp),
+                                        )
+                                    }
+                                }
+                            }
                         }
 
                         FrameType.OneByFour -> {
@@ -307,13 +341,15 @@ fun PictureSelectScreen(
                                     .height(70.dp)
                                     .noRippleClickable {
                                         selectedPictures.value =
-                                            selectedPictures.value.toMutableList().apply {
-                                                if (contains(pictures[index])) {
-                                                    remove(pictures[index])
-                                                } else {
-                                                    add(pictures[index])
+                                            selectedPictures.value
+                                                .toMutableList()
+                                                .apply {
+                                                    if (contains(pictures[index])) {
+                                                        remove(pictures[index])
+                                                    } else {
+                                                        add(pictures[index])
+                                                    }
                                                 }
-                                            }
                                     },
                             bitmap = pictures[index].asImageBitmap(),
                             contentDescription = null,
@@ -330,10 +366,16 @@ fun PictureSelectScreen(
             )
             Spacer(modifier = Modifier.height(10.dp))
             Row(
-                modifier = Modifier.align(Alignment.Start).fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .align(Alignment.Start)
+                        .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Checkbox(checked = check.value, onCheckedChange = { check.value = !check.value })
+                Checkbox(
+                    checked = check.value,
+                    onCheckedChange = { check.value = !check.value },
+                )
                 Text(text = stringResource(R.string.picture_date), style = Typography.bodySmall)
                 Spacer(modifier = Modifier.width(20.dp))
                 ColorPalette(
