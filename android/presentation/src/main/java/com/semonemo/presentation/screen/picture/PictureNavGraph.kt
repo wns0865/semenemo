@@ -1,5 +1,6 @@
 package com.semonemo.presentation.screen.picture
 
+import android.net.Uri
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -16,6 +17,7 @@ fun NavGraphBuilder.PictureGraph(
     navController: NavController,
     graphRoute: String,
     onErrorSnackBar: (String) -> Unit,
+    actionWithSnackBar: (Uri) -> Unit,
 ) {
     navigation(startDestination = ScreenDestinations.PictureMain.route, route = graphRoute) {
         composable(
@@ -69,6 +71,7 @@ fun NavGraphBuilder.PictureGraph(
                 viewModel = viewModel,
                 onShowSnackBar = onErrorSnackBar,
                 type = type,
+                actionWithSnackBar = actionWithSnackBar
             )
         }
     }
