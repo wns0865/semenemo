@@ -35,7 +35,7 @@ fun CreatePictureButton(
             tint = Color.Unspecified,
             modifier =
                 modifier.noRippleClickable {
-                    if (isEnabled) onClick()
+                    onClick()
                 },
             painter =
                 if (isEnabled) {

@@ -195,28 +195,33 @@ fun PictureSelectScreen(
         ) {
             Spacer(modifier = Modifier.height(20.dp))
             TopAppBar(modifier = Modifier, onNavigationClick = popUpBackStack, actionButtons = {
+                val isEnabled = selectedPictures.value.size == type.amount
                 CreatePictureButton(
                     modifier = Modifier,
-                    isEnabled = selectedPictures.value.size == type.amount,
+                    isEnabled = isEnabled,
                     onClick = {
-                        scope.launch {
-                            val bitmapAsync = captureController.captureAsync()
-                            try {
-                                val frame = frames[selectedFrameIndex.value]
-                                val bitmap = bitmapAsync.await().asAndroidBitmap()
-                                saveBitmapToGallery(
-                                    context = context,
-                                    bitmap = bitmap,
-                                    nickname = frame.owner.nickname,
-                                    frameTitle = frame.nftInfo.data.title,
-                                    onSuccess = {
-                                        actionWithSnackBar(it)
-                                        popUpBackStack()
-                                    },
-                                )
-                            } catch (error: Throwable) {
-                                onShowSnackBar(error.message ?: "")
+                        if(isEnabled) {
+                            scope.launch {
+                                val bitmapAsync = captureController.captureAsync()
+                                try {
+                                    val frame = frames[selectedFrameIndex.value]
+                                    val bitmap = bitmapAsync.await().asAndroidBitmap()
+                                    saveBitmapToGallery(
+                                        context = context,
+                                        bitmap = bitmap,
+                                        nickname = frame.owner.nickname,
+                                        frameTitle = frame.nftInfo.data.title,
+                                        onSuccess = {
+                                            actionWithSnackBar(it)
+                                            popUpBackStack()
+                                        },
+                                    )
+                                } catch (error: Throwable) {
+                                    onShowSnackBar(error.message ?: "")
+                                }
                             }
+                        } else {
+                            onShowSnackBar("사진을 선택해주세요!")
                         }
                     },
                 )
