@@ -3,6 +3,7 @@ package com.semonemo.presentation.screen.detail.asset
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.semonemo.domain.datasource.AuthDataSource
 import com.semonemo.domain.model.ApiResponse
 import com.semonemo.domain.repository.AssetRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,6 +24,7 @@ class AssetDetailViewModel
     constructor(
         private val assetRepository: AssetRepository,
         private val savedStateHandle: SavedStateHandle,
+        private val authDataSource: AuthDataSource,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(AssetDetailUiState())
         val uiState = _uiState.asStateFlow()
@@ -30,6 +32,11 @@ class AssetDetailViewModel
         val uiEvent = _uiEvent.asSharedFlow()
 
         init {
+            viewModelScope.launch {
+                authDataSource.getUserId()?.let { userId ->
+                    _uiState.update { it.copy(userId = userId.toLong()) }
+                }
+            }
             getSaleNftDetail(savedStateHandle["assetSellId"] ?: -1L)
         }
 

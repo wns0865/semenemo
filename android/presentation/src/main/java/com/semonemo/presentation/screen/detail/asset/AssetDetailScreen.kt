@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -44,6 +43,7 @@ import com.semonemo.presentation.R
 import com.semonemo.presentation.component.HashTag
 import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.LongBlackButton
+import com.semonemo.presentation.component.LongUnableButton
 import com.semonemo.presentation.component.NameWithBadge
 import com.semonemo.presentation.component.TopAppBar
 import com.semonemo.presentation.theme.GunMetal
@@ -105,6 +105,7 @@ fun AssetDetailContent(
         price = asset.price.toDouble(),
         profileImageUrl = asset.creator.profileImage,
         onClickedAsset = onClickedLikeAsset,
+        canPurchase = (uiState.userId == asset.creator.userId).not(),
     )
     if (uiState.isLoading) {
         LoadingDialog(
@@ -128,6 +129,7 @@ fun AssetDetailScreen(
     heartCount: Long = 100000,
     price: Double = 100.1,
     onClickedAsset: (Boolean) -> Unit = {},
+    canPurchase: Boolean = true,
 ) {
     val scrollState = rememberScrollState()
     val (expanded, isExpanded) =
@@ -139,8 +141,7 @@ fun AssetDetailScreen(
         modifier =
             Modifier
                 .fillMaxSize()
-                .background(color = Color.White)
-                .verticalScroll(state = scrollState),
+                .background(color = Color.White),
     ) {
         Column(
             modifier =
@@ -230,9 +231,10 @@ fun AssetDetailScreen(
                 }
                 Spacer(modifier = Modifier.height(10.dp))
                 Image(
-                    modifier = Modifier,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
                     painter = painterResource(id = R.drawable.price_graph),
                     contentDescription = "",
+                    contentScale = ContentScale.Crop,
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Row(
@@ -272,20 +274,31 @@ fun AssetDetailScreen(
                         )
                     }
                     Spacer(modifier = Modifier.weight(0.05f))
-                    LongBlackButton(
-                        modifier =
-                            Modifier
-                                .weight(1f)
-                                .padding(end = 10.dp)
-                                .height(50.dp),
-                        icon = R.drawable.ic_color_sene_coin,
-                        text =
-                            String.format(
-                                Locale.KOREAN,
-                                "%,.0f ",
-                                price,
-                            ) + stringResource(id = R.string.buy_price_message),
-                    )
+                    if (canPurchase) {
+                        LongBlackButton(
+                            modifier =
+                                Modifier
+                                    .weight(1f)
+                                    .padding(end = 10.dp)
+                                    .height(50.dp),
+                            icon = R.drawable.ic_color_sene_coin,
+                            text =
+                                String.format(
+                                    Locale.KOREAN,
+                                    "%,.0f ",
+                                    price,
+                                ) + stringResource(id = R.string.buy_price_message),
+                        )
+                    } else {
+                        LongUnableButton(
+                            modifier =
+                                Modifier
+                                    .weight(1f)
+                                    .padding(end = 10.dp)
+                                    .height(50.dp),
+                            text = "본인이 제작한 에셋은 구매할 수 없습니다."
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.height(0.dp))
             }
@@ -302,6 +315,7 @@ fun AssetDetailScreenPreview() {
             hashTag = hashTag,
             assetUrl = "https://flexible.img.hani.co.kr/flexible/normal/800/534/imgdb/original/2024/0318/20240318500152.jpg",
             profileImageUrl = "https://flexible.img.hani.co.kr/flexible/normal/800/534/imgdb/original/2024/0318/20240318500152.jpg",
+            canPurchase = false,
         )
     }
 }
