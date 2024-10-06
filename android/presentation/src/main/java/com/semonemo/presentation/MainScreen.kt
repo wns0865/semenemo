@@ -452,6 +452,24 @@ fun MainNavHost(
             StoreFullViewScreen(
                 modifier = modifier,
                 isFrame = navBackStackEntry.arguments?.getBoolean("isFrame") ?: false,
+                popUpBackStack = navController::popBackStack,
+                navigateToAssetSale = { navController.navigate(ScreenDestinations.AssetSale.route) },
+                navigateToFrameSale = { navController.navigate(ScreenDestinations.FrameSale.route) },
+                navigateToAssetDetail = {
+                    navController.navigate(
+                        ScreenDestinations.AssetDetail.createRoute(
+                            it,
+                        ),
+                    )
+                },
+                navigateToFrameDetail = {
+                    navController.navigate(
+                        ScreenDestinations.FrameDetail.createRoute(
+                            it,
+                        ),
+                    )
+                },
+                onShowErrorSnackBar = { onShowErrorSnackBar(it) },
             )
         }
 
