@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.semonemo.presentation.BuildConfig
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.HashTag
 import com.semonemo.presentation.component.LoadingDialog
@@ -46,15 +47,21 @@ import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.component.LongUnableButton
 import com.semonemo.presentation.component.NameWithBadge
 import com.semonemo.presentation.component.TopAppBar
+import com.semonemo.presentation.screen.nft.NftViewModel
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Red
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.WhiteGray
 import com.semonemo.presentation.util.noRippleClickable
+import com.semonemo.presentation.util.toPrice
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
+import org.web3j.abi.TypeReference
+import org.web3j.abi.datatypes.Function
+import org.web3j.abi.datatypes.Utf8String
+import org.web3j.abi.datatypes.generated.Uint256
 import java.util.Locale
 
 @Composable
@@ -63,6 +70,7 @@ fun AssetDetailRoute(
     popUpBackStack: () -> Unit = {},
     onShowSnackBar: (String) -> Unit = {},
     viewModel: AssetDetailViewModel = hiltViewModel(),
+    nftViewModel: NftViewModel = hiltViewModel(),
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
     AssetDetailContent(
@@ -72,6 +80,30 @@ fun AssetDetailRoute(
         uiState = uiState.value,
         uiEvent = viewModel.uiEvent,
         onClickedLikeAsset = viewModel::onLikedAsset,
+        onClickedPurchase = viewModel::getBalance,
+        sendTransaction = { price ->
+            nftViewModel.sendTransaction(
+                function =
+                    Function(
+                        "transferBalance",
+                        listOf(
+                            Utf8String(uiState.value.asset.creator.address),
+                            Uint256(price.toBigInteger().toPrice()),
+                        ),
+                        listOf<TypeReference<*>>(object : TypeReference<Uint256>() {}),
+                    ),
+                onSuccess = { hash ->
+                    viewModel.purchaseAsset(
+                        txHash = hash,
+                        assetSellId = uiState.value.asset.assetSellId,
+                    )
+                },
+                onError = {
+                    onShowSnackBar(it)
+                },
+                contractAddress = BuildConfig.SYSTEM_CONTRACT_ADDRESS,
+            )
+        },
     )
 }
 
@@ -80,14 +112,18 @@ fun AssetDetailContent(
     modifier: Modifier = Modifier,
     popUpBackStack: () -> Unit = {},
     onShowSnackBar: (String) -> Unit = {},
+    onClickedPurchase: (Long) -> Unit = {},
     uiEvent: SharedFlow<AssetDetailUiEvent>,
     uiState: AssetDetailUiState,
     onClickedLikeAsset: (Boolean) -> Unit = {},
+    sendTransaction: (Long) -> Unit = {},
 ) {
     LaunchedEffect(uiEvent) {
         uiEvent.collectLatest { event ->
             when (event) {
                 is AssetDetailUiEvent.Error -> onShowSnackBar(event.errorMessage)
+                is AssetDetailUiEvent.Purchase -> sendTransaction(event.price)
+                AssetDetailUiEvent.Success -> popUpBackStack()
             }
         }
     }
@@ -105,6 +141,7 @@ fun AssetDetailContent(
         price = asset.price.toDouble(),
         profileImageUrl = asset.creator.profileImage,
         onClickedAsset = onClickedLikeAsset,
+        onClickedPurchase = onClickedPurchase,
         canPurchase = (uiState.userId == asset.creator.userId).not(),
     )
     if (uiState.isLoading) {
@@ -129,6 +166,7 @@ fun AssetDetailScreen(
     heartCount: Long = 100000,
     price: Double = 100.1,
     onClickedAsset: (Boolean) -> Unit = {},
+    onClickedPurchase: (Long) -> Unit = {},
     canPurchase: Boolean = true,
 ) {
     val scrollState = rememberScrollState()
@@ -288,6 +326,7 @@ fun AssetDetailScreen(
                                     "%,.0f ",
                                     price,
                                 ) + stringResource(id = R.string.buy_price_message),
+                            onClick = { onClickedPurchase(price.toLong()) },
                         )
                     } else {
                         LongUnableButton(
@@ -296,7 +335,7 @@ fun AssetDetailScreen(
                                     .weight(1f)
                                     .padding(end = 10.dp)
                                     .height(50.dp),
-                            text = "본인이 제작한 에셋은 구매할 수 없습니다."
+                            text = "본인이 제작한 에셋은 구매할 수 없습니다.",
                         )
                     }
                 }
