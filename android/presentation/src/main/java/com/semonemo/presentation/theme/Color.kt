@@ -103,3 +103,13 @@ val Main02 =
         startX = 0f,
         endX = Float.POSITIVE_INFINITY,
     )
+
+val frameBackGroundColor =
+    listOf(
+        Color.Black,
+        FramePink,
+        FrameOrange,
+        FrameBlue,
+        FramePurple,
+        Gray01,
+    )

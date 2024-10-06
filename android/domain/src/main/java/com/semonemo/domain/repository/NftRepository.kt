@@ -20,7 +20,7 @@ interface NftRepository {
 
     suspend fun sellRegisterNft(request: SellNftRequest): Flow<ApiResponse<FrameDetail>>
 
-    suspend fun getAllSaleNft(): Flow<ApiResponse<List<FrameDetail>>>
+    suspend fun getAllSaleNft(orderBy: String): Flow<ApiResponse<List<FrameDetail>>>
 
     suspend fun getSaleNftDetail(marketId: Long): Flow<ApiResponse<FrameDetail>>
 
@@ -35,4 +35,9 @@ interface NftRepository {
     suspend fun getSaleLikeNft(): Flow<ApiResponse<List<FrameDetail>>>
 
     suspend fun purchaseNft(request: PurchaseNftRequest): Flow<ApiResponse<MyFrame>>
+
+    suspend fun cancelSaleNft(
+        txHash: String,
+        marketId: Long,
+    ): Flow<ApiResponse<Unit>>
 }

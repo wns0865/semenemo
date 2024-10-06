@@ -144,144 +144,151 @@ fun AssetDetailScreen(
     ) {
         Column(
             modifier =
-                modifier
+                Modifier
+                    .fillMaxSize()
                     .statusBarsPadding()
                     .navigationBarsPadding(),
-//                    .padding(horizontal = 10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
             Spacer(modifier = Modifier.height(10.dp))
             TopAppBar(
                 modifier = Modifier,
                 onNavigationClick = popUpBackStack,
             )
-            GlideImage(
-                imageModel = assetUrl.toUri(),
-                contentScale = ContentScale.Fit,
-                modifier =
-                    Modifier
-                        .fillMaxWidth(0.8f)
-                        .padding(horizontal = 20.dp)
-                        .aspectRatio(1f)
-                        .background(color = WhiteGray, shape = RoundedCornerShape(10.dp)),
-            )
-            LazyRow(
-                modifier =
-                    Modifier
-                        .wrapContentHeight()
-                        .padding(horizontal = 10.dp)
-                        .align(Alignment.Start),
-                horizontalArrangement = Arrangement.spacedBy(5.dp),
-                content = {
-                    items(hashTag.size) { index ->
-                        HashTag(
-                            keyword = hashTag[index],
-                        )
-                    }
-                },
-            )
-            Row(
-                modifier =
-                    Modifier
-                        .align(Alignment.Start)
-                        .padding(horizontal = 10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(5.dp),
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
                 GlideImage(
-                    imageModel = profileImageUrl.toUri(),
-                    contentScale = ContentScale.Crop,
+                    imageModel = assetUrl.toUri(),
+                    contentScale = ContentScale.Fit,
                     modifier =
                         Modifier
-                            .size(30.dp)
-                            .clip(shape = CircleShape),
+                            .fillMaxWidth(0.8f)
+                            .padding(horizontal = 20.dp)
+                            .aspectRatio(1f)
+                            .background(color = WhiteGray, shape = RoundedCornerShape(10.dp)),
                 )
-
-                if (hasBadge) {
-                    NameWithBadge(
-                        name = nickname,
-                        size = 18,
-                    )
-                } else {
-                    Text(
-                        text = nickname,
-                        style = Typography.bodySmall.copy(fontSize = 14.sp, color = GunMetal),
-                    )
-                }
-            }
-            Row(
-                modifier =
-                    Modifier
-                        .align(Alignment.Start)
-                        .padding(horizontal = 10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Image(
-                    modifier = Modifier,
-                    painter = painterResource(id = R.drawable.img_graph),
-                    contentDescription = "",
+                LazyRow(
+                    modifier =
+                        Modifier
+                            .wrapContentHeight()
+                            .padding(horizontal = 10.dp)
+                            .align(Alignment.Start),
+                    horizontalArrangement = Arrangement.spacedBy(5.dp),
+                    content = {
+                        items(hashTag.size) { index ->
+                            HashTag(
+                                keyword = hashTag[index],
+                            )
+                        }
+                    },
                 )
-
-                Text(text = stringResource(R.string.price_chart), style = Typography.bodyLarge)
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            Image(
-                modifier = Modifier,
-                painter = painterResource(id = R.drawable.price_graph),
-                contentDescription = "",
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            Row(
-                modifier = Modifier.align(Alignment.Start),
-                verticalAlignment = Alignment.Bottom,
-            ) {
-                Spacer(modifier = Modifier.weight(0.05f))
-                Column(modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(
+                Row(
+                    modifier =
+                        Modifier
+                            .align(Alignment.Start)
+                            .padding(horizontal = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(5.dp),
+                ) {
+                    GlideImage(
+                        imageModel = profileImageUrl.toUri(),
+                        contentScale = ContentScale.Crop,
                         modifier =
                             Modifier
-                                .size(25.dp)
-                                .noRippleClickable {
-                                    if (isLiked.not()) {
-                                        onClickedAsset(true)
-                                    } else {
-                                        onClickedAsset(false)
-                                    }
-                                },
-                        painter =
-                            if (isLiked.not()) {
-                                painterResource(id = R.drawable.ic_toggle_heart_off)
-                            } else {
-                                painterResource(
-                                    id = R.drawable.ic_toggle_heart_on,
-                                )
-                            },
-                        contentDescription = "",
-                        tint = if (isLiked.not()) GunMetal else Red,
+                                .size(30.dp)
+                                .clip(shape = CircleShape),
                     )
-                    Text(
-                        text = String.format(Locale.KOREAN, "%,.0f", heartCount.toDouble()),
-                        style = Typography.bodySmall,
-                    )
+
+                    if (hasBadge) {
+                        NameWithBadge(
+                            name = nickname,
+                            size = 18,
+                        )
+                    } else {
+                        Text(
+                            text = nickname,
+                            style = Typography.bodySmall.copy(fontSize = 14.sp, color = GunMetal),
+                        )
+                    }
                 }
-                Spacer(modifier = Modifier.weight(0.05f))
-                LongBlackButton(
+                Row(
                     modifier =
                         Modifier
-                            .weight(1f)
-                            .padding(end = 10.dp)
-                            .height(50.dp),
-                    icon = R.drawable.ic_color_sene_coin,
-                    text =
-                        String.format(
-                            Locale.KOREAN,
-                            "%,.0f ",
-                            price,
-                        ) + stringResource(id = R.string.buy_price_message),
+                            .align(Alignment.Start)
+                            .padding(horizontal = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Image(
+                        modifier = Modifier,
+                        painter = painterResource(id = R.drawable.img_graph),
+                        contentDescription = "",
+                    )
+
+                    Text(text = stringResource(R.string.price_chart), style = Typography.bodyLarge)
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                Image(
+                    modifier = Modifier,
+                    painter = painterResource(id = R.drawable.price_graph),
+                    contentDescription = "",
                 )
+                Spacer(modifier = Modifier.weight(1f))
+                Row(
+                    modifier = Modifier.align(Alignment.Start),
+                    verticalAlignment = Alignment.Bottom,
+                ) {
+                    Spacer(modifier = Modifier.weight(0.05f))
+                    Column(
+                        modifier = Modifier,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Icon(
+                            modifier =
+                                Modifier
+                                    .size(25.dp)
+                                    .noRippleClickable {
+                                        if (isLiked.not()) {
+                                            onClickedAsset(true)
+                                        } else {
+                                            onClickedAsset(false)
+                                        }
+                                    },
+                            painter =
+                                if (isLiked.not()) {
+                                    painterResource(id = R.drawable.ic_toggle_heart_off)
+                                } else {
+                                    painterResource(
+                                        id = R.drawable.ic_toggle_heart_on,
+                                    )
+                                },
+                            contentDescription = "",
+                            tint = if (isLiked.not()) GunMetal else Red,
+                        )
+                        Text(
+                            text = String.format(Locale.KOREAN, "%,.0f", heartCount.toDouble()),
+                            style = Typography.bodySmall,
+                        )
+                    }
+                    Spacer(modifier = Modifier.weight(0.05f))
+                    LongBlackButton(
+                        modifier =
+                            Modifier
+                                .weight(1f)
+                                .padding(end = 10.dp)
+                                .height(50.dp),
+                        icon = R.drawable.ic_color_sene_coin,
+                        text =
+                            String.format(
+                                Locale.KOREAN,
+                                "%,.0f ",
+                                price,
+                            ) + stringResource(id = R.string.buy_price_message),
+                    )
+                }
+                Spacer(modifier = Modifier.height(0.dp))
             }
-            Spacer(modifier = Modifier.height(0.dp))
         }
     }
 }

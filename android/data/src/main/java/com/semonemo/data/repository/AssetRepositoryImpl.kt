@@ -8,6 +8,7 @@ import com.semonemo.data.util.toMultiPart
 import com.semonemo.domain.model.AllSellAssets
 import com.semonemo.domain.model.ApiResponse
 import com.semonemo.domain.model.Asset
+import com.semonemo.domain.model.CreateAiAsset
 import com.semonemo.domain.model.CreateAsset
 import com.semonemo.domain.model.SellAsset
 import com.semonemo.domain.model.SellAssetDetail
@@ -22,15 +23,18 @@ class AssetRepositoryImpl
     constructor(
         private val api: AssetApi,
     ) : AssetRepository {
-        override suspend fun registerAsset(image: File): Flow<ApiResponse<Asset>> =
+        override suspend fun registerAsset(image: File): Flow<ApiResponse<Unit>> =
             flow {
                 val requestFile = image.toMultiPart()
-                emit(
+                val response =
                     emitApiResponse(
                         apiResponse = { api.registerAsset(requestFile) },
-                        default = Asset(),
-                    ),
-                )
+                        default = CreateAiAsset(),
+                    )
+                when (response) {
+                    is ApiResponse.Error -> emit(response)
+                    is ApiResponse.Success -> emit(ApiResponse.Success(Unit))
+                }
             }
 
         override suspend fun getMyAssets(cursorId: Long?): Flow<ApiResponse<List<Asset>>> =

@@ -1,10 +1,14 @@
 package com.semonemo.presentation
 
 import BottomNavigationBar
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -12,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -45,7 +50,7 @@ import com.semonemo.presentation.screen.store.StoreFullViewScreen
 import com.semonemo.presentation.screen.store.StoreRoute
 import com.semonemo.presentation.screen.store.asset.AssetSaleRoute
 import com.semonemo.presentation.screen.store.frame.FrameSaleRoute
-import com.semonemo.presentation.screen.wallet.WalletScreen
+import com.semonemo.presentation.screen.wallet.WalletRoute
 import com.semonemo.presentation.theme.Gray01
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Typography
@@ -58,7 +63,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-
+    val context = LocalContext.current
     val (visible, setVisible) =
         remember {
             mutableStateOf(false)
@@ -80,6 +85,30 @@ fun MainScreen(modifier: Modifier = Modifier) {
     val onShowErrorSnackBar: (errorMessage: String) -> Unit = { errorMessage ->
         coroutineScope.launch {
             snackBarHostState.showSnackbar(errorMessage)
+        }
+    }
+
+    val actionWithSnackBar: (Uri) -> Unit = { imageUri ->
+        coroutineScope.launch {
+            snackBarHostState
+                .showSnackbar(
+                    message = "이미지가 저장되었습니다!",
+                    actionLabel = "확인하기!",
+                    duration = SnackbarDuration.Short,
+                ).let { result ->
+                    when (result) {
+                        SnackbarResult.ActionPerformed -> {
+                            val intent =
+                                Intent(Intent.ACTION_VIEW).apply {
+                                    setDataAndType(imageUri, "image/jpeg")
+                                }
+                            context.startActivity(intent)
+                        }
+
+                        SnackbarResult.Dismissed -> {
+                        }
+                    }
+                }
         }
     }
 
@@ -123,6 +152,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
             navController = navController,
             startDestination = ScreenDestinations.Login.route,
             onShowErrorSnackBar = onShowErrorSnackBar,
+            actionWithSnackBar = actionWithSnackBar,
         )
     }
 }
@@ -133,6 +163,7 @@ fun MainNavHost(
     navController: NavHostController,
     startDestination: String,
     onShowErrorSnackBar: (String) -> Unit,
+    actionWithSnackBar: (Uri) -> Unit,
 ) {
     NavHost(navController = navController, startDestination = startDestination) {
         composable(
@@ -203,6 +234,12 @@ fun MainNavHost(
                 navigateToProfile = { userId ->
                     navController.navigate(ScreenDestinations.MyPage.createRoute(userId))
                 },
+                navigateToAssetDetail = { sellId ->
+                    navController.navigate(ScreenDestinations.AssetDetail.createRoute(sellId))
+                },
+                navigateToFrameDetail = { nftId ->
+                    navController.navigate(ScreenDestinations.FrameDetail.createRoute(nftId))
+                },
                 popUpBackStack = navController::popBackStack,
             )
         }
@@ -228,7 +265,11 @@ fun MainNavHost(
         composable(
             route = ScreenDestinations.Wallet.route,
         ) {
-            WalletScreen(modifier = modifier)
+            WalletRoute(
+                modifier = modifier,
+                navigateToCoinDetail = {},
+                onShowSnackBar = onShowErrorSnackBar,
+            )
         }
 
         composable(
@@ -239,10 +280,11 @@ fun MainNavHost(
 
             MyPageRoute(
                 modifier = modifier,
-                navigateToDetail = { nftId ->
+                navigateToDetail = { id, isSale ->
                     navController.navigate(
                         ScreenDestinations.Detail.createRoute(
-                            nftId,
+                            id,
+                            isSale,
                         ),
                     )
                 },
@@ -260,6 +302,9 @@ fun MainNavHost(
                 },
                 navigateToAssetDetail = { assetSellId ->
                     navController.navigate(ScreenDestinations.AssetDetail.createRoute(assetSellId))
+                },
+                navigateToSaleFrameDetail = { marketId ->
+                    navController.navigate(ScreenDestinations.FrameDetail.createRoute(marketId))
                 },
                 onErrorSnackBar = onShowErrorSnackBar,
                 userId = userId ?: -1,
@@ -340,6 +385,7 @@ fun MainNavHost(
                 navigateToMy = {
                     navController.navigate(ScreenDestinations.MyPage.createRoute(it))
                 },
+                onErrorSnackBar = onShowErrorSnackBar,
             )
         }
 
@@ -414,6 +460,24 @@ fun MainNavHost(
             StoreFullViewScreen(
                 modifier = modifier,
                 isFrame = navBackStackEntry.arguments?.getBoolean("isFrame") ?: false,
+                popUpBackStack = navController::popBackStack,
+                navigateToAssetSale = { navController.navigate(ScreenDestinations.AssetSale.route) },
+                navigateToFrameSale = { navController.navigate(ScreenDestinations.FrameSale.route) },
+                navigateToAssetDetail = {
+                    navController.navigate(
+                        ScreenDestinations.AssetDetail.createRoute(
+                            it,
+                        ),
+                    )
+                },
+                navigateToFrameDetail = {
+                    navController.navigate(
+                        ScreenDestinations.FrameDetail.createRoute(
+                            it,
+                        ),
+                    )
+                },
+                onShowErrorSnackBar = { onShowErrorSnackBar(it) },
             )
         }
 
@@ -440,6 +504,7 @@ fun MainNavHost(
             modifier = modifier,
             navController = navController,
             onErrorSnackBar = onShowErrorSnackBar,
+            actionWithSnackBar = actionWithSnackBar,
             graphRoute = "picture_graph",
         )
 
@@ -448,9 +513,7 @@ fun MainNavHost(
         ) {
             AssetSaleRoute(
                 modifier = modifier,
-                navigateToStore = {
-                    navController.navigate(ScreenDestinations.Shop.route)
-                },
+                popUpBackStack = navController::popBackStack,
                 onShowSnackBar = onShowErrorSnackBar,
             )
         }
