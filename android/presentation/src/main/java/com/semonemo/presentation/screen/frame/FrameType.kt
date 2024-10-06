@@ -10,6 +10,11 @@ enum class FrameType(
     ;
 
     companion object {
-        fun fromIdx(idx: Int): FrameType? = values().find { it.idx == idx }
+        fun fromIdx(idx: Int): FrameType =
+            when (idx) {
+                1 -> OneByOne
+                2 -> TwoByTwo
+                else -> OneByFour
+            }
     }
 }
