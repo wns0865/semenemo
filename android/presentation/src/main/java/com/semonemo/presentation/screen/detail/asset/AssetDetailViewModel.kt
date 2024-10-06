@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.semonemo.domain.datasource.AuthDataSource
 import com.semonemo.domain.model.ApiResponse
 import com.semonemo.domain.repository.AssetRepository
+import com.semonemo.domain.repository.CoinRepository
+import com.semonemo.domain.request.PurchaseAssetRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,6 +27,7 @@ class AssetDetailViewModel
         private val assetRepository: AssetRepository,
         private val savedStateHandle: SavedStateHandle,
         private val authDataSource: AuthDataSource,
+        private val coinRepository: CoinRepository,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(AssetDetailUiState())
         val uiState = _uiState.asStateFlow()
@@ -38,6 +41,29 @@ class AssetDetailViewModel
                 }
             }
             getSaleNftDetail(savedStateHandle["assetSellId"] ?: -1L)
+        }
+
+        fun getBalance(price: Long) {
+            viewModelScope.launch {
+                coinRepository.getBalance().collectLatest { response ->
+                    when (response) {
+                        is ApiResponse.Error -> {
+                            _uiEvent.emit(AssetDetailUiEvent.Error(response.errorMessage))
+                        }
+
+                        is ApiResponse.Success -> {
+                            val balance = response.data.payableBalance
+                            val event =
+                                if (balance < price) {
+                                    AssetDetailUiEvent.Error("가격이 모자릅니다!!")
+                                } else {
+                                    AssetDetailUiEvent.Purchase(price)
+                                }
+                            _uiEvent.emit(event)
+                        }
+                    }
+                }
+            }
         }
 
         private fun getSaleNftDetail(assetSellId: Long) {
@@ -107,6 +133,30 @@ class AssetDetailViewModel
                         _uiState.update { it.copy(likedCount = response.data) }
                     }
                 }
+            }
+        }
+
+        fun purchaseAsset(
+            txHash: String,
+            assetSellId: Long,
+        ) {
+            viewModelScope.launch {
+                assetRepository
+                    .purchaseAsset(
+                        request =
+                            PurchaseAssetRequest(
+                                txHash = txHash,
+                                assetSellId = assetSellId,
+                            ),
+                    ).onStart {
+                        _uiState.update { it.copy(isLoading = true) }
+                    }.onCompletion { _uiState.update { it.copy(isLoading = false) } }
+                    .collectLatest { response ->
+                        when (response) {
+                            is ApiResponse.Error -> _uiEvent.emit(AssetDetailUiEvent.Error(response.errorMessage))
+                            is ApiResponse.Success -> _uiEvent.emit(AssetDetailUiEvent.Success)
+                        }
+                    }
             }
         }
     }
