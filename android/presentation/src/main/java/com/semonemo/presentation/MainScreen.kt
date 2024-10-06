@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -90,8 +91,9 @@ fun MainScreen(modifier: Modifier = Modifier) {
         coroutineScope.launch {
             snackBarHostState
                 .showSnackbar(
-                    message = "이미지가 갤러리에 저장되었습니다!",
-                    actionLabel = "갤러리 열기",
+                    message = "이미지가 저장되었습니다!",
+                    actionLabel = "확인하기!",
+                    duration = SnackbarDuration.Short,
                 ).let { result ->
                     when (result) {
                         SnackbarResult.ActionPerformed -> {

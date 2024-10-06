@@ -1,6 +1,7 @@
 package com.semonemo.presentation.screen.picture.select
 
 import android.graphics.Bitmap
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -83,6 +84,7 @@ fun PictureSelectRoute(
     popUpBackStack: () -> Unit,
     viewModel: CameraViewModel = hiltViewModel(),
     onShowSnackBar: (String) -> Unit = {},
+    actionWithSnackBar: (Uri) -> Unit = {},
     type: Int,
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
@@ -94,6 +96,7 @@ fun PictureSelectRoute(
         onShowSnackBar = onShowSnackBar,
         loadMyFrame = viewModel::loadAvailableFrames,
         type = type,
+        actionWithSnackBar = actionWithSnackBar,
     )
 
     DisposableEffect(Unit) {
@@ -112,6 +115,7 @@ fun PictureSelectContent(
     onShowSnackBar: (String) -> Unit,
     loadMyFrame: (Int) -> Unit,
     type: Int,
+    actionWithSnackBar: (Uri) -> Unit = {},
 ) {
     LaunchedEffect(Unit) {
         loadMyFrame(type)
@@ -131,6 +135,7 @@ fun PictureSelectContent(
         frames = uiState.frames,
         type = FrameType.fromIdx(type),
         onShowSnackBar = onShowSnackBar,
+        actionWithSnackBar = actionWithSnackBar,
     )
     if (uiState.isLoading) {
         Box(
@@ -156,6 +161,7 @@ fun PictureSelectScreen(
     frames: List<MyFrame> = listOf(),
     type: FrameType = FrameType.OneByOne,
     onShowSnackBar: (String) -> Unit = {},
+    actionWithSnackBar: (Uri) -> Unit = {},
 ) {
     val captureController = rememberCaptureController()
     val scope = rememberCoroutineScope()
@@ -185,7 +191,33 @@ fun PictureSelectScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(modifier = Modifier.height(20.dp))
-            TopAppBar(modifier = Modifier, onNavigationClick = popUpBackStack)
+            TopAppBar(modifier = Modifier, onNavigationClick = popUpBackStack, actionButtons = {
+                CreatePictureButton(
+                    modifier = Modifier,
+                    isEnabled = selectedPictures.value.size == type.amount,
+                    onClick = {
+                        scope.launch {
+                            val bitmapAsync = captureController.captureAsync()
+                            try {
+                                val frame = frames[selectedFrameIndex.value]
+                                val bitmap = bitmapAsync.await().asAndroidBitmap()
+                                saveBitmapToGallery(
+                                    context = context,
+                                    bitmap = bitmap,
+                                    nickname = frame.owner.nickname,
+                                    frameTitle = frame.nftInfo.data.title,
+                                    onSuccess = {
+                                        actionWithSnackBar(it)
+                                        popUpBackStack()
+                                    },
+                                )
+                            } catch (error: Throwable) {
+                                onShowSnackBar(error.message ?: "")
+                            }
+                        }
+                    },
+                )
+            })
             Spacer(modifier = Modifier.height(10.dp))
             Box(
                 modifier =

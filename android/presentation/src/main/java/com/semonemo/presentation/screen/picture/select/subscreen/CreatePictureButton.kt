@@ -33,7 +33,10 @@ fun CreatePictureButton(
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Icon(
             tint = Color.Unspecified,
-            modifier = modifier.noRippleClickable { onClick() },
+            modifier =
+                modifier.noRippleClickable {
+                    if (isEnabled) onClick()
+                },
             painter =
                 if (isEnabled) {
                     painterResource(id = img)
