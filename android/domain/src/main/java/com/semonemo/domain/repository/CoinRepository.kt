@@ -11,5 +11,7 @@ interface CoinRepository {
 
     suspend fun getCoinHistory(): Flow<ApiResponse<List<CoinHistory>>>
 
+    suspend fun exchangeCoinPayable(request: ExchangePayableRequest): Flow<ApiResponse<Coin>>
+
     suspend fun exchangePayableCoin(request: ExchangePayableRequest): Flow<ApiResponse<Coin>>
 }

@@ -56,6 +56,28 @@ class CoinRepositoryImpl
                 }
             }
 
+        override suspend fun exchangeCoinPayable(request: ExchangePayableRequest): Flow<ApiResponse<Coin>> =
+            flow {
+                val response =
+                    emitApiResponse(
+                        apiResponse = { api.exchangeCoinPayable(request) },
+                        default = ExchangePayableResponse(),
+                    )
+                when (response) {
+                    is ApiResponse.Error -> emit(response)
+                    is ApiResponse.Success ->
+                        emit(
+                            ApiResponse.Success(
+                                data =
+                                    Coin(
+                                        coinBalance = response.data.coinBalance,
+                                        payableBalance = response.data.payableBalance,
+                                    ),
+                            ),
+                        )
+                }
+            }
+
         override suspend fun exchangePayableCoin(request: ExchangePayableRequest): Flow<ApiResponse<Coin>> =
             flow {
                 val response =

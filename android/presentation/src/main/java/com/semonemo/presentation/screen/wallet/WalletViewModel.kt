@@ -96,6 +96,30 @@ class WalletViewModel
             }
         }
 
+        fun exchangeCoinPayable(
+            amount: Long,
+            txHash: String,
+        ) {
+            viewModelScope.launch {
+                coinRepository
+                    .exchangeCoinPayable(
+                        request =
+                            ExchangePayableRequest(
+                                txHash = txHash,
+                                amount = amount,
+                            ),
+                    ).onStart {
+                        _uiState.update { it.copy(isLoading = true) }
+                    }.onCompletion { _uiState.update { it.copy(isLoading = false) } }
+                    .collectLatest { response ->
+                        when (response) {
+                            is ApiResponse.Error -> _uiEvent.emit(WalletUiEvent.Error(response.errorMessage))
+                            is ApiResponse.Success -> loadCoinHistory()
+                        }
+                    }
+            }
+        }
+
         fun exchangePayableCoin(
             amount: Long,
             txHash: String,

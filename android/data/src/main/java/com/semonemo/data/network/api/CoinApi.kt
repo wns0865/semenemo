@@ -17,6 +17,11 @@ interface CoinApi {
     suspend fun getCoinHistory(): BaseResponse<GetCoinHistoryResponse>
 
     @POST("api/coin/exchange/payable")
+    suspend fun exchangeCoinPayable(
+        @Body request: ExchangePayableRequest,
+    ): BaseResponse<ExchangePayableResponse>
+
+    @POST("api/coin/exchange/coin")
     suspend fun exchangePayableCoin(
         @Body request: ExchangePayableRequest,
     ): BaseResponse<ExchangePayableResponse>
