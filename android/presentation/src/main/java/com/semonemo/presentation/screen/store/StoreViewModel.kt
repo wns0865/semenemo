@@ -41,8 +41,8 @@ class StoreViewModel
         fun loadStoreInfo() {
             viewModelScope.launch {
                 combine(
-                    nftRepository.getAllSaleNft(),
-                    assetRepository.getAllSellAssets("latest"),
+                    nftRepository.getAllSaleNft(orderBy = "oldest"),
+                    assetRepository.getAllSellAssets(option = "oldest"),
                 ) { saleFrame, saleAsset ->
                     var currentState = StoreUiState()
 
