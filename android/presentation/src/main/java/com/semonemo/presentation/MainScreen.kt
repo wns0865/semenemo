@@ -33,6 +33,7 @@ import com.semonemo.presentation.screen.aiAsset.draw.DrawAssetRoute
 import com.semonemo.presentation.screen.aiAsset.prompt.PromptAssetScreen
 import com.semonemo.presentation.screen.auction.AuctionDetailScreen
 import com.semonemo.presentation.screen.auction.AuctionScreen
+import com.semonemo.presentation.screen.auction.register.AuctionRegisterRoute
 import com.semonemo.presentation.screen.coin.CoinRoute
 import com.semonemo.presentation.screen.detail.asset.AssetDetailRoute
 import com.semonemo.presentation.screen.detail.frame.FrameDetailRoute
@@ -250,12 +251,15 @@ fun MainNavHost(
         ) {
             AuctionScreen(
                 modifier = modifier,
-                navigateToAuctionProcess = { auctionId ->
+                navigateToAuctionDetail = { auctionId ->
                     navController.navigate(
                         ScreenDestinations.AuctionProcess.createRoute(
                             auctionId,
                         ),
                     )
+                },
+                navigateToAuctionRegister = {
+                    navController.navigate(ScreenDestinations.AuctionRegister.route)
                 },
             )
         }
@@ -482,6 +486,16 @@ fun MainNavHost(
                     )
                 },
                 onShowErrorSnackBar = { onShowErrorSnackBar(it) },
+            )
+        }
+
+        composable(
+            route = ScreenDestinations.AuctionRegister.route,
+        ) {
+            AuctionRegisterRoute(
+                modifier = modifier,
+                popUpBackStack = navController::popBackStack,
+                onShowSnackBar = onShowErrorSnackBar,
             )
         }
 

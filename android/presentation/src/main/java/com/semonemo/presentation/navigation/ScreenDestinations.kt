@@ -132,6 +132,8 @@ sealed class ScreenDestinations(
 
     data object AssetSale : ScreenDestinations(route = "assetSale")
 
+    data object AuctionRegister : ScreenDestinations(route = "auctionRegister")
+
     data object AuctionDetail : ScreenDestinations(route = "auctionDetail") {
         override val route: String
             get() = "auctionDetail/{auctionId}"

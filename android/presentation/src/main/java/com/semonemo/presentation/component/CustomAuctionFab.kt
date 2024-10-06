@@ -45,7 +45,10 @@ import kotlinx.coroutines.delay
  * @param modifier
  */
 @Composable
-fun CustomAuctionFAB(modifier: Modifier = Modifier) {
+fun CustomAuctionFAB(
+    modifier: Modifier = Modifier,
+    navigateToAuctionRegister: () -> Unit = {},
+) {
     var expanded by remember { mutableStateOf(false) }
 
     Box(
@@ -68,6 +71,7 @@ fun CustomAuctionFAB(modifier: Modifier = Modifier) {
                 delayMillis = 100,
                 textLabel = stringResource(id = R.string.fab_label_register_short_auction),
                 imgRes = R.drawable.ic_fab_short_auction,
+                onClick = navigateToAuctionRegister,
             )
 
 
@@ -103,11 +107,10 @@ fun CustomAuctionSubFAB(
     delayMillis: Int,
     textLabel: String,
     imgRes: Int,
+    onClick: () -> Unit = {},
 ) {
     var isVisible by remember { mutableStateOf(false) }
-    var test by remember {
-        mutableStateOf(false)
-    }
+
     // 애니메이션 지연
     LaunchedEffect(visible) {
         if (visible) {
@@ -118,9 +121,7 @@ fun CustomAuctionSubFAB(
         }
     }
 
-    if (test) {
-        Text(textLabel)
-    }
+
 
     AnimatedVisibility(
         visible = isVisible,
@@ -132,7 +133,7 @@ fun CustomAuctionSubFAB(
                 modifier
                     .padding(end = 10.dp)
                     .noRippleClickable {
-                        test = true
+                        onClick()
                     },
             verticalAlignment = Alignment.CenterVertically,
         ) {

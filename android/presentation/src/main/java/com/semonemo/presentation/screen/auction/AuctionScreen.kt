@@ -22,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.semonemo.presentation.R
@@ -34,14 +33,13 @@ import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.util.noRippleClickable
 
-@Preview(showBackground = true)
 @Composable
 fun AuctionScreen(
     modifier: Modifier = Modifier,
     viewModel: AuctionViewModel = hiltViewModel(),
-    navigateToAuctionProcess: (Long) -> Unit = {},
+    navigateToAuctionDetail: (Long) -> Unit = {},
+    navigateToAuctionRegister: () -> Unit = {},
 ) {
-//    val verticalScrollState = rememberScrollState()
     Surface(
         modifier =
             modifier
@@ -53,7 +51,6 @@ fun AuctionScreen(
                     .fillMaxSize()
                     .statusBarsPadding()
                     .navigationBarsPadding(),
-//                    .verticalScroll(state = verticalScrollState),
         ) {
             Spacer(modifier = Modifier.height(30.dp))
             Row(
@@ -93,12 +90,15 @@ fun AuctionScreen(
 
             ShortAuctionReadScreen(
                 viewModel = viewModel,
-                navigateToAuctionDetail = navigateToAuctionProcess,
+                navigateToAuctionDetail = navigateToAuctionDetail,
             )
             Spacer(modifier = Modifier.height(30.dp))
             SectionHeader(text = stringResource(R.string.in_progress_long_action))
             LongAuctionReadScreen()
         }
-        CustomAuctionFAB(modifier = modifier)
+        CustomAuctionFAB(
+            modifier = modifier,
+            navigateToAuctionRegister = navigateToAuctionRegister,
+        )
     }
 }
