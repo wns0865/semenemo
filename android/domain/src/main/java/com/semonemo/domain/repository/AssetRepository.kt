@@ -6,6 +6,7 @@ import com.semonemo.domain.model.Asset
 import com.semonemo.domain.model.CreateAsset
 import com.semonemo.domain.model.SellAsset
 import com.semonemo.domain.model.SellAssetDetail
+import com.semonemo.domain.request.PurchaseAssetRequest
 import kotlinx.coroutines.flow.Flow
 import java.io.File
 
@@ -31,4 +32,6 @@ interface AssetRepository {
     suspend fun getSaleAssetDetail(assetSellId: Long): Flow<ApiResponse<SellAssetDetail>>
 
     suspend fun getLikeAssets(): Flow<ApiResponse<AllSellAssets>>
+
+    suspend fun purchaseAsset(request: PurchaseAssetRequest): Flow<ApiResponse<Unit>>
 }
