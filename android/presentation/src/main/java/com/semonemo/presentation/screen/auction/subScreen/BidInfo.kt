@@ -48,7 +48,7 @@ fun BidInfo(
                         .fillMaxWidth(),
             ) {
                 Text(
-                    text = String.format("%03d번", topBidder.userId),
+                    text = String.format("%03d번", topBidder.anonym),
                     fontSize = 24.sp, // 적절한 텍스트 크기 조정
                     style =
                         Typography.bodyMedium.copy(
@@ -125,7 +125,7 @@ fun BidInfo(
                             .height(itemHeight),
                 ) {
                     Text(
-                        text = String.format("%03d번", bidder.userId),
+                        text = String.format("%03d번", bidder.anonym),
                         fontSize = 20.sp, // 기본 텍스트 크기
                         style =
                             Typography.labelMedium.copy(
@@ -166,12 +166,12 @@ fun BidInfoPreview_NoBids() {
 fun BidInfoPreview_WithBids() {
     val sampleBidLogs =
         listOf(
-            AuctionBidLog(userId = 101, bidAmount = 15000),
-            AuctionBidLog(userId = 102, bidAmount = 12000),
-            AuctionBidLog(userId = 103, bidAmount = 11000),
-            AuctionBidLog(userId = 103, bidAmount = 10000),
-            AuctionBidLog(userId = 103, bidAmount = 8000),
-            AuctionBidLog(userId = 103, bidAmount = 7000),
+            AuctionBidLog(anonym = 101, bidAmount = 15000),
+            AuctionBidLog(anonym = 102, bidAmount = 12000),
+            AuctionBidLog(anonym = 103, bidAmount = 11000),
+            AuctionBidLog(anonym = 103, bidAmount = 10000),
+            AuctionBidLog(anonym = 124, bidAmount = 8000),
+            AuctionBidLog(anonym = 753, bidAmount = 7000),
         )
     BidInfo(
         bidLogList = sampleBidLogs,

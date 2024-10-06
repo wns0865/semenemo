@@ -35,11 +35,11 @@ class WebSocketManager {
     private val startMessageJsonAdapter = moshi.adapter(StartMessage::class.java).lenient()
     private val bidMessageJsonAdapter = moshi.adapter(BidMessage::class.java).lenient()
     private val endMessageJsonAdapter = moshi.adapter(EndMessage::class.java).lenient()
-//    private val entranceAdapter = moshi.adapter()
 
-    suspend fun connectToAuction(auctionId: Long): StompSession {
+    suspend fun connectToAuction(): StompSession {
 //        val url = "ws://192.168.100.69:8090/ws/auction"
 //        val url = "http://192.168.100.203:8081/ws-stomp"
+//        val url = "http://192.168.0.45:8080/ws-stomp"
         val url = "${BuildConfig.SEVER_URL}ws-stomp"
         return stompClient.connect(url)
     }
@@ -50,14 +50,13 @@ class WebSocketManager {
         bidRequest: BidMessage,
     ) {
         Log.d(TAG, "sendBid: 보내기!!")
-        Log.d(TAG, "auction: $auctionId")
         // BidRequest를 JSON 문자열로 변환
         val bidRequestAdapter = moshi.adapter(BidMessage::class.java).lenient()
         val bidJson = bidRequestAdapter.toJson(bidRequest)
         val headers = StompSendHeaders("/app/auction/$auctionId/bid")
-
         // FrameBody로 감싸서 전송
         val frameBody = FrameBody.Text(bidJson)
+        Log.d(TAG, "sendBid: frameBody ${frameBody.text}")
 
         // 변환된 JSON 문자열을 Stomp 메시지로 전송
 
@@ -69,7 +68,8 @@ class WebSocketManager {
         headersUri: String,
         onAuctionStart: (StartMessage) -> Unit = {},
         onBidUpdate: (BidMessage) -> Unit = {},
-        onAuctionEnd: () -> Unit = {},
+        onAuctionEnd: (EndMessage) -> Unit = {},
+        onParticipants: (Int) -> Unit = {},
     ) {
         // StompSubscribeHeaders를 사용해 헤더 생성
         val headers = StompSubscribeHeaders(headersUri)
@@ -82,6 +82,7 @@ class WebSocketManager {
                 onAuctionStart,
                 onBidUpdate,
                 onAuctionEnd,
+                onParticipants,
             )
         }
     }
@@ -98,7 +99,8 @@ class WebSocketManager {
         message: StompFrame.Message,
         onAuctionStart: (StartMessage) -> Unit = {},
         onBidUpdate: (BidMessage) -> Unit = {},
-        onAuctionEnd: () -> Unit = {},
+        onAuctionEnd: (EndMessage) -> Unit = {},
+        onParticipants: (Int) -> Unit = {},
     ) {
         val msgHeaders = message.headers
         val msgBody = message.body
@@ -108,7 +110,7 @@ class WebSocketManager {
             val textBody = msgBody.text
             Log.d(TAG, "textHeaders: $textHeaders")
             Log.d(TAG, "textBody: $textBody")
-            if (msgHeaders.containsKey("start") || textBody.contains("start")) {
+            if (textHeaders.contains("start") || textBody.contains("start")) {
                 runCatching {
                     startMessageJsonAdapter.fromJson(textBody)
                 }.onSuccess { startMessage ->
@@ -120,22 +122,24 @@ class WebSocketManager {
                 }.onFailure { exception ->
                     Log.e("AuctionProcess", "JSON 파싱 중 오류 발생", exception)
                 }
-            } else if (msgHeaders.containsKey("end")) {
+            } else if (textHeaders.contains("end")) {
                 runCatching {
                     endMessageJsonAdapter.fromJson(textBody)
                 }.onSuccess { endMessage ->
                     if (endMessage != null) {
-                        onAuctionEnd()
+                        onAuctionEnd(endMessage)
                     } else {
                         Log.e("AuctionProcess", "파싱 실패: endMessage")
                     }
                 }.onFailure { exception ->
                     Log.e("AuctionProcess", "JSON 파싱 중 오류 발생", exception)
                 }
-            } else if (msgHeaders.containsKey("participants")) {
+            } else if (textHeaders.contains("participants")) {
                 Log.d(TAG, "참가자 수: $textBody")
+                onParticipants(textBody.toInt())
             } else {
                 runCatching {
+                    Log.d(TAG, "processMessage: $textBody")
                     bidMessageJsonAdapter.fromJson(textBody)
                 }.onSuccess { bidMessage ->
                     if (bidMessage != null) {
@@ -162,6 +166,7 @@ enum class MessageType {
 fun BidMessage.toAuctionBidLog(): AuctionBidLog =
     AuctionBidLog(
         userId = this.userId,
+        anonym = this.anonym,
         bidAmount = this.bidAmount,
         bidTime = this.bidTime,
         endTime = this.endTime,
@@ -180,6 +185,7 @@ data class StartMessage(
 @JsonClass(generateAdapter = true)
 data class BidMessage(
     val userId: Long,
+    val anonym: Int,
     val bidAmount: Long,
     val bidTime: LocalDateTime = LocalDateTime.now(),
     val endTime: LocalDateTime = LocalDateTime.now(),
@@ -191,13 +197,6 @@ data class EndMessage(
     val finalPrice: Long,
     val winner: Long?,
     val endTime: LocalDateTime,
-)
-
-@JsonClass(generateAdapter = true)
-data class EntranceMessage(
-    val auctionId: Long,
-    val userId: Long,
-    val entranceTime: LocalDateTime = LocalDateTime.now(),
 )
 
 class LocalDateTimeAdapter {

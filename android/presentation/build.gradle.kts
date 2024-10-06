@@ -135,4 +135,7 @@ dependencies {
     // moshi
     implementation(libs.moshi)
     implementation(libs.moshi.kotlin)
+
+    // pager
+    implementation(libs.androidx.foundation)
 }
