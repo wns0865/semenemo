@@ -53,7 +53,7 @@ fun LiveAuctionCard(
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        modifier = modifier.noRippleClickable { onClick(-1L) },
+        modifier = modifier.noRippleClickable { onClick(id) },
     ) {
         // Overlay content
         Column(
@@ -132,10 +132,10 @@ fun LiveAuctionCard(
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text =
-                        String.format(
-                            "%,d ${stringResource(id = R.string.coin_price_unit)}",
-                            currentBid,
-                        ),
+                            String.format(
+                                "%,d ${stringResource(id = R.string.coin_price_unit)}",
+                                currentBid,
+                            ),
                         color = GunMetal,
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
