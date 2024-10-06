@@ -80,10 +80,10 @@ class NftRepositoryImpl
                 )
             }
 
-        override suspend fun getAllSaleNft(): Flow<ApiResponse<List<FrameDetail>>> =
+        override suspend fun getAllSaleNft(orderBy: String): Flow<ApiResponse<List<FrameDetail>>> =
             flow {
                 val response =
-                    emitApiResponse(apiResponse = { api.getAllSaleNft() }, default = SearchFrame())
+                    emitApiResponse(apiResponse = { api.getAllSaleNft(orderBy = orderBy) }, default = SearchFrame())
                 when (response) {
                     is ApiResponse.Error -> emit(response)
                     is ApiResponse.Success -> emit(ApiResponse.Success(response.data.content))
