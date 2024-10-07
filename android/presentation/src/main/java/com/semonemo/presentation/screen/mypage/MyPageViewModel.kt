@@ -192,11 +192,23 @@ class MyPageViewModel
 
         private fun loadComponents() {
             viewModelScope.launch {
+                val loadComponentUserId =
+                    if (userId == -1L) {
+                        authDataSource.getUserId()?.toLong() ?: -1L
+                    } else {
+                        userId
+                    }
                 authDataSource.getUserId()?.let { userId ->
                     combine(
-                        nftRepository.getUserNft(userId.toLong()),
-                        nftRepository.getSellNft(userId.toLong()),
-                        assetRepository.getMyAssets(null),
+                        nftRepository.getUserNft(loadComponentUserId),
+                        nftRepository.getSellNft(loadComponentUserId),
+                        if (loadComponentUserId == -1L) {
+                            assetRepository.getMyAssets(null)
+                        } else {
+                            assetRepository.getCreateAssets(
+                                loadComponentUserId,
+                            )
+                        },
                     ) { nftList, sellNftList, assetList ->
                         var currentState = MyPageUiState.Success()
 
@@ -258,7 +270,7 @@ class MyPageViewModel
             }
         }
 
-        fun loadLikeComponents() {
+        private fun loadLikeComponents() {
             viewModelScope.launch {
                 combine(
                     assetRepository.getLikeAssets(),
