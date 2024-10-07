@@ -66,6 +66,7 @@ import com.semonemo.presentation.component.BrushPalette
 import com.semonemo.presentation.component.ColorPalette
 import com.semonemo.presentation.component.CustomTab
 import com.semonemo.presentation.component.LongBlackButton
+import com.semonemo.presentation.component.TopAppBar
 import com.semonemo.presentation.screen.aiAsset.draw.AssetButtonList
 import com.semonemo.presentation.theme.BlackGradient
 import com.semonemo.presentation.theme.BlueGradient
@@ -104,9 +105,10 @@ data class OverlayAsset(
 @Composable
 fun FrameRoute(
     modifier: Modifier = Modifier,
-    navigateToFrameDone: () -> Unit = {},
+    navigateToFrameDone: () -> Unit,
     viewModel: FrameViewModel = hiltViewModel(),
-    onErrorSnackBar: (String) -> Unit = {},
+    onErrorSnackBar: (String) -> Unit,
+    popBackStack: () -> Unit,
 ) {
     LaunchedEffect(Unit) {
         viewModel.loadMyAssets()
@@ -117,6 +119,7 @@ fun FrameRoute(
         updateFrame = viewModel::updateFrame,
         onErrorSnackBar = onErrorSnackBar,
         assets = viewModel.assets.value,
+        popBackStack = popBackStack
     )
 }
 
@@ -125,6 +128,7 @@ fun FrameRoute(
 fun FrameScreen(
     modifier: Modifier = Modifier,
     navigateToFrameDone: () -> Unit = {},
+    popBackStack: () -> Unit = {},
     updateFrame: (Bitmap, FrameType) -> Unit = { _, _ -> },
     onErrorSnackBar: (String) -> Unit = {},
     assets: List<Asset> = listOf(),
@@ -183,11 +187,16 @@ fun FrameScreen(
                     .navigationBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Spacer(modifier = Modifier.fillMaxHeight(0.02f))
-            Text(
-                text = stringResource(R.string.frame_description),
-                style = Typography.labelMedium.copy(fontSize = 16.sp),
-                color = GunMetal,
+            Spacer(modifier = Modifier.fillMaxHeight(0.015f))
+            TopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(R.string.frame_description),
+                        style = Typography.labelMedium.copy(fontSize = 16.sp),
+                        color = GunMetal,
+                    )
+                },
+                onNavigationClick = popBackStack,
             )
             Spacer(modifier = Modifier.fillMaxHeight(0.02f))
             Column(modifier = Modifier.fillMaxWidth()) {
