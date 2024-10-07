@@ -8,6 +8,7 @@ import com.semonemo.data.network.response.emitApiResponse
 import com.semonemo.domain.model.ApiResponse
 import com.semonemo.domain.model.Coin
 import com.semonemo.domain.model.CoinHistory
+import com.semonemo.domain.model.CoinRate
 import com.semonemo.domain.repository.CoinRepository
 import com.semonemo.domain.request.ExchangePayableRequest
 import kotlinx.coroutines.flow.Flow
@@ -98,5 +99,10 @@ class CoinRepositoryImpl
                             ),
                         )
                 }
+            }
+
+        override suspend fun getCoinRate(): Flow<ApiResponse<CoinRate>> =
+            flow {
+                emit(emitApiResponse(apiResponse = { api.getCoinRates() }, default = CoinRate()))
             }
     }
