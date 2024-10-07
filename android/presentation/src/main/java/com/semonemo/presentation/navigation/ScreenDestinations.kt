@@ -197,6 +197,11 @@ sealed class ScreenDestinations(
 
         fun createRoute(type: Int) = "pictureSelect/$type"
     }
+
+    data object CoinDetail : ScreenDestinations(route = "coinDetail") {
+        override val route: String
+            get() = "coinDetail"
+    }
 }
 
 // 팔로워 / 팔로잉 목록 전달 위한 NavType 정의

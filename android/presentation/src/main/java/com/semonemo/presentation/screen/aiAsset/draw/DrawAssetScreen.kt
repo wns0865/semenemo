@@ -1,5 +1,8 @@
-package com.semonemo.presentation.screen.aiAsset
+package com.semonemo.presentation.screen.aiAsset.draw
 
+import android.graphics.Bitmap
+import android.net.Uri
+import android.util.Base64
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -10,7 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,45 +23,55 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ExperimentalComposeApi
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.AssetButton
-import com.semonemo.presentation.component.ColorCircle
 import com.semonemo.presentation.component.ColorPalette
+import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.LongBlackButton
-import com.semonemo.presentation.component.PenCircle
 import com.semonemo.presentation.component.PenPalette
-import com.semonemo.presentation.theme.Gray01
+import com.semonemo.presentation.component.TopAppBar
 import com.semonemo.presentation.theme.Gray02
 import com.semonemo.presentation.theme.GunMetal
-import com.semonemo.presentation.theme.Main02
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.White
+import dev.shreyaspatil.capturable.capturable
+import dev.shreyaspatil.capturable.controller.rememberCaptureController
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 
 // 펜 스타일 데이터 클래스
 data class PathStyle(
@@ -79,10 +92,84 @@ internal fun DrawScope.drawPath(
 }
 
 @Composable
+fun DrawAssetRoute(
+    modifier: Modifier,
+    navigateToDone: (String) -> Unit,
+    viewModel: DrawAssetViewModel = hiltViewModel(),
+    popUpToBackStack: () -> Unit,
+    onErrorSnackBar: (String) -> Unit,
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    DrawAssetContent(
+        modifier = modifier,
+        navigateToDone = navigateToDone,
+        popUpBackStack = popUpToBackStack,
+        onErrorSnackBar = onErrorSnackBar,
+        uiEvent = viewModel.uiEvent,
+        isLoading = uiState.isLoading,
+        makeDrawAsset = viewModel::makeDrawAsset,
+        updateStyle = viewModel::updateStyle,
+    )
+}
+
+@Composable
+fun DrawAssetContent(
+    modifier: Modifier,
+    navigateToDone: (String) -> Unit,
+    popUpBackStack: () -> Unit,
+    onErrorSnackBar: (String) -> Unit,
+    uiEvent: SharedFlow<DrawAssetUiEvent>,
+    isLoading: Boolean,
+    makeDrawAsset: (String) -> Unit,
+    updateStyle: (String, String) -> Unit,
+) {
+    LaunchedEffect(uiEvent) {
+        uiEvent.collectLatest { event ->
+            when (event) {
+                is DrawAssetUiEvent.Error -> onErrorSnackBar(event.errorMessage)
+                is DrawAssetUiEvent.NavigateTo -> navigateToDone(event.imageUrl)
+            }
+        }
+    }
+
+    DrawAssetScreen(
+        modifier = modifier,
+        popUpBackStack = popUpBackStack,
+        onErrorSnackBar = { onErrorSnackBar(it) },
+        makeDrawAsset = makeDrawAsset,
+        updateStyle = updateStyle,
+        navigateToDone = navigateToDone,
+    )
+
+    if (isLoading) {
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .clickable(enabled = false) {},
+        )
+        LoadingDialog(
+            lottieRes = R.raw.normal_load,
+            loadingMessage = stringResource(R.string.loading_message),
+            subMessage = stringResource(R.string.loading_sub_message),
+        )
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalComposeApi::class)
+@Composable
 fun DrawAssetScreen(
     modifier: Modifier = Modifier,
-    navigateToDone: (String) -> Unit = {},
+    popUpBackStack: () -> Unit = {},
+    onErrorSnackBar: (String) -> Unit = {},
+    makeDrawAsset: (String) -> Unit = {},
+    updateStyle: (String, String) -> Unit = { _, _ -> },
+    navigateToDone: (String) -> Unit,
 ) {
+    val captureController = rememberCaptureController()
+    val scope = rememberCoroutineScope()
+
     // 색상 팔레트
     val colors =
         listOf(
@@ -107,11 +194,25 @@ fun DrawAssetScreen(
 
     val titles =
         listOf(
-            "픽셀",
+            "없음",
             "실사",
+            "카툰",
             "애니메이션",
         )
-    var selectedBtn by remember { mutableStateOf("픽셀") }
+
+    var styles =
+        listOf(
+            "없음",
+            "사람",
+            "동물",
+        )
+
+    var selectedType by remember { mutableStateOf("없음") }
+    var selectedWhat by remember { mutableStateOf("없음") }
+
+    LaunchedEffect(selectedType, selectedWhat) {
+        updateStyle(selectedType, selectedWhat)
+    }
 
     var point by remember { mutableStateOf(Offset.Zero) } // point 위치 추척 state
     val points = remember { mutableListOf<Offset>() } // 새로 그려지는 path 표시하기 위한 points State
@@ -121,81 +222,101 @@ fun DrawAssetScreen(
     val removedPaths = remember { mutableStateListOf<Pair<Path, PathStyle>>() } // undo, redo 위한 리스트
     val pathStyle by remember { mutableStateOf(PathStyle()) }
 
-    Box(
+    val state = rememberScrollState()
+
+    Column(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(color = White),
+                .background(color = White)
+                .statusBarsPadding()
+                .navigationBarsPadding()
+                .verticalScroll(state),
     ) {
+        Spacer(modifier = Modifier.height(10.dp))
+        TopAppBar(
+            modifier = Modifier.fillMaxWidth(),
+            title = {
+                Text(
+                    text = stringResource(R.string.canvas_script),
+                    style = Typography.labelMedium,
+                    color = Gray02,
+                )
+            },
+            onNavigationClick = popUpBackStack,
+        )
         Column(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .statusBarsPadding()
-                    .navigationBarsPadding(),
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Spacer(modifier = Modifier.height(15.dp))
-            Text(
-                text = stringResource(R.string.canvas_script),
-                style = Typography.labelMedium,
-                color = Gray02,
-            )
             Spacer(modifier = Modifier.height(18.dp))
-            Canvas(
+            Box(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight(0.48f)
+                        .aspectRatio(1f)
                         .background(color = White)
                         .padding(horizontal = 17.dp)
                         .border(width = 1.dp, color = Gray02, shape = RoundedCornerShape(15.dp))
-                        .pointerInput(Unit) {
-                            detectDragGestures(
-                                onDragStart = { offset ->
-                                    point = offset
-                                    points.add(point)
-                                },
-                                onDrag = { _, dragAmount ->
-                                    val newPoint = point + dragAmount // 새로운 포인트 위치 계산
-                                    val canvasBounds = size // 범위 내인지 확인
-
-                                    if (newPoint.x in 0f..canvasBounds.width.toFloat() && newPoint.y in 0f..canvasBounds.height.toFloat()) {
-                                        point = newPoint
+                        .capturable(
+                            controller = captureController,
+                        ),
+            ) {
+                Canvas(
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .pointerInput(Unit) {
+                                detectDragGestures(
+                                    onDragStart = { offset ->
+                                        point = offset
                                         points.add(point)
+                                    },
+                                    onDrag = { _, dragAmount ->
+                                        val newPoint = point + dragAmount // 새로운 포인트 위치 계산
+                                        val canvasBounds = size // 범위 내인지 확인
 
-                                        path = Path()
+                                        if (newPoint.x in 0f..canvasBounds.width.toFloat() &&
+                                            newPoint.y in 0f..canvasBounds.height.toFloat()
+                                        ) {
+                                            point = newPoint
+                                            points.add(point)
 
-                                        points.forEachIndexed { index, point ->
-                                            if (index == 0) {
-                                                path.moveTo(point.x, point.y)
-                                            } else {
-                                                path.lineTo(point.x, point.y)
+                                            path = Path()
+
+                                            points.forEachIndexed { index, point ->
+                                                if (index == 0) {
+                                                    path.moveTo(point.x, point.y)
+                                                } else {
+                                                    path.lineTo(point.x, point.y)
+                                                }
                                             }
                                         }
-                                    }
-                                },
-                                onDragEnd = {
-                                    paths.add(Pair(path, pathStyle.copy()))
-                                    points.clear()
-                                    path = Path()
-                                },
-                            )
-                        },
-            ) {
-                // 이미 완성된 획들
-                paths.forEach { pair ->
+                                    },
+                                    onDragEnd = {
+                                        paths.add(Pair(path, pathStyle.copy()))
+                                        points.clear()
+                                        path = Path()
+                                    },
+                                )
+                            },
+                ) {
+//                    drawRect(color = White, size = size)
+
+                    // 이미 완성된 획들
+                    paths.forEach { pair ->
+                        drawPath(
+                            path = pair.first,
+                            style = pair.second,
+                        )
+                    }
+
+                    // 현재 그려지고 있는 획
                     drawPath(
-                        path = pair.first,
-                        style = pair.second,
+                        path = path,
+                        style = pathStyle,
                     )
                 }
-
-                // 현재 그려지고 있는 획
-                drawPath(
-                    path = path,
-                    style = pathStyle,
-                )
             }
             Spacer(modifier = Modifier.height(5.dp))
             Box(
@@ -308,21 +429,86 @@ fun DrawAssetScreen(
             ) {
                 AssetButtonList(
                     titles = titles,
-                    selectedBtn = selectedBtn,
-                    onBtnSelected = { selectedBtn = it },
+                    selectedBtn = selectedType,
+                    onBtnSelected = {
+                        selectedType = it
+                    },
                 )
             }
-            Spacer(modifier = Modifier.fillMaxHeight(0.3f))
+            Spacer(modifier = Modifier.height(25.dp))
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 17.dp),
+                contentAlignment = Alignment.CenterStart,
+            ) {
+                Text(
+                    text = "종류",
+                    style = Typography.bodySmall.copy(color = GunMetal, fontSize = 15.sp),
+                )
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 17.dp),
+                contentAlignment = Alignment.CenterStart,
+            ) {
+                if (selectedType == "없음") {
+                    styles = listOf("없음", "사람", "동물")
+                    AssetButtonList(
+                        titles = styles,
+                        selectedBtn = selectedWhat,
+                        onBtnSelected = {
+                            selectedWhat = it
+                        },
+                    )
+                } else {
+                    styles = listOf("사람", "동물")
+                    AssetButtonList(
+                        titles = styles,
+                        selectedBtn = selectedWhat,
+                        onBtnSelected = {
+                            selectedWhat = it
+                        },
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(20.dp))
             LongBlackButton(
                 icon = null,
                 text = stringResource(R.string.draw_done),
                 onClick = {
-                    // ai랑 통신해서 결과 얻어오고, 완료 화면으로 이동
-                    navigateToDone("test")
+                    scope.launch {
+                        try {
+                            val bitmapAsync = captureController.captureAsync()
+                            val bitmap = bitmapAsync.await().asAndroidBitmap()
+                            val base64 = bitmapToBase64(bitmap)
+
+                            if (selectedType == "없음") {
+                                val uri = "data:image/png;base64,$base64"
+                                navigateToDone(Uri.encode(uri))
+                            } else {
+                                makeDrawAsset(base64)
+                            }
+                        } catch (error: Throwable) {
+                            onErrorSnackBar(error.message ?: "")
+                        }
+                    }
                 },
             )
+            Spacer(modifier = Modifier.height(10.dp))
         }
     }
+}
+
+fun bitmapToBase64(bitmap: Bitmap): String {
+    val byteArrayOutputStream = ByteArrayOutputStream()
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+    val byteArray = byteArrayOutputStream.toByteArray()
+    return Base64.encodeToString(byteArray, Base64.DEFAULT)
 }
 
 // 뒤로가기, 앞으로가기, 초기화하기
@@ -388,10 +574,10 @@ fun AssetButtonList(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun DrawAssetPreview() {
     SemonemoTheme {
-        DrawAssetScreen()
+//        DrawAssetScreen()
     }
 }

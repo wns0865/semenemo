@@ -23,16 +23,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.semonemo.domain.model.User
 import com.semonemo.presentation.navigation.CustomFAB
 import com.semonemo.presentation.navigation.ScreenDestinations
 import com.semonemo.presentation.screen.aiAsset.AiAssetScreen
 import com.semonemo.presentation.screen.aiAsset.AssetDoneRoute
-import com.semonemo.presentation.screen.aiAsset.DrawAssetScreen
-import com.semonemo.presentation.screen.aiAsset.PromptAssetScreen
+import com.semonemo.presentation.screen.aiAsset.draw.DrawAssetRoute
+import com.semonemo.presentation.screen.aiAsset.prompt.PromptAssetScreen
 import com.semonemo.presentation.screen.auction.AuctionDetailScreen
 import com.semonemo.presentation.screen.auction.AuctionScreen
 import com.semonemo.presentation.screen.auction.register.AuctionRegisterRoute
+import com.semonemo.presentation.screen.coin.CoinRoute
 import com.semonemo.presentation.screen.detail.asset.AssetDetailRoute
 import com.semonemo.presentation.screen.detail.frame.FrameDetailRoute
 import com.semonemo.presentation.screen.frame.MomentGraph
@@ -112,8 +114,11 @@ fun MainScreen(modifier: Modifier = Modifier) {
         }
     }
 
+    val systemUiController = rememberSystemUiController()
+    systemUiController.setStatusBarColor(color = Color.Transparent, darkIcons = true)
+
     Scaffold(
-        modifier = Modifier,
+        modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         bottomBar = {
             if (visible) {
@@ -123,6 +128,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
         floatingActionButtonPosition = FabPosition.Center,
         floatingActionButton = {
             if (visible) {
+                systemUiController.setNavigationBarColor(color = Color.White)
                 val isSelected = currentRoute == ScreenDestinations.Moment.route
                 CustomFAB(
                     onClick = {
@@ -145,6 +151,8 @@ fun MainScreen(modifier: Modifier = Modifier) {
                     labelStyle =
                         if (isSelected) Typography.bodySmall.copy(fontSize = 12.sp) else Typography.labelSmall,
                 )
+            } else {
+                systemUiController.setNavigationBarColor(color = Color.Transparent)
             }
         },
     ) { _ ->
@@ -267,7 +275,9 @@ fun MainNavHost(
         ) {
             WalletRoute(
                 modifier = modifier,
-                navigateToCoinDetail = {},
+                navigateToCoinDetail = {
+                    navController.navigate(ScreenDestinations.CoinDetail.route)
+                },
                 onShowSnackBar = onShowErrorSnackBar,
             )
         }
@@ -406,11 +416,15 @@ fun MainNavHost(
         composable(
             route = ScreenDestinations.DrawAsset.route,
         ) {
-            DrawAssetScreen(
+            DrawAssetRoute(
                 modifier = modifier,
                 navigateToDone = { assetUrl ->
-                    navController.navigate(ScreenDestinations.AssetDone.createRoute(assetUrl))
+                    navController.navigate(ScreenDestinations.AssetDone.createRoute(assetUrl)) {
+                        popUpTo("imageAsset") { inclusive = true }
+                    }
                 },
+                popUpToBackStack = navController::popBackStack,
+                onErrorSnackBar = onShowErrorSnackBar,
             )
         }
 
@@ -490,6 +504,7 @@ fun MainNavHost(
                 onShowSnackBar = onShowErrorSnackBar,
             )
         }
+
         composable(
             route = ScreenDestinations.FrameSale.route,
         ) {
@@ -537,6 +552,16 @@ fun MainNavHost(
                 modifier = modifier,
                 popUpBackStack = navController::popBackStack,
                 onShowSnackBar = onShowErrorSnackBar,
+            )
+        }
+
+        composable(
+            route = ScreenDestinations.CoinDetail.route,
+        ) {
+            CoinRoute(
+                modifier = modifier,
+                onShowSnackBar = onShowErrorSnackBar,
+                popUpBackStack = navController::popBackStack,
             )
         }
     }

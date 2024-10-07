@@ -13,6 +13,7 @@ import com.semonemo.domain.model.CreateAsset
 import com.semonemo.domain.model.SellAsset
 import com.semonemo.domain.model.SellAssetDetail
 import com.semonemo.domain.repository.AssetRepository
+import com.semonemo.domain.request.PurchaseAssetRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.io.File
@@ -90,14 +91,17 @@ class AssetRepositoryImpl
                 emit(response)
             }
 
-        override suspend fun getCreateAssets(userId: Long): Flow<ApiResponse<CreateAsset>> =
+        override suspend fun getCreateAssets(userId: Long): Flow<ApiResponse<List<Asset>>> =
             flow {
                 val response =
                     emitApiResponse(
                         apiResponse = { api.getCreateAssets(userId) },
                         default = CreateAsset(),
                     )
-                emit(response)
+                when (response) {
+                    is ApiResponse.Error -> emit(response)
+                    is ApiResponse.Success -> emit(ApiResponse.Success(data = response.data.content))
+                }
             }
 
         override suspend fun likeAsset(assetSellId: Long): Flow<ApiResponse<Long>> =
@@ -144,5 +148,15 @@ class AssetRepositoryImpl
                         default = AllSellAssets(),
                     )
                 emit(response)
+            }
+
+        override suspend fun purchaseAsset(request: PurchaseAssetRequest): Flow<ApiResponse<Unit>> =
+            flow {
+                emit(
+                    emitApiResponse(
+                        apiResponse = { api.purchaseAsset(request) },
+                        default = Unit,
+                    ),
+                )
             }
     }

@@ -121,6 +121,7 @@ fun MyPageRoute(
             viewModel.unfollowUser(userId)
         },
         navigateToSaleFrameDetail = navigateToSaleFrameDetail,
+        userId = userId,
     )
 }
 
@@ -152,6 +153,7 @@ fun HandleMyPageUi(
     updateProfileImage: (Uri) -> Unit,
     followUser: () -> Unit,
     unfollowUser: () -> Unit,
+    userId: Long,
 ) {
     when (uiState) {
         MyPageUiState.Loading -> LoadingDialog(modifier = Modifier.fillMaxSize())
@@ -178,6 +180,7 @@ fun HandleMyPageUi(
                 likeAssets = uiState.likeAssets,
                 likedFrames = uiState.likedFrames,
                 navigateToSaleFrameDetail = navigateToSaleFrameDetail,
+                userId = userId,
             )
     }
 }
@@ -205,8 +208,14 @@ fun MyPageScreen(
     assetList: List<Asset> = listOf(),
     likeAssets: List<SellAssetDetail> = listOf(),
     likedFrames: List<FrameDetail> = listOf(),
+    userId: Long = -1L,
 ) {
-    val tabs = listOf("프레임", "에셋", "찜")
+    val tabs =
+        if (userId == -1L) {
+            listOf("프레임", "에셋", "찜")
+        } else {
+            listOf("프레임", "에셋")
+        }
     val selectedIndex = remember { mutableIntStateOf(0) }
     val singlePhotoPickerLauncher =
         rememberLauncherForActivityResult(

@@ -45,7 +45,7 @@ class AssetSaleViewModel
                                 _uiState.update {
                                     it.copy(
                                         isLoading = false,
-                                        assets = response.data.content,
+                                        assets = response.data,
                                     )
                                 }
                             }

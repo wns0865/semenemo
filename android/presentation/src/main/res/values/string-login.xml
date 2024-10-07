@@ -10,4 +10,5 @@
     <string name="login_title_keywords">MetaMask</string>
     <string name="login_content_keywords">필수적</string>
     <string name="login_dialog_content">"세모네모를 이용하기 위해서는\nMetaMask 연동이 필수적이에요.   "</string>
+    <string name="signup_loading_message">"회원가입 진행중이에요! "</string>
 </resources>

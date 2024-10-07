@@ -115,18 +115,6 @@ dependencies {
     // web3j
     implementation(libs.web3j.core)
 
-    // capture
-    implementation(libs.capturable)
-
-    // Gson
-    implementation("com.google.code.gson:gson:2.8.8")
-
-    // camera
-    implementation(libs.bundles.camera)
-
-    // PermissionState
-    implementation(libs.accompanist.permissions)
-
     // websocket
     implementation(libs.krossbow.stomp.core)
     implementation(libs.krossbow.websocket.okhttp)
@@ -138,4 +126,22 @@ dependencies {
 
     // pager
     implementation(libs.androidx.foundation)
+
+    // camera
+    implementation(libs.bundles.camera)
+
+    // PermissionState
+    implementation(libs.accompanist.permissions)
+
+    // graph
+    implementation(libs.bundles.graph)
+
+    // gson
+    implementation(libs.gson)
+
+    // capture
+    implementation(libs.capturable)
+
+    //
+    implementation(libs.accompanist.systemuicontroller)
 }

@@ -124,6 +124,7 @@ fun WalletContent(
         modifier = modifier,
         userName = uiState.nickname,
         coinPrice = uiState.coinPrice.toDouble(),
+        changePercent = uiState.coinChanged,
         coinHistory = uiState.coinHistory,
         userCoin = uiState.userCoin,
         userId = uiState.userId,
@@ -156,7 +157,7 @@ fun WalletScreen(
     userCoin: Coin = Coin(),
     coinPrice: Double = 100000.0,
     changePercent: Double = 8.7,
-    changePrice: Double = 8300.0,
+    changePrice: Double = coinPrice * changePercent * 0.01,
     coinHistory: List<CoinHistory> = listOf(),
     userId: Long = 0L,
     sendExchangePayableTransaction: (String) -> Unit = {},
@@ -179,7 +180,6 @@ fun WalletScreen(
             modifier = modifier,
             userName = userName,
             userCoin = userCoin,
-            navigateToCoinDetail = navigateToCoinDetail,
             sendExchangePayableTransaction = sendExchangePayableTransaction,
             sendExchangeCoinTransaction = sendExchangeCoinTransaction,
             onShowSnackBar = onShowSnackBar,
@@ -188,6 +188,7 @@ fun WalletScreen(
         WalletCoinBox(
             modifier = modifier,
             coinPrice = coinPrice,
+            navigateToCoinDetail = navigateToCoinDetail,
             changePercent = changePercent,
             changePrice = changePrice,
         )
