@@ -1,8 +1,10 @@
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
@@ -47,7 +49,8 @@ fun BottomNavigationBar(
     BottomAppBar(
         modifier =
             modifier
-                .fillMaxHeight(0.09f)
+                .fillMaxHeight(0.07f)
+                .navigationBarsPadding()
                 .shadow(
                     elevation = 20.dp,
                     shape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp),

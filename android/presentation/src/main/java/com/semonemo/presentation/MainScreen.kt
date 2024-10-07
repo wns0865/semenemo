@@ -23,13 +23,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.semonemo.domain.model.User
 import com.semonemo.presentation.navigation.CustomFAB
 import com.semonemo.presentation.navigation.ScreenDestinations
 import com.semonemo.presentation.screen.aiAsset.AiAssetScreen
 import com.semonemo.presentation.screen.aiAsset.AssetDoneRoute
 import com.semonemo.presentation.screen.aiAsset.draw.DrawAssetRoute
-import com.semonemo.presentation.screen.aiAsset.draw.DrawAssetScreen
 import com.semonemo.presentation.screen.aiAsset.prompt.PromptAssetScreen
 import com.semonemo.presentation.screen.auction.AuctionProcessScreen
 import com.semonemo.presentation.screen.auction.AuctionScreen
@@ -55,6 +55,7 @@ import com.semonemo.presentation.screen.wallet.WalletRoute
 import com.semonemo.presentation.theme.Gray01
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Typography
+import com.semonemo.presentation.theme.White
 import com.semonemo.presentation.util.toUriOrDefault
 import kotlinx.coroutines.launch
 
@@ -113,8 +114,11 @@ fun MainScreen(modifier: Modifier = Modifier) {
         }
     }
 
+    val systemUiController = rememberSystemUiController()
+    systemUiController.setStatusBarColor(color = Color.Transparent, darkIcons = true)
+
     Scaffold(
-        modifier = Modifier,
+        modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         bottomBar = {
             if (visible) {
@@ -124,6 +128,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
         floatingActionButtonPosition = FabPosition.Center,
         floatingActionButton = {
             if (visible) {
+                systemUiController.setNavigationBarColor(color = Color.White)
                 val isSelected = currentRoute == ScreenDestinations.Moment.route
                 CustomFAB(
                     onClick = {
@@ -146,6 +151,8 @@ fun MainScreen(modifier: Modifier = Modifier) {
                     labelStyle =
                         if (isSelected) Typography.bodySmall.copy(fontSize = 12.sp) else Typography.labelSmall,
                 )
+            } else {
+                systemUiController.setNavigationBarColor(color = Color.Transparent)
             }
         },
     ) { _ ->
