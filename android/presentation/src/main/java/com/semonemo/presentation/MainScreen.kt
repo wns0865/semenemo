@@ -31,8 +31,9 @@ import com.semonemo.presentation.screen.aiAsset.AiAssetScreen
 import com.semonemo.presentation.screen.aiAsset.AssetDoneRoute
 import com.semonemo.presentation.screen.aiAsset.draw.DrawAssetRoute
 import com.semonemo.presentation.screen.aiAsset.prompt.PromptAssetScreen
-import com.semonemo.presentation.screen.auction.AuctionProcessScreen
+import com.semonemo.presentation.screen.auction.AuctionDetailScreen
 import com.semonemo.presentation.screen.auction.AuctionScreen
+import com.semonemo.presentation.screen.auction.register.AuctionRegisterRoute
 import com.semonemo.presentation.screen.coin.CoinRoute
 import com.semonemo.presentation.screen.detail.asset.AssetDetailRoute
 import com.semonemo.presentation.screen.detail.frame.FrameDetailRoute
@@ -55,7 +56,6 @@ import com.semonemo.presentation.screen.wallet.WalletRoute
 import com.semonemo.presentation.theme.Gray01
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Typography
-import com.semonemo.presentation.theme.White
 import com.semonemo.presentation.util.toUriOrDefault
 import kotlinx.coroutines.launch
 
@@ -257,12 +257,15 @@ fun MainNavHost(
         ) {
             AuctionScreen(
                 modifier = modifier,
-                navigateToAuctionProcess = { auctionId ->
+                navigateToAuctionDetail = { auctionId ->
                     navController.navigate(
-                        ScreenDestinations.AuctionProcess.createRoute(
+                        ScreenDestinations.AuctionDetail.createRoute(
                             auctionId,
                         ),
                     )
+                },
+                navigateToAuctionRegister = {
+                    navController.navigate(ScreenDestinations.AuctionRegister.route)
                 },
             )
         }
@@ -455,12 +458,12 @@ fun MainNavHost(
         )
 
         composable(
-            route = ScreenDestinations.AuctionProcess.route,
-            arguments = ScreenDestinations.AuctionProcess.arguments,
+            route = ScreenDestinations.AuctionDetail.route,
+            arguments = ScreenDestinations.AuctionDetail.arguments,
         ) {
-            AuctionProcessScreen(
+            AuctionDetailScreen(
                 modifier = modifier,
-                auctionId = it.arguments?.getString("auctionId") ?: "",
+                auctionId = it.arguments?.getLong("auctionId") ?: -1L,
             )
         }
 
@@ -489,6 +492,16 @@ fun MainNavHost(
                     )
                 },
                 onShowErrorSnackBar = { onShowErrorSnackBar(it) },
+            )
+        }
+
+        composable(
+            route = ScreenDestinations.AuctionRegister.route,
+        ) {
+            AuctionRegisterRoute(
+                modifier = modifier,
+                popUpBackStack = navController::popBackStack,
+                onShowSnackBar = onShowErrorSnackBar,
             )
         }
 
