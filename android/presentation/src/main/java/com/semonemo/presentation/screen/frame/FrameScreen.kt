@@ -649,23 +649,26 @@ fun ShowAssets(
 
         val imageTransformableState =
             rememberTransformableState { zoomChange, offsetChange, rotationChange ->
-                imageScale = (imageScale * zoomChange).coerceIn(0.25f, 1.5f)
+                imageScale = (imageScale * zoomChange).coerceIn(0.25f, 3f)
                 imageRotation += rotationChange
 
-                val newOffsetX = imageOffsetX + offsetChange.x * imageScale
-                val newOffsetY = imageOffsetY + offsetChange.y * imageScale
+                imageOffsetX += offsetChange.x * imageScale
+                imageOffsetY += offsetChange.y * imageScale
 
-                val maxOffsetX = (parentSize.width - assetSize.width * imageScale)
-                val maxOffsetY = (contentSize.height - assetSize.height * imageScale)
+//                val newOffsetX = imageOffsetX + offsetChange.x * imageScale
+//                val newOffsetY = imageOffsetY + offsetChange.y * imageScale
+//
+//                val maxOffsetX = (parentSize.width - assetSize.width * imageScale)
+//                val maxOffsetY = (contentSize.height - assetSize.height * imageScale)
 
                 // 최소값과 최대값을 안전하게 계산
-                val minX = -maxOffsetX.coerceAtLeast(0f)
-                val maxX = maxOffsetX.coerceAtLeast(0f)
-                val minY = -maxOffsetY.coerceAtLeast(0f)
-                val maxY = maxOffsetY.coerceAtLeast(0f)
+//                val minX = -maxOffsetX.coerceAtLeast(0f)
+//                val maxX = maxOffsetX.coerceAtLeast(0f)
+//                val minY = -maxOffsetY.coerceAtLeast(0f)
+//                val maxY = maxOffsetY.coerceAtLeast(0f)
 
-                imageOffsetX = newOffsetX.coerceIn(minX, maxX)
-                imageOffsetY = newOffsetY.coerceIn(minY, maxY)
+//                imageOffsetX = newOffsetX.coerceIn(minX, maxX)
+//                imageOffsetY = newOffsetY.coerceIn(minY, maxY)
 
                 asset.offsetX = imageOffsetX
                 asset.offsetY = imageOffsetY
