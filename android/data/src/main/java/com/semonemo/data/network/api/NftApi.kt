@@ -88,4 +88,9 @@ interface NftApi {
         @Path("marketId") marketId: Long,
         @Path("txHash") txHash: String,
     ): BaseResponse<Unit>
+
+    @GET("api/nft/users/{creator}/creator")
+    suspend fun getCreatorSaleNft(
+        @Path("creator") creator: Long,
+    ): BaseResponse<SearchFrame>
 }
