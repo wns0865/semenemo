@@ -40,6 +40,7 @@ fun NavGraphBuilder.MomentGraph(
                 viewModel = viewModel,
                 navigateToFrameDone = { navController.navigate(ScreenDestinations.FrameDone.route) },
                 onErrorSnackBar = onErrorSnackBar,
+                popBackStack = navController::popBackStack,
             )
         }
 

@@ -28,8 +28,9 @@ import com.semonemo.presentation.navigation.CustomFAB
 import com.semonemo.presentation.navigation.ScreenDestinations
 import com.semonemo.presentation.screen.aiAsset.AiAssetScreen
 import com.semonemo.presentation.screen.aiAsset.AssetDoneRoute
-import com.semonemo.presentation.screen.aiAsset.DrawAssetScreen
-import com.semonemo.presentation.screen.aiAsset.PromptAssetScreen
+import com.semonemo.presentation.screen.aiAsset.draw.DrawAssetRoute
+import com.semonemo.presentation.screen.aiAsset.draw.DrawAssetScreen
+import com.semonemo.presentation.screen.aiAsset.prompt.PromptAssetScreen
 import com.semonemo.presentation.screen.auction.AuctionProcessScreen
 import com.semonemo.presentation.screen.auction.AuctionScreen
 import com.semonemo.presentation.screen.detail.asset.AssetDetailRoute
@@ -402,11 +403,15 @@ fun MainNavHost(
         composable(
             route = ScreenDestinations.DrawAsset.route,
         ) {
-            DrawAssetScreen(
+            DrawAssetRoute(
                 modifier = modifier,
                 navigateToDone = { assetUrl ->
-                    navController.navigate(ScreenDestinations.AssetDone.createRoute(assetUrl))
+                    navController.navigate(ScreenDestinations.AssetDone.createRoute(assetUrl)) {
+                        popUpTo("imageAsset") { inclusive = true }
+                    }
                 },
+                popUpToBackStack = navController::popBackStack,
+                onErrorSnackBar = onShowErrorSnackBar,
             )
         }
 
