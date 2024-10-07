@@ -10,4 +10,5 @@ data class WalletUiState(
     val isLoading: Boolean = false,
     val nickname: String = "",
     val userId: Long = -1L,
+    val coinChanged: Double = 0.0,
 )

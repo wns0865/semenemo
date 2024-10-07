@@ -52,7 +52,8 @@ class WalletViewModel
                 combine(
                     coinRepository.getCoinHistory(),
                     coinRepository.getBalance(),
-                ) { historyInfo, coinInfo ->
+                    coinRepository.getCoinRate(),
+                ) { historyInfo, coinInfo, rateInto ->
                     var currentState = WalletUiState()
                     currentState =
                         when (coinInfo) {
@@ -81,6 +82,19 @@ class WalletViewModel
                                 )
                             }
                         }
+                    currentState =
+                        when (rateInto) {
+                            is ApiResponse.Error -> {
+                                _uiEvent.emit(WalletUiEvent.Error(rateInto.errorMessage))
+                                currentState
+                            }
+
+                            is ApiResponse.Success ->
+                                currentState.copy(
+                                    coinPrice = rateInto.data.price,
+                                    coinChanged = rateInto.data.changed,
+                                )
+                        }
                     currentState
                 }.onStart {
                     _uiState.update { it.copy(isLoading = true) }
@@ -90,6 +104,8 @@ class WalletViewModel
                             it.copy(
                                 coinHistory = updateState.coinHistory,
                                 userCoin = updateState.userCoin,
+                                coinPrice = updateState.coinPrice,
+                                coinChanged = updateState.coinChanged,
                             )
                         }
                     }
