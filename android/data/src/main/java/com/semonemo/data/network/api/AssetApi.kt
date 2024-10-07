@@ -2,6 +2,7 @@ package com.semonemo.data.network.api
 
 import com.semonemo.data.network.response.BaseResponse
 import com.semonemo.data.network.response.GetAssetsResponse
+import com.semonemo.data.network.response.GetCreatorAssetsResponse
 import com.semonemo.data.network.response.LikeResponse
 import com.semonemo.domain.model.AllSellAssets
 import com.semonemo.domain.model.Asset
@@ -57,7 +58,7 @@ interface AssetApi {
     ): BaseResponse<AllSellAssets>
 
     // 유저 제작 에셋 조회
-    @GET("api/asset/creator")
+    @GET("api/asset/user")
     suspend fun getCreateAssets(
         @Query("userId") userId: Long,
     ): BaseResponse<CreateAsset>
@@ -89,4 +90,9 @@ interface AssetApi {
     suspend fun purchaseAsset(
         @Body purchaseAssetRequest: PurchaseAssetRequest,
     ): BaseResponse<Unit>
+
+    @GET("api/asset/creator")
+    suspend fun getCreatorAsset(
+        @Query("userId") userId: Long,
+    ) : BaseResponse<GetCreatorAssetsResponse>
 }

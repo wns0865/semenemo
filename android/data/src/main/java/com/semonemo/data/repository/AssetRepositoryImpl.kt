@@ -2,6 +2,7 @@ package com.semonemo.data.repository
 
 import com.semonemo.data.network.api.AssetApi
 import com.semonemo.data.network.response.GetAssetsResponse
+import com.semonemo.data.network.response.GetCreatorAssetsResponse
 import com.semonemo.data.network.response.LikeResponse
 import com.semonemo.data.network.response.emitApiResponse
 import com.semonemo.data.util.toMultiPart
@@ -158,5 +159,36 @@ class AssetRepositoryImpl
                         default = Unit,
                     ),
                 )
+            }
+
+        override suspend fun getCreatorAsset(userId: Long): Flow<ApiResponse<List<SellAssetDetail>>> =
+            flow {
+                val response =
+                    emitApiResponse(
+                        apiResponse = { api.getCreatorAsset(userId) },
+                        default = GetCreatorAssetsResponse(),
+                    )
+                when (response) {
+                    is ApiResponse.Error -> emit(response)
+                    is ApiResponse.Success ->
+                        emit(
+                            ApiResponse.Success(
+                                data =
+                                    response.data.content.map {
+                                        SellAssetDetail(
+                                            assetSellId = it.assetSellId,
+                                            assetId = it.assetId,
+                                            creator = it.creator,
+                                            createAt = it.createdAt,
+                                            price = it.price,
+                                            imageUrl = it.imageUrl,
+                                            hits = it.hits,
+                                            isLiked = it.isLiked,
+                                            likeCount = it.likedCount,
+                                        )
+                                    },
+                            ),
+                        )
+                }
             }
     }
