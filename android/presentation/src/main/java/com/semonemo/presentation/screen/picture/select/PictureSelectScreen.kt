@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -24,6 +25,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -51,6 +53,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -193,39 +196,46 @@ fun PictureSelectScreen(
                     .navigationBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Spacer(modifier = Modifier.height(20.dp))
-            TopAppBar(modifier = Modifier, onNavigationClick = popUpBackStack, actionButtons = {
-                val isEnabled = selectedPictures.value.size == type.amount
-                CreatePictureButton(
-                    modifier = Modifier,
-                    isEnabled = isEnabled,
-                    onClick = {
-                        if(isEnabled) {
-                            scope.launch {
-                                val bitmapAsync = captureController.captureAsync()
-                                try {
-                                    val frame = frames[selectedFrameIndex.value]
-                                    val bitmap = bitmapAsync.await().asAndroidBitmap()
-                                    saveBitmapToGallery(
-                                        context = context,
-                                        bitmap = bitmap,
-                                        nickname = frame.owner.nickname,
-                                        frameTitle = frame.nftInfo.data.title,
-                                        onSuccess = {
-                                            actionWithSnackBar(it)
-                                            popUpBackStack()
-                                        },
-                                    )
-                                } catch (error: Throwable) {
-                                    onShowSnackBar(error.message ?: "")
+            Spacer(modifier = Modifier.height(10.dp))
+            TopAppBar(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight(),
+                onNavigationClick = popUpBackStack,
+                actionButtons = {
+                    val isEnabled = selectedPictures.value.size == type.amount
+                    CreatePictureButton(
+                        modifier = Modifier,
+                        isEnabled = isEnabled,
+                        onClick = {
+                            if (isEnabled) {
+                                scope.launch {
+                                    val bitmapAsync = captureController.captureAsync()
+                                    try {
+                                        val frame = frames[selectedFrameIndex.intValue]
+                                        val bitmap = bitmapAsync.await().asAndroidBitmap()
+                                        saveBitmapToGallery(
+                                            context = context,
+                                            bitmap = bitmap,
+                                            nickname = frame.owner.nickname,
+                                            frameTitle = frame.nftInfo.data.title,
+                                            onSuccess = {
+                                                actionWithSnackBar(it)
+                                                popUpBackStack()
+                                            },
+                                        )
+                                    } catch (error: Throwable) {
+                                        onShowSnackBar(error.message ?: "")
+                                    }
                                 }
+                            } else {
+                                onShowSnackBar("사진을 선택해 주세요!")
                             }
-                        } else {
-                            onShowSnackBar("사진을 선택해주세요!")
-                        }
-                    },
-                )
-            })
+                        },
+                    )
+                },
+            )
             Spacer(modifier = Modifier.height(10.dp))
             Box(
                 modifier =
@@ -237,8 +247,8 @@ fun PictureSelectScreen(
             ) {
                 if (selectedFrameIndex.value == -1) {
                     Text(
-                        text = "프레임을 선택해주세요! 📸",
-                        style = Typography.bodyMedium,
+                        text = "프레임을 선택해 주세요! 📸",
+                        style = Typography.bodyMedium.copy(fontSize = 15.sp),
                         color = Gray02,
                     )
                     selectedPictures.value.clear()
@@ -409,22 +419,31 @@ fun PictureSelectScreen(
             Spacer(modifier = Modifier.height(10.dp))
             HorizontalDivider(
                 modifier = Modifier.fillMaxWidth(),
-                thickness = 2.dp,
+                thickness = 1.dp,
                 color = GunMetal,
             )
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(15.dp))
             Row(
                 modifier =
                     Modifier
                         .align(Alignment.Start)
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .padding(start = 15.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Checkbox(
+                    modifier = Modifier.size(10.dp),
                     checked = check.value,
                     onCheckedChange = { check.value = !check.value },
+                    colors =
+                        CheckboxDefaults.colors(
+                            checkedColor = GunMetal,
+                            uncheckedColor = GunMetal,
+                            checkmarkColor = Color.White,
+                        ),
                 )
-                Text(text = stringResource(R.string.picture_date), style = Typography.bodySmall)
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(text = stringResource(R.string.picture_date), style = Typography.labelMedium)
                 Spacer(modifier = Modifier.width(20.dp))
                 ColorPalette(
                     colors = frameBackGroundColor,
@@ -434,14 +453,13 @@ fun PictureSelectScreen(
                         selectedColor = it
                     },
                 )
-                Spacer(modifier = Modifier.weight(1f))
             }
-
+            Spacer(modifier = Modifier.height(15.dp))
             Text(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .padding(start = 15.dp)
+                        .padding(start = 12.dp)
                         .align(Alignment.Start),
                 text = stringResource(R.string.my_frame),
                 style = Typography.bodySmall,
