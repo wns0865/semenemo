@@ -66,7 +66,7 @@ import com.semonemo.presentation.component.BrushPalette
 import com.semonemo.presentation.component.ColorPalette
 import com.semonemo.presentation.component.CustomTab
 import com.semonemo.presentation.component.LongBlackButton
-import com.semonemo.presentation.screen.aiAsset.AssetButtonList
+import com.semonemo.presentation.screen.aiAsset.draw.AssetButtonList
 import com.semonemo.presentation.theme.BlackGradient
 import com.semonemo.presentation.theme.BlueGradient
 import com.semonemo.presentation.theme.FrameBlue
