@@ -412,13 +412,18 @@ fun FrameSaleScreen(
                             .height(48.dp),
                     price = price.toString(),
                     onPriceChange = { newPrice ->
-                        price = newPrice.toLong()
+                        price =
+                            if (newPrice.isEmpty()) {
+                                0L
+                            } else {
+                                newPrice.toLong()
+                            }
                     },
                 )
                 // 프레임 불러오기 Success면 LongBlackButton
                 // 다른 상태면 LongUnableButton
                 Spacer(modifier = Modifier.height(30.dp))
-                if (selectedFrame != null && price.toLong() != 0L) {
+                if (selectedFrame != null && price != 0L) {
                     LongBlackButton(
                         modifier =
                             Modifier
