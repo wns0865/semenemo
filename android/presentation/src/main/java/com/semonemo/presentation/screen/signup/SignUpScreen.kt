@@ -7,6 +7,8 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,6 +40,7 @@ import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BoldTextWithKeywords
 import com.semonemo.presentation.component.CustomPasswordTextField
 import com.semonemo.presentation.component.CustomTextField
+import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.component.LongUnableButton
 import com.semonemo.presentation.theme.Main01
@@ -95,6 +98,20 @@ fun SignUpContent(
             signUpViewModel.updateProfileImage(image)
         },
     )
+
+    if (uiState.isLoading) {
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .clickable(enabled = false) {},
+        )
+        LoadingDialog(
+            lottieRes = R.raw.normal_load,
+            loadingMessage = stringResource(R.string.signup_loading_message),
+            subMessage = stringResource(R.string.loading_sub_message),
+        )
+    }
 }
 
 @Composable
@@ -154,7 +171,14 @@ fun SignUpScreen(
                 modifier =
                     Modifier
                         .size(140.dp)
-                        .clip(shape = CircleShape),
+                        .clip(shape = CircleShape)
+                        .noRippleClickable {
+                            singlePhotoPickerLauncher.launch(
+                                PickVisualMediaRequest(
+                                    ActivityResultContracts.PickVisualMedia.ImageOnly,
+                                ),
+                            )
+                        },
             )
         } else {
             Image(

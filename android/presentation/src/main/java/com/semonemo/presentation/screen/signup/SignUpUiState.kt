@@ -7,6 +7,7 @@ data class SignUpUiState(
     val nickname: String = "",
     val password: String = "",
     val profileImage: File? = null,
+    val isLoading: Boolean = false,
 ) {
     fun validate(): Boolean =
         profileImage != null &&
