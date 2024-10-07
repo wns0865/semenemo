@@ -23,7 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.semonemo.presentation.component.LiveAuctionCard
+import com.semonemo.presentation.screen.auction.AuctionViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -31,7 +33,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun ShortAuctionReadScreen(
     modifier: Modifier = Modifier,
-    navigateToAuctionProcess: (String) -> Unit = {},
+    viewModel: AuctionViewModel = hiltViewModel(),
+    navigateToAuctionDetail: (Long) -> Unit = {},
 ) {
     Column(
         modifier =
@@ -46,12 +49,12 @@ fun ShortAuctionReadScreen(
         // 사용자가 마지막으로 스크롤한 시간을 추적
         var lastInteractionTime by remember { mutableStateOf(System.currentTimeMillis()) }
         // 경매 데이터
-        val auctionDataList = getSampleAuctionData()
+        val auctionDataList = viewModel.shortAuctionList.value
 
-        // 사용자가 1초 동안 상호작용하지 않았을 때 자동으로 스크롤 시작
+        // 사용자가 5초 동안 상호작용하지 않았을 때 자동으로 스크롤 시작
         LaunchedEffect(lastInteractionTime) {
             while (true) {
-                if (System.currentTimeMillis() - lastInteractionTime > 1000) {
+                if (System.currentTimeMillis() - lastInteractionTime > 5000) {
                     coroutineScope.launch {
                         val itemWidth =
                             listState.layoutInfo.visibleItemsInfo
@@ -96,62 +99,24 @@ fun ShortAuctionReadScreen(
                         }
                     },
         ) {
-            items(auctionDataList) { auctionData ->
+            items(auctionDataList) { data ->
                 LiveAuctionCard(
-                    viewerCount = auctionData.viewerCount,
-                    likeCount = auctionData.likeCount,
-                    price = auctionData.price,
-                    imageUrl = auctionData.imageUrl,
                     modifier =
                         Modifier
                             .width(160.dp) // 카드의 너비 설정
                             .height(300.dp),
-                    onClick = navigateToAuctionProcess
+                    id = data.id,
+                    status = data.status,
+                    nftId = data.nftId,
+                    nftImageUrl = data.nftImageUrl,
+                    participants = data.participants,
+                    startPrice = data.startPrice,
+                    currentBid = data.currentBid,
+                    startTime = data.startTime,
+                    endTime = data.endTime,
+                    onClick = navigateToAuctionDetail,
                 )
             }
         }
     }
 }
-
-// 샘플 데이터 생성을 위한 데이터 클래스와 함수는 그대로 유지
-data class AuctionData(
-    val viewerCount: Int,
-    val likeCount: Int,
-    val price: Int,
-    val imageUrl: String,
-)
-
-fun getSampleAuctionData(): List<AuctionData> =
-    listOf(
-        AuctionData(
-            123,
-            20,
-            300,
-            "https://static.wikia.nocookie.net/shinchan/images/b/b2/%EC%8B%A0%EC%A7%B1%EA%B5%AC2.JPG/revision/latest?cb=20131026025408&path-prefix=ko",
-        ),
-        AuctionData(
-            456,
-            30,
-            500,
-            "https://i.namu.wiki/i/imS20jFHx8ISktmwqwfs90JMvIDykHuaiGZKZfWJUTBeYs6ovoqIBotk7trFa8nWj7dpWp_9Mzz2rv1TMHLskg.webp",
-        ),
-        AuctionData(
-            789,
-            40,
-            700,
-            "https://kr-cdn.spooncast.net/profiles/v/9MO6KvsperDEG/d5b9099a-859a-4cc8-8b81-fa23bd3e375a.jpg",
-        ),
-        AuctionData(
-            789,
-            42,
-            500,
-            "https://i.namu.wiki/i/2NE9ni_Jk32mN-zEQrswpjEA_iZ1lK_gbDo2tG44wlLxmN-0M4wp8ALSIX-Qxy1yK1fpBqEO1jDXxWyViV_pBA.webp",
-        ),
-        AuctionData(
-            111,
-            22,
-            33,
-            "https://i.namu.wiki/i/zfd-NOPP39XJ49BUBLXu8d3SAPsYnpvqYviuQHzSe8FqI6DhYAaHp5Nx30dWi_Q5XGUcbczMfuSp1lOMAN3NvA.webp",
-        ),
-        // 더 많은 샘플 데이터 추가...
-    )

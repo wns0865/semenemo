@@ -91,13 +91,13 @@ fun CoinContent(
     if (uiState.isLoading) {
         Box(
             modifier =
-                Modifier
-                    .fillMaxSize()
-                    .clickable(enabled = false) {},
+            Modifier
+                .fillMaxSize()
+                .clickable(enabled = false) {},
         )
         LoadingDialog(
             lottieRes = R.raw.normal_load,
-            loadingMessage = stringResource(R.string.frame_loading_title),
+            loadingMessage = stringResource(R.string.loading_coin_message),
             subMessage = stringResource(R.string.loading_sub_message),
         )
     }
@@ -114,17 +114,17 @@ fun CoinScreen(
 ) {
     Box(
         modifier =
-            modifier
-                .fillMaxSize()
-                .background(brush = Main01),
+        modifier
+            .fillMaxSize()
+            .background(brush = Main01),
     ) {
         Column(
             modifier =
-                Modifier
-                    .wrapContentHeight()
-                    .statusBarsPadding()
-                    .navigationBarsPadding()
-                    .padding(horizontal = 17.dp, vertical = 30.dp),
+            Modifier
+                .wrapContentHeight()
+                .statusBarsPadding()
+                .navigationBarsPadding()
+                .padding(horizontal = 17.dp, vertical = 30.dp),
         ) {
             TopAppBar(modifier = Modifier, title = {
                 Image(

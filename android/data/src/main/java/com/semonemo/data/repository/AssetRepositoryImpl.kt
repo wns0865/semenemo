@@ -91,14 +91,17 @@ class AssetRepositoryImpl
                 emit(response)
             }
 
-        override suspend fun getCreateAssets(userId: Long): Flow<ApiResponse<CreateAsset>> =
+        override suspend fun getCreateAssets(userId: Long): Flow<ApiResponse<List<Asset>>> =
             flow {
                 val response =
                     emitApiResponse(
                         apiResponse = { api.getCreateAssets(userId) },
                         default = CreateAsset(),
                     )
-                emit(response)
+                when (response) {
+                    is ApiResponse.Error -> emit(response)
+                    is ApiResponse.Success -> emit(ApiResponse.Success(data = response.data.content))
+                }
             }
 
         override suspend fun likeAsset(assetSellId: Long): Flow<ApiResponse<Long>> =

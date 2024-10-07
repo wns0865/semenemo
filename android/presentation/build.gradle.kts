@@ -115,11 +115,17 @@ dependencies {
     // web3j
     implementation(libs.web3j.core)
 
-    // capture
-    implementation(libs.capturable)
+    // websocket
+    implementation(libs.krossbow.stomp.core)
+    implementation(libs.krossbow.websocket.okhttp)
+    implementation(libs.krossbow.stomp.moshi)
 
-    // Gson
-    implementation(libs.gson)
+    // moshi
+    implementation(libs.moshi)
+    implementation(libs.moshi.kotlin)
+
+    // pager
+    implementation(libs.androidx.foundation)
 
     // camera
     implementation(libs.bundles.camera)
@@ -130,5 +136,12 @@ dependencies {
     // graph
     implementation(libs.bundles.graph)
 
-    implementation ("com.google.accompanist:accompanist-systemuicontroller:0.17.0")
+    // gson
+    implementation(libs.gson)
+
+    // capture
+    implementation(libs.capturable)
+
+    //
+    implementation(libs.accompanist.systemuicontroller)
 }

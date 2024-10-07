@@ -2,6 +2,7 @@ package com.semonemo.data.di
 
 import com.semonemo.data.network.api.AiApi
 import com.semonemo.data.network.api.AssetApi
+import com.semonemo.data.network.api.AuctionApi
 import com.semonemo.data.network.api.AuthApi
 import com.semonemo.data.network.api.CoinApi
 import com.semonemo.data.network.api.IpfsApi
@@ -66,4 +67,10 @@ object ApiModule {
     fun provideCoinApi(
         @NetworkModule.BaseClient retrofit: Retrofit,
     ): CoinApi = retrofit.create()
+
+    @Provides
+    @Singleton
+    fun provideAuctionApi(
+        @NetworkModule.BaseClient retrofit: Retrofit,
+    ): AuctionApi = retrofit.create()
 }
