@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -142,7 +143,7 @@ fun SignUpScreen(
         modifier =
             modifier
                 .background(brush = Main01)
-                .padding(top = 65.dp)
+                .padding(top = 50.dp)
                 .addFocusCleaner(focusManager),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -163,7 +164,7 @@ fun SignUpScreen(
             normalStyle = Typography.labelLarge.copy(fontSize = 25.sp),
         )
 
-        Spacer(modifier = Modifier.weight(0.1f))
+        Spacer(modifier = Modifier.fillMaxHeight(0.1f))
         if (profile.isNotBlank()) {
             GlideImage(
                 imageModel = profile.toUri(),
@@ -197,7 +198,7 @@ fun SignUpScreen(
                 contentDescription = "",
             )
         }
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.fillMaxHeight(0.1f))
         CustomTextField(
             modifier = Modifier.fillMaxWidth(0.88f),
             focusManager = focusManager,
@@ -207,7 +208,6 @@ fun SignUpScreen(
             onValueChange = { updateNickname(it) },
             placeholder = stringResource(R.string.input_nickname_message),
         )
-        Spacer(modifier = Modifier.height(30.dp))
         CustomPasswordTextField(
             modifier = Modifier.fillMaxWidth(0.88f),
             focusManager = focusManager,
