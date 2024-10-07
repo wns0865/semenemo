@@ -77,6 +77,7 @@ fun AssetDetailRoute(
     onShowSnackBar: (String) -> Unit = {},
     viewModel: AssetDetailViewModel = hiltViewModel(),
     nftViewModel: NftViewModel = hiltViewModel(),
+    navigateToDetail: (Long) -> Unit = {},
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
     AssetDetailContent(
@@ -110,6 +111,7 @@ fun AssetDetailRoute(
                 contractAddress = BuildConfig.SYSTEM_CONTRACT_ADDRESS,
             )
         },
+        navigateToDetail = navigateToDetail,
     )
 }
 
@@ -123,6 +125,7 @@ fun AssetDetailContent(
     uiState: AssetDetailUiState,
     onClickedLikeAsset: (Boolean) -> Unit = {},
     sendTransaction: (Long) -> Unit = {},
+    navigateToDetail: (Long) -> Unit = {},
 ) {
     LaunchedEffect(uiEvent) {
         uiEvent.collectLatest { event ->
@@ -150,6 +153,7 @@ fun AssetDetailContent(
         onClickedPurchase = onClickedPurchase,
         canPurchase = (uiState.userId == asset.creator.userId).not(),
         creatorAssets = uiState.creatorAssets,
+        navigateToDetail = navigateToDetail,
     )
     if (uiState.isLoading) {
         Box(
@@ -182,6 +186,7 @@ fun AssetDetailScreen(
     onClickedPurchase: (Long) -> Unit = {},
     canPurchase: Boolean = true,
     creatorAssets: List<SellAssetDetail> = listOf(),
+    navigateToDetail: (Long) -> Unit = {},
 ) {
     Surface(
         modifier =
@@ -317,7 +322,9 @@ fun AssetDetailScreen(
                                             width = 1.dp,
                                             shape = RoundedCornerShape(10.dp),
                                             color = Gray03,
-                                        ),
+                                        ).noRippleClickable {
+                                            navigateToDetail(asset.assetSellId)
+                                        },
                                 imageModel = asset.imageUrl,
                                 contentScale = ContentScale.Inside,
                             )
