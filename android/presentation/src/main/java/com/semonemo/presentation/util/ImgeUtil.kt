@@ -36,14 +36,22 @@ fun saveBase64ParseImageToFile(
     base64Uri: String,
 ): Uri? {
     val base64String = base64Uri.replace("data:image/png;base64,", "")
-    val imageBytes = Base64.getDecoder().decode(base64String)
-    val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-    return if (bitmap != null) {
-        saveBitmapToFile(context, bitmap, "image_${System.currentTimeMillis()}.png")
-    } else {
+    val cleanedBase64String = base64String.replace("\\s".toRegex(), "")
+
+    return try {
+        val imageBytes = Base64.getDecoder().decode(cleanedBase64String)
+        val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+
+        if (bitmap != null) {
+            saveBitmapToFile(context, bitmap, "image_${System.currentTimeMillis()}.png")
+        } else {
+            null
+        }
+    } catch (e: IllegalArgumentException) {
         null
     }
 }
+
 
 fun saveBitmapToFile(
     context: Context,

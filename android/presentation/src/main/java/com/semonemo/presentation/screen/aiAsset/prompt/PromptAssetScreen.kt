@@ -1,4 +1,4 @@
-package com.semonemo.presentation.screen.aiAsset
+package com.semonemo.presentation.screen.aiAsset.prompt
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -31,11 +31,11 @@ import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BoldTextWithKeywords
 import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.component.ScriptTextField
+import com.semonemo.presentation.screen.aiAsset.draw.AssetButtonList
 import com.semonemo.presentation.theme.Gray02
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
-import com.semonemo.presentation.theme.White
 
 @Composable
 fun PromptAssetScreen(
