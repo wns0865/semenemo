@@ -1,6 +1,5 @@
 package com.semonemo.presentation.screen.mypage
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -44,7 +43,7 @@ fun FollowListScreen(
 
     Surface(
         modifier = modifier.fillMaxSize(),
-        color = Color.White
+        color = Color.White,
     ) {
         Column(
             modifier =

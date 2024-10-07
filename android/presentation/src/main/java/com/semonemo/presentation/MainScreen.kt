@@ -56,7 +56,6 @@ import com.semonemo.presentation.screen.wallet.WalletRoute
 import com.semonemo.presentation.theme.Gray01
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Typography
-import com.semonemo.presentation.theme.White
 import com.semonemo.presentation.util.toUriOrDefault
 import kotlinx.coroutines.launch
 
