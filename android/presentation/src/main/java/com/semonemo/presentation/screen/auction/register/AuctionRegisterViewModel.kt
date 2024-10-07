@@ -67,7 +67,7 @@ class AuctionRegisterViewModel
             val selectFrame = _uiState.value.selectFrame
             if (selectFrame == null) {
                 viewModelScope.launch {
-                    _uiEvent.emit(AuctionRegisterUiEvent.Error("프레임을 선택해주세요!"))
+                    _uiEvent.emit(AuctionRegisterUiEvent.Error("경매에 등록할 프레임을 선택해주세요!"))
                 }
                 return
             }

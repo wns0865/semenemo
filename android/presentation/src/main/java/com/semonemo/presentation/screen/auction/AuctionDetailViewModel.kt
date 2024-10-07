@@ -55,8 +55,10 @@ class AuctionDetailViewModel
         var auctionId = saveStateHandle["auctionId"] ?: -1L // 경매 번호
             private set
 
-        // 유저 ID
-        var userId: Long = 0L
+
+        var userId: Long = 0L // 유저 ID
+        var userAnonym: Int = 0 // 유저 익명 번호
+            private set
         var nftImageUrl = mutableStateOf("")
         var anonym = mutableIntStateOf(1) // 익명 번호
             private set
@@ -88,7 +90,6 @@ class AuctionDetailViewModel
             initWebSocketManager()
             initStompSession()
             loadAuctionDetail()
-//            joinAuction()
         }
 
         fun initWebSocketManager() {
@@ -170,6 +171,7 @@ class AuctionDetailViewModel
 
                         is ApiResponse.Success -> {
                             Log.d(TAG, "joinAuction: ${response.data}")
+                            userAnonym = response.data.anonym
                             auctionBidLog.value = response.data.bidLogs
                             userStatus.value = UserStatus.READY
                         }
@@ -220,7 +222,7 @@ class AuctionDetailViewModel
         /** 경매 종료 메세지 */
         fun updateEndMessage(endMessage: EndMessage) {
             result.value = endMessage
-            auctionStatus.value
+            auctionStatus.value = AuctionStatus.END
         }
 
         /** user가 입찰했으면 메세지 출력 */
