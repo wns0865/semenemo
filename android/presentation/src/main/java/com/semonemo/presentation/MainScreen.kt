@@ -56,6 +56,7 @@ import com.semonemo.presentation.screen.wallet.WalletRoute
 import com.semonemo.presentation.theme.Gray01
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Typography
+import com.semonemo.presentation.theme.White
 import com.semonemo.presentation.util.toUriOrDefault
 import kotlinx.coroutines.launch
 
@@ -115,8 +116,11 @@ fun MainScreen(modifier: Modifier = Modifier) {
         }
     }
 
+    val systemUiController = rememberSystemUiController()
+    systemUiController.setStatusBarColor(color = Color.Transparent, darkIcons = true)
+
     Scaffold(
-        modifier = Modifier,
+        modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         bottomBar = {
             if (visible) {
