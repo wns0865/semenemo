@@ -1,7 +1,8 @@
 package com.semonemo.presentation.screen.coin.subscreen
 
-import androidx.compose.foundation.layout.fillMaxHeight
+import android.graphics.Typeface
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -22,17 +23,15 @@ import com.patrykandpatrick.vico.core.chart.column.ColumnChart
 import com.patrykandpatrick.vico.core.chart.composed.plus
 import com.patrykandpatrick.vico.core.chart.line.LineChart
 import com.patrykandpatrick.vico.core.chart.values.AxisValuesOverrider
-import com.patrykandpatrick.vico.core.component.shape.LineComponent
-import com.patrykandpatrick.vico.core.component.shape.Shapes
 import com.patrykandpatrick.vico.core.component.text.TextComponent
-import com.patrykandpatrick.vico.core.entry.ChartEntry
 import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
 import com.patrykandpatrick.vico.core.entry.FloatEntry
 import com.patrykandpatrick.vico.core.entry.composed.ComposedChartEntryModelProducer
 import com.patrykandpatrick.vico.core.entry.composed.plus
 import com.patrykandpatrick.vico.core.entry.entryOf
-import com.semonemo.presentation.theme.Gray03
 import com.semonemo.presentation.theme.GunMetal
+import com.semonemo.presentation.theme.ProgressGreen
+import com.semonemo.presentation.theme.Red
 import com.semonemo.presentation.theme.SemonemoTheme
 
 @Composable
@@ -52,7 +51,6 @@ fun CustomCoinChart(
         ChartEntryModelProducer(intListAsFloatEntryList(highPrice))
     val averagePriceProducer =
         ChartEntryModelProducer(intListAsFloatEntryList(averagePrice))
-
     ProvideChartStyle(
         rememberChartStyle(
             lineChartColors = lineColor,
@@ -64,9 +62,17 @@ fun CustomCoinChart(
                 lines =
                     listOf(
                         lineSpec(
-                            lineColor = Color.Blue,
+                            lineColor = Color.Red,
                             lineThickness = 1.dp,
-                            dataLabel = TextComponent.Builder().build(),
+                            dataLabel =
+                                TextComponent
+                                    .Builder()
+                                    .apply {
+                                        color = Color.Red.toArgb()
+                                        textSizeSp = 14f
+                                        typeface = Typeface.DEFAULT_BOLD
+                                    }.build(),
+                            lineBackgroundShader = null,
                         ),
                     ),
             )
@@ -76,9 +82,17 @@ fun CustomCoinChart(
                 lines =
                     listOf(
                         lineSpec(
-                            lineColor = Color.Red,
+                            lineColor = Color.Blue,
                             lineThickness = 1.dp,
-                            dataLabel = TextComponent.Builder().build(),
+                            dataLabel =
+                                TextComponent
+                                    .Builder()
+                                    .apply {
+                                        color = Color.Blue.toArgb()
+                                        textSizeSp = 14f
+                                        typeface = Typeface.DEFAULT_BOLD
+                                    }.build(),
+                            lineBackgroundShader = null,
                         ),
                     ),
             )
@@ -91,15 +105,15 @@ fun CustomCoinChart(
                         minY = minPrice.toFloat(),
                         maxY = maxPrice.toFloat(),
                     ),
-                spacing = 10.dp,
-                columns =
-                    listOf(
-                        LineComponent(
-                            color = Gray03.toArgb(), // 컬럼 색상을 지정
-                            thicknessDp = 7f, // 컬럼 두께를 설정
-                            shape = Shapes.cutCornerShape(topRightPercent = 20, topLeftPercent = 20),
-                        ),
-                    ),
+                spacing = 100.dp,
+                dataLabel =
+                    TextComponent
+                        .Builder()
+                        .apply {
+                            color = ProgressGreen.toArgb()
+                            textSizeSp = 14f
+                            typeface = Typeface.DEFAULT_BOLD
+                        }.build(),
             )
         val chartModelProducer =
             ComposedChartEntryModelProducer(
@@ -111,11 +125,11 @@ fun CustomCoinChart(
         Chart(
             modifier =
                 modifier
-                    .fillMaxHeight()
+                    .fillMaxWidth()
                     .height(400.dp),
             chart =
                 remember(averagePriceChart + highPriceChart + lowPriceChart) {
-                    averagePriceChart + lowPriceChart + highPriceChart
+                    averagePriceChart + highPriceChart + lowPriceChart
                 },
             legend = rememberLegend(colors = lineColor),
             chartModelProducer = chartModelProducer,
@@ -135,15 +149,6 @@ fun CustomCoinChart(
     }
 }
 
-fun createChartData(): List<ChartEntry> =
-    listOf(
-        FloatEntry(x = 0f, y = 10f),
-        FloatEntry(x = 1f, y = 20f),
-        FloatEntry(x = 2f, y = 30f),
-        FloatEntry(x = 3f, y = 40f),
-        FloatEntry(x = 4f, y = 50f),
-    )
-
 private fun intListAsFloatEntryList(list: List<Long>): List<FloatEntry> {
     val floatEntryList = arrayListOf<FloatEntry>()
     floatEntryList.clear()
@@ -161,11 +166,11 @@ fun CoinChartPreview() {
     SemonemoTheme {
         CustomCoinChart(
             modifier = Modifier.fillMaxSize(),
-            lineColor = listOf(Color.Red, Color.Blue,GunMetal),
+            lineColor = listOf(Color.Red, Color.Blue, GunMetal),
             columnColor = listOf(GunMetal),
-            lowPrice = listOf(0L, 1L, 2L, 3L, 4L, 5L),
-            highPrice = listOf(0L, 3L, 2L, 3L, 4L, 5L),
-            averagePrice = listOf(0L, 3L, 2L, 3L, 4L, 5L),
+            lowPrice = listOf(0L, 1L, 2L, 3L, 4L, 5L, 1L, 1L, 1L, 1L),
+            highPrice = listOf(0L, 3L, 2L, 3L, 4L, 5L, 1L, 1L, 1L, 1L),
+            averagePrice = listOf(0L, 3L, 2L, 3L, 4L, 5L, 1L, 1L, 1L, 1L),
             date =
                 listOf(
                     "10-01",
@@ -174,6 +179,10 @@ fun CoinChartPreview() {
                     "10-04",
                     "10-05",
                     "10-06",
+                    "10-07",
+                    "10-08",
+                    "10-09",
+                    "10-10",
                 ),
         )
     }

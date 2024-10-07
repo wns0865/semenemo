@@ -36,9 +36,8 @@ import com.semonemo.presentation.R
 import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.TopAppBar
 import com.semonemo.presentation.screen.coin.subscreen.CustomCoinChart
-import com.semonemo.presentation.theme.Gray03
-import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Main01
+import com.semonemo.presentation.theme.ProgressGreen
 import com.semonemo.presentation.theme.Red
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
@@ -91,9 +90,9 @@ fun CoinContent(
     if (uiState.isLoading) {
         Box(
             modifier =
-            Modifier
-                .fillMaxSize()
-                .clickable(enabled = false) {},
+                Modifier
+                    .fillMaxSize()
+                    .clickable(enabled = false) {},
         )
         LoadingDialog(
             lottieRes = R.raw.normal_load,
@@ -114,17 +113,17 @@ fun CoinScreen(
 ) {
     Box(
         modifier =
-        modifier
-            .fillMaxSize()
-            .background(brush = Main01),
+            modifier
+                .fillMaxSize()
+                .background(brush = Main01),
     ) {
         Column(
             modifier =
-            Modifier
-                .wrapContentHeight()
-                .statusBarsPadding()
-                .navigationBarsPadding()
-                .padding(horizontal = 17.dp, vertical = 30.dp),
+                Modifier
+                    .wrapContentHeight()
+                    .statusBarsPadding()
+                    .navigationBarsPadding()
+                    .padding(horizontal = 17.dp, vertical = 30.dp),
         ) {
             TopAppBar(modifier = Modifier, title = {
                 Image(
@@ -186,8 +185,8 @@ fun CoinScreen(
                 highPrice = weeklyCoin.map { it.highestPrice },
                 averagePrice = weeklyCoin.map { it.averagePrice.toLong() },
                 date = weeklyCoin.map { it.date },
-                lineColor = listOf(Color.Red, Color.Blue, Gray03),
-                columnColor = listOf(Gray03),
+                lineColor = listOf(Color.Red, Color.Blue, ProgressGreen),
+                columnColor = listOf(ProgressGreen),
             )
         }
     }
