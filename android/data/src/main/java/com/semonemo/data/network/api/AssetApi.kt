@@ -9,6 +9,7 @@ import com.semonemo.domain.model.CreateAiAsset
 import com.semonemo.domain.model.CreateAsset
 import com.semonemo.domain.model.SellAsset
 import com.semonemo.domain.model.SellAssetDetail
+import com.semonemo.domain.request.PurchaseAssetRequest
 import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -82,4 +83,10 @@ interface AssetApi {
     // 좋아요한 에셋 목록
     @GET("api/asset/like")
     suspend fun getLikeAssets(): BaseResponse<AllSellAssets>
+
+    // 에셋 구매
+    @POST("api/asset/purchase")
+    suspend fun purchaseAsset(
+        @Body purchaseAssetRequest: PurchaseAssetRequest,
+    ): BaseResponse<Unit>
 }

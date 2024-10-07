@@ -107,7 +107,7 @@ fun WalletCoinBox(
                             if (changePrice > 0) {
                                 "+$changePercent%"
                             } else {
-                                "-$changePercent%"
+                                "$changePercent%"
                             },
                         color = if (changePercent > 0) Color.Red else Color.Blue,
                         style = Typography.bodyMedium,

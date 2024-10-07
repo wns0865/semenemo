@@ -135,7 +135,7 @@ fun AssetSaleScreen(
     val focusManager = LocalFocusManager.current
     val scrollState = rememberScrollState()
 
-    var price by remember { mutableStateOf("") } // 판매가
+    var price by remember { mutableStateOf(0L) } // 판매가
     var showBottomSheet by remember { mutableStateOf(false) } // bottomSheet 보임 여부
     var selectedAsset by remember { mutableStateOf("") } // 선택된 에셋
     var asset by remember { mutableStateOf<Asset?>(null) }
@@ -287,13 +287,18 @@ fun AssetSaleScreen(
                         Modifier
                             .fillMaxWidth()
                             .height(48.dp),
-                    price = price,
+                    price = price.toString(),
                     onPriceChange = { newPrice ->
-                        price = newPrice
+                        price =
+                            if (newPrice.isEmpty()) {
+                                0L
+                            } else {
+                                newPrice.toLong()
+                            }
                     },
                 )
                 Spacer(modifier = Modifier.height(30.dp))
-                if (selectedAsset != "") {
+                if (selectedAsset != "" && price != 0L) {
                     LongBlackButton(
                         modifier =
                             Modifier
