@@ -23,12 +23,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.semonemo.domain.model.User
 import com.semonemo.presentation.navigation.CustomFAB
 import com.semonemo.presentation.navigation.ScreenDestinations
 import com.semonemo.presentation.screen.aiAsset.AiAssetScreen
 import com.semonemo.presentation.screen.aiAsset.AssetDoneRoute
-import com.semonemo.presentation.screen.aiAsset.PromptAssetScreen
 import com.semonemo.presentation.screen.aiAsset.draw.DrawAssetRoute
 import com.semonemo.presentation.screen.aiAsset.prompt.PromptAssetScreen
 import com.semonemo.presentation.screen.auction.AuctionDetailScreen
@@ -66,6 +66,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val context = LocalContext.current
+    val systemUiController = rememberSystemUiController()
     val (visible, setVisible) =
         remember {
             mutableStateOf(false)
@@ -125,6 +126,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
         floatingActionButtonPosition = FabPosition.Center,
         floatingActionButton = {
             if (visible) {
+                systemUiController.setNavigationBarColor(color = Color.White)
                 val isSelected = currentRoute == ScreenDestinations.Moment.route
                 CustomFAB(
                     onClick = {
@@ -147,6 +149,8 @@ fun MainScreen(modifier: Modifier = Modifier) {
                     labelStyle =
                         if (isSelected) Typography.bodySmall.copy(fontSize = 12.sp) else Typography.labelSmall,
                 )
+            } else {
+                systemUiController.setNavigationBarColor(color = Color.Transparent)
             }
         },
     ) { _ ->
@@ -253,7 +257,7 @@ fun MainNavHost(
                 modifier = modifier,
                 navigateToAuctionDetail = { auctionId ->
                     navController.navigate(
-                        ScreenDestinations.AuctionProcess.createRoute(
+                        ScreenDestinations.AuctionDetail.createRoute(
                             auctionId,
                         ),
                     )

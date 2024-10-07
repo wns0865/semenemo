@@ -95,32 +95,17 @@ fun AuctionFrameSaleScreen(
 
     val frames1 =
         listOf(
-            R.drawable.img_example,
-            R.drawable.img_example2,
-            R.drawable.img_example3,
-            R.drawable.img_example,
-            R.drawable.img_example2,
-            R.drawable.img_example3,
+            R.drawable.img_graph,
         )
 
     val frames2 =
         listOf(
-            R.drawable.img_example3,
-            R.drawable.img_example2,
-            R.drawable.img_example,
-            R.drawable.img_example3,
-            R.drawable.img_example2,
-            R.drawable.img_example,
-            R.drawable.img_example3,
-            R.drawable.img_example2,
-            R.drawable.img_example,
+            R.drawable.img_graph,
         )
 
     val frames3 =
         listOf(
-            R.drawable.img_example,
-            R.drawable.img_example2,
-            R.drawable.img_example3,
+            R.drawable.img_graph,
         )
 
     val frames = listOf(frames1, frames2, frames3)

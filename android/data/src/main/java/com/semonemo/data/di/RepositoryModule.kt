@@ -15,7 +15,9 @@ import com.semonemo.domain.datasource.AuthDataSource
 import com.semonemo.domain.datasource.TokenDataSource
 import com.semonemo.domain.repository.AiRepository
 import com.semonemo.domain.repository.AssetRepository
+import com.semonemo.domain.repository.AuctionRepository
 import com.semonemo.domain.repository.AuthRepository
+import com.semonemo.domain.repository.CoinRepository
 import com.semonemo.domain.repository.IpfsRepository
 import com.semonemo.domain.repository.NftRepository
 import com.semonemo.domain.repository.SearchRepository

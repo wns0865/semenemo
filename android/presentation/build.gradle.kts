@@ -21,12 +21,32 @@ android {
         buildConfigField("String", "CHAIN_NAME", properties["CHAIN_NAME"] as String)
         buildConfigField("String", "RPC_URLS", properties["RPC_URLS"] as String)
         buildConfigField("String", "SEVER_URL", properties["SEVER_URL"] as String)
-        buildConfigField("String", "METAMASK_PACKAGE_NAME", properties["METAMASK_PACKAGE_NAME"] as String)
-        buildConfigField("String", "METAMASK_PLAY_STORE_PATH", properties["METAMASK_PLAY_STORE_PATH"] as String)
+        buildConfigField(
+            "String",
+            "METAMASK_PACKAGE_NAME",
+            properties["METAMASK_PACKAGE_NAME"] as String,
+        )
+        buildConfigField(
+            "String",
+            "METAMASK_PLAY_STORE_PATH",
+            properties["METAMASK_PLAY_STORE_PATH"] as String,
+        )
         buildConfigField("String", "CONTRACT_ADDRESS", properties["CONTRACT_ADDRESS"] as String)
-        buildConfigField("String", "NFT_CONTRACT_ADDRESS", properties["NFT_CONTRACT_ADDRESS"] as String)
-        buildConfigField("String", "COIN_CONTRACT_ADDRESS", properties["COIN_CONTRACT_ADDRESS"] as String)
-        buildConfigField("String", "SYSTEM_CONTRACT_ADDRESS", properties["SYSTEM_CONTRACT_ADDRESS"] as String)
+        buildConfigField(
+            "String",
+            "NFT_CONTRACT_ADDRESS",
+            properties["NFT_CONTRACT_ADDRESS"] as String,
+        )
+        buildConfigField(
+            "String",
+            "COIN_CONTRACT_ADDRESS",
+            properties["COIN_CONTRACT_ADDRESS"] as String,
+        )
+        buildConfigField(
+            "String",
+            "SYSTEM_CONTRACT_ADDRESS",
+            properties["SYSTEM_CONTRACT_ADDRESS"] as String,
+        )
         buildConfigField("String", "IPFS_READ_URL", properties["IPFS_READ_URL"] as String)
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -126,4 +146,22 @@ dependencies {
 
     // pager
     implementation(libs.androidx.foundation)
+
+    // camera
+    implementation(libs.bundles.camera)
+
+    // permission
+    implementation(libs.accompanist.permissions)
+
+    // graph
+    implementation(libs.bundles.graph)
+
+    // gson
+    implementation(libs.gson)
+
+    // capture
+    implementation(libs.capturable)
+
+    //
+    implementation(libs.accompanist.systemuicontroller)
 }

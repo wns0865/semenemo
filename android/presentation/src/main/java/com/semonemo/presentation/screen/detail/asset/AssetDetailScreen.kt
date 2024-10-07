@@ -59,8 +59,8 @@ import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import org.web3j.abi.TypeReference
+import org.web3j.abi.datatypes.Address
 import org.web3j.abi.datatypes.Function
-import org.web3j.abi.datatypes.Utf8String
 import org.web3j.abi.datatypes.generated.Uint256
 import java.util.Locale
 
@@ -87,7 +87,7 @@ fun AssetDetailRoute(
                     Function(
                         "transferBalance",
                         listOf(
-                            Utf8String(uiState.value.asset.creator.address),
+                            Address(uiState.value.asset.creator.address),
                             Uint256(price.toBigInteger().toPrice()),
                         ),
                         listOf<TypeReference<*>>(object : TypeReference<Uint256>() {}),
@@ -147,7 +147,7 @@ fun AssetDetailContent(
     if (uiState.isLoading) {
         LoadingDialog(
             lottieRes = R.raw.normal_load,
-            loadingMessage = stringResource(R.string.frame_loading_title),
+            loadingMessage = stringResource(R.string.load_asset_purchase),
             subMessage = stringResource(R.string.loading_sub_message),
         )
     }
