@@ -67,7 +67,6 @@ fun MainScreen(modifier: Modifier = Modifier) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val context = LocalContext.current
-    val systemUiController = rememberSystemUiController()
     val (visible, setVisible) =
         remember {
             mutableStateOf(false)
