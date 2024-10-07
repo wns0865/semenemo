@@ -1,8 +1,8 @@
 package com.semonemo.presentation.screen.aiAsset.draw
 
 import android.graphics.Bitmap
+import android.net.Uri
 import android.util.Base64
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -66,6 +66,7 @@ import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.White
+import com.semonemo.presentation.util.decodeBase64ToImage
 import dev.shreyaspatil.capturable.capturable
 import dev.shreyaspatil.capturable.controller.rememberCaptureController
 import kotlinx.coroutines.flow.SharedFlow
@@ -139,6 +140,7 @@ fun DrawAssetContent(
         onErrorSnackBar = { onErrorSnackBar(it) },
         makeDrawAsset = makeDrawAsset,
         updateStyle = updateStyle,
+        navigateToDone = navigateToDone,
     )
 
     if (isLoading) {
@@ -164,6 +166,7 @@ fun DrawAssetScreen(
     onErrorSnackBar: (String) -> Unit = {},
     makeDrawAsset: (String) -> Unit = {},
     updateStyle: (String, String) -> Unit = { _, _ -> },
+    navigateToDone: (String) -> Unit,
 ) {
     val captureController = rememberCaptureController()
     val scope = rememberCoroutineScope()
@@ -192,6 +195,7 @@ fun DrawAssetScreen(
 
     val titles =
         listOf(
+            "없음",
             "실사",
             "카툰",
             "애니메이션",
@@ -199,12 +203,13 @@ fun DrawAssetScreen(
 
     val styles =
         listOf(
+            "없음",
             "사람",
             "동물",
         )
 
-    var selectedType by remember { mutableStateOf("실사") }
-    var selectedWhat by remember { mutableStateOf("사람") }
+    var selectedType by remember { mutableStateOf("없음") }
+    var selectedWhat by remember { mutableStateOf("없음") }
 
     LaunchedEffect(selectedType, selectedWhat) {
         updateStyle(selectedType, selectedWhat)
@@ -262,7 +267,6 @@ fun DrawAssetScreen(
                     modifier =
                         Modifier
                             .fillMaxSize()
-                            .background(color = White)
                             .pointerInput(Unit) {
                                 detectDragGestures(
                                     onDragStart = { offset ->
@@ -471,8 +475,13 @@ fun DrawAssetScreen(
                             val bitmapAsync = captureController.captureAsync()
                             val bitmap = bitmapAsync.await().asAndroidBitmap()
                             val base64 = bitmapToBase64(bitmap)
-                            Log.d("nakyung", "Base64 : $base64")
-                            makeDrawAsset(base64)
+
+                            if (selectedType == "없음") {
+                                val uri = "data:image/png;base64,$base64"
+                                navigateToDone(Uri.encode(uri))
+                            } else {
+                                makeDrawAsset(base64)
+                            }
                         } catch (error: Throwable) {
                             onErrorSnackBar(error.message ?: "")
                         }

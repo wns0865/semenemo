@@ -47,11 +47,12 @@ class AssetViewModel
 
         fun removeBackground() {
             uiState.value.assetUrl?.let { assetUrl ->
-                val base64String = if(assetUrl.contains("data:image/png;base64,")){
-                    Uri.decode(assetUrl).replace("data:image/png;base64,", "")
-                } else {
-                    encodeImageToBase64(assetUrl)
-                }
+                val base64String =
+                    if (assetUrl.contains("data:image/png;base64,")) {
+                        Uri.decode(assetUrl).replace("data:image/png;base64,", "")
+                    } else {
+                        encodeImageToBase64(assetUrl)
+                    }
                 viewModelScope.launch {
                     aiRepository
                         .removeBg(RemoveBgRequest(inputImage = base64String))
