@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.semonemo.presentation.R
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.White
+import com.semonemo.presentation.util.noRippleClickable
 import java.util.Locale
 
 @Composable
@@ -36,12 +37,16 @@ fun WalletCoinBox(
     coinPrice: Double,
     changePercent: Double,
     changePrice: Double,
+    navigateToCoinDetail: () -> Unit,
 ) {
     Card(
         modifier =
             modifier
                 .fillMaxWidth()
-                .wrapContentHeight(),
+                .wrapContentHeight()
+                .noRippleClickable {
+                    navigateToCoinDetail()
+                },
         shape = RoundedCornerShape(10.dp),
         elevation = CardDefaults.cardElevation(2.dp),
     ) {

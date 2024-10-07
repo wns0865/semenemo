@@ -180,7 +180,6 @@ fun WalletScreen(
             modifier = modifier,
             userName = userName,
             userCoin = userCoin,
-            navigateToCoinDetail = navigateToCoinDetail,
             sendExchangePayableTransaction = sendExchangePayableTransaction,
             sendExchangeCoinTransaction = sendExchangeCoinTransaction,
             onShowSnackBar = onShowSnackBar,
@@ -189,6 +188,7 @@ fun WalletScreen(
         WalletCoinBox(
             modifier = modifier,
             coinPrice = coinPrice,
+            navigateToCoinDetail = navigateToCoinDetail,
             changePercent = changePercent,
             changePrice = changePrice,
         )

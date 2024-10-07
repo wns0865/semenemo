@@ -44,7 +44,6 @@ fun WalletCardBox(
     modifier: Modifier = Modifier,
     userName: String,
     userCoin: Coin,
-    navigateToCoinDetail: () -> Unit,
     onShowSnackBar: (String) -> Unit,
     sendExchangePayableTransaction: (String) -> Unit,
     sendExchangeCoinTransaction: (String) -> Unit,
@@ -202,10 +201,7 @@ fun WalletCardBox(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .wrapContentHeight()
-                            .noRippleClickable {
-                                navigateToCoinDetail()
-                            },
+                            .wrapContentHeight(),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
                     BoldTextWithKeywords(
