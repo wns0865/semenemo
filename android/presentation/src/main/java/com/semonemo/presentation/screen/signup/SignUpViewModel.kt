@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
@@ -70,7 +72,11 @@ class SignUpViewModel
                                         nickname = uiState.value.nickname,
                                     ),
                                 profileImage = profileImage,
-                            ).collectLatest { response ->
+                            ).onStart {
+                                _uiState.update { it.copy(isLoading = true) }
+                            }.onCompletion {
+                                _uiState.update { it.copy(isLoading = false) }
+                            }.collectLatest { response ->
                                 when (response) {
                                     is ApiResponse.Error -> {
                                         _uiEvent.emit(
