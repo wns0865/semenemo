@@ -66,7 +66,6 @@ import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.White
-import com.semonemo.presentation.util.decodeBase64ToImage
 import dev.shreyaspatil.capturable.capturable
 import dev.shreyaspatil.capturable.controller.rememberCaptureController
 import kotlinx.coroutines.flow.SharedFlow
@@ -201,7 +200,7 @@ fun DrawAssetScreen(
             "애니메이션",
         )
 
-    val styles =
+    var styles =
         listOf(
             "없음",
             "사람",
@@ -457,13 +456,25 @@ fun DrawAssetScreen(
                         .padding(horizontal = 17.dp),
                 contentAlignment = Alignment.CenterStart,
             ) {
-                AssetButtonList(
-                    titles = styles,
-                    selectedBtn = selectedWhat,
-                    onBtnSelected = {
-                        selectedWhat = it
-                    },
-                )
+                if (selectedType == "없음") {
+                    styles = listOf("없음", "사람", "동물")
+                    AssetButtonList(
+                        titles = styles,
+                        selectedBtn = selectedWhat,
+                        onBtnSelected = {
+                            selectedWhat = it
+                        },
+                    )
+                } else {
+                    styles = listOf("사람", "동물")
+                    AssetButtonList(
+                        titles = styles,
+                        selectedBtn = selectedWhat,
+                        onBtnSelected = {
+                            selectedWhat = it
+                        },
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(20.dp))
             LongBlackButton(
