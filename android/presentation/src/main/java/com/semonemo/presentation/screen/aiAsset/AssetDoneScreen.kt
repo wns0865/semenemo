@@ -1,6 +1,8 @@
 package com.semonemo.presentation.screen.aiAsset
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -95,6 +97,12 @@ fun AssetDoneContent(
     )
 
     if (uiState.isLoading) {
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .clickable(enabled = false) {},
+        )
         LoadingDialog(
             loadingMessage = "AI가 열심히 배경을 제거하고 있어요...",
             subMessage = "조금만 기다려 주세요  (。＾▽＾)",
