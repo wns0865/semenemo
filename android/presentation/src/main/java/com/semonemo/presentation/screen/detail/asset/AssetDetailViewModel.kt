@@ -90,10 +90,35 @@ class AssetDetailViewModel
                                         likedCount = response.data.likeCount,
                                     )
                                 }
+                                getCreatorAssets(response.data.creator.userId, assetSellId)
                             }
                         }
                     }
             }
+        }
+
+        private suspend fun getCreatorAssets(
+            userId: Long,
+            assetSellId: Long,
+        ) {
+            assetRepository
+                .getCreatorAsset(userId)
+                .onStart {
+                    _uiState.update { it.copy(isLoading = true) }
+                }.onCompletion {
+                    _uiState.update { it.copy(isLoading = false) }
+                }.collectLatest { response ->
+                    when (response) {
+                        is ApiResponse.Error -> _uiEvent.emit(AssetDetailUiEvent.Error(response.errorMessage))
+                        is ApiResponse.Success -> {
+                            _uiState.update {
+                                it.copy(
+                                    creatorAssets = response.data.filter { it.assetSellId != assetSellId },
+                                )
+                            }
+                        }
+                    }
+                }
         }
 
         fun onLikedAsset(isLiked: Boolean) {

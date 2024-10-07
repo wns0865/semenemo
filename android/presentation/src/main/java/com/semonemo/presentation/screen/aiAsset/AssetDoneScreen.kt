@@ -19,6 +19,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -121,6 +123,10 @@ fun AssetDoneScreen(
     val context = LocalContext.current
 
     val focusManager = LocalFocusManager.current
+    var isRemoveBg =
+        remember {
+            mutableStateOf(false)
+        }
     Column(
         modifier =
             modifier
@@ -184,7 +190,10 @@ fun AssetDoneScreen(
                     modifier = Modifier.weight(1f),
                     icon = null,
                     text = "배경 제거할래요",
-                    onClick = removeBackGround,
+                    onClick = {
+                        removeBackGround()
+                        isRemoveBg.value = true
+                    },
                 )
                 Spacer(modifier = Modifier.weight(0.08f))
                 LongBlackButton(
@@ -193,9 +202,13 @@ fun AssetDoneScreen(
                     text = stringResource(R.string.save_asset),
                     onClick = {
                         assetUrl?.let {
-                            val uri = saveBase64ParseImageToFile(context, it)
-                            uri?.let {
-                                uploadAsset(File(uri.path))
+                            if (isRemoveBg.value) {
+                                val uri = saveBase64ParseImageToFile(context, it)
+                                uri?.let {
+                                    uploadAsset(File(uri.path))
+                                }
+                            } else {
+                                uploadAsset(File(it))
                             }
                         }
                     },

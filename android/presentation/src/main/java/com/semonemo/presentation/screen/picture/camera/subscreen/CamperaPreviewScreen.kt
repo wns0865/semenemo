@@ -6,6 +6,7 @@ import androidx.camera.view.PreviewView
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -41,12 +42,16 @@ fun CameraPreviewView(
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     AndroidView(
-        modifier = modifier,
+        modifier =
+            modifier.clipToBounds(),
         factory = {
             PreviewView(it).apply {
                 this.controller = controller
                 controller.bindToLifecycle(lifecycleOwner)
             }
+        },
+        onReset = {
+            controller.unbind()
         },
     )
 }
