@@ -119,7 +119,7 @@ fun FrameRoute(
         updateFrame = viewModel::updateFrame,
         onErrorSnackBar = onErrorSnackBar,
         assets = viewModel.assets.value,
-        popBackStack = popBackStack
+        popBackStack = popBackStack,
     )
 }
 
@@ -176,8 +176,8 @@ fun FrameScreen(
     Surface(
         modifier =
             modifier
-                .fillMaxSize()
-                .background(color = Color.White),
+                .fillMaxSize(),
+        color = Color.White,
     ) {
         Column(
             modifier =

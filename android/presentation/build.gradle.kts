@@ -129,4 +129,6 @@ dependencies {
 
     // graph
     implementation(libs.bundles.graph)
+
+    implementation ("com.google.accompanist:accompanist-systemuicontroller:0.17.0")
 }
