@@ -73,7 +73,7 @@ class WebSocketManager {
     ) {
         // StompSubscribeHeaders를 사용해 헤더 생성
         val headers = StompSubscribeHeaders(headersUri)
-        Log.d(TAG, "구독 좋아요 $headersUri")
+        Log.d(TAG, "구독 headersUri : $headersUri")
 
         // 구독하고 메시지를 처리
         stompSession.subscribe(headers).collect { message ->
@@ -85,14 +85,6 @@ class WebSocketManager {
                 onParticipants,
             )
         }
-    }
-
-    suspend fun exitAuction(
-        stompSession: StompSession,
-        auctionId: Long,
-        userId: Int,
-    ) {
-        val headers = StompSendHeaders("/app/auction/$auctionId/exit")
     }
 
     private fun processMessage(

@@ -12,6 +12,7 @@ import com.semonemo.domain.model.ApiResponse
 import com.semonemo.domain.model.AuctionBidLog
 import com.semonemo.domain.repository.AuctionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -35,7 +36,17 @@ class AuctionDetailViewModel
         // 경매 상태 관리
         var auctionStatus = mutableStateOf(AuctionStatus.READY)
             private set
+
+        // 유저 상태 관리
         var userStatus = mutableStateOf(UserStatus.NOT_READY)
+            private set
+
+        // 입찰 관찰자
+        var observedBidMessage = mutableStateOf(false)
+            private set
+
+        // 유저 입찰 여부
+        var observedBidSubmit = mutableStateOf(false)
             private set
         var webSocketManager = mutableStateOf<WebSocketManager?>(null)
             private set
@@ -43,7 +54,9 @@ class AuctionDetailViewModel
             private set
         var auctionId = saveStateHandle["auctionId"] ?: -1L // 경매 번호
             private set
-        var userId: Long = 0L // 유저 ID
+
+        // 유저 ID
+        var userId: Long = 0L
         var nftImageUrl = mutableStateOf("")
         var anonym = mutableIntStateOf(1) // 익명 번호
             private set
@@ -78,6 +91,18 @@ class AuctionDetailViewModel
 //            joinAuction()
         }
 
+        fun initWebSocketManager() {
+            webSocketManager.value = WebSocketManager()
+        }
+
+        fun initStompSession() {
+            viewModelScope.launch {
+                if (stompSession.value != null) {
+                    stompSession.value = webSocketManager.value?.connectToAuction()
+                }
+            }
+        }
+
         private fun loadAuctionDetail() {
             if (auctionId == -1L) {
                 viewModelScope.launch {
@@ -107,7 +132,7 @@ class AuctionDetailViewModel
         fun startAuction() {
             if (auctionId == -1L) {
                 viewModelScope.launch {
-                    _uiEvent.emit(AuctionUiEvent.Error("경매가 종료되었습니다."))
+                    _uiEvent.emit(AuctionUiEvent.Error("존재하지 않는 경매입니다."))
                 }
                 return
             }
@@ -132,7 +157,7 @@ class AuctionDetailViewModel
         fun joinAuction() {
             if (auctionId == -1L) {
                 viewModelScope.launch {
-                    _uiEvent.emit(AuctionUiEvent.Error("경매가 종료되었습니다."))
+                    _uiEvent.emit(AuctionUiEvent.Error("존재하지 않는 경매입니다."))
                 }
                 return
             }
@@ -153,24 +178,37 @@ class AuctionDetailViewModel
             }
         }
 
-        fun initWebSocketManager() {
-            webSocketManager.value = WebSocketManager()
-        }
-
-        fun initStompSession() {
+        /** 해당 경매를 떠남 */
+        fun leaveAuction() {
+            if (auctionId == -1L) {
+                viewModelScope.launch {
+                    _uiEvent.emit(AuctionUiEvent.Error("존재하지 않는 경매입니다."))
+                }
+                return
+            }
             viewModelScope.launch {
-                if (stompSession.value != null) {
-                    stompSession.value = webSocketManager.value?.connectToAuction()
+                auctionRepository.leaveAuction(auctionId).collectLatest { response ->
+                    when (response) {
+                        is ApiResponse.Error -> {
+                            _uiEvent.emit(AuctionUiEvent.Error(response.errorMessage))
+                        }
+
+                        is ApiResponse.Success -> {
+                            auctionBidLog.value = listOf()
+                        }
+                    }
                 }
             }
         }
 
+        /** 경매 시작 메세지 */
         fun updateStartMessage(startMessage: StartMessage) {
             topPrice.longValue = startMessage.currentBid
+            auctionStatus.value = AuctionStatus.PROGRESS
         }
 
-        fun updateParticipants(participants: Int) {
-            participant.intValue = participants
+        fun updateParticipantsMessage(participantsMessage: Int) {
+            participant.intValue = participantsMessage
         }
 
         /** log10을 통해 10%의 입찰 단가를 계산 */
@@ -179,8 +217,20 @@ class AuctionDetailViewModel
             bidPriceUnit.longValue = 10.0.pow(unit).toLong()
         }
 
+        /** 경매 종료 메세지 */
         fun updateEndMessage(endMessage: EndMessage) {
             result.value = endMessage
+            auctionStatus.value
+        }
+
+        /** user가 입찰했으면 메세지 출력 */
+        fun observeBidMessage(bidMessage: BidMessage) {
+            observedBidSubmit.value = bidMessage.userId == userId
+            viewModelScope.launch {
+                observedBidMessage.value = true
+                delay(2000L)
+                observedBidMessage.value = false
+            }
         }
 
         /**
@@ -214,5 +264,8 @@ class AuctionDetailViewModel
 
         fun exitBidLog(bidLog: AuctionBidLog) {
             auctionBidLog.value -= bidLog
+        }
+
+        fun validateUserBid() {
         }
     }

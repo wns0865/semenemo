@@ -79,6 +79,7 @@ class AuctionRegisterViewModel
                             AuctionRegisterRequest(
                                 nftId = selectFrame.nftId,
                                 startPrice = price,
+                                txHash = hash,
                             ),
                     ).onStart {
                         _uiState.update {

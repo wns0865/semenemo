@@ -28,10 +28,13 @@ fun BidInfo(
     modifier: Modifier = Modifier,
     bidLogList: List<AuctionBidLog>,
     startPrice: Long, // 추가된 파라미터
+    userId: Long = 0,
 ) {
     Column(
         modifier = modifier,
     ) {
+        val fontSize = 16
+
         // 입찰 기록이 있을 때 입찰자 목록 표시
 
         // 상위 입찰자 표시
@@ -48,8 +51,8 @@ fun BidInfo(
                         .fillMaxWidth(),
             ) {
                 Text(
-                    text = String.format("%03d번", topBidder.anonym),
-                    fontSize = 24.sp, // 적절한 텍스트 크기 조정
+                    text = String.format("%03d번", topBidder.anonym) + if (userId == topBidder.userId) String.format(" (MY)") else "",
+                    fontSize = (fontSize + 4).sp, // 적절한 텍스트 크기 조정
                     style =
                         Typography.bodyMedium.copy(
                             fontFeatureSettings = "tnum",
@@ -62,7 +65,7 @@ fun BidInfo(
                             "%,d ${stringResource(id = R.string.coin_price_unit)}",
                             topBidder.bidAmount,
                         ),
-                    fontSize = 24.sp, // 적절한 텍스트 크기 조정
+                    fontSize = (fontSize + 4).sp, // 적절한 텍스트 크기 조정
                     style =
                         Typography.bodyMedium.copy(
                             fontFeatureSettings = "tnum",
@@ -79,7 +82,7 @@ fun BidInfo(
             ) {
                 Text(
                     text = "기준가",
-                    fontSize = 24.sp, // 적절한 텍스트 크기 조정
+                    fontSize = (fontSize + 4).sp, // 적절한 텍스트 크기 조정
                     style =
                         Typography.bodyMedium.copy(
                             fontFeatureSettings = "tnum",
@@ -92,7 +95,7 @@ fun BidInfo(
                             "%,d ${stringResource(id = R.string.coin_price_unit)}",
                             startPrice,
                         ),
-                    fontSize = 24.sp, // 적절한 텍스트 크기 조정
+                    fontSize = (fontSize + 4).sp, // 적절한 텍스트 크기 조정
                     style =
                         Typography.bodyMedium.copy(
                             fontFeatureSettings = "tnum",
@@ -105,7 +108,7 @@ fun BidInfo(
         Spacer(modifier = Modifier.height(8.dp))
 
         // 나머지 입찰자 리스트 표시
-        val itemHeight = 24.sp.spToDp() + 8.dp // 텍스트 크기 + 패딩으로 높이 계산
+        val itemHeight = fontSize.sp.spToDp() + 8.dp // 텍스트 크기 + 패딩으로 높이 계산
 
         LazyColumn(
             modifier =
@@ -114,8 +117,7 @@ fun BidInfo(
                     .height(itemHeight * 4),
             // 원하는 높이 설정 (필요에 따라 조정 가능)
         ) {
-
-            items(if(bidLogList.isNotEmpty())sortedBidLog.drop(1) else sortedBidLog) { bidder ->
+            items(if (bidLogList.isNotEmpty())sortedBidLog.drop(1) else sortedBidLog) { bidder ->
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
@@ -126,7 +128,7 @@ fun BidInfo(
                 ) {
                     Text(
                         text = String.format("%03d번", bidder.anonym),
-                        fontSize = 20.sp, // 기본 텍스트 크기
+                        fontSize = fontSize.sp, // 기본 텍스트 크기
                         style =
                             Typography.labelMedium.copy(
                                 fontFeatureSettings = "tnum",
@@ -139,7 +141,7 @@ fun BidInfo(
                                 "%,d ${stringResource(id = R.string.coin_price_unit)}",
                                 bidder.bidAmount,
                             ),
-                        fontSize = 20.sp, // 기본 텍스트 크기
+                        fontSize = fontSize.sp, // 기본 텍스트 크기
                         style =
                             Typography.labelMedium.copy(
                                 fontFeatureSettings = "tnum",

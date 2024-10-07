@@ -51,10 +51,10 @@ fun ShortAuctionReadScreen(
         // 경매 데이터
         val auctionDataList = viewModel.shortAuctionList.value
 
-        // 사용자가 1초 동안 상호작용하지 않았을 때 자동으로 스크롤 시작
+        // 사용자가 5초 동안 상호작용하지 않았을 때 자동으로 스크롤 시작
         LaunchedEffect(lastInteractionTime) {
             while (true) {
-                if (System.currentTimeMillis() - lastInteractionTime > 1000) {
+                if (System.currentTimeMillis() - lastInteractionTime > 5000) {
                     coroutineScope.launch {
                         val itemWidth =
                             listState.layoutInfo.visibleItemsInfo

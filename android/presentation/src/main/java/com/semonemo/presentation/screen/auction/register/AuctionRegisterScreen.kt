@@ -82,7 +82,6 @@ import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.WhiteGray
 import com.semonemo.presentation.util.addFocusCleaner
 import com.semonemo.presentation.util.noRippleClickable
-import com.semonemo.presentation.util.toPrice
 import com.semonemo.presentation.util.urlToIpfs
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.flow.SharedFlow
@@ -111,14 +110,13 @@ fun AuctionRegisterRoute(
             nftViewModel.sendTransaction(
                 function =
                     Function(
-                        "createMarket",
+                        "startAuction",
                         listOf(
                             Uint256(
                                 uiState.value.selectFrame
                                     ?.nftInfo
                                     ?.tokenId ?: 0L,
                             ),
-                            Uint256(price.toBigInteger().toPrice()),
                         ),
                         listOf<TypeReference<*>>(object : TypeReference<Uint256>() {}),
                     ),
@@ -191,7 +189,7 @@ fun AuctionRegisterScreen(
     val focusManager = LocalFocusManager.current
     val scrollState = rememberScrollState()
 
-    var price by remember { mutableStateOf("") } // 판매가
+    var price by remember { mutableStateOf(0L) } // 판매가
     var showBottomSheet by remember { mutableStateOf(false) } // bottomSheet 보임 여부
     var selectedIndex by remember { mutableIntStateOf(0) } // bottomSheet 선택된 탭 index
 
@@ -407,15 +405,20 @@ fun AuctionRegisterScreen(
                     Modifier
                         .fillMaxWidth()
                         .height(48.dp),
-                price = price,
+                price = price.toString(),
                 onPriceChange = { newPrice ->
-                    price = newPrice
+                    price =
+                        if (newPrice.isEmpty()) {
+                            0L
+                        } else {
+                            newPrice.toLong()
+                        }
                 },
             )
             // 프레임 불러오기 Success면 LongBlackButton
             // 다른 상태면 LongUnableButton
             Spacer(modifier = Modifier.height(30.dp))
-            if (selectedFrame != null) {
+            if (selectedFrame != null && price != 0L) {
                 LongBlackButton(
                     modifier =
                         Modifier
@@ -423,7 +426,7 @@ fun AuctionRegisterScreen(
                     text = stringResource(R.string.label_register_auction),
                     icon = null,
                     onClick = {
-                        sendTransaction(price)
+                        sendTransaction(price.toString())
                     },
                 )
             } else {

@@ -8,21 +8,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.semonemo.presentation.R
 import com.semonemo.presentation.component.AuctionBidPriceInput
 import com.semonemo.presentation.component.BidPriceUnitButton
 import com.semonemo.presentation.component.CustomAuctionProgressBar
 import com.semonemo.presentation.component.CustomNoRippleButton
 import com.semonemo.presentation.screen.auction.AuctionDetailViewModel
 import com.semonemo.presentation.screen.auction.BidMessage
-import com.semonemo.presentation.theme.Typography
 import com.walletconnect.android.internal.common.scope
 import kotlinx.coroutines.launch
 
@@ -49,7 +44,7 @@ fun AuctionProgressScreen(
                 // 위에서 선언한 auctionBidLog
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(5.dp))
             AuctionBidPriceInput(
                 modifier = Modifier,
                 currentPrice = viewModel.topPrice.longValue,
@@ -58,29 +53,7 @@ fun AuctionProgressScreen(
                 onClear = { viewModel.adjustClear() },
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Text(
-                    text = "10% = ${viewModel.bidPriceUnit.longValue} ${stringResource(id = R.string.coin_price_unit)}",
-                    style =
-                        Typography.labelMedium.copy(
-                            fontFeatureSettings = "tnum",
-                            fontSize = 20.sp,
-                        ),
-                )
-                Text(
-                    text = "",
-                    style =
-                        Typography.labelMedium.copy(
-                            fontFeatureSettings = "tnum",
-                            fontSize = 20.sp,
-                        ),
-                )
-            }
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(5.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
