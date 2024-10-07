@@ -178,12 +178,13 @@ fun CameraScreen(
         ) {
             Spacer(modifier = Modifier.height(10.dp))
             TopAppBar(modifier = Modifier, onNavigationClick = popUpBackStack, iconColor = White)
+            Spacer(modifier = Modifier.height(5.dp))
             Box(
                 modifier =
                     if (frameType != FrameType.OneByFour) {
-                        Modifier.fillMaxWidth(0.8f).aspectRatio(4f / 6f)
+                        Modifier.fillMaxWidth().aspectRatio(3f / 4f)
                     } else {
-                        Modifier.fillMaxWidth(0.8f).aspectRatio(6f / 4f)
+                        Modifier.fillMaxWidth().aspectRatio(6.5f / 4f)
                     },
                 contentAlignment = Alignment.Center,
             ) {
@@ -195,7 +196,7 @@ fun CameraScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             Box(modifier = Modifier.fillMaxWidth().align(Alignment.Start).padding(start = 10.dp)) {
                 SingleChoiceSegmentedButtonRow {
                     options.forEachIndexed { index, label ->
