@@ -32,6 +32,7 @@ import com.semonemo.presentation.screen.aiAsset.DrawAssetScreen
 import com.semonemo.presentation.screen.aiAsset.PromptAssetScreen
 import com.semonemo.presentation.screen.auction.AuctionProcessScreen
 import com.semonemo.presentation.screen.auction.AuctionScreen
+import com.semonemo.presentation.screen.coin.CoinRoute
 import com.semonemo.presentation.screen.detail.asset.AssetDetailRoute
 import com.semonemo.presentation.screen.detail.frame.FrameDetailRoute
 import com.semonemo.presentation.screen.frame.MomentGraph
@@ -263,7 +264,9 @@ fun MainNavHost(
         ) {
             WalletRoute(
                 modifier = modifier,
-                navigateToCoinDetail = {},
+                navigateToCoinDetail = {
+                    navController.navigate(ScreenDestinations.CoinDetail.route)
+                },
                 onShowSnackBar = onShowErrorSnackBar,
             )
         }
@@ -524,6 +527,16 @@ fun MainNavHost(
                 modifier = modifier,
                 popUpBackStack = navController::popBackStack,
                 onShowSnackBar = onShowErrorSnackBar,
+            )
+        }
+
+        composable(
+            route = ScreenDestinations.CoinDetail.route,
+        ) {
+            CoinRoute(
+                modifier = modifier,
+                onShowSnackBar = onShowErrorSnackBar,
+                popUpBackStack = navController::popBackStack,
             )
         }
     }
