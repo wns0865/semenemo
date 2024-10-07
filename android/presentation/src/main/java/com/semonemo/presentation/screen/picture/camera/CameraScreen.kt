@@ -10,6 +10,7 @@ import androidx.camera.core.ImageProxy
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -162,8 +163,8 @@ fun CameraScreen(
     Surface(
         modifier =
             modifier
-                .fillMaxSize()
-                .background(color = GunMetal),
+                .fillMaxSize(),
+        color = GunMetal,
     ) {
         Column(
             modifier =
@@ -267,7 +268,7 @@ fun CameraScreen(
                             .size(40.dp)
                             .background(shape = CircleShape, color = Gray03)
                             .padding(7.dp)
-                            .noRippleClickable {
+                            .clickable {
                                 controller.cameraSelector =
                                     if (controller.cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
                                         CameraSelector.DEFAULT_FRONT_CAMERA
