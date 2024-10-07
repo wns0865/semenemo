@@ -29,6 +29,7 @@ import com.patrykandpatrick.vico.core.entry.ChartEntry
 import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
 import com.patrykandpatrick.vico.core.entry.FloatEntry
 import com.patrykandpatrick.vico.core.entry.composed.ComposedChartEntryModelProducer
+import com.patrykandpatrick.vico.core.entry.composed.plus
 import com.patrykandpatrick.vico.core.entry.entryOf
 import com.semonemo.presentation.theme.Gray03
 import com.semonemo.presentation.theme.GunMetal
@@ -102,9 +103,9 @@ fun CustomCoinChart(
             )
         val chartModelProducer =
             ComposedChartEntryModelProducer(
-                lowPriceProducer,
-                highPriceProducer,
                 averagePriceProducer,
+                highPriceProducer,
+                lowPriceProducer,
             )
 
         Chart(
@@ -113,8 +114,8 @@ fun CustomCoinChart(
                     .fillMaxHeight()
                     .height(400.dp),
             chart =
-                remember(highPriceChart + lowPriceChart + averagePriceChart) {
-                    highPriceChart + lowPriceChart + averagePriceChart
+                remember(averagePriceChart + highPriceChart + lowPriceChart) {
+                    averagePriceChart + lowPriceChart + highPriceChart
                 },
             legend = rememberLegend(colors = lineColor),
             chartModelProducer = chartModelProducer,
@@ -160,11 +161,11 @@ fun CoinChartPreview() {
     SemonemoTheme {
         CustomCoinChart(
             modifier = Modifier.fillMaxSize(),
-            lineColor = listOf(Color.Red, Color.Blue),
+            lineColor = listOf(Color.Red, Color.Blue,GunMetal),
             columnColor = listOf(GunMetal),
             lowPrice = listOf(0L, 1L, 2L, 3L, 4L, 5L),
-            highPrice = listOf(0L, 1L, 2L, 3L, 4L, 5L),
-            averagePrice = listOf(0L, 1L, 2L, 3L, 4L, 5L),
+            highPrice = listOf(0L, 3L, 2L, 3L, 4L, 5L),
+            averagePrice = listOf(0L, 3L, 2L, 3L, 4L, 5L),
             date =
                 listOf(
                     "10-01",
