@@ -5,6 +5,7 @@ import com.semonemo.data.network.response.ExchangePayableResponse
 import com.semonemo.data.network.response.GetBalanceResponse
 import com.semonemo.data.network.response.GetCoinHistoryResponse
 import com.semonemo.domain.model.CoinRate
+import com.semonemo.domain.model.WeeklyCoin
 import com.semonemo.domain.request.ExchangePayableRequest
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -29,4 +30,7 @@ interface CoinApi {
 
     @GET("api/coin/price")
     suspend fun getCoinRates(): BaseResponse<CoinRate>
+
+    @GET("api/coin/weekly")
+    suspend fun getWeeklyCoin(): BaseResponse<List<WeeklyCoin>>
 }

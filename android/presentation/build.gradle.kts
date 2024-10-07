@@ -119,11 +119,14 @@ dependencies {
     implementation(libs.capturable)
 
     // Gson
-    implementation("com.google.code.gson:gson:2.8.8")
+    implementation(libs.gson)
 
     // camera
     implementation(libs.bundles.camera)
 
     // PermissionState
     implementation(libs.accompanist.permissions)
+
+    // graph
+    implementation(libs.bundles.graph)
 }
