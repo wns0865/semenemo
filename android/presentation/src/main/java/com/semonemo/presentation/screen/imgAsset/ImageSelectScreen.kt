@@ -36,7 +36,7 @@ import com.semonemo.presentation.R
 import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.component.LongWhiteButton
-import com.semonemo.presentation.screen.aiAsset.AssetButtonList
+import com.semonemo.presentation.screen.aiAsset.draw.AssetButtonList
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.White
