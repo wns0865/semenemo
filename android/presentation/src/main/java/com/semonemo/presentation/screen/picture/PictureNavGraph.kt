@@ -30,6 +30,7 @@ fun NavGraphBuilder.PictureGraph(
                         ScreenDestinations.Camera.createRoute(it),
                     )
                 },
+                popBackStack = navController::popBackStack,
             )
         }
         composable(
@@ -71,7 +72,7 @@ fun NavGraphBuilder.PictureGraph(
                 viewModel = viewModel,
                 onShowSnackBar = onErrorSnackBar,
                 type = type,
-                actionWithSnackBar = actionWithSnackBar
+                actionWithSnackBar = actionWithSnackBar,
             )
         }
     }

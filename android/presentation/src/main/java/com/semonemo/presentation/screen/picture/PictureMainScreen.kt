@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BoldTextWithKeywords
 import com.semonemo.presentation.component.FrameSizeBox
+import com.semonemo.presentation.component.TopAppBar
 import com.semonemo.presentation.screen.frame.FrameType
 import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.theme.SemonemoTheme
@@ -31,17 +32,20 @@ import com.semonemo.presentation.theme.Typography
 fun PictureMainRoute(
     modifier: Modifier = Modifier,
     navigateToCamera: (Int) -> Unit,
+    popBackStack: () -> Unit,
 ) {
     PictureMainScreen(
         modifier = modifier,
         navigateToCamera = navigateToCamera,
+        popBackStack = popBackStack,
     )
 }
 
 @Composable
 fun PictureMainScreen(
     modifier: Modifier = Modifier,
-    navigateToCamera: (Int) -> Unit = { },
+    navigateToCamera: (Int) -> Unit = {},
+    popBackStack: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
 
@@ -60,7 +64,12 @@ fun PictureMainScreen(
                     .verticalScroll(state = scrollState),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Spacer(modifier = Modifier.height(35.dp))
+            Spacer(modifier = Modifier.height(10.dp))
+            TopAppBar(
+                modifier = Modifier.fillMaxWidth(),
+                onNavigationClick = popBackStack,
+            )
+            Spacer(modifier = Modifier.height(15.dp))
             Box(
                 modifier =
                     Modifier
