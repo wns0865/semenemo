@@ -42,8 +42,9 @@ fun rememberChartStyle(
                         lineChartColors.mapIndexed { index, color ->
                             lineSpec(
                                 lineColor = color,
-                                lineThickness = 3.dp, // 필요한 두께로 설정
+                                lineThickness = 1.dp, // 필요한 두께로 설정
                                 dataLabel = TextComponent.Builder().build(), // 데이터 라벨을 추가
+                                lineBackgroundShader = null
                             )
                         },
                 ),
@@ -53,7 +54,7 @@ fun rememberChartStyle(
                         columnChartColors.map { columnColor ->
                             LineComponent(
                                 color = columnColor.toArgb(),
-                                thicknessDp = 5f, // 필요한 두께로 설정
+                                thicknessDp = 30f, // 필요한 두께로 설정
                                 shape = Shapes.cutCornerShape(topRightPercent = 10, topLeftPercent = 10),
                             )
                         },
