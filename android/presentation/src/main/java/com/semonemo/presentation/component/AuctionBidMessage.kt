@@ -25,8 +25,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.semonemo.presentation.R
-import com.semonemo.presentation.theme.Gray03
 import com.semonemo.presentation.theme.GunMetal
+import com.semonemo.presentation.theme.ProgressGreen
+import com.semonemo.presentation.theme.ProgressRed
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.White
@@ -41,11 +42,15 @@ fun AuctionBidMessage(
     modifier: Modifier = Modifier,
     icon: Int?,
     bidPrice: Long = 0L,
+    anonym: Int = 0,
+    user: Boolean = true,
 ) {
+    val borderColor = if(user) ProgressGreen else ProgressRed
+    val postfixMessage = if(user) " 입찰 성공" else " 입찰(${String.format("%03d", anonym)}번)"
     Surface(
-        shape = RoundedCornerShape(14.dp), // 모서리 반경 10dp
+        shape = RoundedCornerShape(10.dp), // 모서리 반경 10dp
         color = White,
-        border = BorderStroke(width = 2.dp, color = Gray03),
+        border = BorderStroke(width = 3.dp, color = borderColor),
         modifier =
             modifier
                 .fillMaxWidth(0.88f)
@@ -75,7 +80,7 @@ fun AuctionBidMessage(
                         String.format(
                             "%,d ${stringResource(id = R.string.coin_price_unit)}",
                             bidPrice,
-                        ) + "입찰 성공",
+                        ) + postfixMessage,
                     style =
                         Typography.bodyMedium.copy(
                             fontFeatureSettings = "tnum",
@@ -91,8 +96,16 @@ fun AuctionBidMessage(
 
 @Composable
 @Preview(showBackground = true)
-fun PreviewAuctionBidMessage() {
+fun PreviewAuctionBidMessageUser() {
     SemonemoTheme {
         AuctionBidMessage(icon = R.drawable.ic_color_sene_coin, bidPrice = 1000L)
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun PreviewAuctionBidMessageOther() {
+    SemonemoTheme {
+        AuctionBidMessage(icon = R.drawable.ic_color_sene_coin, bidPrice = 3000L, anonym = 17, user = false)
     }
 }

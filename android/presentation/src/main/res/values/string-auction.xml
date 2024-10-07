@@ -17,4 +17,6 @@
     <string name="short_auction_register_title">단기 경매</string>
     <string name="long_auction_register_title">장기 경매</string>
     <string name="auction_add_title">경매에 등록할\n프레임을 추가하세요</string>
+
+    <string name="is_user_bid_mark">(MY)</string>
 </resources>
