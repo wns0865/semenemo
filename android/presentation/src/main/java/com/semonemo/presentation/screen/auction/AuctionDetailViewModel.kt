@@ -122,6 +122,7 @@ class AuctionDetailViewModel
                             nftImageUrl.value = response.data.nftImageUrl
                             participant.intValue = response.data.participants
                             registerId = response.data.registerId
+                            auctionStatus.value = parseAuctionStatus(response.data.status)
                             Log.d(TAG, "loadAuctionDetail: registerId : $registerId")
                         }
                     }
@@ -154,9 +155,7 @@ class AuctionDetailViewModel
             }
         }
 
-        /**
-         * 해당 경매에 참여
-         */
+        /** 해당 경매에 참여 */
         fun joinAuction() {
             if (auctionId == -1L) {
                 viewModelScope.launch {
@@ -172,10 +171,16 @@ class AuctionDetailViewModel
                         }
 
                         is ApiResponse.Success -> {
-                            Log.d(TAG, "joinAuction: ${response.data}")
+                            Log.d(TAG, "auctionTest1: ${response.data}")
                             userAnonym = response.data.anonym
                             auctionBidLog.value = response.data.bidLogs
-                            userStatus.value = UserStatus.READY
+                            if (auctionStatus.value == AuctionStatus.READY) {
+                                Log.d(TAG, "auctionTest2: ")
+                                userStatus.value = UserStatus.READY
+                            } else if (auctionStatus.value == AuctionStatus.PROGRESS) {
+                                Log.d(TAG, "auctionTest3: ")
+                                userStatus.value = UserStatus.IN_PROGRESS
+                            }
                         }
                     }
                 }
