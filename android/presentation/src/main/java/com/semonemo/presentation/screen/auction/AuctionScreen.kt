@@ -44,6 +44,7 @@ fun AuctionScreen(
         modifier =
             modifier
                 .fillMaxSize(),
+        color = Color.White,
     ) {
         Column(
             modifier =
