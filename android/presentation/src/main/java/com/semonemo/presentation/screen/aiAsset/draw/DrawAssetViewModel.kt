@@ -40,8 +40,6 @@ class DrawAssetViewModel
             type: String,
             what: String,
         ) {
-            Log.d("nakyung", "updateStyle")
-
             val paintingStyle =
                 if (type == "실사" && what == "사람") {
                     PaintingStyle.Realistic.People
