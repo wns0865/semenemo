@@ -38,18 +38,24 @@ class PromptViewModel
             what: String,
         ) {
             val paintingStyle =
-                if (type == "실사" && what == "사람") {
-                    PaintingStyle.Realistic.People
-                } else if (type == "실사" && what == "동물") {
-                    PaintingStyle.Realistic.Animal
-                } else if (type == "카툰" && what == "사람") {
-                    PaintingStyle.Cartoon.People
-                } else if (type == "카툰" && what == "동물") {
-                    PaintingStyle.Cartoon.Animal
-                } else if (type == "애니메이션" && what == "사람") {
-                    PaintingStyle.Anime.People
+                if (type == "실사") {
+                    when (what) {
+                        "사람" -> PaintingStyle.Realistic.People
+                        "동물" -> PaintingStyle.Realistic.Animal
+                        else -> PaintingStyle.Realistic.Ect
+                    }
+                } else if (type == "카툰") {
+                    when (what) {
+                        "사람" -> PaintingStyle.Cartoon.People
+                        "동물" -> PaintingStyle.Cartoon.Animal
+                        else -> PaintingStyle.Cartoon.Ect
+                    }
                 } else {
-                    PaintingStyle.Anime.Animal
+                    when (what) {
+                        "사람" -> PaintingStyle.Anime.People
+                        "동물" -> PaintingStyle.Anime.Animal
+                        else -> PaintingStyle.Anime.Ect
+                    }
                 }
 
             _uiState.update {
@@ -65,7 +71,7 @@ class PromptViewModel
                     .makeAiAsset(
                         request =
                             MakeAiAssetRequest(
-                                prompt = uiState.value.style.prompt + ", $prompt",
+                                prompt = uiState.value.style.prompt + ", draw only $prompt",
                                 negativePrompt = uiState.value.style.negativePrompt,
                                 overrideSettings =
                                     OverrideSettings(
