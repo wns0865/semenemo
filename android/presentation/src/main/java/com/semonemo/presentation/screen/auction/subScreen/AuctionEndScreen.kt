@@ -58,8 +58,8 @@ fun AuctionEndScreen(
             Spacer(modifier = Modifier.height(10.dp))
             BoldTextWithKeywords(
                 modifier = Modifier,
-                fullText = "입찰자 : ${viewModel.result.value?.winner ?: "없음"}",
-                keywords = listOf("${viewModel.result.value?.winner ?: "없음"}"),
+                fullText = "입찰자 : ${viewModel.result.value?.anonym ?: "없음"}",
+                keywords = listOf("${viewModel.result.value?.anonym ?: "없음"}"),
                 brushFlag = listOf(false),
                 boldStyle = Typography.bodyMedium.copy(fontSize = 16.sp),
                 normalStyle = Typography.labelMedium.copy(fontSize = 16.sp),

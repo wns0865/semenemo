@@ -25,6 +25,7 @@ fun NavGraphBuilder.MomentGraph(
                 navigateToImageAsset = { navController.navigate(ScreenDestinations.ImageAsset.route) },
                 navigateToFrame = { navController.navigate(ScreenDestinations.Frame.route) },
                 navigateToPicture = { navController.navigate(ScreenDestinations.PictureMain.route) },
+                onShowSnackBar = onErrorSnackBar,
             )
         }
         composable(
@@ -40,7 +41,7 @@ fun NavGraphBuilder.MomentGraph(
                 viewModel = viewModel,
                 navigateToFrameDone = { navController.navigate(ScreenDestinations.FrameDone.route) },
                 onErrorSnackBar = onErrorSnackBar,
-                popBackStack = navController::popBackStack,
+                popBackStack = { navController.navigate(ScreenDestinations.Moment.route) },
             )
         }
 
