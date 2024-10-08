@@ -43,9 +43,9 @@ import com.semonemo.presentation.component.AuctionBidMessage
 import com.semonemo.presentation.component.AuctionTopAppBarTitle
 import com.semonemo.presentation.component.CustomDialog
 import com.semonemo.presentation.component.CustomTextButton
+import com.semonemo.presentation.component.ImageLoadingProgress
 import com.semonemo.presentation.component.TopAppBar
 import com.semonemo.presentation.component.TopAppBarNavigationType
-import com.semonemo.presentation.component.ImageLoadingProgress
 import com.semonemo.presentation.screen.auction.subScreen.AuctionEndScreen
 import com.semonemo.presentation.screen.auction.subScreen.AuctionProgressScreen
 import com.semonemo.presentation.screen.auction.subScreen.AuctionReadyScreen
@@ -59,6 +59,7 @@ private const val TAG = "AuctionDetailScreen"
 // 경매 상태 관리
 enum class AuctionStatus(
     val page: Int,
+    val text: String = "",
 ) {
     READY(0),
     PROGRESS(1),
@@ -220,8 +221,18 @@ fun AuctionDetailScreen(
                     pagerState.scrollToPage(AuctionStatus.PROGRESS.page)
                 }
             }
+            UserStatus.IN_PROGRESS -> {
+                if (viewModel.auctionStatus.value == AuctionStatus.PROGRESS) {
+                    Log.d(TAG, "AuctionDetailScreen: 중간 이동")
+                    Log.d(TAG, "auctionTest4: ")
+                    pagerState.scrollToPage(AuctionStatus.PROGRESS.page)
+                }
+            }
 
-            else -> {}
+            else -> {
+                Log.d(TAG, "auctionTest5: ")
+                Log.d(TAG, "AuctionDetailScreen: 여기로 오다뇨")
+            }
         }
     }
 

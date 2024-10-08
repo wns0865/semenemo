@@ -83,6 +83,7 @@ fun AuctionReadyScreen(
                 )
             }
             Spacer(modifier = Modifier.height(20.dp))
+
             if (viewModel.auctionStatus.value == AuctionStatus.READY && viewModel.userStatus.value == UserStatus.NOT_READY) {
                 LongBlackButton(
                     modifier =
@@ -105,6 +106,8 @@ fun AuctionReadyScreen(
                         viewModel.joinAuction()
                     },
                 )
+            } else if (true) {
+
             } else {
                 LongUnableButton(
                     modifier =

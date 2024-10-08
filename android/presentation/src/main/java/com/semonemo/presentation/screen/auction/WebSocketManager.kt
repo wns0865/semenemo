@@ -189,6 +189,7 @@ data class EndMessage(
     val auctionId: Long,
     val finalPrice: Long,
     val winner: Long?,
+    val anonym: Int?,
     val endTime: LocalDateTime,
 )
 
