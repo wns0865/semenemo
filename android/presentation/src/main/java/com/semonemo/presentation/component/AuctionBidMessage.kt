@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -52,16 +53,16 @@ fun AuctionBidMessage(
         modifier =
             modifier
                 .fillMaxWidth(0.88f)
-                .height(50.dp),
+                .height(60.dp),
     ) {
         Box(
             modifier =
                 Modifier
-                    .padding(16.dp),
+                    .padding(8.dp),
             contentAlignment = Alignment.Center,
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxSize(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
             ) {
@@ -76,10 +77,11 @@ fun AuctionBidMessage(
                 }
                 BoldTextWithKeywords(
                     modifier = Modifier,
-                    fullText = String.format(
-                        "%,d",
-                        bidPrice,
-                    ) + postfixMessage,
+                    fullText =
+                        String.format(
+                            "%,d",
+                            bidPrice,
+                        ) + postfixMessage,
                     keywords = listOf(String.format("%,d", bidPrice)),
                     brushFlag = listOf(false),
                     boldStyle = Typography.titleSmall.copy(fontSize = 16.sp),

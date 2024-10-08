@@ -1,6 +1,7 @@
 package com.semonemo.presentation.screen.auction
 
 import android.media.MediaPlayer
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -19,13 +20,19 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,6 +41,8 @@ import com.semonemo.presentation.BuildConfig
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.AuctionBidMessage
 import com.semonemo.presentation.component.AuctionTopAppBarTitle
+import com.semonemo.presentation.component.CustomDialog
+import com.semonemo.presentation.component.CustomTextButton
 import com.semonemo.presentation.component.TopAppBar
 import com.semonemo.presentation.component.TopAppBarNavigationType
 import com.semonemo.presentation.screen.auction.subScreen.AuctionEndScreen
@@ -47,7 +56,9 @@ import kotlinx.coroutines.launch
 private const val TAG = "AuctionDetailScreen"
 
 // 경매 상태 관리
-enum class AuctionStatus(val page: Int) {
+enum class AuctionStatus(
+    val page: Int,
+) {
     READY(0),
     PROGRESS(1),
     END(2),
@@ -64,11 +75,19 @@ enum class UserStatus {
     COMPLETED, // 종료
 }
 
+// 참가 모드
+enum class ParticipationStatus {
+    PARTICIPANTS, // 참가자
+    OBSERVER, // 관찰자
+}
+
 @Preview
 @Composable
 fun AuctionDetailScreen(
     modifier: Modifier = Modifier,
     auctionId: Long = 0L,
+    registerId: Long = 0L,
+    popUpBackStack: () -> Unit = {},
     viewModel: AuctionDetailViewModel = hiltViewModel(),
 ) {
     val pagerState = rememberPagerState(pageCount = { AuctionStatus.entries.size })
@@ -79,6 +98,34 @@ fun AuctionDetailScreen(
     val webSocketManager = viewModel.webSocketManager.value
     // stompSession을 remember로 관리하여 전역적으로 유지
     val stompSession = viewModel.stompSession
+
+    var showDialog by remember { mutableStateOf(false) }
+
+    @Composable
+    fun showCustomDialog(
+        onConfirmClicked: () -> Unit,
+        titleKeywords: List<String> = emptyList(),
+        contentKeywords: List<String> = emptyList(),
+    ) {
+        CustomDialog(
+            title = stringResource(R.string.auction_bid_give_up_title),
+            content = stringResource(R.string.auction_bid_give_up_content),
+            onConfirmMessage = stringResource(R.string.auction_bid_give_up_confirm),
+            onDismissMessage = stringResource(R.string.auction_bid_give_up_dismiss),
+            titleKeywords = titleKeywords,
+            contentKeywords = contentKeywords,
+            titleBrushFlag = titleKeywords.map { false },
+            contentBrushFlag = contentKeywords.map { false },
+            onConfirm = {
+                showDialog = false // 다이얼로그 닫기
+                onConfirmClicked()
+            },
+            onDismiss = {
+                showDialog = false
+            },
+        )
+    }
+
     LaunchedEffect(auctionId) {
         // 세션이 초기화되지 않았을 때만 연결
         if (stompSession.value == null) {
@@ -201,6 +248,13 @@ fun AuctionDetailScreen(
             modifier = Modifier,
             title = { AuctionTopAppBarTitle(modifier = Modifier, viewModel = viewModel) },
             navigationType = TopAppBarNavigationType.None,
+            actionButtons = {
+                CustomTextButton(
+                    text = stringResource(id = R.string.auction_bid_give_up_button),
+                    isPossible = true,
+                    onClick = { showDialog = true },
+                )
+            },
         )
         Spacer(modifier = modifier.height(30.dp))
         GlideImage(
@@ -278,5 +332,21 @@ fun AuctionDetailScreen(
                 user = viewModel.observedBidSubmit.value,
             )
         }
+    }
+
+    // Composable이 사라질 때 leaveAuction() 호출
+    DisposableEffect(Unit) {
+        onDispose {
+            Log.d(TAG, "Composable is being disposed. Calling leaveAuction()")
+            viewModel.leaveAuction()
+        }
+    }
+
+    if (showDialog) {
+        showCustomDialog(
+            onConfirmClicked = {
+                popUpBackStack()
+            },
+        )
     }
 }

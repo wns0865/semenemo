@@ -55,8 +55,8 @@ class AuctionDetailViewModel
         var auctionId = saveStateHandle["auctionId"] ?: -1L // 경매 번호
             private set
 
-
         var userId: Long = 0L // 유저 ID
+        var registerId: Long = 0L // 경매 등록자 ID
         var userAnonym: Int = 0 // 유저 익명 번호
             private set
         var nftImageUrl = mutableStateOf("")
@@ -121,6 +121,8 @@ class AuctionDetailViewModel
                         is ApiResponse.Success -> {
                             nftImageUrl.value = response.data.nftImageUrl
                             participant.intValue = response.data.participants
+                            registerId = response.data.registerId
+                            Log.d(TAG, "loadAuctionDetail: registerId : $registerId")
                         }
                     }
                 }

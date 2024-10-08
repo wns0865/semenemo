@@ -464,6 +464,8 @@ fun MainNavHost(
             AuctionDetailScreen(
                 modifier = modifier,
                 auctionId = it.arguments?.getLong("auctionId") ?: -1L,
+                registerId = it.arguments?.getLong("registerId") ?: -1L,
+                popUpBackStack = navController::popBackStack,
             )
         }
 
