@@ -28,6 +28,7 @@ android {
         buildConfigField("String", "COIN_CONTRACT_ADDRESS", properties["COIN_CONTRACT_ADDRESS"] as String)
         buildConfigField("String", "SYSTEM_CONTRACT_ADDRESS", properties["SYSTEM_CONTRACT_ADDRESS"] as String)
         buildConfigField("String", "IPFS_READ_URL", properties["IPFS_READ_URL"] as String)
+        buildConfigField("String", "BOOTPAY_API_KEY", properties["BOOTPAY_API_KEY"] as String)
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -144,4 +145,7 @@ dependencies {
 
     //
     implementation(libs.accompanist.systemuicontroller)
+
+    // bootpay
+    implementation(libs.bootpay)
 }
