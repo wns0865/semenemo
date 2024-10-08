@@ -1,6 +1,7 @@
 package com.semonemo.presentation.screen.frame
 
 import android.graphics.Bitmap
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -135,6 +136,9 @@ fun FrameScreen(
     onErrorSnackBar: (String) -> Unit = {},
     assets: List<Asset> = listOf(),
 ) {
+    BackHandler {
+        popBackStack()
+    }
     val captureController = rememberCaptureController()
     val scope = rememberCoroutineScope()
     val tabs =
