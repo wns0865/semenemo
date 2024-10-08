@@ -122,6 +122,7 @@ fun WalletContent(
         uiEvent.collectLatest { event ->
             when (event) {
                 is WalletUiEvent.Error -> onShowSnackBar(event.errorMessage)
+                is WalletUiEvent.PaySuccess -> onShowSnackBar(event.message)
             }
         }
     }
