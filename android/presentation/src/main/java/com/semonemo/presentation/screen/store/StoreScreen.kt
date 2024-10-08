@@ -239,15 +239,17 @@ fun StoreScreen(
             }
             Spacer(modifier = Modifier.height(10.dp))
             Row(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                SectionHeader(text = stringResource(id = R.string.section_header_sell_asset))
-                SectionFullViewButton(onClick = { navigateToFullView(false) })
+                SectionHeader(
+                    modifier = Modifier.padding(10.dp),
+                    text = stringResource(id = R.string.section_header_sell_asset),
+                )
+                SectionFullViewButton(onClick = {
+                    navigateToFullView(false)
+                })
             }
             if (saleAssets.isEmpty()) {
                 Box(

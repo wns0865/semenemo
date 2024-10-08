@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="in_progress_short_action">진행 중인 단기 경매</string>
+    <string name="in_progress_short_action">💥 진행 중인 단기 경매</string>
     <string name="in_progress_long_action">진행 중인 장기 경매"</string>
     <string name="reload_label">새로고침</string>
 
