@@ -110,6 +110,7 @@ fun CameraContent(
             when (event) {
                 is PictureUiEvent.Error -> onShowSnackBar(event.errorMessage)
                 PictureUiEvent.NavigateToSelect -> navigateToSelect(idx)
+                else -> {}
             }
         }
     }
