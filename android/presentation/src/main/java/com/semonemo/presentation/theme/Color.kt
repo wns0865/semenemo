@@ -34,6 +34,8 @@ val FrameGreen = Color(0xFF99CC99)
 val FrameBlue = Color(0xFFADC4FF)
 val FramePurple = Color(0xFFFFB3FF)
 
+val Orange = Color(0xFFFFA500)
+
 val Main01 =
     Brush.linearGradient(
         colors =
