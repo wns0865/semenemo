@@ -1,4 +1,4 @@
-package com.semonemo.presentation.screen.picture
+package com.semonemo.presentation.screen.picture.main
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -13,31 +13,54 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BoldTextWithKeywords
 import com.semonemo.presentation.component.FrameSizeBox
 import com.semonemo.presentation.component.TopAppBar
 import com.semonemo.presentation.screen.frame.FrameType
+import com.semonemo.presentation.screen.picture.PictureUiEvent
+import com.semonemo.presentation.screen.picture.camera.CameraViewModel
 import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun PictureMainRoute(
     modifier: Modifier = Modifier,
     navigateToCamera: (Int) -> Unit,
     popBackStack: () -> Unit,
+    viewModel: CameraViewModel = hiltViewModel(),
+    onShowSnackBar: (String) -> Unit = {},
 ) {
+    val context = LocalContext.current
+    LaunchedEffect(viewModel.uiEvent) {
+        viewModel.uiEvent.collectLatest { event ->
+            when (event) {
+                is PictureUiEvent.Error -> onShowSnackBar(event.errorMessage)
+                is PictureUiEvent.NavigateToCamera -> navigateToCamera(event.frameIdx)
+                PictureUiEvent.NoAvailableFrame -> {
+                    onShowSnackBar(context.getString(R.string.no_available_frame_message))
+                }
+
+                PictureUiEvent.NavigateToSelect -> {}
+            }
+        }
+    }
     PictureMainScreen(
         modifier = modifier,
         navigateToCamera = navigateToCamera,
         popBackStack = popBackStack,
+        loadAvailableFrames = viewModel::loadAvailableFrames,
     )
 }
 
@@ -46,6 +69,7 @@ fun PictureMainScreen(
     modifier: Modifier = Modifier,
     navigateToCamera: (Int) -> Unit = {},
     popBackStack: () -> Unit = {},
+    loadAvailableFrames: (Int) -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
 
@@ -102,7 +126,9 @@ fun PictureMainScreen(
                         title = stringResource(R.string.frame_size1_title),
                         script = stringResource(R.string.frame_size1_script),
                         frameImg = R.drawable.img_frame_size_one_by_four,
-                        onClick = { navigateToCamera(FrameType.OneByFour.idx) },
+                        onClick = {
+                            loadAvailableFrames(FrameType.OneByFour.idx)
+                        },
                     )
                     FrameSizeBox(
                         modifier =
@@ -112,7 +138,9 @@ fun PictureMainScreen(
                         title = stringResource(R.string.frame_size2_title),
                         script = stringResource(R.string.frame_size2_script),
                         frameImg = R.drawable.img_frame_size_two_by_two,
-                        onClick = { navigateToCamera(FrameType.TwoByTwo.idx) },
+                        onClick = {
+                            loadAvailableFrames(FrameType.TwoByTwo.idx)
+                        },
                     )
                     FrameSizeBox(
                         modifier =
@@ -122,7 +150,9 @@ fun PictureMainScreen(
                         title = stringResource(R.string.frame_size3_title),
                         script = stringResource(R.string.frame_size3_script),
                         frameImg = R.drawable.img_frame_size_one_by_one,
-                        onClick = { navigateToCamera(FrameType.OneByOne.idx) },
+                        onClick = {
+                            loadAvailableFrames(FrameType.OneByOne.idx)
+                        },
                     )
                 }
             }
