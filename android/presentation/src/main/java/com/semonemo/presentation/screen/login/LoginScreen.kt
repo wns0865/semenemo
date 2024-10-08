@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +31,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -137,10 +139,12 @@ fun LoginContent(
                                 action?.let {
                                     action()
                                 } ?: run {
-                                    // 에러 처리
+                                    onShowErrorSnackBar(message)
                                 }
                             },
-                            onSuccess = { loginViewModel.existUser(result) },
+                            onSuccess = {
+                                loginViewModel.existUser(result)
+                            },
                         )
                     }
                 }
@@ -148,9 +152,6 @@ fun LoginContent(
         },
         onClick = { loginViewModel.login(it) },
         isConnect = isConnect,
-        // getBalance = nftViewModel::getBalance,
-//        transfer = { nftViewModel.transfer(BuildConfig.CONTRACT_ADDRESS, "1") },
-//        onSigned = nftViewModel::sendTransaction,
     )
 }
 
@@ -218,7 +219,7 @@ fun LoginScreen(
                 .background(brush = Main01),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Spacer(modifier = Modifier.weight(0.5f))
+        Spacer(modifier = Modifier.weight(1f))
         BoldTextWithKeywords(
             fullText = stringResource(R.string.login_title),
             keywords =
@@ -227,20 +228,19 @@ fun LoginScreen(
                     stringResource(R.string.brush_frame),
                 ),
             brushFlag = listOf(true, true),
-            boldStyle = Typography.titleSmall.copy(fontSize = 16.sp),
-            normalStyle = Typography.labelLarge,
+            boldStyle = Typography.titleSmall.copy(fontSize = 18.sp),
+            normalStyle = Typography.labelLarge.copy(fontSize = 18.sp),
         )
-        Spacer(modifier = Modifier.weight(0.1f))
+        Spacer(modifier = Modifier.weight(0.01f))
         Text(
             text = stringResource(id = R.string.app_name),
-            style = Typography.titleLarge.copy(brush = Main02, fontSize = 40.sp),
+            style = Typography.titleLarge.copy(brush = Main02, fontSize = 50.sp),
         )
-        Spacer(modifier = Modifier.weight(0.25f))
         Image(
             painter = painterResource(id = R.drawable.img_start_background),
             contentDescription = "",
         )
-
+        Spacer(modifier = Modifier.weight(0.15f))
         LongWhiteButton(
             modifier =
                 Modifier
@@ -249,8 +249,7 @@ fun LoginScreen(
             text = stringResource(R.string.login_message),
             onClick = onConnect,
         )
-        Spacer(modifier = Modifier.weight(0.05f))
-
+        Spacer(modifier = Modifier.height(8.dp))
         AnimatedVisibility(
             visible = isConnect,
             enter =

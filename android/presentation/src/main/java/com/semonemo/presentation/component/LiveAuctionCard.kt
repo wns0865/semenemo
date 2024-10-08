@@ -117,6 +117,11 @@ fun LiveAuctionCard(
                     Modifier
                         .fillMaxWidth()
                         .weight(1f),
+                loading = {
+                    ImageLoadingProgress(
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                },
             )
 
             Spacer(modifier = Modifier.height(4.dp))

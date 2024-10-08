@@ -35,13 +35,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.semonemo.domain.model.FrameDetail
-import com.semonemo.domain.model.FrameInfo
-import com.semonemo.domain.model.NftData
 import com.semonemo.domain.model.SellAssetDetail
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.CustomStoreFAB
+import com.semonemo.presentation.component.ImageLoadingProgress
 import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.SectionFullViewButton
 import com.semonemo.presentation.component.SectionHeader
@@ -178,10 +176,26 @@ fun StoreScreen(
                     tint = GunMetal,
                 )
             }
-            LazyRow {
-                items(hotFrames.size) { index ->
-                    val frame = hotFrames[index]
-                    HotRecentFrame(frame = frame)
+            if (hotFrames.isEmpty()) {
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(100.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "현재 인기 프레임이 없어요! 🥲",
+                        style = Typography.labelLarge,
+                        color = Gray02,
+                    )
+                }
+            } else {
+                LazyRow {
+                    items(hotFrames.size) { index ->
+                        val frame = hotFrames[index]
+                        HotRecentFrame(frame = frame)
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(10.dp))
@@ -292,6 +306,11 @@ fun HotRecentFrame(
                         .urlToIpfs(),
                 contentScale = ContentScale.Fit,
                 modifier = Modifier.padding(vertical = 10.dp),
+                loading = {
+                    ImageLoadingProgress(
+                        modifier = Modifier,
+                    )
+                },
             )
         }
     }
@@ -301,18 +320,6 @@ fun HotRecentFrame(
 @Composable
 fun preview() {
     SemonemoTheme {
-        HotRecentFrame(
-            frame =
-                FrameDetail(
-                    nftInfo =
-                        FrameInfo(
-                            data =
-                                NftData(
-                                    title = "타이틀",
-                                    image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6oBX5xsX1CcZfshK5ibbUUJCd7-SpqLQF4g&s",
-                                ),
-                        ),
-                ),
-        )
+        StoreScreen()
     }
 }

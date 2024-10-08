@@ -63,6 +63,7 @@ import com.semonemo.presentation.R
 import com.semonemo.presentation.component.CustomDropdownMenu
 import com.semonemo.presentation.component.CustomDropdownMenuStyles
 import com.semonemo.presentation.component.CustomTab
+import com.semonemo.presentation.component.ImageLoadingProgress
 import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.NameWithBadge
 import com.semonemo.presentation.component.SubScribeButton
@@ -295,6 +296,11 @@ fun MyPageScreen(
                         Modifier
                             .size(120.dp)
                             .clip(shape = CircleShape),
+                    loading = {
+                        ImageLoadingProgress(
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    },
                 )
                 if (isFollow == null) { // 마이페이지인 경우에만 버튼 나오도록
                     Image(

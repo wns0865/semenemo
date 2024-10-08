@@ -51,6 +51,7 @@ import com.semonemo.domain.model.FrameDetail
 import com.semonemo.presentation.BuildConfig
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.HashTag
+import com.semonemo.presentation.component.ImageLoadingProgress
 import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.component.LongUnableButton
@@ -255,6 +256,21 @@ fun FrameDetailScreen(
                             Modifier
                                 .size(30.dp)
                                 .clip(shape = CircleShape),
+                        loading = {
+                            ImageLoadingProgress(
+                                modifier = Modifier,
+                            )
+                        },
+                        failure = {
+                            Image(
+                                painter =
+                                    painterResource(
+                                        id =
+                                            R.drawable.ic_place_holder,
+                                    ),
+                                contentDescription = null,
+                            )
+                        },
                     )
 
                     if (hasBadge) {

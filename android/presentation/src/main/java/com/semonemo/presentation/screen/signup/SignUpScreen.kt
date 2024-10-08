@@ -41,6 +41,7 @@ import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BoldTextWithKeywords
 import com.semonemo.presentation.component.CustomPasswordTextField
 import com.semonemo.presentation.component.CustomTextField
+import com.semonemo.presentation.component.ImageLoadingProgress
 import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.component.LongUnableButton
@@ -180,6 +181,21 @@ fun SignUpScreen(
                                 ),
                             )
                         },
+                loading = {
+                    ImageLoadingProgress(
+                        modifier = Modifier,
+                    )
+                },
+                failure = {
+                    Image(
+                        painter =
+                            painterResource(
+                                id =
+                                    R.drawable.ic_place_holder,
+                            ),
+                        contentDescription = null,
+                    )
+                },
             )
         } else {
             Image(

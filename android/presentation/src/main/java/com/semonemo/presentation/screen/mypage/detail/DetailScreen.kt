@@ -40,6 +40,7 @@ import com.semonemo.presentation.BuildConfig
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.CustomDialog
 import com.semonemo.presentation.component.HashTag
+import com.semonemo.presentation.component.ImageLoadingProgress
 import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.LongWhiteButton
 import com.semonemo.presentation.component.PrivateTag
@@ -271,6 +272,11 @@ fun DetailScreen(
                         .size(25.dp)
                         .clip(CircleShape),
                 imageModel = profileImg,
+                loading = {
+                    ImageLoadingProgress(
+                        modifier = Modifier,
+                    )
+                },
             )
             Spacer(modifier = Modifier.width(6.dp))
             Text(

@@ -45,6 +45,7 @@ import com.semonemo.presentation.component.CustomDialog
 import com.semonemo.presentation.component.CustomTextButton
 import com.semonemo.presentation.component.TopAppBar
 import com.semonemo.presentation.component.TopAppBarNavigationType
+import com.semonemo.presentation.component.ImageLoadingProgress
 import com.semonemo.presentation.screen.auction.subScreen.AuctionEndScreen
 import com.semonemo.presentation.screen.auction.subScreen.AuctionProgressScreen
 import com.semonemo.presentation.screen.auction.subScreen.AuctionReadyScreen
@@ -265,6 +266,11 @@ fun AuctionDetailScreen(
                     .height(300.dp)
                     .width(200.dp)
                     .align(Alignment.CenterHorizontally),
+            loading = {
+                ImageLoadingProgress(
+                    modifier = Modifier,
+                )
+            },
         )
         Spacer(modifier = modifier.height(20.dp))
 
