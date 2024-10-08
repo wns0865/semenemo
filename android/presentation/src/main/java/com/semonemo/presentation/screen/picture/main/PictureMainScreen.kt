@@ -151,7 +151,7 @@ fun PictureMainScreen(
                         script = stringResource(R.string.frame_size3_script),
                         frameImg = R.drawable.img_frame_size_one_by_one,
                         onClick = {
-                            loadAvailableFrames(FrameType.TwoByTwo.idx)
+                            loadAvailableFrames(FrameType.OneByOne.idx)
                         },
                     )
                 }
