@@ -62,13 +62,13 @@ fun CustomAuctionFAB(
         ) {
             CustomAuctionSubFAB(
                 visible = expanded,
-                delayMillis = 0,
+                delayMillis = 100,
                 textLabel = stringResource(id = R.string.fab_label_register_long_auction),
                 imgRes = R.drawable.ic_fab_long_auction,
             )
             CustomAuctionSubFAB(
                 visible = expanded,
-                delayMillis = 100,
+                delayMillis = 0,
                 textLabel = stringResource(id = R.string.fab_label_register_short_auction),
                 imgRes = R.drawable.ic_fab_short_auction,
                 onClick = navigateToAuctionRegister,
@@ -86,9 +86,9 @@ fun CustomAuctionFAB(
                         painterResource(
                             // FAB 상태에 따라 아이콘 변경
                             if (expanded) {
-                                R.drawable.ic_fab_sell_off
+                                R.drawable.ic_fab_auction_click
                             } else {
-                                R.drawable.ic_fab_sell_on
+                                R.drawable.ic_fab_auction_unclick
                             },
                         ),
                     contentDescription = null,

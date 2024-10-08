@@ -33,7 +33,7 @@ fun BidInfo(
     Column(
         modifier = modifier,
     ) {
-        val fontSize = 16
+        val fontSize = 14
 
         // 입찰 기록이 있을 때 입찰자 목록 표시
 

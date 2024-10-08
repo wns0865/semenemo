@@ -2,6 +2,7 @@ package com.semonemo.presentation.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -47,7 +48,7 @@ fun CustomNoRippleButton(
                 enabled = enabled,
                 onClick = onClick,
                 indication = null,  // 리플 효과 제거
-                interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                interactionSource = remember { MutableInteractionSource() }
             )
             .padding(16.dp)
     ) {

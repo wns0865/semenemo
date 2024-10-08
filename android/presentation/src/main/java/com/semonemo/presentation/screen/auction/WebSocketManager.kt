@@ -36,11 +36,12 @@ class WebSocketManager {
     private val bidMessageJsonAdapter = moshi.adapter(BidMessage::class.java).lenient()
     private val endMessageJsonAdapter = moshi.adapter(EndMessage::class.java).lenient()
 
+    // 현재 연결된 세션을 저장하기 위한 변수
+    private var currentSession: StompSession? = null
+
     suspend fun connectToAuction(): StompSession {
-//        val url = "ws://192.168.100.69:8090/ws/auction"
-//        val url = "http://192.168.100.203:8081/ws-stomp"
-//        val url = "http://192.168.0.45:8080/ws-stomp"
         val url = "${BuildConfig.SEVER_URL}ws-stomp"
+        currentSession = stompClient.connect(url)
         return stompClient.connect(url)
     }
 

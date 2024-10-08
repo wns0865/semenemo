@@ -4,6 +4,7 @@ data class Auction(
     val id: Long = 0L,
     val status: String = "",
     val nftId: Long = 0L,
+    val registerId: Long = 0L,
     val nftImageUrl: String = "",
     val participants: Int = 0,
     val startPrice: Long = 0L,
