@@ -298,7 +298,7 @@ fun MyPageScreen(
                             .clip(shape = CircleShape),
                     loading = {
                         ImageLoadingProgress(
-                            modifier = Modifier,
+                            modifier = Modifier.fillMaxSize(),
                         )
                     },
                 )

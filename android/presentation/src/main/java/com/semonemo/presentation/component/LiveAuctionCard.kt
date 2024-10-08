@@ -119,7 +119,7 @@ fun LiveAuctionCard(
                         .weight(1f),
                 loading = {
                     ImageLoadingProgress(
-                        modifier = Modifier,
+                        modifier = Modifier.fillMaxSize(),
                     )
                 },
             )

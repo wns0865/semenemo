@@ -140,7 +140,9 @@ fun LoginContent(
                                     onShowErrorSnackBar(message)
                                 }
                             },
-                            onSuccess = { loginViewModel.existUser(result) },
+                            onSuccess = {
+                                loginViewModel.existUser(result)
+                            },
                         )
                     }
                 }
