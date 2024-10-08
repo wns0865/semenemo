@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
@@ -50,7 +49,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -73,7 +71,6 @@ import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.frameBackGroundColor
-import com.semonemo.presentation.util.getTodayDate
 import com.semonemo.presentation.util.noRippleClickable
 import com.semonemo.presentation.util.saveBitmapToGallery
 import com.semonemo.presentation.util.urlToIpfs
@@ -237,149 +234,367 @@ fun PictureSelectScreen(
                 },
             )
             Spacer(modifier = Modifier.height(10.dp))
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxWidth(0.5f)
-                        .fillMaxHeight(0.4f)
-                        .capturable(captureController),
-                contentAlignment = Alignment.Center,
-            ) {
-                if (selectedFrameIndex.value == -1) {
+            if (selectedFrameIndex.intValue == -1) {
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(350.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
                     Text(
                         text = "프레임을 선택해 주세요! 📸",
                         style = Typography.bodyMedium.copy(fontSize = 15.sp),
                         color = Gray02,
                     )
-                    selectedPictures.value.clear()
-                } else {
-                    GlideImage(
-                        imageModel =
-                            frames[selectedFrameIndex.value]
-                                .nftInfo.data.image
-                                .urlToIpfs(),
-                        contentScale = ContentScale.Fit,
-                        modifier =
-                            Modifier
-                                .fillMaxSize()
-                                .noRippleClickable {
-                                },
-                    )
-                    if (check.value) {
-                        val (textStyle, alignment) =
-                            if (type == FrameType.OneByFour) {
-                                Pair(
-                                    Typography.bodySmall.copy(color = selectedColor),
-                                    Alignment.BottomCenter,
-                                )
-                            } else {
-                                Pair(
-                                    Typography.bodyMedium.copy(color = selectedColor),
-                                    Alignment.BottomEnd,
-                                )
-                            }
-
-                        Text(
+                }
+                selectedPictures.value.clear()
+            } else {
+                when (type) {
+                    FrameType.OneByOne -> {
+                        Box(
                             modifier =
                                 Modifier
-                                    .wrapContentHeight()
-                                    .align(alignment)
-                                    .padding(7.dp),
-                            text = getTodayDate(),
-                            style = textStyle,
-                            textAlign = TextAlign.End,
-                        )
-                    }
-                    when (type) {
-                        FrameType.OneByOne -> {
-                            Box(
+                                    .fillMaxWidth(0.6f)
+                                    .height(345.dp)
+                                    .capturable(captureController),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Column(
                                 modifier =
                                     Modifier
-                                        .fillMaxSize()
-                                        .padding(top = 5.dp, bottom = 50.dp),
+                                        .fillMaxSize(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
                             ) {
-                                selectedPictures.value.forEach { bitmap ->
-                                    Image(
-                                        bitmap = bitmap.asImageBitmap(),
-                                        contentDescription = null,
-                                        contentScale = ContentScale.Fit,
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .height(5.dp),
+                                )
+                                Row(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .wrapContentHeight(),
+                                ) {
+                                    Box(
                                         modifier =
                                             Modifier
-                                                .fillMaxSize()
-                                                .align(Alignment.Center),
+                                                .width(5.dp)
+                                                .height(280.dp),
+                                    )
+                                    Box(
+                                        modifier =
+                                            Modifier
+                                                .fillMaxWidth()
+                                                .height(280.dp),
+                                    ) {
+                                        selectedPictures.value.forEach { bitmap ->
+                                            Image(
+                                                bitmap = bitmap.asImageBitmap(),
+                                                contentDescription = null,
+                                                contentScale = ContentScale.Crop,
+                                                modifier = Modifier.fillMaxSize(),
+                                            )
+                                        }
+                                    }
+                                    Box(
+                                        modifier =
+                                            Modifier
+                                                .width(5.dp)
+                                                .height(280.dp),
                                     )
                                 }
-                            }
-                        }
-
-                        FrameType.TwoByTwo -> {
-                            Box(
-                                modifier =
-                                    Modifier
-                                        .wrapContentSize(),
-                            ) {
                                 Box(
                                     modifier =
                                         Modifier
-                                            .fillMaxSize(),
-                                ) {
-                                    Column(
-                                        modifier = Modifier.fillMaxSize(),
-                                    ) {
-                                        RenderImageRow(
-                                            modifier = Modifier.weight(1f),
-                                            startIndex = 0,
-                                            selectedPictures = selectedPictures.value,
-                                        )
-
-                                        RenderImageRow(
-                                            modifier = Modifier.weight(1f),
-                                            startIndex = 2,
-                                            selectedPictures = selectedPictures.value,
-                                        )
-                                        Spacer(
-                                            modifier =
-                                                Modifier
-                                                    .fillMaxWidth()
-                                                    .height(50.dp),
-                                        )
-                                    }
-                                }
+                                            .fillMaxWidth()
+                                            .height(60.dp),
+                                )
                             }
-                        }
-
-                        FrameType.OneByFour -> {
-                            Box(
+                            GlideImage(
+                                imageModel =
+                                    frames[selectedFrameIndex.intValue]
+                                        .nftInfo.data.image
+                                        .urlToIpfs(),
                                 modifier =
                                     Modifier
-                                        .wrapContentSize(),
-                                contentAlignment = Alignment.Center,
-                            ) {
+                                        .fillMaxWidth()
+                                        .height(345.dp),
+                            )
+                        }
+                    }
+
+                    FrameType.TwoByTwo -> {
+                        Box(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth(0.6f)
+                                    .height(344.dp)
+                                    .capturable(captureController),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Column(modifier = Modifier.fillMaxSize()) {
                                 Box(
                                     modifier =
                                         Modifier
-                                            .fillMaxSize(),
+                                            .fillMaxWidth()
+                                            .height(5.dp),
+                                )
+                                Row(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .wrapContentHeight(),
                                 ) {
-                                    Column(
+                                    Box(
                                         modifier =
                                             Modifier
-                                                .fillMaxSize(),
+                                                .width(5.dp)
+                                                .height(137.dp),
+                                    )
+                                    Box(
+                                        modifier =
+                                            Modifier
+                                                .weight(1f)
+                                                .height(137.dp),
                                     ) {
-                                        for (i in 0 until FrameType.OneByFour.amount) {
+                                        if (selectedPictures.value.size >= 1) {
+                                            Image(
+                                                bitmap = selectedPictures.value[0].asImageBitmap(),
+                                                contentDescription = null,
+                                                contentScale = ContentScale.Crop,
+                                                modifier =
+                                                    Modifier
+                                                        .fillMaxSize(),
+                                            )
+                                        }
+                                    }
+                                    Box(
+                                        modifier =
+                                            Modifier
+                                                .width(5.dp)
+                                                .height(137.dp),
+                                    )
+                                    Box(
+                                        modifier =
+                                            Modifier
+                                                .weight(1f)
+                                                .height(137.dp),
+                                    ) {
+                                        if (selectedPictures.value.size >= 2) {
+                                            Image(
+                                                bitmap = selectedPictures.value[1].asImageBitmap(),
+                                                contentDescription = null,
+                                                contentScale = ContentScale.Crop,
+                                                modifier =
+                                                    Modifier
+                                                        .fillMaxSize()
+                                                        .align(Alignment.Center),
+                                            )
+                                        }
+                                    }
+                                    Box(
+                                        modifier =
+                                            Modifier
+                                                .width(5.dp)
+                                                .height(137.dp),
+                                    )
+                                }
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .height(5.dp),
+                                )
+                                Row(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .wrapContentHeight(),
+                                ) {
+                                    Box(
+                                        modifier =
+                                            Modifier
+                                                .width(5.dp)
+                                                .height(137.dp),
+                                    )
+                                    Box(
+                                        modifier =
+                                            Modifier
+                                                .weight(1f)
+                                                .height(137.dp),
+                                    ) {
+                                        if (selectedPictures.value.size >= 3) {
+                                            Image(
+                                                bitmap = selectedPictures.value[2].asImageBitmap(),
+                                                contentDescription = null,
+                                                contentScale = ContentScale.Crop,
+                                                modifier =
+                                                    Modifier
+                                                        .fillMaxSize()
+                                                        .align(Alignment.Center),
+                                            )
+                                        }
+                                    }
+                                    Box(
+                                        modifier =
+                                            Modifier
+                                                .width(5.dp)
+                                                .height(137.dp),
+                                    )
+                                    Box(
+                                        modifier =
+                                            Modifier
+                                                .weight(1f)
+                                                .height(137.dp),
+                                    ) {
+                                        if (selectedPictures.value.size >= 4) {
+                                            Image(
+                                                bitmap = selectedPictures.value[3].asImageBitmap(),
+                                                contentDescription = null,
+                                                contentScale = ContentScale.Crop,
+                                                modifier =
+                                                    Modifier
+                                                        .fillMaxSize()
+                                                        .align(Alignment.Center),
+                                            )
+                                        }
+                                    }
+                                    Box(
+                                        modifier =
+                                            Modifier
+                                                .width(5.dp)
+                                                .height(137.dp),
+                                    )
+                                }
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .height(60.dp),
+                                )
+                            }
+                            GlideImage(
+                                imageModel =
+                                    frames[selectedFrameIndex.intValue]
+                                        .nftInfo.data.image
+                                        .urlToIpfs(),
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(344.dp),
+                            )
+                        }
+                    }
+
+                    FrameType.OneByFour -> {
+                        Box(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth(0.3f)
+                                    .height(365.dp)
+                                    .capturable(captureController),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Column(modifier = Modifier.fillMaxWidth()) {
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .height(5.dp),
+                                )
+                                repeat(4) { index ->
+                                    Row(modifier = Modifier.fillMaxWidth()) {
+                                        Box(
+                                            modifier =
+                                                Modifier
+                                                    .width(5.dp)
+                                                    .height(75.dp),
+                                        )
+                                        Box(
+                                            modifier =
+                                                Modifier
+                                                    .weight(1f)
+                                                    .height(75.dp),
+                                        ) {
                                             RenderImage(
-                                                modifier = Modifier.fillMaxWidth().weight(1f),
-                                                index = i,
+                                                modifier =
+                                                    Modifier
+                                                        .fillMaxSize()
+                                                        .align(Alignment.Center),
+                                                index = index,
                                                 selectedPictures = selectedPictures.value,
                                             )
                                         }
-                                        Spacer(modifier = Modifier.height(40.dp))
+                                        Box(
+                                            modifier =
+                                                Modifier
+                                                    .width(5.dp)
+                                                    .height(75.dp),
+                                        )
                                     }
+                                    Box(
+                                        modifier =
+                                            Modifier
+                                                .fillMaxWidth()
+                                                .height(5.dp),
+                                    )
                                 }
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .height(40.dp),
+                                )
                             }
+                            GlideImage(
+                                imageModel =
+                                    frames[selectedFrameIndex.intValue]
+                                        .nftInfo.data.image
+                                        .urlToIpfs(),
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(365.dp),
+                            )
                         }
                     }
                 }
+                if (check.value) {
+                    val (textStyle, alignment) =
+                        if (type == FrameType.OneByFour) {
+                            Pair(
+                                Typography.bodySmall.copy(
+                                    fontSize = 12.sp,
+                                    color = selectedColor,
+                                ),
+                                Alignment.BottomCenter,
+                            )
+                        } else {
+                            Pair(
+                                Typography.bodyMedium.copy(
+                                    fontSize = 12.sp,
+                                    color = selectedColor,
+                                ),
+                                Alignment.BottomEnd,
+                            )
+                        }
+
+//                    Text(
+//                        modifier =
+//                            Modifier
+//                                .wrapContentHeight()
+//                                .align(alignment)
+//                                .padding(7.dp),
+//                        text = getTodayDate(),
+//                        style = textStyle,
+//                        textAlign = TextAlign.End,
+//                    )
+                }
             }
+
             Spacer(modifier = Modifier.height(20.dp))
             LazyRow(
                 modifier =
