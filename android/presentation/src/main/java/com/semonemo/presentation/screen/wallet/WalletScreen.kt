@@ -103,6 +103,7 @@ fun WalletRoute(
                 contractAddress = BuildConfig.SYSTEM_CONTRACT_ADDRESS,
             )
         },
+        buyCoin = viewModel::buyCoin,
     )
 }
 
@@ -115,6 +116,7 @@ fun WalletContent(
     onShowSnackBar: (String) -> Unit,
     sendExchangePayableTransaction: (String) -> Unit,
     sendExchangeCoinTransaction: (String) -> Unit,
+    buyCoin: (Long) -> Unit = {},
 ) {
     LaunchedEffect(uiEvent) {
         uiEvent.collectLatest { event ->
@@ -135,6 +137,7 @@ fun WalletContent(
         sendExchangePayableTransaction = sendExchangePayableTransaction,
         onShowSnackBar = onShowSnackBar,
         sendExchangeCoinTransaction = sendExchangeCoinTransaction,
+        buyCoin = buyCoin,
     )
 
     if (uiState.isLoading) {
@@ -166,6 +169,7 @@ fun WalletScreen(
     sendExchangePayableTransaction: (String) -> Unit = {},
     sendExchangeCoinTransaction: (String) -> Unit = {},
     onShowSnackBar: (String) -> Unit = {},
+    buyCoin: (Long) -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
 
@@ -191,6 +195,7 @@ fun WalletScreen(
                 sendExchangePayableTransaction = sendExchangePayableTransaction,
                 sendExchangeCoinTransaction = sendExchangeCoinTransaction,
                 onShowSnackBar = onShowSnackBar,
+                buyCoin = buyCoin,
             )
             Spacer(modifier = Modifier.height(10.dp))
             WalletCoinBox(
@@ -203,7 +208,7 @@ fun WalletScreen(
             Spacer(modifier = Modifier.height(30.dp))
             Text(
                 text = stringResource(R.string.recent_transaction_history),
-                style = Typography.bodyMedium.copy(fontSize = 20.sp)
+                style = Typography.bodyMedium.copy(fontSize = 20.sp),
             )
             Column(
                 modifier = Modifier.fillMaxSize(),
