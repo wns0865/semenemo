@@ -12,4 +12,12 @@ sealed interface PictureUiEvent {
 
     @Immutable
     data object NavigateToSelect : PictureUiEvent
+
+    @Immutable
+    data class NavigateToCamera(
+        val frameIdx: Int,
+    ) : PictureUiEvent
+
+    @Immutable
+    data object NoAvailableFrame : PictureUiEvent
 }

@@ -326,16 +326,6 @@ fun DetailScreen(
                     text = stringResource(R.string.change_to_private_nft),
                     onClick = { showDialog = DialogType.PUBLIC },
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-                LongWhiteButton(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp),
-                    icon = null,
-                    text = stringResource(R.string.change_to_sale_nft),
-                    onClick = { showDialog = DialogType.SALE },
-                )
             } else {
                 LongWhiteButton(
                     modifier =
@@ -385,19 +375,11 @@ fun DetailScreen(
         }
 
         DialogType.SALE -> {
-            val (dialogTitle, dialogContent) =
-                if (!isOnSale) {
-                    stringResource(R.string.sale_dialog_title) to stringResource(R.string.sale_dialog_content)
-                } else {
-                    stringResource(R.string.not_sale_dialog_title) to stringResource(R.string.not_sale_dialog_content)
-                }
+            val dialogTitle =stringResource(R.string.sale_dialog_title)
+            val dialogContent = stringResource(R.string.sale_dialog_content)
 
-            val (titleKeywords, contentKeywords) =
-                if (!isOnSale) {
-                    listOf("판매") to listOf("구매할 수 있게", "비판매로 변경")
-                } else {
-                    listOf("비판매") to listOf("구매할 수 없게", "판매로 변경")
-                }
+            val titleKeywords =  listOf("비판매")
+            val contentKeywords =  listOf("구매할 수 없게", "판매로 변경")
 
             showCustomDialog(
                 title = dialogTitle,

@@ -9,4 +9,6 @@ data class FrameDetailUiState(
     val frame: FrameDetail = FrameDetail(),
     val isLiked: Boolean = false,
     val likedCount: Long = 0L,
+    val creatorFrames: List<FrameDetail> = listOf(),
+    val userId: Long = 0L,
 )

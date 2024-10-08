@@ -3,6 +3,7 @@ package com.semonemo.presentation.screen.picture.camera
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Matrix
+import androidx.activity.compose.BackHandler
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -10,11 +11,13 @@ import androidx.camera.core.ImageProxy
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -32,6 +35,7 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -47,6 +51,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.TopAppBar
@@ -54,7 +59,6 @@ import com.semonemo.presentation.screen.frame.FrameType
 import com.semonemo.presentation.screen.picture.PictureUiEvent
 import com.semonemo.presentation.screen.picture.camera.subscreen.CameraPreviewWithPermission
 import com.semonemo.presentation.screen.picture.camera.subscreen.CircularCountdownTimer
-import com.semonemo.presentation.screen.picture.camera.subscreen.PicturesContent
 import com.semonemo.presentation.theme.Gray01
 import com.semonemo.presentation.theme.Gray02
 import com.semonemo.presentation.theme.Gray03
@@ -79,15 +83,21 @@ fun CameraRoute(
     val frameType = FrameType.fromIdx(frameIdx) ?: FrameType.OneByOne
     CameraContent(
         modifier = modifier,
-        popUpBackStack = popUpBackStack,
+        popUpBackStack = {
+            viewModel.resetUiState()
+            popUpBackStack()
+        },
         onShowSnackBar = onShowSnackBar,
         onTakePhoto = viewModel::takePhoto,
         navigateToSelect = navigateToSelect,
         uiEvent = viewModel.uiEvent,
         bitmaps = uiState.value.bitmaps,
-        amount = frameType.amount,
         idx = frameType.idx,
     )
+    BackHandler(onBack = {
+        viewModel.resetUiState()
+        popUpBackStack()
+    })
 }
 
 @Composable
@@ -99,7 +109,6 @@ fun CameraContent(
     uiEvent: SharedFlow<PictureUiEvent>,
     bitmaps: List<Bitmap> = listOf(),
     navigateToSelect: (Int) -> Unit = {},
-    amount: Int,
     idx: Int,
 ) {
     LaunchedEffect(uiEvent) {
@@ -107,15 +116,26 @@ fun CameraContent(
             when (event) {
                 is PictureUiEvent.Error -> onShowSnackBar(event.errorMessage)
                 PictureUiEvent.NavigateToSelect -> navigateToSelect(idx)
+                else -> {}
             }
         }
     }
+    val context = LocalContext.current
+    val controller =
+        remember {
+            LifecycleCameraController(context).apply {
+                setEnabledUseCases(CameraController.IMAGE_CAPTURE)
+            }
+        }
+
     CameraScreen(
         modifier = modifier,
         popUpBackStack = popUpBackStack,
         onShowSnackBar = onShowSnackBar,
         onTakePhoto = onTakePhoto,
-        amount = amount,
+        controller = controller,
+        context = context,
+        frameType = FrameType.fromIdx(idx),
         bitmaps = bitmaps,
     )
 }
@@ -126,13 +146,14 @@ fun CameraScreen(
     popUpBackStack: () -> Unit = {},
     onShowSnackBar: (String) -> Unit = {},
     onTakePhoto: (Bitmap, Int) -> Unit = { _, _ -> },
-    amount: Int = 4,
+    controller: LifecycleCameraController,
+    context: Context = LocalContext.current,
+    frameType: FrameType = FrameType.OneByOne,
     bitmaps: List<Bitmap> = listOf(),
 ) {
-    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     var selectedIndex by remember { mutableStateOf(0) }
-    val (cnt, setCount) = remember { mutableStateOf(amount) }
-
+    val (cnt, setCount) = remember { mutableStateOf(frameType.amount) }
     val options = listOf(3, 10)
     var timerTime =
         remember {
@@ -141,38 +162,44 @@ fun CameraScreen(
     LaunchedEffect(timerTime) {
         timerTime.value = options[selectedIndex] * 1000L
     }
-    val controller =
-        remember {
-            LifecycleCameraController(context).apply {
-                setEnabledUseCases(CameraController.IMAGE_CAPTURE)
-            }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            controller.unbind()
         }
+    }
 
     Surface(
         modifier =
             modifier
-                .fillMaxSize()
-                .background(color = GunMetal),
+                .fillMaxSize(),
+        color = GunMetal,
     ) {
         Column(
             modifier =
                 Modifier
+                    .fillMaxWidth()
                     .statusBarsPadding()
                     .navigationBarsPadding()
-                    .background(GunMetal)
-                    .padding(horizontal = 20.dp),
-            horizontalAlignment = Alignment.Start,
+                    .background(GunMetal),
+            horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             Spacer(modifier = Modifier.height(10.dp))
             TopAppBar(modifier = Modifier, onNavigationClick = popUpBackStack, iconColor = White)
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(5.dp))
             Box(
                 modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .height(300.dp)
-                        .padding(20.dp),
+                    if (frameType != FrameType.OneByFour) {
+                        Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(3f / 4f)
+                    } else {
+                        Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(6.5f / 4f)
+                    },
+                contentAlignment = Alignment.Center,
             ) {
                 CameraPreviewWithPermission(
                     modifier =
@@ -181,49 +208,63 @@ fun CameraScreen(
                     controller = controller,
                 )
             }
-            Spacer(modifier = Modifier.height(30.dp))
-            SingleChoiceSegmentedButtonRow {
-                options.forEachIndexed { index, label ->
-                    SegmentedButton(
-                        shape =
-                            SegmentedButtonDefaults.itemShape(
-                                index = index,
-                                count = options.size,
-                            ),
-                        onClick = {
-                            selectedIndex = index
-                            timerTime.value = options[selectedIndex] * 1000L
-                        },
-                        selected = index == selectedIndex,
-                        colors =
-                            SegmentedButtonDefaults.colors(
-                                inactiveBorderColor = Gray02,
-                                inactiveContainerColor = Gray02,
-                                activeContainerColor = White,
-                                activeBorderColor = White,
-                            ),
-                        icon = {
-                            if (index == selectedIndex) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_auction_clock),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(20.dp),
-                                )
-                            }
-                        },
-                    ) {
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("${label}s", style = Typography.bodyLarge)
-                    }
-                }
-            }
-            PicturesContent(
+
+            Spacer(modifier = Modifier.height(10.dp))
+            Box(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .height(150.dp),
-                bitmaps = bitmaps,
-            )
+                        .align(Alignment.Start)
+                        .padding(start = 10.dp),
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    SingleChoiceSegmentedButtonRow {
+                        options.forEachIndexed { index, label ->
+                            SegmentedButton(
+                                modifier = Modifier,
+                                shape =
+                                    SegmentedButtonDefaults.itemShape(
+                                        index = index,
+                                        count = options.size,
+                                    ),
+                                onClick = {
+                                    selectedIndex = index
+                                    timerTime.value = options[selectedIndex] * 1000L
+                                },
+                                selected = index == selectedIndex,
+                                colors =
+                                    SegmentedButtonDefaults.colors(
+                                        inactiveBorderColor = Gray02,
+                                        inactiveContainerColor = Gray02,
+                                        activeContainerColor = White,
+                                        activeBorderColor = White,
+                                    ),
+                                icon = {
+                                    if (index == selectedIndex) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_auction_clock),
+                                            contentDescription = null,
+                                            modifier = Modifier.size(20.dp),
+                                        )
+                                    }
+                                },
+                            ) {
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("${label}s", style = Typography.bodyLarge)
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = "${bitmaps.size} / ${frameType.amount}",
+                        style = Typography.bodyLarge.copy(color = White),
+                    )
+                    Spacer(modifier = Modifier.weight(0.2f))
+                }
+            }
             Spacer(modifier = Modifier.weight(1f))
             Row(
                 modifier = Modifier.wrapContentSize(),
@@ -259,7 +300,7 @@ fun CameraScreen(
                             .size(40.dp)
                             .background(shape = CircleShape, color = Gray03)
                             .padding(7.dp)
-                            .noRippleClickable {
+                            .clickable {
                                 controller.cameraSelector =
                                     if (controller.cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
                                         CameraSelector.DEFAULT_FRONT_CAMERA
@@ -314,15 +355,13 @@ private fun takePhoto(
     )
 }
 
-@Preview(showSystemUi = true, showBackground = true)
+@Preview(showBackground = true)
 @Composable
 fun CameraScreenPreview() {
     SemonemoTheme {
+        val mockController = LifecycleCameraController(LocalContext.current)
         CameraScreen(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .background(GunMetal),
+            controller = mockController,
         )
     }
 }

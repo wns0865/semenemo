@@ -86,12 +86,18 @@ class AssetViewModel
                 if (file == null) {
                     _uiEvent.emit(AssetDoneUiEvent.Error("file is not selected"))
                 } else {
-                    assetRepository.registerAsset(file).collectLatest { response ->
-                        when (response) {
-                            is ApiResponse.Error -> _uiEvent.emit(AssetDoneUiEvent.Error(response.errorMessage))
-                            is ApiResponse.Success -> _uiEvent.emit(AssetDoneUiEvent.Done)
+                    assetRepository
+                        .registerAsset(file)
+                        .onStart {
+                            _uiState.update { it.copy(isLoading = true) }
+                        }.onCompletion {
+                            _uiState.update { it.copy(isLoading = false) }
+                        }.collectLatest { response ->
+                            when (response) {
+                                is ApiResponse.Error -> _uiEvent.emit(AssetDoneUiEvent.Error(response.errorMessage))
+                                is ApiResponse.Success -> _uiEvent.emit(AssetDoneUiEvent.Done)
+                            }
                         }
-                    }
                 }
             }
         }

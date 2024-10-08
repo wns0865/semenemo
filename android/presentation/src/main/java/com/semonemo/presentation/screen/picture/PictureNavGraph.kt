@@ -8,8 +8,10 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.semonemo.presentation.navigation.ScreenDestinations
+import com.semonemo.presentation.screen.moment.MomentRoute
 import com.semonemo.presentation.screen.picture.camera.CameraRoute
 import com.semonemo.presentation.screen.picture.camera.CameraViewModel
+import com.semonemo.presentation.screen.picture.main.PictureMainRoute
 import com.semonemo.presentation.screen.picture.select.PictureSelectRoute
 
 fun NavGraphBuilder.PictureGraph(
@@ -19,10 +21,26 @@ fun NavGraphBuilder.PictureGraph(
     onErrorSnackBar: (String) -> Unit,
     actionWithSnackBar: (Uri) -> Unit,
 ) {
-    navigation(startDestination = ScreenDestinations.PictureMain.route, route = graphRoute) {
+    navigation(startDestination = ScreenDestinations.Moment.route, route = graphRoute) {
+        composable(
+            route = ScreenDestinations.Moment.route,
+        ) {
+            MomentRoute(
+                modifier = modifier,
+                navigateToAiAsset = { navController.navigate(ScreenDestinations.AiAsset.route) },
+                navigateToImageAsset = { navController.navigate(ScreenDestinations.ImageAsset.route) },
+                navigateToFrame = { navController.navigate(ScreenDestinations.Frame.route) },
+                navigateToPicture = { navController.navigate(ScreenDestinations.PictureMain.route) },
+            )
+        }
+
         composable(
             route = ScreenDestinations.PictureMain.route,
         ) {
+            val viewModel =
+                hiltViewModel<CameraViewModel>(
+                    navController.getBackStackEntry(graphRoute),
+                )
             PictureMainRoute(
                 modifier = modifier,
                 navigateToCamera = {
@@ -30,6 +48,9 @@ fun NavGraphBuilder.PictureGraph(
                         ScreenDestinations.Camera.createRoute(it),
                     )
                 },
+                popBackStack = navController::popBackStack,
+                viewModel = viewModel,
+                onShowSnackBar = onErrorSnackBar,
             )
         }
         composable(
@@ -71,7 +92,7 @@ fun NavGraphBuilder.PictureGraph(
                 viewModel = viewModel,
                 onShowSnackBar = onErrorSnackBar,
                 type = type,
-                actionWithSnackBar = actionWithSnackBar
+                actionWithSnackBar = actionWithSnackBar,
             )
         }
     }

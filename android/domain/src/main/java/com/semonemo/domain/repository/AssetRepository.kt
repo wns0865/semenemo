@@ -3,7 +3,6 @@ package com.semonemo.domain.repository
 import com.semonemo.domain.model.AllSellAssets
 import com.semonemo.domain.model.ApiResponse
 import com.semonemo.domain.model.Asset
-import com.semonemo.domain.model.CreateAsset
 import com.semonemo.domain.model.SellAsset
 import com.semonemo.domain.model.SellAssetDetail
 import com.semonemo.domain.request.PurchaseAssetRequest
@@ -34,4 +33,6 @@ interface AssetRepository {
     suspend fun getLikeAssets(): Flow<ApiResponse<AllSellAssets>>
 
     suspend fun purchaseAsset(request: PurchaseAssetRequest): Flow<ApiResponse<Unit>>
+
+    suspend fun getCreatorAsset(userId: Long) : Flow<ApiResponse<List<SellAssetDetail>>>
 }

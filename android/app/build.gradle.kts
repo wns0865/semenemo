@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     id("kotlin-kapt")
     alias(libs.plugins.hilt)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -62,4 +63,7 @@ dependencies {
     implementation(project(":presentation"))
     // metaMask
     implementation(libs.metamask.android.sdk)
+
+    // firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
 }

@@ -9,4 +9,5 @@
     <string name="frame_size3_script">오로지 한 컷만!</string>
     <string name="my_frame">내 프레임</string>
     <string name="picture_date">촬영 일자 삽입</string>
+    <string name="no_available_frame_message">촬영할 수 있는 프레임이 없어요!</string>
 </resources>

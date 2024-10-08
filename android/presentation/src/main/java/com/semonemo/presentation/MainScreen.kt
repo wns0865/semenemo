@@ -31,6 +31,7 @@ import com.semonemo.presentation.screen.aiAsset.AiAssetScreen
 import com.semonemo.presentation.screen.aiAsset.AssetDoneRoute
 import com.semonemo.presentation.screen.aiAsset.draw.DrawAssetRoute
 import com.semonemo.presentation.screen.aiAsset.prompt.PromptAssetScreen
+import com.semonemo.presentation.screen.aiAsset.prompt.PromptRoute
 import com.semonemo.presentation.screen.auction.AuctionDetailScreen
 import com.semonemo.presentation.screen.auction.AuctionScreen
 import com.semonemo.presentation.screen.auction.register.AuctionRegisterRoute
@@ -431,11 +432,11 @@ fun MainNavHost(
         composable(
             route = ScreenDestinations.PromptAsset.route,
         ) {
-            PromptAssetScreen(
+            PromptRoute(
                 modifier = modifier,
-                navigateToDone = { assetUrl ->
-                    navController.navigate(ScreenDestinations.AssetDone.createRoute(assetUrl))
-                },
+                navigateToDone = { navController.navigate(ScreenDestinations.AssetDone.createRoute(it)) },
+                popUpBackStack = navController::popBackStack,
+                onErrorSnackBar = onShowErrorSnackBar
             )
         }
 
@@ -543,6 +544,9 @@ fun MainNavHost(
                 modifier = modifier,
                 popUpBackStack = navController::popBackStack,
                 onShowSnackBar = onShowErrorSnackBar,
+                navigateToDetail = {
+                    navController.navigate(ScreenDestinations.FrameDetail.createRoute(it))
+                },
             )
         }
 
@@ -554,6 +558,9 @@ fun MainNavHost(
                 modifier = modifier,
                 popUpBackStack = navController::popBackStack,
                 onShowSnackBar = onShowErrorSnackBar,
+                navigateToDetail = {
+                    navController.navigate(ScreenDestinations.AssetDetail.createRoute(it))
+                },
             )
         }
 
