@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
@@ -218,17 +219,19 @@ fun FrameDetailScreen(
             Column(
                 modifier =
                     modifier
+                        .wrapContentSize()
                         .padding(horizontal = 15.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
+                Spacer(modifier = Modifier.height(5.dp))
                 GlideImage(
                     imageModel = frameUrl.toUri(),
                     contentScale = ContentScale.Fit,
                     modifier =
                         Modifier
-                            .padding(horizontal = 20.dp)
-                            .size(width = 265.dp, height = 365.dp),
+                            .wrapContentSize()
+                            .padding(horizontal = 20.dp),
                 )
                 LazyRow(
                     modifier =

@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.semonemo.domain.model.Coin
@@ -34,6 +35,7 @@ import com.semonemo.presentation.screen.wallet.subscreen.TransactionHistoryBox
 import com.semonemo.presentation.screen.wallet.subscreen.WalletCardBox
 import com.semonemo.presentation.screen.wallet.subscreen.WalletCoinBox
 import com.semonemo.presentation.theme.SemonemoTheme
+import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.util.toPrice
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -199,7 +201,10 @@ fun WalletScreen(
                 changePrice = changePrice,
             )
             Spacer(modifier = Modifier.height(30.dp))
-            Text(text = stringResource(R.string.recent_transaction_history))
+            Text(
+                text = stringResource(R.string.recent_transaction_history),
+                style = Typography.bodyMedium.copy(fontSize = 20.sp)
+            )
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
