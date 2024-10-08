@@ -1,5 +1,6 @@
 package com.semonemo.presentation.screen.aiAsset
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -36,6 +37,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BoldTextWithKeywords
+import com.semonemo.presentation.component.ImageLoadingProgress
 import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.component.LongWhiteButton
@@ -183,6 +185,11 @@ fun AssetDoneScreen(
                         .fillMaxWidth()
                         .aspectRatio(1f),
                 contentScale = ContentScale.Fit,
+                loading = {
+                    ImageLoadingProgress(
+                        modifier = Modifier,
+                    )
+                },
             )
             Spacer(modifier = Modifier.fillMaxHeight(0.1f))
             Row(modifier = Modifier.fillMaxWidth(0.88f)) {

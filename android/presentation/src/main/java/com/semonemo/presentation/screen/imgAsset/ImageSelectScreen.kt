@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.semonemo.presentation.R
+import com.semonemo.presentation.component.ImageLoadingProgress
 import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.component.LongWhiteButton
@@ -172,6 +173,11 @@ fun ImageSelectScreen(
                         .fillMaxWidth()
                         .fillMaxHeight(0.5f),
                 contentScale = ContentScale.Fit,
+                loading = {
+                    ImageLoadingProgress(
+                        modifier = Modifier,
+                    )
+                },
             )
             Spacer(modifier = Modifier.weight(0.4f))
             Text(
@@ -206,7 +212,7 @@ fun ImageSelectScreen(
                 text = stringResource(R.string.img_select_confirm),
                 onClick = {
                     if (paintingStyle == "없음") {
-                        imageUri?.let{
+                        imageUri?.let {
                             navigateToDone(Uri.encode(it.toAbsolutePath(context)))
                         }
                     } else {

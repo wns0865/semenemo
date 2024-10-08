@@ -139,10 +139,12 @@ fun LoginContent(
                                 action?.let {
                                     action()
                                 } ?: run {
-                                    // 에러 처리
+                                    onShowErrorSnackBar(message)
                                 }
                             },
-                            onSuccess = { loginViewModel.existUser(result) },
+                            onSuccess = {
+                                loginViewModel.existUser(result)
+                            },
                         )
                     }
                 }
@@ -150,9 +152,6 @@ fun LoginContent(
         },
         onClick = { loginViewModel.login(it) },
         isConnect = isConnect,
-        // getBalance = nftViewModel::getBalance,
-//        transfer = { nftViewModel.transfer(BuildConfig.CONTRACT_ADDRESS, "1") },
-//        onSigned = nftViewModel::sendTransaction,
     )
 }
 

@@ -3,6 +3,7 @@ package com.semonemo.presentation.screen.mypage.subscreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -16,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.semonemo.domain.model.Asset
+import com.semonemo.presentation.component.ImageLoadingProgress
 import com.semonemo.presentation.theme.Gray03
 import com.semonemo.presentation.theme.White
 import com.skydoves.landscapist.glide.GlideImage
@@ -52,6 +54,11 @@ fun MyPageOwnedAssets(
                         ),
                 imageModel = asset.imageUrl,
                 contentScale = ContentScale.Inside,
+                loading = {
+                    ImageLoadingProgress(
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                },
             )
         }
     }
