@@ -1,6 +1,5 @@
 package com.semonemo.data.repository
 
-import android.util.Log
 import com.semonemo.data.network.api.NftApi
 import com.semonemo.data.network.response.LikeResponse
 import com.semonemo.data.network.response.emitApiResponse
@@ -27,7 +26,6 @@ class NftRepositoryImpl
             flow {
                 val response =
                     emitApiResponse(apiResponse = { api.publishNft(request) }, default = Nft())
-                Log.d("jaehan", "publish nft : $response")
                 emit(response)
             }
 
@@ -175,6 +173,19 @@ class NftRepositoryImpl
                 when (response) {
                     is ApiResponse.Error -> emit(response)
                     is ApiResponse.Success -> emit(ApiResponse.Success(data = response.data.content))
+                }
+            }
+
+        override suspend fun getHotNft(): Flow<ApiResponse<List<FrameDetail>>> =
+            flow {
+                val response =
+                    emitApiResponse(
+                        apiResponse = { api.getHotNft() },
+                        default = listOf(),
+                    )
+                when (response) {
+                    is ApiResponse.Error -> emit(response)
+                    is ApiResponse.Success -> emit(ApiResponse.Success(data = response.data))
                 }
             }
     }

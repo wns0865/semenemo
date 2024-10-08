@@ -190,7 +190,7 @@ class MyPageViewModel
             }
         }
 
-        private fun loadComponents() {
+        fun loadComponents() {
             viewModelScope.launch {
                 val loadComponentUserId =
                     if (userId == -1L) {
