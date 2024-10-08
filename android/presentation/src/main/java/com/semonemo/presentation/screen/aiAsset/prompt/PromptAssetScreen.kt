@@ -1,6 +1,5 @@
 package com.semonemo.presentation.screen.aiAsset.prompt
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +14,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,8 +27,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BoldTextWithKeywords
+import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.component.ScriptTextField
 import com.semonemo.presentation.component.TopAppBar
@@ -37,32 +40,92 @@ import com.semonemo.presentation.theme.Gray02
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.FormBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
-import org.json.JSONObject
-import java.io.IOException
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collectLatest
+
+@Composable
+fun PromptRoute(
+    modifier: Modifier,
+    navigateToDone: (String) -> Unit,
+    popUpBackStack: () -> Unit,
+    onErrorSnackBar: (String) -> Unit,
+    viewModel: PromptViewModel = hiltViewModel(),
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    PromptContent(
+        modifier = modifier,
+        navigateToDone = navigateToDone,
+        popUpBackStack = popUpBackStack,
+        onErrorSnackBar = onErrorSnackBar,
+        uiEvent = viewModel.uiEvent,
+        isLoading = uiState.isLoading,
+        makePromptAsset = viewModel::makePromptAsset,
+        updateStyle = viewModel::updateStyle,
+    )
+}
+
+@Composable
+fun PromptContent(
+    modifier: Modifier,
+    navigateToDone: (String) -> Unit,
+    popUpBackStack: () -> Unit,
+    onErrorSnackBar: (String) -> Unit,
+    uiEvent: SharedFlow<PromptUiEvent>,
+    isLoading: Boolean,
+    makePromptAsset: (String) -> Unit,
+    updateStyle: (String, String) -> Unit,
+) {
+    LaunchedEffect(uiEvent) {
+        uiEvent.collectLatest { event ->
+            when (event) {
+                is PromptUiEvent.Error -> onErrorSnackBar(event.errorMessage)
+                is PromptUiEvent.NavigateTo -> navigateToDone(event.imageUrl)
+            }
+        }
+    }
+
+    PromptAssetScreen(
+        modifier = modifier,
+        popUpBackStack = popUpBackStack,
+        makePromptAsset = makePromptAsset,
+        updateStyle = updateStyle,
+    )
+
+    if (isLoading) {
+        LoadingDialog(
+            modifier = Modifier.fillMaxSize(),
+            loadingMessage = stringResource(R.string.loading_message),
+            subMessage = stringResource(R.string.loading_sub_message),
+        )
+    }
+}
 
 @Composable
 fun PromptAssetScreen(
     modifier: Modifier = Modifier,
-    navigateToDone: (String) -> Unit = {},
+    popUpBackStack: () -> Unit,
+    makePromptAsset: (String) -> Unit = {},
+    updateStyle: (String, String) -> Unit = { _, _ -> },
 ) {
     val scrollState = rememberScrollState()
     val focusManager = LocalFocusManager.current
 
     var prompt by remember { mutableStateOf("") }
 
-    val titles =
+    val styles =
         listOf(
             "실사",
             "카툰",
             "애니메이션",
         )
-    var selectedBtn by remember { mutableStateOf("실사") }
+
+    val types =
+        listOf(
+            "사람",
+            "동물",
+        )
+    var selectedStyle by remember { mutableStateOf("실사") }
+    var selectedType by remember { mutableStateOf("사람") }
 
     Surface(
         modifier =
@@ -79,7 +142,10 @@ fun PromptAssetScreen(
                     .navigationBarsPadding(),
         ) {
             Spacer(modifier = Modifier.height(10.dp))
-            TopAppBar(modifier = Modifier.fillMaxWidth())
+            TopAppBar(
+                modifier = Modifier.fillMaxWidth(),
+                onNavigationClick = popUpBackStack,
+            )
             Column(
                 modifier =
                     Modifier
@@ -89,7 +155,7 @@ fun PromptAssetScreen(
                 BoldTextWithKeywords(
                     modifier = Modifier.padding(top = 15.dp),
                     fullText = stringResource(R.string.prompt_title),
-                    keywords = listOf("설명하는 문장", "자세히"),
+                    keywords = listOf("설명하는 문장", "영어로 작성"),
                     brushFlag = listOf(false, false),
                     boldStyle = Typography.bodyLarge.copy(fontSize = 22.sp),
                     normalStyle = Typography.labelLarge.copy(fontSize = 22.sp),
@@ -100,7 +166,7 @@ fun PromptAssetScreen(
                     style = Typography.labelMedium.copy(fontSize = 14.sp),
                     color = Gray02,
                 )
-                Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.height(30.dp))
                 ScriptTextField(
                     placeholder = stringResource(R.string.prompt_placeholder),
                     height = 200,
@@ -130,9 +196,40 @@ fun PromptAssetScreen(
                     contentAlignment = Alignment.CenterStart,
                 ) {
                     AssetButtonList(
-                        titles = titles,
-                        selectedBtn = selectedBtn,
-                        onBtnSelected = { selectedBtn = it },
+                        titles = styles,
+                        selectedBtn = selectedStyle,
+                        onBtnSelected = {
+                            selectedStyle = it
+                            updateStyle(selectedStyle, selectedType)
+                        },
+                    )
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth(),
+                    contentAlignment = Alignment.CenterStart,
+                ) {
+                    Text(
+                        text = "종류",
+                        style = Typography.bodySmall.copy(color = GunMetal, fontSize = 15.sp),
+                    )
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth(),
+                    contentAlignment = Alignment.CenterStart,
+                ) {
+                    AssetButtonList(
+                        titles = types,
+                        selectedBtn = selectedType,
+                        onBtnSelected = {
+                            selectedType = it
+                            updateStyle(selectedStyle, selectedType)
+                        },
                     )
                 }
                 Spacer(modifier = Modifier.height(80.dp))
@@ -141,11 +238,7 @@ fun PromptAssetScreen(
                     icon = null,
                     text = stringResource(R.string.prompt_done_btn_title),
                     onClick = {
-                        // api 통신
-                        translateText(text = prompt) { result ->
-                            Log.d("nakyung", "translate Result: $result")
-                        }
-//                        navigateToDone("test")
+                        makePromptAsset(prompt)
                     },
                 )
             }
@@ -153,58 +246,10 @@ fun PromptAssetScreen(
     }
 }
 
-fun translateText(
-    text: String,
-    callback: (String?) -> Unit,
-) {
-    Log.d("nakyung", text)
-    val client = OkHttpClient()
-    val url = "https://libretranslate.com/translate"
-    val requestBody =
-        FormBody
-            .Builder()
-            .add("q", text)
-            .add("source", "ko")
-            .add("target", "en")
-            .add("format", "text")
-            .build()
-
-    val request =
-        Request
-            .Builder()
-            .url(url)
-            .post(requestBody)
-            .build()
-
-    client.newCall(request).enqueue(
-        object : Callback {
-            override fun onFailure(
-                call: Call,
-                e: IOException,
-            ) {
-                callback(null) // 오류 처리
-            }
-
-            override fun onResponse(
-                call: Call,
-                response: Response,
-            ) {
-                if (response.isSuccessful) {
-                    val responseData = response.body?.string()
-                    val json = responseData?.let { JSONObject(it) }
-                    callback(json?.getString("translatedText"))
-                } else {
-                    callback(null) // 오류 처리
-                }
-            }
-        },
-    )
-}
-
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PromptAssetScreenPreview() {
     SemonemoTheme {
-        PromptAssetScreen()
+//        PromptAssetScreen()
     }
 }
