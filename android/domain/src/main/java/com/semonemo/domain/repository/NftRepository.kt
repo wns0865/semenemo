@@ -3,6 +3,7 @@ package com.semonemo.domain.repository
 import com.semonemo.domain.model.ApiResponse
 import com.semonemo.domain.model.FrameDetail
 import com.semonemo.domain.model.Nft
+import com.semonemo.domain.model.NftData
 import com.semonemo.domain.model.myFrame.MyFrame
 import com.semonemo.domain.request.PublishNftRequest
 import com.semonemo.domain.request.PurchaseNftRequest
@@ -42,4 +43,6 @@ interface NftRepository {
     ): Flow<ApiResponse<Unit>>
 
     suspend fun getCreatorSaleNft(creator: Long): Flow<ApiResponse<List<FrameDetail>>>
+
+    suspend fun getHotNft(): Flow<ApiResponse<List<FrameDetail>>>
 }

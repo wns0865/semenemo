@@ -93,4 +93,7 @@ interface NftApi {
     suspend fun getCreatorSaleNft(
         @Path("creator") creator: Long,
     ): BaseResponse<SearchFrame>
+
+    @GET("api/nft/hot")
+    suspend fun getHotNft(): BaseResponse<List<FrameDetail>>
 }
