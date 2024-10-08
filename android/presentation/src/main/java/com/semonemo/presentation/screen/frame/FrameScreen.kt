@@ -71,6 +71,7 @@ import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.component.TopAppBar
 import com.semonemo.presentation.screen.aiAsset.draw.AssetButtonList
 import com.semonemo.presentation.theme.FrameBlue
+import com.semonemo.presentation.theme.FrameGreen
 import com.semonemo.presentation.theme.FrameOrange
 import com.semonemo.presentation.theme.FramePink
 import com.semonemo.presentation.theme.FramePurple
@@ -141,13 +142,23 @@ fun FrameScreen(
             stringResource(R.string.frame_one_by_four),
             stringResource(R.string.frame_two_by_two),
         )
-    val colors =
+    val frameColors =
         listOf(
             Color.Black,
+            Color.White,
             FramePink,
             FrameOrange,
+            FrameGreen,
             FrameBlue,
             FramePurple,
+        )
+    val deepColors =
+        listOf(
+            Color.Red,
+            Color.Green,
+            Color.Cyan,
+            Color.Blue,
+            Color.Magenta,
             Gray01,
         )
 
@@ -155,7 +166,6 @@ fun FrameScreen(
     var selectedIndex by remember { mutableIntStateOf(0) }
     var selectedBtn by remember { mutableStateOf("1x1") }
     var selectedColor by remember { mutableStateOf<Color?>(Color.Black) }
-    var selectedBrush by remember { mutableStateOf<Brush?>(null) }
     val overlayAssets = remember { mutableStateListOf<OverlayAsset>() }
 
     Surface(
@@ -189,7 +199,6 @@ fun FrameScreen(
                 captureController = captureController,
                 overlayAssets = overlayAssets,
                 backgroundColor = selectedColor,
-                backgroundBrush = selectedBrush,
                 onDeleteAsset = { asset ->
                     val index = overlayAssets.indexOf(asset)
                     if (index != -1) {
@@ -237,20 +246,22 @@ fun FrameScreen(
                                 .padding(horizontal = 24.dp),
                         horizontalAlignment = Alignment.Start,
                     ) {
-                        Spacer(modifier = Modifier.fillMaxHeight(0.06f))
-                        Text(
-                            modifier = Modifier.padding(start = 4.dp),
-                            text = "단색",
-                            style = Typography.bodySmall.copy(fontSize = 15.sp),
-                        )
-                        Spacer(modifier = Modifier.fillMaxHeight(0.03f))
+                        Spacer(modifier = Modifier.fillMaxHeight(0.07f))
                         ColorPalette(
-                            colors = colors,
+                            colors = frameColors,
                             circleSize = 35,
                             selectedColor = selectedColor,
                             onColorSelected = {
                                 selectedColor = it
-                                selectedBrush = null
+                            },
+                        )
+                        Spacer(modifier = Modifier.height(15.dp))
+                        ColorPalette(
+                            colors = deepColors,
+                            circleSize = 35,
+                            selectedColor = selectedColor,
+                            onColorSelected = {
+                                selectedColor = it
                             },
                         )
                         Spacer(modifier = Modifier.fillMaxHeight(0.13f))
