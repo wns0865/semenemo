@@ -65,7 +65,7 @@ class PromptViewModel
                     .makeAiAsset(
                         request =
                             MakeAiAssetRequest(
-                                prompt = uiState.value.style.prompt + prompt,
+                                prompt = uiState.value.style.prompt + ", $prompt",
                                 negativePrompt = uiState.value.style.negativePrompt,
                                 overrideSettings =
                                     OverrideSettings(
