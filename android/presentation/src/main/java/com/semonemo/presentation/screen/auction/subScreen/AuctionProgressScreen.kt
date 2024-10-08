@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,25 +27,30 @@ fun AuctionProgressScreen(
     modifier: Modifier = Modifier,
     viewModel: AuctionDetailViewModel = hiltViewModel(),
 ) {
+    val adjustEndTime =
+        viewModel.auctionBidLog.value
+            .lastOrNull()
+            ?.endTime
     Surface(
         modifier = modifier.fillMaxSize(),
     ) {
         Column(
-            modifier = Modifier,
+            modifier = Modifier.fillMaxHeight(),
         ) {
-            val adjustEndTime =
-                viewModel.auctionBidLog.value
-                    .lastOrNull()
-                    ?.endTime
-            CustomAuctionProgressBar(endTime = adjustEndTime ?: viewModel.endTime.value)
-            Spacer(modifier = Modifier.height(20.dp))
-            BidInfo(
-                bidLogList = viewModel.auctionBidLog.value,
-                startPrice = viewModel.topPrice.longValue,
-                // 위에서 선언한 auctionBidLog
-            )
+            Column(
+                modifier = Modifier.weight(1f),
+            ) {
+                CustomAuctionProgressBar(endTime = adjustEndTime ?: viewModel.endTime.value)
+                Spacer(modifier = Modifier.height(10.dp))
+                BidInfo(
+                    bidLogList = viewModel.auctionBidLog.value,
+                    startPrice = viewModel.topPrice.longValue,
+                    // 위에서 선언한 auctionBidLog
+                )
 
-            Spacer(modifier = Modifier.height(5.dp))
+                Spacer(modifier = Modifier.height(10.dp))
+            }
+
             AuctionBidPriceInput(
                 modifier = Modifier,
                 currentPrice = viewModel.topPrice.longValue,
@@ -52,8 +58,7 @@ fun AuctionProgressScreen(
                 adjustedPercentage = viewModel.myPercentage.intValue,
                 onClear = { viewModel.adjustClear() },
             )
-
-            Spacer(modifier = Modifier.height(5.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -83,7 +88,7 @@ fun AuctionProgressScreen(
                     },
                 )
             }
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             CustomNoRippleButton(
                 text = "입찰하기",
                 onClick = {

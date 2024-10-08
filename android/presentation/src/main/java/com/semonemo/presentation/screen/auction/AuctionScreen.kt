@@ -17,6 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,6 +41,10 @@ fun AuctionScreen(
     navigateToAuctionDetail: (Long) -> Unit = {},
     navigateToAuctionRegister: () -> Unit = {},
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.loadShortAuction()
+    }
+
     Surface(
         modifier =
             modifier

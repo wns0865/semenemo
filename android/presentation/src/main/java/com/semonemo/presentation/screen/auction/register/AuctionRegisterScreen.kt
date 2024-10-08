@@ -263,7 +263,8 @@ fun AuctionRegisterScreen(
                         )
                         Spacer(modifier = Modifier.height(9.dp))
                         Text(
-                            text = stringResource(R.string.frame_add_title),
+                            text = stringResource(R.string.auction_add_title),
+                            textAlign = TextAlign.Center,
                             style = Typography.bodySmall.copy(fontSize = 15.sp),
                             color = Gray02,
                         )
@@ -440,7 +441,7 @@ fun AuctionRegisterScreen(
                     modifier =
                         Modifier
                             .fillMaxWidth(),
-                    text = stringResource(R.string.register_btn_title),
+                    text = stringResource(R.string.label_register_auction),
                 )
             }
             Spacer(modifier = Modifier.height(10.dp))
