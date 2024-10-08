@@ -3,6 +3,7 @@ package com.semonemo.presentation.screen.detail.frame
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.semonemo.domain.datasource.AuthDataSource
 import com.semonemo.domain.model.ApiResponse
 import com.semonemo.domain.repository.CoinRepository
 import com.semonemo.domain.repository.NftRepository
@@ -26,6 +27,7 @@ class FrameDetailViewModel
         private val nftRepository: NftRepository,
         private val savedStateHandle: SavedStateHandle,
         private val coinRepository: CoinRepository,
+        private val authDataSource: AuthDataSource,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(FrameDetailUiState())
         val uiState = _uiState.asStateFlow()
@@ -33,6 +35,11 @@ class FrameDetailViewModel
         val uiEvent = _uiEvent.asSharedFlow()
 
         init {
+            viewModelScope.launch {
+                authDataSource.getUserId()?.let { userId ->
+                    _uiState.update { it.copy(userId = userId.toLong()) }
+                }
+            }
             getSaleNftDetail(savedStateHandle["nftId"] ?: -1L)
         }
 
@@ -77,6 +84,7 @@ class FrameDetailViewModel
 
                             is ApiResponse.Success -> {
                                 _uiState.update {
+                                    getCreatorSaleNft(response.data.seller.userId, marketId)
                                     it.copy(
                                         frame = response.data,
                                         isLiked = response.data.isLiked,
@@ -87,6 +95,30 @@ class FrameDetailViewModel
                         }
                     }
             }
+        }
+
+        private suspend fun getCreatorSaleNft(
+            creator: Long,
+            marketId: Long,
+        ) {
+            nftRepository
+                .getCreatorSaleNft(creator)
+                .onStart {
+                    _uiState.update { it.copy(isLoading = true) }
+                }.onCompletion {
+                    _uiState.update { it.copy(isLoading = false) }
+                }.collectLatest { response ->
+                    when (response) {
+                        is ApiResponse.Error -> _uiEvent.emit(FrameDetailUiEvent.Error(response.errorMessage))
+                        is ApiResponse.Success -> {
+                            _uiState.update {
+                                it.copy(
+                                    creatorFrames = response.data.filter { it.marketId != marketId },
+                                )
+                            }
+                        }
+                    }
+                }
         }
 
         fun onClickedLikeNft(isLiked: Boolean) {

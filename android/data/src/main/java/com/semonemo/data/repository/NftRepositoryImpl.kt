@@ -83,7 +83,10 @@ class NftRepositoryImpl
         override suspend fun getAllSaleNft(orderBy: String): Flow<ApiResponse<List<FrameDetail>>> =
             flow {
                 val response =
-                    emitApiResponse(apiResponse = { api.getAllSaleNft(orderBy = orderBy) }, default = SearchFrame())
+                    emitApiResponse(
+                        apiResponse = { api.getAllSaleNft(orderBy = orderBy) },
+                        default = SearchFrame(),
+                    )
                 when (response) {
                     is ApiResponse.Error -> emit(response)
                     is ApiResponse.Success -> emit(ApiResponse.Success(response.data.content))
@@ -160,5 +163,18 @@ class NftRepositoryImpl
                         )
                     }, default = Unit),
                 )
+            }
+
+        override suspend fun getCreatorSaleNft(creator: Long): Flow<ApiResponse<List<FrameDetail>>> =
+            flow {
+                val response =
+                    emitApiResponse(
+                        apiResponse = { api.getCreatorSaleNft(creator) },
+                        default = SearchFrame(),
+                    )
+                when (response) {
+                    is ApiResponse.Error -> emit(response)
+                    is ApiResponse.Success -> emit(ApiResponse.Success(data = response.data.content))
+                }
             }
     }

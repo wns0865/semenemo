@@ -541,6 +541,9 @@ fun MainNavHost(
                 modifier = modifier,
                 popUpBackStack = navController::popBackStack,
                 onShowSnackBar = onShowErrorSnackBar,
+                navigateToDetail = {
+                    navController.navigate(ScreenDestinations.FrameDetail.createRoute(it))
+                },
             )
         }
 

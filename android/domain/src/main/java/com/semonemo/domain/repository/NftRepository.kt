@@ -40,4 +40,6 @@ interface NftRepository {
         txHash: String,
         marketId: Long,
     ): Flow<ApiResponse<Unit>>
+
+    suspend fun getCreatorSaleNft(creator: Long): Flow<ApiResponse<List<FrameDetail>>>
 }

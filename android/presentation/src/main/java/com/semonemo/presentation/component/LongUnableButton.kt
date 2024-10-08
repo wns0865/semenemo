@@ -15,7 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.semonemo.presentation.theme.Gray03
+import com.semonemo.presentation.theme.Gray02
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.WhiteGray
 
@@ -41,7 +41,7 @@ fun LongUnableButton(
                 text = text,
                 style = Typography.bodySmall.copy(fontSize = 15.sp),
                 textAlign = TextAlign.Center,
-                color = Gray03,
+                color = Gray02,
             )
         }
     }

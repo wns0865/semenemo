@@ -2,11 +2,14 @@ package com.semonemo.presentation.screen.detail.frame
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,8 +19,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -46,9 +53,12 @@ import com.semonemo.presentation.R
 import com.semonemo.presentation.component.HashTag
 import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.LongBlackButton
+import com.semonemo.presentation.component.LongUnableButton
 import com.semonemo.presentation.component.NameWithBadge
 import com.semonemo.presentation.component.TopAppBar
 import com.semonemo.presentation.screen.nft.NftViewModel
+import com.semonemo.presentation.theme.Gray02
+import com.semonemo.presentation.theme.Gray03
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Red
 import com.semonemo.presentation.theme.SemonemoTheme
@@ -70,6 +80,7 @@ fun FrameDetailRoute(
     onShowSnackBar: (String) -> Unit = {},
     viewModel: FrameDetailViewModel = hiltViewModel(),
     nftViewModel: NftViewModel = hiltViewModel(),
+    navigateToDetail: (Long) -> Unit = {},
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
     FrameDetailContent(
@@ -98,6 +109,7 @@ fun FrameDetailRoute(
             )
         },
         frame = uiState.value.frame,
+        navigateToDetail = navigateToDetail,
     )
 }
 
@@ -112,6 +124,7 @@ fun FrameDetailContent(
     onClickedPurchase: (Long) -> Unit = {},
     sendTransaction: () -> Unit = {},
     frame: FrameDetail = FrameDetail(),
+    navigateToDetail: (Long) -> Unit = {},
 ) {
     LaunchedEffect(uiEvent) {
         uiEvent.collectLatest { event ->
@@ -139,6 +152,9 @@ fun FrameDetailContent(
         profileImageUrl = frame.seller.profileImage,
         onClickedLikeNft = onClickedLikeNft,
         onClickedPurchase = onClickedPurchase,
+        creatorFrames = uiState.creatorFrames,
+        navigateToDetail = navigateToDetail,
+        canPurchase = (uiState.userId == frame.seller.userId).not(),
     )
     if (uiState.isLoading) {
         LoadingDialog(
@@ -165,6 +181,9 @@ fun FrameDetailScreen(
     price: Double = 100.1,
     onClickedLikeNft: (Boolean) -> Unit = {},
     onClickedPurchase: (Long) -> Unit = {},
+    creatorFrames: List<FrameDetail> = listOf(),
+    navigateToDetail: (Long) -> Unit = {},
+    canPurchase: Boolean = false,
 ) {
     val scrollState = rememberScrollState()
     val (expanded, isExpanded) =
@@ -262,24 +281,71 @@ fun FrameDetailScreen(
                     )
                 }
                 Row(
-                    modifier = Modifier.align(Alignment.Start),
+                    modifier =
+                        Modifier
+                            .align(Alignment.Start),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Image(
-                        modifier = Modifier,
-                        painter = painterResource(id = R.drawable.img_graph),
+                        modifier = Modifier.size(30.dp),
+                        painter = painterResource(id = R.drawable.img_fm_artist),
                         contentDescription = "",
                     )
 
-                    Text(text = stringResource(R.string.price_chart), style = Typography.bodyLarge)
+                    Text(text = "관련 작품", style = Typography.bodyLarge)
                 }
                 Spacer(modifier = Modifier.height(10.dp))
-                Image(
-                    modifier = Modifier.fillMaxWidth(),
-                    painter = painterResource(id = R.drawable.price_graph),
-                    contentDescription = "",
-                    contentScale = ContentScale.Crop,
-                )
+                if (creatorFrames.isEmpty()) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .height(150.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = "현재 판매 중인 프레임이 없어요! 🥲",
+                            style = Typography.labelLarge,
+                            color = Gray02,
+                        )
+                    }
+                } else {
+                    LazyHorizontalGrid(
+                        modifier =
+                            modifier
+                                .fillMaxWidth()
+                                .height(150.dp)
+                                .padding(horizontal = 10.dp),
+                        rows = GridCells.Fixed(1),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        state = rememberLazyGridState(),
+                    ) {
+                        items(creatorFrames.size) { index ->
+                            val frame = creatorFrames[index]
+
+                            GlideImage(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .aspectRatio(1f)
+                                        .padding(8.dp)
+                                        .clip(shape = RoundedCornerShape(10.dp))
+                                        .border(
+                                            width = 1.dp,
+                                            shape = RoundedCornerShape(10.dp),
+                                            color = Gray03,
+                                        ).noRippleClickable {
+                                            navigateToDetail(frame.marketId)
+                                        },
+                                imageModel =
+                                    frame.nftInfo.data.image
+                                        .urlToIpfs(),
+                                contentScale = ContentScale.Inside,
+                            )
+                        }
+                    }
+                }
                 Spacer(modifier = Modifier.height(10.dp))
                 Row(
                     modifier = Modifier.align(Alignment.Start),
@@ -318,20 +384,31 @@ fun FrameDetailScreen(
                         )
                     }
                     Spacer(modifier = Modifier.weight(0.05f))
-                    LongBlackButton(
-                        modifier =
-                            Modifier
-                                .weight(1f)
-                                .height(50.dp),
-                        icon = R.drawable.ic_color_sene_coin,
-                        text =
-                            String.format(
-                                Locale.KOREAN,
-                                "%,.0f ",
-                                price,
-                            ) + stringResource(id = R.string.buy_price_message),
-                        onClick = { onClickedPurchase(price.toLong()) },
-                    )
+                    if (canPurchase) {
+                        LongBlackButton(
+                            modifier =
+                                Modifier
+                                    .weight(1f)
+                                    .height(50.dp),
+                            icon = R.drawable.ic_color_sene_coin,
+                            text =
+                                String.format(
+                                    Locale.KOREAN,
+                                    "%,.0f ",
+                                    price,
+                                ) + stringResource(id = R.string.buy_price_message),
+                            onClick = { onClickedPurchase(price.toLong()) },
+                        )
+                    } else {
+                        LongUnableButton(
+                            modifier =
+                                Modifier
+                                    .weight(1f)
+                                    .padding(end = 10.dp)
+                                    .height(50.dp),
+                            text = "본인이 제작한 프레임은 구매할 수 없습니다.",
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.height(5.dp))
             }
