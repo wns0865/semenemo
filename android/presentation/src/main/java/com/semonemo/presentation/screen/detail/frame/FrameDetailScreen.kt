@@ -232,6 +232,11 @@ fun FrameDetailScreen(
                         Modifier
                             .wrapContentSize()
                             .padding(horizontal = 20.dp),
+                    loading = {
+                        ImageLoadingProgress(
+                            modifier = Modifier,
+                        )
+                    },
                 )
                 LazyRow(
                     modifier =
@@ -361,6 +366,11 @@ fun FrameDetailScreen(
                                     frame.nftInfo.data.image
                                         .urlToIpfs(),
                                 contentScale = ContentScale.Inside,
+                                loading = {
+                                    ImageLoadingProgress(
+                                        modifier = Modifier,
+                                    )
+                                },
                             )
                         }
                     }
