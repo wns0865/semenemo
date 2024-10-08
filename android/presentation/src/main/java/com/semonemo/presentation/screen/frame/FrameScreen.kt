@@ -407,14 +407,15 @@ fun FramePreview(
                 Box(
                     modifier =
                         Modifier
-                            .wrapContentSize()
+                            .fillMaxWidth(0.6f)
+                            .wrapContentHeight()
                             .capturable(captureController),
                     contentAlignment = Alignment.Center,
                 ) {
                     Box(
                         modifier =
                             Modifier
-                                .fillMaxWidth(0.6f)
+                                .fillMaxWidth()
                                 .height(345.dp)
                                 .onSizeChanged { contentSize = it },
                     ) {
@@ -477,14 +478,15 @@ fun FramePreview(
                 Box(
                     modifier =
                         Modifier
-                            .wrapContentSize()
+                            .fillMaxWidth(0.6f)
+                            .wrapContentHeight()
                             .capturable(captureController),
                     contentAlignment = Alignment.Center,
                 ) {
                     Box(
                         modifier =
                             Modifier
-                                .fillMaxWidth(0.6f)
+                                .fillMaxWidth()
                                 .height(344.dp)
                                 .onSizeChanged { contentSize = it },
                     ) {
@@ -588,14 +590,15 @@ fun FramePreview(
                 Box(
                     modifier =
                         Modifier
-                            .wrapContentSize()
+                            .fillMaxWidth(0.3f)
+                            .wrapContentHeight()
                             .capturable(captureController),
                     contentAlignment = Alignment.Center,
                 ) {
                     Box(
                         modifier =
                             Modifier
-                                .fillMaxWidth(0.3f)
+                                .fillMaxWidth()
                                 .height(365.dp)
                                 .onSizeChanged { contentSize = it },
                     ) {
@@ -706,7 +709,7 @@ fun ShowAssets(
             Box(
                 modifier =
                     assetModifier
-                        .wrapContentSize()
+                        .size(assetSize.width.dp, assetSize.height.dp)
                         .border(width = 2.dp, color = GunMetal),
             ) {
                 if (asset.imageUrl.isNotEmpty()) {
