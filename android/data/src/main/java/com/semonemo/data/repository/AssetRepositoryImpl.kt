@@ -191,4 +191,14 @@ class AssetRepositoryImpl
                         )
                 }
             }
+
+        override suspend fun getUnSaleAssets(): Flow<ApiResponse<List<Asset>>> =
+            flow {
+                val response =
+                    emitApiResponse(apiResponse = { api.getUnSaleAssets() }, default = CreateAsset())
+                when (response) {
+                    is ApiResponse.Error -> emit(response)
+                    is ApiResponse.Success -> emit(ApiResponse.Success(data = response.data.content))
+                }
+            }
     }

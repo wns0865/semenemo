@@ -34,5 +34,7 @@ interface AssetRepository {
 
     suspend fun purchaseAsset(request: PurchaseAssetRequest): Flow<ApiResponse<Unit>>
 
-    suspend fun getCreatorAsset(userId: Long) : Flow<ApiResponse<List<SellAssetDetail>>>
+    suspend fun getCreatorAsset(userId: Long): Flow<ApiResponse<List<SellAssetDetail>>>
+
+    suspend fun getUnSaleAssets(): Flow<ApiResponse<List<Asset>>>
 }

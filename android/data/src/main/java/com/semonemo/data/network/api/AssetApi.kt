@@ -91,8 +91,13 @@ interface AssetApi {
         @Body purchaseAssetRequest: PurchaseAssetRequest,
     ): BaseResponse<Unit>
 
+    // 유저 제작한 에셋
     @GET("api/asset/creator")
     suspend fun getCreatorAsset(
         @Query("userId") userId: Long,
-    ) : BaseResponse<GetCreatorAssetsResponse>
+    ): BaseResponse<GetCreatorAssetsResponse>
+
+    // 판매 가능한 에셋 조회
+    @GET("api/asset/unsell")
+    suspend fun getUnSaleAssets(): BaseResponse<CreateAsset>
 }
