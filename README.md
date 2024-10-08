@@ -29,7 +29,9 @@
 ### Backend
 |[이지언](https://github.com/Leejieon) | [이준형](https://github.com/wns0865) | [최현성](https://github.com/ChoiHyeonSeong) 
 |:--------:|:---------:|:---------:|
-| <img src="https://avatars.githubusercontent.com/u/42794501?v=4" width=400 height=200/> | ![](https://avatars.githubusercontent.com/u/81565813?v=4) | ![](https://avatars.githubusercontent.com/u/99950545?v=4) |
+| ![](https://avatars.githubusercontent.com/u/42794501?v=4)  | ![](https://avatars.githubusercontent.com/u/81565813?v=4) | ![](https://avatars.githubusercontent.com/u/99950545?v=4) |
+
+ 
 
 
 
