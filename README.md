@@ -66,7 +66,7 @@
 
 |1x1 프레임 제작|2x2 프레임 제작|1x4 프레임 제작|
 |:---:|:---:|:---:|
-| <img src="https://github.com/user-attachments/assets/f0cb7e02-c37d-4ff3-9b08-6a2d61b6cde3" width=300 height=400/> | <img src="https://github.com/user-attachments/assets/401412f4-8015-45e0-b606-317ddea63f92" width=300 height=400/> | <img src="https://github.com/user-attachments/assets/06a2cdca-744a-45ce-ba54-b6ff98fdae5a" width=300 height=400/>
+| <img src="https://github.com/user-attachments/assets/f0cb7e02-c37d-4ff3-9b08-6a2d61b6cde3" width=200 height=400/> | <img src="https://github.com/user-attachments/assets/401412f4-8015-45e0-b606-317ddea63f92" width=200 height=400/> | <img src="https://github.com/user-attachments/assets/06a2cdca-744a-45ce-ba54-b6ff98fdae5a" width=200 height=400/>
 
 
 |프레임 판매|프레임 구매|
