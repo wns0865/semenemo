@@ -6,13 +6,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -33,7 +35,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.semonemo.domain.model.FrameDetail
+import com.semonemo.domain.model.FrameInfo
+import com.semonemo.domain.model.NftData
 import com.semonemo.domain.model.SellAssetDetail
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.CustomStoreFAB
@@ -46,6 +51,7 @@ import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.White
+import com.semonemo.presentation.util.urlToIpfs
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -112,9 +118,10 @@ fun StoreContent(
         navigateToFrameSale = navigateToFrameSale,
         navigateToFullView = navigateToFullView,
         navigateToSearch = navigateToSearch,
+        hotFrames = uiState.hotFrame,
         saleFrames = uiState.saleFrame,
-        navigateToFrameDetail = navigateToFrameDetail,
         saleAssets = uiState.saleAsset,
+        navigateToFrameDetail = navigateToFrameDetail,
         navigateToAssetDetail = navigateToAssetDetail,
     )
 }
@@ -126,6 +133,7 @@ fun StoreScreen(
     navigateToSearch: () -> Unit = {},
     navigateToAssetSale: () -> Unit = {},
     navigateToFrameSale: () -> Unit = {},
+    hotFrames: List<FrameDetail> = listOf(),
     saleFrames: List<FrameDetail> = listOf(),
     saleAssets: List<SellAssetDetail> = listOf(),
     navigateToFrameDetail: (Long) -> Unit = {},
@@ -160,18 +168,22 @@ fun StoreScreen(
                 Spacer(Modifier.weight(1f))
                 Icon(
                     modifier =
-                        Modifier.padding(10.dp).clickable {
-                            navigateToSearch()
-                        },
+                        Modifier
+                            .padding(10.dp)
+                            .clickable {
+                                navigateToSearch()
+                            },
                     painter = painterResource(id = R.drawable.ic_search_magnifier),
                     contentDescription = null,
                     tint = GunMetal,
                 )
             }
-            // 아마 리스트형태로 뷰페이저로 들어갈듯
-            HotRecentFrame(
-                imgUrl = "https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNDA3MjhfMjQ5%2FMDAxNzIyMTc0NDI3NTUx.2i13wuVFmNnbi_PAAaWFaMoH8dnfMCELiKLi3FzWDowg.Jpv5rH4kLAXvpQvH7ZSiFATG9sCXuZxNlSx-Ac3hXlEg.JPEG%2FIMG%25A3%25DF2672.JPG&type=a340",
-            )
+            LazyRow {
+                items(hotFrames.size) { index ->
+                    val frame = hotFrames[index]
+                    HotRecentFrame(frame = frame)
+                }
+            }
             Spacer(modifier = Modifier.height(10.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -202,7 +214,10 @@ fun StoreScreen(
                 }
             } else {
                 StoreSubScreen(
-                    modifier = Modifier.height(frameHeight).fillMaxWidth(),
+                    modifier =
+                        Modifier
+                            .height(frameHeight)
+                            .fillMaxWidth(),
                     isFrame = true,
                     saleFrames = saleFrames,
                     navigateToFrameDetail = navigateToFrameDetail,
@@ -210,7 +225,10 @@ fun StoreScreen(
             }
             Spacer(modifier = Modifier.height(10.dp))
             Row(
-                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -233,7 +251,10 @@ fun StoreScreen(
                 }
             } else {
                 StoreSubScreen(
-                    modifier = Modifier.height(assetHeight).fillMaxWidth(),
+                    modifier =
+                        Modifier
+                            .height(assetHeight)
+                            .fillMaxWidth(),
                     isFrame = false,
                     saleAssets = saleAssets,
                     navigateToAssetDetail = navigateToAssetDetail,
@@ -252,21 +273,25 @@ fun StoreScreen(
 @Composable
 fun HotRecentFrame(
     modifier: Modifier = Modifier,
-    imgUrl: String = "",
+    frame: FrameDetail = FrameDetail(),
 ) {
     Card(
-        modifier = modifier.padding(horizontal = 10.dp).height(200.dp),
+        modifier =
+            modifier
+                .width(200.dp)
+                .padding(horizontal = 10.dp)
+                .aspectRatio(3f / 4f),
         shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = White),
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth().wrapContentHeight(),
-        ) {
+        Row(modifier = Modifier.fillMaxSize()) {
             GlideImage(
-                imageModel = imgUrl,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxWidth().weight(1f),
+                imageModel =
+                    frame.nftInfo.data.image
+                        .urlToIpfs(),
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.padding(vertical = 10.dp),
             )
         }
     }
@@ -276,6 +301,18 @@ fun HotRecentFrame(
 @Composable
 fun preview() {
     SemonemoTheme {
-        StoreScreen()
+        HotRecentFrame(
+            frame =
+                FrameDetail(
+                    nftInfo =
+                        FrameInfo(
+                            data =
+                                NftData(
+                                    title = "타이틀",
+                                    image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6oBX5xsX1CcZfshK5ibbUUJCd7-SpqLQF4g&s",
+                                ),
+                        ),
+                ),
+        )
     }
 }

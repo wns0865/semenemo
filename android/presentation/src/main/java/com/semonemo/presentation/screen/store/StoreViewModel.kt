@@ -41,11 +41,23 @@ class StoreViewModel
         fun loadStoreInfo() {
             viewModelScope.launch {
                 combine(
+                    nftRepository.getHotNft(),
                     nftRepository.getAllSaleNft(orderBy = "oldest"),
                     assetRepository.getAllSellAssets(option = "oldest"),
-                ) { saleFrame, saleAsset ->
+                ) { hotFrame, saleFrame, saleAsset ->
                     var currentState = StoreUiState()
 
+                    currentState =
+                        when (hotFrame) {
+                            is ApiResponse.Error -> {
+                                _uiEvent.emit(StoreUiEvent.Error(hotFrame.errorMessage))
+                                currentState
+                            }
+
+                            is ApiResponse.Success -> {
+                                currentState.copy(hotFrame = hotFrame.data)
+                            }
+                        }
                     currentState =
                         when (saleFrame) {
                             is ApiResponse.Error -> {
