@@ -196,79 +196,91 @@ fun WalletCardBox(
                         .fillMaxSize()
                         .background(color = White)
                         .padding(10.dp),
+                contentAlignment = Alignment.TopCenter,
             ) {
                 Column(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .wrapContentHeight(),
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                            .wrapContentHeight()
+                            .padding(top = 10.dp),
                 ) {
                     BoldTextWithKeywords(
-                        modifier = Modifier.padding(start = 5.dp, top = 5.dp),
+                        modifier = Modifier.padding(start = 5.dp),
                         fullText = "$userName 님의 지갑",
                         keywords = listOf(userName),
                         brushFlag = listOf(true),
                         boldStyle = Typography.titleSmall.copy(fontSize = 20.sp),
                         normalStyle = Typography.labelLarge.copy(fontSize = 20.sp),
                     )
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(5.dp),
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_color_sene_coin),
-                            contentDescription = "",
-                        )
-                        Text(
-                            text =
-                                String.format(
-                                    Locale.KOREAN,
-                                    "%,.0f",
-                                    userCoin.payableBalance.toDouble(),
-                                ),
-                            style = Typography.bodyLarge,
-                            fontSize = 20.sp,
-                        )
-
-                        Text(
-                            text = "${stringResource(R.string.coin_unit_name)}(Pay)",
-                            style = Typography.labelMedium,
-                        )
-                    }
                     Spacer(modifier = Modifier.weight(1f))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                    Column(
+                        modifier =
+                            Modifier
+                                .wrapContentHeight()
+                                .padding(bottom = 10.dp),
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_color_sene_coin),
-                            contentDescription = "",
-                        )
-                        Text(
-                            text =
-                                String.format(
-                                    Locale.KOREAN,
-                                    "%,.0f",
-                                    userCoin.coinBalance.toDouble(),
-                                ),
-                            style = Typography.bodyLarge,
-                            fontSize = 20.sp,
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(5.dp),
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_color_sene_coin),
+                                contentDescription = "",
+                            )
+                            Text(
+                                text =
+                                    String.format(
+                                        Locale.KOREAN,
+                                        "%,.0f",
+                                        userCoin.payableBalance.toDouble(),
+                                    ),
+                                style = Typography.bodyLarge,
+                                fontSize = 20.sp,
+                            )
 
-                        Text(
-                            text = stringResource(R.string.coin_unit_name),
-                            style = Typography.labelMedium,
-                        )
+                            Text(
+                                text = "${stringResource(R.string.coin_unit_name)}(Pay)",
+                                style = Typography.labelMedium,
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(5.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(5.dp),
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_color_sene_coin),
+                                contentDescription = "",
+                            )
+                            Text(
+                                text =
+                                    String.format(
+                                        Locale.KOREAN,
+                                        "%,.0f",
+                                        userCoin.coinBalance.toDouble(),
+                                    ),
+                                style = Typography.bodyLarge,
+                                fontSize = 20.sp,
+                            )
+
+                            Text(
+                                text = stringResource(R.string.coin_unit_name),
+                                style = Typography.labelMedium,
+                            )
+                        }
                     }
-                    Spacer(modifier = Modifier.weight(1f))
                 }
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                     Image(
                         modifier =
                             Modifier
                                 .padding(10.dp)
-                                .size(105.dp),
+                                .size(90.dp),
                         painter = painterResource(id = R.drawable.img_money),
                         contentDescription = null,
                     )
