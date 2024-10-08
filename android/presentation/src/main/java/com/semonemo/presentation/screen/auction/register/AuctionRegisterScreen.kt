@@ -412,7 +412,7 @@ fun AuctionRegisterScreen(
                     Modifier
                         .fillMaxWidth()
                         .height(48.dp),
-                price = price.toString(),
+                price = price,
                 onPriceChange = { newPrice ->
                     price =
                         if (newPrice.isEmpty()) {
