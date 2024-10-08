@@ -78,7 +78,6 @@ import com.semonemo.presentation.theme.FrameOrange
 import com.semonemo.presentation.theme.FramePink
 import com.semonemo.presentation.theme.FramePurple
 import com.semonemo.presentation.theme.Gray01
-import com.semonemo.presentation.theme.Gray02
 import com.semonemo.presentation.theme.GreenGradient
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.PinkGradient
@@ -97,7 +96,7 @@ import java.util.UUID
 
 data class OverlayAsset(
     val uuid: UUID = UUID.randomUUID(),
-    val imageUrl: String,
+    var imageUrl: String,
     var scale: Float = 1f,
     var offsetX: Float = 0f,
     var offsetY: Float = 0f,
@@ -173,7 +172,7 @@ fun FrameScreen(
     var selectedBtn by remember { mutableStateOf("1x1") }
     var selectedColor by remember { mutableStateOf<Color?>(Color.Black) }
     var selectedBrush by remember { mutableStateOf<Brush?>(null) }
-    var overlayAssets = remember { mutableStateListOf<OverlayAsset>() }
+    val overlayAssets = remember { mutableStateListOf<OverlayAsset>() }
 
     Surface(
         modifier =
@@ -207,8 +206,11 @@ fun FrameScreen(
                 overlayAssets = overlayAssets,
                 backgroundColor = selectedColor,
                 backgroundBrush = selectedBrush,
-                onDeleteAsset = {
-                    overlayAssets.remove(it)
+                onDeleteAsset = { asset ->
+                    val index = overlayAssets.indexOf(asset)
+                    if (index != -1) {
+                        overlayAssets[index] = overlayAssets[index].copy(imageUrl = "")
+                    }
                 },
             )
             Spacer(modifier = Modifier.fillMaxHeight(0.05f))
@@ -468,11 +470,11 @@ fun FramePreview(
                                     .then(backgroundModifier),
                         )
                     }
+                }
+                Box(modifier = Modifier.height(345.dp)) {
                     if (overlayAssets.isNotEmpty()) {
                         ShowAssets(
                             overlayAssets = overlayAssets,
-                            parentSize = parentSize,
-                            contentSize = contentSize,
                             onDeleteAsset = onDeleteAsset,
                         )
                     }
@@ -572,11 +574,11 @@ fun FramePreview(
                                     .then(backgroundModifier),
                         )
                     }
+                }
+                Box(modifier = Modifier.height(344.dp)) {
                     if (overlayAssets.isNotEmpty()) {
                         ShowAssets(
                             overlayAssets = overlayAssets,
-                            parentSize = parentSize,
-                            contentSize = contentSize,
                             onDeleteAsset = onDeleteAsset,
                         )
                     }
@@ -635,11 +637,11 @@ fun FramePreview(
                                     .then(backgroundModifier),
                         )
                     }
+                }
+                Box(modifier = Modifier.height(365.dp)) {
                     if (overlayAssets.isNotEmpty()) {
                         ShowAssets(
                             overlayAssets = overlayAssets,
-                            parentSize = parentSize,
-                            contentSize = contentSize,
                             onDeleteAsset = onDeleteAsset,
                         )
                     }
@@ -652,8 +654,6 @@ fun FramePreview(
 @Composable
 fun ShowAssets(
     overlayAssets: List<OverlayAsset>,
-    parentSize: IntSize,
-    contentSize: IntSize,
     onDeleteAsset: (OverlayAsset) -> Unit,
 ) {
     var selectedAssetId by remember { mutableStateOf<UUID?>(null) }
@@ -667,26 +667,11 @@ fun ShowAssets(
 
         val imageTransformableState =
             rememberTransformableState { zoomChange, offsetChange, rotationChange ->
-                imageScale = (imageScale * zoomChange).coerceIn(0.25f, 3f)
+                imageScale = (imageScale * zoomChange).coerceIn(0.1f, 5f)
                 imageRotation += rotationChange
 
                 imageOffsetX += offsetChange.x * imageScale
                 imageOffsetY += offsetChange.y * imageScale
-
-//                val newOffsetX = imageOffsetX + offsetChange.x * imageScale
-//                val newOffsetY = imageOffsetY + offsetChange.y * imageScale
-//
-//                val maxOffsetX = (parentSize.width - assetSize.width * imageScale)
-//                val maxOffsetY = (contentSize.height - assetSize.height * imageScale)
-
-                // 최소값과 최대값을 안전하게 계산
-//                val minX = -maxOffsetX.coerceAtLeast(0f)
-//                val maxX = maxOffsetX.coerceAtLeast(0f)
-//                val minY = -maxOffsetY.coerceAtLeast(0f)
-//                val maxY = maxOffsetY.coerceAtLeast(0f)
-
-//                imageOffsetX = newOffsetX.coerceIn(minX, maxX)
-//                imageOffsetY = newOffsetY.coerceIn(minY, maxY)
 
                 asset.offsetX = imageOffsetX
                 asset.offsetY = imageOffsetY
@@ -717,35 +702,37 @@ fun ShowAssets(
                 modifier =
                     assetModifier
                         .wrapContentSize()
-                        .border(2.dp, Gray02),
+                        .border(width = 2.dp, color = GunMetal),
             ) {
-                GlideImage(
-                    modifier =
-                        Modifier
-                            .wrapContentSize(),
-                    imageModel = asset.imageUrl,
-                    contentScale = ContentScale.Fit,
-                    loading = {
-                        ImageLoadingProgress(
-                            modifier = Modifier,
-                        )
-                    },
-                )
-                // 삭제 버튼 (오른쪽 상단)
-                Box(
-                    modifier =
-                        Modifier
-                            .size(30.dp)
-                            .align(Alignment.TopEnd)
-                            .background(WhiteGray, shape = CircleShape)
-                            .noRippleClickable { onDeleteAsset(asset) },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Delete Asset",
-                        tint = GunMetal,
+                if (asset.imageUrl.isNotEmpty()) {
+                    GlideImage(
+                        modifier =
+                            Modifier
+                                .wrapContentSize(),
+                        imageModel = asset.imageUrl,
+                        contentScale = ContentScale.Fit,
+                        loading = {
+                            ImageLoadingProgress(
+                                modifier = Modifier,
+                            )
+                        },
                     )
+                    // 삭제 버튼 (오른쪽 상단)
+                    Box(
+                        modifier =
+                            Modifier
+                                .size(40.dp)
+                                .align(Alignment.TopEnd)
+                                .background(WhiteGray, shape = CircleShape)
+                                .noRippleClickable { onDeleteAsset(asset) },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Delete Asset",
+                            tint = GunMetal,
+                        )
+                    }
                 }
             }
         } else {
