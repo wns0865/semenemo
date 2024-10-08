@@ -102,7 +102,10 @@ fun MyPageRoute(
     HandleMyPageEvent(
         uiEvent = viewModel.uiEvent,
         onErrorSnackBar = onErrorSnackBar,
-        onSubscribe = { viewModel.loadOtherUserInfo() },
+        onSubscribe = {
+            viewModel.loadOtherUserInfo()
+            viewModel.loadComponents()
+        },
     )
     HandleMyPageUi(
         modifier = modifier,
@@ -231,7 +234,7 @@ fun MyPageScreen(
     var isSell by remember { mutableStateOf(false) }
     var likeCategory by remember { mutableStateOf("프레임") }
 
-    Surface(
+    Box(
         modifier =
             modifier
                 .fillMaxSize()

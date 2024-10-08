@@ -1,13 +1,9 @@
-package com.semonemo.presentation.screen.aiAsset.draw
+package com.semonemo.presentation.screen.aiAsset.prompt
 
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.semonemo.domain.model.ApiResponse
 import com.semonemo.domain.repository.AiRepository
-import com.semonemo.domain.request.makeAiAsset.AlwaysonScripts
-import com.semonemo.domain.request.makeAiAsset.Arg
-import com.semonemo.domain.request.makeAiAsset.Controlnet
 import com.semonemo.domain.request.makeAiAsset.MakeAiAssetRequest
 import com.semonemo.domain.request.makeAiAsset.OverrideSettings
 import com.semonemo.domain.request.makeAiAsset.PaintingStyle
@@ -26,14 +22,15 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class DrawAssetViewModel
+class PromptViewModel
     @Inject
     constructor(
         private val aiRepository: AiRepository,
     ) : BaseViewModel() {
-        private val _uiState = MutableStateFlow(DrawAssetUiState())
+        private val _uiState = MutableStateFlow(PromptUiState())
         val uiState = _uiState.asStateFlow()
-        private val _uiEvent = MutableSharedFlow<DrawAssetUiEvent>()
+
+        private val _uiEvent = MutableSharedFlow<PromptUiEvent>()
         val uiEvent = _uiEvent.asSharedFlow()
 
         fun updateStyle(
@@ -62,31 +59,17 @@ class DrawAssetViewModel
             }
         }
 
-        fun makeDrawAsset(imageUrl: String) {
+        fun makePromptAsset(prompt: String) {
             viewModelScope.launch {
                 aiRepository
                     .makeAiAsset(
                         request =
                             MakeAiAssetRequest(
-                                prompt = uiState.value.style.prompt,
+                                prompt = uiState.value.style.prompt + prompt,
                                 negativePrompt = uiState.value.style.negativePrompt,
                                 overrideSettings =
                                     OverrideSettings(
                                         sdModelCheckpoint = uiState.value.style.model,
-                                    ),
-                                alwaysonScripts =
-                                    AlwaysonScripts(
-                                        controlnet =
-                                            Controlnet(
-                                                listOf(
-                                                    Arg(image = imageUrl),
-                                                    Arg(
-                                                        model = "controlnet11Models_scribble [4e6af23e]",
-                                                        module = "t2ia_color_grid",
-                                                        image = imageUrl,
-                                                    ),
-                                                ),
-                                            ),
                                     ),
                             ),
                     ).onStart {
@@ -95,10 +78,10 @@ class DrawAssetViewModel
                         _uiState.update { it.copy(isLoading = false) }
                     }.collectLatest { response ->
                         when (response) {
-                            is ApiResponse.Error -> _uiEvent.emit(DrawAssetUiEvent.Error(errorMessage = response.errorMessage))
+                            is ApiResponse.Error -> _uiEvent.emit(PromptUiEvent.Error(errorMessage = response.errorMessage))
                             is ApiResponse.Success ->
                                 _uiEvent.emit(
-                                    DrawAssetUiEvent.NavigateTo(
+                                    PromptUiEvent.NavigateTo(
                                         Uri.encode(
                                             decodeBase64ToImage(response.data).toString(),
                                         ),

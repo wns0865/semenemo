@@ -1,5 +1,6 @@
 package com.semonemo.presentation.screen.wallet
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -171,6 +172,7 @@ fun WalletScreen(
             modifier
                 .padding(horizontal = 20.dp)
                 .verticalScroll(state = scrollState)
+                .background(color = Color.White)
                 .statusBarsPadding()
                 .navigationBarsPadding(),
         verticalArrangement = Arrangement.spacedBy(10.dp),
