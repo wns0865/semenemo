@@ -1,5 +1,6 @@
 package com.semonemo.presentation.screen.mypage.subscreen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,11 +13,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.semonemo.domain.model.myFrame.MyFrame
 import com.semonemo.presentation.BuildConfig
 import com.semonemo.presentation.theme.Gray03
+import com.semonemo.presentation.theme.White
 import com.semonemo.presentation.util.noRippleClickable
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -47,6 +50,7 @@ fun MyPageOwnedFrames(
                         .aspectRatio(1f)
                         .padding(8.dp)
                         .clip(shape = RoundedCornerShape(10.dp))
+                        .background(color = White.copy(alpha = 0.6f))
                         .border(
                             width = 1.dp,
                             shape = RoundedCornerShape(10.dp),

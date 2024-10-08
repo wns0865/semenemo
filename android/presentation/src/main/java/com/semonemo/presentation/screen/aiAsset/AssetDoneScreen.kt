@@ -106,7 +106,7 @@ fun AssetDoneContent(
                     .clickable(enabled = false) {},
         )
         LoadingDialog(
-            loadingMessage = "AI가 열심히 배경을 제거하고 있어요...",
+            loadingMessage = "로딩중...",
             subMessage = "조금만 기다려 주세요  (。＾▽＾)",
         )
     }
@@ -201,14 +201,14 @@ fun AssetDoneScreen(
                     icon = null,
                     text = stringResource(R.string.save_asset),
                     onClick = {
-                        assetUrl?.let {
-                            if (isRemoveBg.value) {
-                                val uri = saveBase64ParseImageToFile(context, it)
+                        assetUrl?.let { assetUrl ->
+                            if (assetUrl.contains("data:image/png;base64")) {
+                                val uri = saveBase64ParseImageToFile(context, assetUrl)
                                 uri?.let {
                                     uploadAsset(File(uri.path))
                                 }
                             } else {
-                                uploadAsset(File(it))
+                                uploadAsset(File(assetUrl))
                             }
                         }
                     },
