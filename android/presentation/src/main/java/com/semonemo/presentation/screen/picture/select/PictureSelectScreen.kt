@@ -71,6 +71,7 @@ import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.frameBackGroundColor
+import com.semonemo.presentation.util.getTodayDate
 import com.semonemo.presentation.util.noRippleClickable
 import com.semonemo.presentation.util.saveBitmapToGallery
 import com.semonemo.presentation.util.urlToIpfs
@@ -255,7 +256,7 @@ fun PictureSelectScreen(
                                     .fillMaxWidth(0.6f)
                                     .height(345.dp)
                                     .capturable(captureController),
-                            contentAlignment = Alignment.Center,
+                            contentAlignment = Alignment.BottomEnd,
                         ) {
                             Column(
                                 modifier =
@@ -320,6 +321,17 @@ fun PictureSelectScreen(
                                         .fillMaxWidth()
                                         .height(345.dp),
                             )
+                            if (check.value) {
+                                Text(
+                                    modifier = Modifier.padding(bottom = 5.dp, end = 5.dp),
+                                    text = getTodayDate(),
+                                    style =
+                                    Typography.labelSmall.copy(
+                                        fontSize = 11.sp,
+                                        color = selectedColor,
+                                    ),
+                                )
+                            }
                         }
                     }
 
@@ -330,7 +342,7 @@ fun PictureSelectScreen(
                                     .fillMaxWidth(0.6f)
                                     .height(344.dp)
                                     .capturable(captureController),
-                            contentAlignment = Alignment.Center,
+                            contentAlignment = Alignment.BottomEnd,
                         ) {
                             Column(modifier = Modifier.fillMaxSize()) {
                                 Box(
@@ -483,6 +495,17 @@ fun PictureSelectScreen(
                                         .fillMaxWidth()
                                         .height(344.dp),
                             )
+                            if (check.value) {
+                                Text(
+                                    modifier = Modifier.padding(bottom = 5.dp, end = 5.dp),
+                                    text = getTodayDate(),
+                                    style =
+                                    Typography.labelSmall.copy(
+                                        fontSize = 11.sp,
+                                        color = selectedColor,
+                                    ),
+                                )
+                            }
                         }
                     }
 
@@ -493,7 +516,7 @@ fun PictureSelectScreen(
                                     .fillMaxWidth(0.3f)
                                     .height(365.dp)
                                     .capturable(captureController),
-                            contentAlignment = Alignment.Center,
+                            contentAlignment = Alignment.BottomEnd,
                         ) {
                             Column(modifier = Modifier.fillMaxWidth()) {
                                 Box(
@@ -544,7 +567,19 @@ fun PictureSelectScreen(
                                         Modifier
                                             .fillMaxWidth()
                                             .height(40.dp),
-                                )
+                                    contentAlignment = Alignment.BottomCenter,
+                                ) {
+                                    if (check.value) {
+                                        Text(
+                                            text = getTodayDate(),
+                                            style =
+                                                Typography.labelSmall.copy(
+                                                    fontSize = 12.sp,
+                                                    color = selectedColor,
+                                                ),
+                                        )
+                                    }
+                                }
                             }
                             GlideImage(
                                 imageModel =
@@ -556,39 +591,19 @@ fun PictureSelectScreen(
                                         .fillMaxWidth()
                                         .height(365.dp),
                             )
+                            if (check.value) {
+                                Text(
+                                    modifier = Modifier.padding(bottom = 5.dp, end = 5.dp),
+                                    text = getTodayDate(),
+                                    style =
+                                    Typography.labelSmall.copy(
+                                        fontSize = 11.sp,
+                                        color = selectedColor,
+                                    ),
+                                )
+                            }
                         }
                     }
-                }
-                if (check.value) {
-                    val (textStyle, alignment) =
-                        if (type == FrameType.OneByFour) {
-                            Pair(
-                                Typography.bodySmall.copy(
-                                    fontSize = 12.sp,
-                                    color = selectedColor,
-                                ),
-                                Alignment.BottomCenter,
-                            )
-                        } else {
-                            Pair(
-                                Typography.bodyMedium.copy(
-                                    fontSize = 12.sp,
-                                    color = selectedColor,
-                                ),
-                                Alignment.BottomEnd,
-                            )
-                        }
-
-//                    Text(
-//                        modifier =
-//                            Modifier
-//                                .wrapContentHeight()
-//                                .align(alignment)
-//                                .padding(7.dp),
-//                        text = getTodayDate(),
-//                        style = textStyle,
-//                        textAlign = TextAlign.End,
-//                    )
                 }
             }
 
