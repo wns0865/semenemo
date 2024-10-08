@@ -68,10 +68,15 @@ class CameraViewModel
                         when (response) {
                             is ApiResponse.Error -> _uiEvent.emit(PictureUiEvent.Error(response.errorMessage))
                             is ApiResponse.Success -> {
-                                _uiState.update {
-                                    it.copy(
-                                        frames = response.data,
-                                    )
+                                if (response.data.isEmpty()) {
+                                    _uiEvent.emit(PictureUiEvent.NoAvailableFrame)
+                                } else {
+                                    _uiEvent.emit(PictureUiEvent.NavigateToCamera(type))
+                                    _uiState.update {
+                                        it.copy(
+                                            frames = response.data,
+                                        )
+                                    }
                                 }
                             }
                         }

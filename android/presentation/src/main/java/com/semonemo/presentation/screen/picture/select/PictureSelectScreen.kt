@@ -120,14 +120,11 @@ fun PictureSelectContent(
     type: Int,
     actionWithSnackBar: (Uri) -> Unit = {},
 ) {
-    LaunchedEffect(Unit) {
-        loadMyFrame(type)
-    }
     LaunchedEffect(uiEvent) {
         uiEvent.collectLatest { event ->
             when (event) {
                 is PictureUiEvent.Error -> onShowSnackBar(event.errorMessage)
-                PictureUiEvent.NavigateToSelect -> {}
+                else -> {}
             }
         }
     }
