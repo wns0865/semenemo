@@ -64,25 +64,18 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.semonemo.domain.model.Asset
 import com.semonemo.presentation.R
-import com.semonemo.presentation.component.BrushPalette
 import com.semonemo.presentation.component.ColorPalette
 import com.semonemo.presentation.component.CustomTab
 import com.semonemo.presentation.component.ImageLoadingProgress
 import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.component.TopAppBar
 import com.semonemo.presentation.screen.aiAsset.draw.AssetButtonList
-import com.semonemo.presentation.theme.BlackGradient
-import com.semonemo.presentation.theme.BlueGradient
 import com.semonemo.presentation.theme.FrameBlue
 import com.semonemo.presentation.theme.FrameOrange
 import com.semonemo.presentation.theme.FramePink
 import com.semonemo.presentation.theme.FramePurple
 import com.semonemo.presentation.theme.Gray01
-import com.semonemo.presentation.theme.GreenGradient
 import com.semonemo.presentation.theme.GunMetal
-import com.semonemo.presentation.theme.PinkGradient
-import com.semonemo.presentation.theme.PurpleGradient
-import com.semonemo.presentation.theme.Rainbow
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.WhiteGray
@@ -156,15 +149,6 @@ fun FrameScreen(
             FrameBlue,
             FramePurple,
             Gray01,
-        )
-    val brushes =
-        listOf(
-            BlackGradient,
-            PinkGradient,
-            GreenGradient,
-            PurpleGradient,
-            BlueGradient,
-            Rainbow,
         )
 
     var frameType by remember { mutableStateOf(FrameType.OneByOne) }
@@ -270,21 +254,6 @@ fun FrameScreen(
                             },
                         )
                         Spacer(modifier = Modifier.fillMaxHeight(0.13f))
-                        Text(
-                            modifier = Modifier.padding(start = 4.dp),
-                            text = "그라데이션",
-                            style = Typography.bodySmall.copy(fontSize = 15.sp),
-                        )
-                        Spacer(modifier = Modifier.fillMaxHeight(0.03f))
-                        BrushPalette(
-                            brushes = brushes,
-                            circleSize = 35,
-                            selectedBrush = selectedBrush,
-                            onBrushSelected = {
-                                selectedBrush = it
-                                selectedColor = null
-                            },
-                        )
                     }
                 }
 
@@ -423,60 +392,67 @@ fun FramePreview(
                 Box(
                     modifier =
                         Modifier
-                            .fillMaxWidth(0.6f)
-                            .height(345.dp)
-                            .capturable(captureController)
-                            .onSizeChanged { contentSize = it },
+                            .wrapContentSize()
+                            .capturable(captureController),
+                    contentAlignment = Alignment.Center,
                 ) {
-                    Column(
+                    Box(
                         modifier =
                             Modifier
-                                .fillMaxWidth(),
+                                .fillMaxWidth(0.6f)
+                                .height(345.dp)
+                                .onSizeChanged { contentSize = it },
                     ) {
-                        Box(
+                        Column(
                             modifier =
                                 Modifier
-                                    .fillMaxWidth()
-                                    .height(5.dp)
-                                    .then(backgroundModifier),
-                        )
-                        Row(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight(),
+                                    .fillMaxWidth(),
                         ) {
                             Box(
                                 modifier =
                                     Modifier
-                                        .width(5.dp)
-                                        .height(280.dp)
+                                        .fillMaxWidth()
+                                        .height(5.dp)
                                         .then(backgroundModifier),
                             )
-                            Spacer(modifier = Modifier.weight(1f))
+                            Row(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .wrapContentHeight(),
+                            ) {
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .width(5.dp)
+                                            .height(280.dp)
+                                            .then(backgroundModifier),
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .width(5.dp)
+                                            .height(280.dp)
+                                            .then(backgroundModifier),
+                                )
+                            }
                             Box(
                                 modifier =
                                     Modifier
-                                        .width(5.dp)
-                                        .height(280.dp)
+                                        .fillMaxWidth()
+                                        .height(60.dp)
                                         .then(backgroundModifier),
                             )
                         }
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .height(60.dp)
-                                    .then(backgroundModifier),
-                        )
                     }
-                }
-                Box(modifier = Modifier.height(345.dp)) {
-                    if (overlayAssets.isNotEmpty()) {
-                        ShowAssets(
-                            overlayAssets = overlayAssets,
-                            onDeleteAsset = onDeleteAsset,
-                        )
+                    Box(modifier = Modifier.height(345.dp)) {
+                        if (overlayAssets.isNotEmpty()) {
+                            ShowAssets(
+                                overlayAssets = overlayAssets,
+                                onDeleteAsset = onDeleteAsset,
+                            )
+                        }
                     }
                 }
             }
@@ -486,130 +462,36 @@ fun FramePreview(
                 Box(
                     modifier =
                         Modifier
-                            .fillMaxWidth(0.6f)
-                            .height(344.dp)
-                            .capturable(captureController)
-                            .onSizeChanged { contentSize = it },
+                            .wrapContentSize()
+                            .capturable(captureController),
+                    contentAlignment = Alignment.Center,
                 ) {
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .height(5.dp)
-                                    .then(backgroundModifier),
-                        )
-                        Row(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight(),
-                        ) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth(0.6f)
+                                .height(344.dp)
+                                .onSizeChanged { contentSize = it },
+                    ) {
+                        Column(modifier = Modifier.fillMaxWidth()) {
                             Box(
                                 modifier =
                                     Modifier
-                                        .width(5.dp)
-                                        .height(137.dp)
+                                        .fillMaxWidth()
+                                        .height(5.dp)
                                         .then(backgroundModifier),
                             )
-                            Spacer(modifier = Modifier.weight(1f))
-                            Box(
+                            Row(
                                 modifier =
                                     Modifier
-                                        .width(5.dp)
-                                        .height(137.dp)
-                                        .then(backgroundModifier),
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            Box(
-                                modifier =
-                                    Modifier
-                                        .width(5.dp)
-                                        .height(137.dp)
-                                        .then(backgroundModifier),
-                            )
-                        }
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .height(5.dp)
-                                    .then(backgroundModifier),
-                        )
-                        Row(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight(),
-                        ) {
-                            Box(
-                                modifier =
-                                    Modifier
-                                        .width(5.dp)
-                                        .height(137.dp)
-                                        .then(backgroundModifier),
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            Box(
-                                modifier =
-                                    Modifier
-                                        .width(5.dp)
-                                        .height(137.dp)
-                                        .then(backgroundModifier),
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            Box(
-                                modifier =
-                                    Modifier
-                                        .width(5.dp)
-                                        .height(137.dp)
-                                        .then(backgroundModifier),
-                            )
-                        }
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .height(60.dp)
-                                    .then(backgroundModifier),
-                        )
-                    }
-                }
-                Box(modifier = Modifier.height(344.dp)) {
-                    if (overlayAssets.isNotEmpty()) {
-                        ShowAssets(
-                            overlayAssets = overlayAssets,
-                            onDeleteAsset = onDeleteAsset,
-                        )
-                    }
-                }
-            }
-
-            FrameType.OneByFour -> {
-                // 1x4 그리드 레이아웃
-                Box(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth(0.3f)
-                            .height(365.dp)
-                            .capturable(captureController)
-                            .onSizeChanged { contentSize = it },
-                ) {
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .height(5.dp)
-                                    .then(backgroundModifier),
-                        )
-                        repeat(4) {
-                            Row(modifier = Modifier.fillMaxWidth()) {
+                                        .fillMaxWidth()
+                                        .wrapContentHeight(),
+                            ) {
                                 Box(
                                     modifier =
                                         Modifier
                                             .width(5.dp)
-                                            .height(75.dp)
+                                            .height(137.dp)
                                             .then(backgroundModifier),
                                 )
                                 Spacer(modifier = Modifier.weight(1f))
@@ -617,7 +499,15 @@ fun FramePreview(
                                     modifier =
                                         Modifier
                                             .width(5.dp)
-                                            .height(75.dp)
+                                            .height(137.dp)
+                                            .then(backgroundModifier),
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .width(5.dp)
+                                            .height(137.dp)
                                             .then(backgroundModifier),
                                 )
                             }
@@ -628,22 +518,122 @@ fun FramePreview(
                                         .height(5.dp)
                                         .then(backgroundModifier),
                             )
+                            Row(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .wrapContentHeight(),
+                            ) {
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .width(5.dp)
+                                            .height(137.dp)
+                                            .then(backgroundModifier),
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .width(5.dp)
+                                            .height(137.dp)
+                                            .then(backgroundModifier),
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .width(5.dp)
+                                            .height(137.dp)
+                                            .then(backgroundModifier),
+                                )
+                            }
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(60.dp)
+                                        .then(backgroundModifier),
+                            )
                         }
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .height(40.dp)
-                                    .then(backgroundModifier),
-                        )
+                    }
+                    Box(modifier = Modifier.height(344.dp)) {
+                        if (overlayAssets.isNotEmpty()) {
+                            ShowAssets(
+                                overlayAssets = overlayAssets,
+                                onDeleteAsset = onDeleteAsset,
+                            )
+                        }
                     }
                 }
-                Box(modifier = Modifier.height(365.dp)) {
-                    if (overlayAssets.isNotEmpty()) {
-                        ShowAssets(
-                            overlayAssets = overlayAssets,
-                            onDeleteAsset = onDeleteAsset,
-                        )
+            }
+
+            FrameType.OneByFour -> {
+                // 1x4 그리드 레이아웃
+                Box(
+                    modifier =
+                        Modifier
+                            .wrapContentSize()
+                            .capturable(captureController),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth(0.3f)
+                                .height(365.dp)
+                                .onSizeChanged { contentSize = it },
+                    ) {
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(5.dp)
+                                        .then(backgroundModifier),
+                            )
+                            repeat(4) {
+                                Row(modifier = Modifier.fillMaxWidth()) {
+                                    Box(
+                                        modifier =
+                                            Modifier
+                                                .width(5.dp)
+                                                .height(75.dp)
+                                                .then(backgroundModifier),
+                                    )
+                                    Spacer(modifier = Modifier.weight(1f))
+                                    Box(
+                                        modifier =
+                                            Modifier
+                                                .width(5.dp)
+                                                .height(75.dp)
+                                                .then(backgroundModifier),
+                                    )
+                                }
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .height(5.dp)
+                                            .then(backgroundModifier),
+                                )
+                            }
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(40.dp)
+                                        .then(backgroundModifier),
+                            )
+                        }
+                    }
+                    Box(modifier = Modifier.height(365.dp)) {
+                        if (overlayAssets.isNotEmpty()) {
+                            ShowAssets(
+                                overlayAssets = overlayAssets,
+                                onDeleteAsset = onDeleteAsset,
+                            )
+                        }
                     }
                 }
             }
