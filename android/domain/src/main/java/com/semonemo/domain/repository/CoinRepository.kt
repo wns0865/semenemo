@@ -20,4 +20,6 @@ interface CoinRepository {
     suspend fun getCoinRate(): Flow<ApiResponse<CoinRate>>
 
     suspend fun getWeeklyCoin(): Flow<ApiResponse<List<WeeklyCoin>>>
+
+    suspend fun buyCoin(amount: Long): Flow<ApiResponse<Coin>>
 }
