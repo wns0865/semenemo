@@ -70,9 +70,10 @@ fun WalletDialog(
                     Text(text = title, style = Typography.labelLarge.copy(fontSize = 20.sp))
                     Spacer(modifier = Modifier.weight(1f))
                     CustomTextField(
-                        input = price.value.toString(),
+                        placeholder = "0",
+                        input = if (price.longValue != 0L) price.longValue.toString() else "",
                         onValueChange = {
-                            price.value =
+                            price.longValue =
                                 if (it.isEmpty()) {
                                     0L
                                 } else {
@@ -81,6 +82,9 @@ fun WalletDialog(
                         },
                         focusManager = focusManager,
                         keyboardType = KeyboardType.Number,
+                        onClearPressed = {
+                            price.longValue = 0
+                        }
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Row {
