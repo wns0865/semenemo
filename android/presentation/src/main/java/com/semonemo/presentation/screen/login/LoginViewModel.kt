@@ -1,6 +1,7 @@
 package com.semonemo.presentation.screen.login
 
 import androidx.lifecycle.viewModelScope
+import com.semonemo.domain.datasource.TokenDataSource
 import com.semonemo.domain.model.ApiResponse
 import com.semonemo.domain.repository.AuthRepository
 import com.semonemo.domain.request.LoginRequest
@@ -19,6 +20,7 @@ class LoginViewModel
     @Inject
     constructor(
         private val authRepository: AuthRepository,
+        private val tokenDataSource: TokenDataSource,
     ) : BaseViewModel() {
         private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Init)
         val uiState = _uiState.asStateFlow()
@@ -27,6 +29,10 @@ class LoginViewModel
 
         private fun authLogin() {
             viewModelScope.launch {
+                val jwtToken = tokenDataSource.getJwtToken()
+                if (jwtToken.first.isEmpty() && jwtToken.second.isEmpty()) {
+                    return@launch
+                }
                 authRepository.login().collectLatest { response ->
                     when (response) {
                         is ApiResponse.Error ->
