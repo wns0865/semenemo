@@ -1,7 +1,6 @@
 package com.semonemo.presentation.screen.store.asset
 
 import androidx.lifecycle.viewModelScope
-import com.semonemo.domain.datasource.AuthDataSource
 import com.semonemo.domain.model.ApiResponse
 import com.semonemo.domain.model.SellAsset
 import com.semonemo.domain.repository.AssetRepository
@@ -21,7 +20,6 @@ class AssetSaleViewModel
     @Inject
     constructor(
         private val assetRepository: AssetRepository,
-        private val authDataSource: AuthDataSource,
     ) : BaseViewModel() {
         private val _uiState = MutableStateFlow(AssetSaleUiState())
         val uiState = _uiState.asStateFlow()
@@ -29,22 +27,20 @@ class AssetSaleViewModel
         val uiEvent = _uiEvent.asSharedFlow()
 
         init {
-            getCreateAssets()
+            getUnSaleAssets()
         }
 
-        private fun getCreateAssets() {
+        private fun getUnSaleAssets() {
             viewModelScope.launch {
-                authDataSource.getUserId()?.let { userId ->
-                    assetRepository.getCreateAssets(userId.toLong()).collectLatest { response ->
-                        when (response) {
-                            is ApiResponse.Error -> {
-                                _uiEvent.emit(AssetSaleUiEvent.Error(response.errorMessage))
-                            }
-
-                            is ApiResponse.Success -> {
+                assetRepository.getUnSaleAssets().collectLatest { response ->
+                    when (response) {
+                        is ApiResponse.Error -> _uiEvent.emit(AssetSaleUiEvent.Error(response.errorMessage))
+                        is ApiResponse.Success -> {
+                            if (response.data.isEmpty()) {
+                                _uiEvent.emit(AssetSaleUiEvent.Error("판매 가능한 에셋이 없습니다."))
+                            } else {
                                 _uiState.update {
                                     it.copy(
-                                        isLoading = false,
                                         assets = response.data,
                                     )
                                 }
