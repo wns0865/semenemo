@@ -3,6 +3,7 @@ package com.semonemo.presentation.screen.picture.camera
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Matrix
+import androidx.activity.compose.BackHandler
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -82,15 +83,21 @@ fun CameraRoute(
     val frameType = FrameType.fromIdx(frameIdx) ?: FrameType.OneByOne
     CameraContent(
         modifier = modifier,
-        popUpBackStack = popUpBackStack,
+        popUpBackStack = {
+            viewModel.resetUiState()
+            popUpBackStack()
+        },
         onShowSnackBar = onShowSnackBar,
         onTakePhoto = viewModel::takePhoto,
         navigateToSelect = navigateToSelect,
         uiEvent = viewModel.uiEvent,
         bitmaps = uiState.value.bitmaps,
-        amount = frameType.amount,
         idx = frameType.idx,
     )
+    BackHandler(onBack = {
+        viewModel.resetUiState()
+        popUpBackStack()
+    })
 }
 
 @Composable
@@ -102,7 +109,6 @@ fun CameraContent(
     uiEvent: SharedFlow<PictureUiEvent>,
     bitmaps: List<Bitmap> = listOf(),
     navigateToSelect: (Int) -> Unit = {},
-    amount: Int,
     idx: Int,
 ) {
     LaunchedEffect(uiEvent) {
@@ -130,6 +136,7 @@ fun CameraContent(
         controller = controller,
         context = context,
         frameType = FrameType.fromIdx(idx),
+        bitmaps = bitmaps,
     )
 }
 
@@ -142,6 +149,7 @@ fun CameraScreen(
     controller: LifecycleCameraController,
     context: Context = LocalContext.current,
     frameType: FrameType = FrameType.OneByOne,
+    bitmaps: List<Bitmap> = listOf(),
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     var selectedIndex by remember { mutableStateOf(0) }
@@ -183,9 +191,13 @@ fun CameraScreen(
             Box(
                 modifier =
                     if (frameType != FrameType.OneByFour) {
-                        Modifier.fillMaxWidth().aspectRatio(3f / 4f)
+                        Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(3f / 4f)
                     } else {
-                        Modifier.fillMaxWidth().aspectRatio(6.5f / 4f)
+                        Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(6.5f / 4f)
                     },
                 contentAlignment = Alignment.Center,
             ) {
@@ -198,41 +210,59 @@ fun CameraScreen(
             }
 
             Spacer(modifier = Modifier.height(10.dp))
-            Box(modifier = Modifier.fillMaxWidth().align(Alignment.Start).padding(start = 10.dp)) {
-                SingleChoiceSegmentedButtonRow {
-                    options.forEachIndexed { index, label ->
-                        SegmentedButton(
-                            shape =
-                                SegmentedButtonDefaults.itemShape(
-                                    index = index,
-                                    count = options.size,
-                                ),
-                            onClick = {
-                                selectedIndex = index
-                                timerTime.value = options[selectedIndex] * 1000L
-                            },
-                            selected = index == selectedIndex,
-                            colors =
-                                SegmentedButtonDefaults.colors(
-                                    inactiveBorderColor = Gray02,
-                                    inactiveContainerColor = Gray02,
-                                    activeContainerColor = White,
-                                    activeBorderColor = White,
-                                ),
-                            icon = {
-                                if (index == selectedIndex) {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_auction_clock),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(20.dp),
-                                    )
-                                }
-                            },
-                        ) {
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("${label}s", style = Typography.bodyLarge)
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.Start)
+                        .padding(start = 10.dp),
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    SingleChoiceSegmentedButtonRow {
+                        options.forEachIndexed { index, label ->
+                            SegmentedButton(
+                                modifier = Modifier,
+                                shape =
+                                    SegmentedButtonDefaults.itemShape(
+                                        index = index,
+                                        count = options.size,
+                                    ),
+                                onClick = {
+                                    selectedIndex = index
+                                    timerTime.value = options[selectedIndex] * 1000L
+                                },
+                                selected = index == selectedIndex,
+                                colors =
+                                    SegmentedButtonDefaults.colors(
+                                        inactiveBorderColor = Gray02,
+                                        inactiveContainerColor = Gray02,
+                                        activeContainerColor = White,
+                                        activeBorderColor = White,
+                                    ),
+                                icon = {
+                                    if (index == selectedIndex) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_auction_clock),
+                                            contentDescription = null,
+                                            modifier = Modifier.size(20.dp),
+                                        )
+                                    }
+                                },
+                            ) {
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("${label}s", style = Typography.bodyLarge)
+                            }
                         }
                     }
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = "${bitmaps.size} / ${frameType.amount}",
+                        style = Typography.bodyLarge.copy(color = White),
+                    )
+                    Spacer(modifier = Modifier.weight(0.2f))
                 }
             }
             Spacer(modifier = Modifier.weight(1f))
