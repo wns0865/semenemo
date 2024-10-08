@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -158,9 +159,9 @@ fun AssetDetailContent(
     if (uiState.isLoading) {
         Box(
             modifier =
-                Modifier
-                    .fillMaxSize()
-                    .clickable(enabled = false) {},
+            Modifier
+                .fillMaxSize()
+                .clickable(enabled = false) {},
         )
         LoadingDialog(
             lottieRes = R.raw.normal_load,
@@ -190,16 +191,16 @@ fun AssetDetailScreen(
 ) {
     Surface(
         modifier =
-            modifier
-                .fillMaxSize()
-                .background(color = Color.White),
+        modifier
+            .fillMaxSize()
+            .background(color = Color.White),
     ) {
         Column(
             modifier =
-                Modifier
-                    .fillMaxSize()
-                    .statusBarsPadding()
-                    .navigationBarsPadding(),
+            Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+                .navigationBarsPadding(),
         ) {
             Spacer(modifier = Modifier.height(10.dp))
             TopAppBar(
@@ -211,15 +212,16 @@ fun AssetDetailScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
+                Spacer(modifier = Modifier.height(5.dp))
                 GlideImage(
                     imageModel = assetUrl.toUri(),
                     contentScale = ContentScale.Fit,
                     modifier =
-                        Modifier
-                            .fillMaxWidth(0.8f)
-                            .padding(horizontal = 20.dp)
-                            .aspectRatio(1f)
-                            .background(color = WhiteGray, shape = RoundedCornerShape(10.dp)),
+                    Modifier
+                        .fillMaxWidth(0.8f)
+                        .padding(horizontal = 20.dp)
+                        .aspectRatio(1f)
+                        .background(color = WhiteGray, shape = RoundedCornerShape(10.dp)),
                 )
                 LazyRow(
                     modifier =
@@ -278,7 +280,7 @@ fun AssetDetailScreen(
                         painter = painterResource(id = R.drawable.img_fm_artist),
                         contentDescription = "",
                     )
-
+                    Spacer(modifier = Modifier.width(5.dp))
                     Text(text = "관련 작품", style = Typography.bodyLarge)
                 }
                 Spacer(modifier = Modifier.weight(1f))
