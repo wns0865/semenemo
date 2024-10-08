@@ -58,12 +58,15 @@ fun AuctionScreen(
                     .statusBarsPadding()
                     .navigationBarsPadding(),
         ) {
-            Spacer(modifier = Modifier.height(30.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                SectionHeader(text = stringResource(R.string.in_progress_short_action))
+                SectionHeader(
+                    modifier = Modifier.padding(10.dp),
+                    text = stringResource(R.string.in_progress_short_action),
+                )
                 Box(
                     modifier =
                         Modifier
@@ -73,7 +76,7 @@ fun AuctionScreen(
                             ),
                 ) {
                     Row(
-                        modifier = Modifier,
+                        modifier = Modifier.padding(end = 5.dp),
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -93,14 +96,12 @@ fun AuctionScreen(
                     }
                 }
             }
-
             ShortAuctionReadScreen(
                 viewModel = viewModel,
                 navigateToAuctionDetail = navigateToAuctionDetail,
             )
             Spacer(modifier = Modifier.height(30.dp))
-            SectionHeader(text = stringResource(R.string.in_progress_long_action))
-            LongAuctionReadScreen()
+            // 여기 아래에 진행 예정인 것 넣으면 됨.
         }
         CustomAuctionFAB(
             modifier = modifier,

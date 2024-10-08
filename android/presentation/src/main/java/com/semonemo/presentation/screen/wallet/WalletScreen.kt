@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -167,70 +167,72 @@ fun WalletScreen(
 ) {
     val scrollState = rememberScrollState()
 
-    Column(
-        modifier =
-            modifier
-                .padding(horizontal = 20.dp)
-                .verticalScroll(state = scrollState)
-                .background(color = Color.White)
-                .statusBarsPadding()
-                .navigationBarsPadding(),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = Color.White,
     ) {
-        Spacer(modifier = Modifier.height(20.dp))
-        WalletCardBox(
-            modifier = modifier,
-            userName = userName,
-            userCoin = userCoin,
-            sendExchangePayableTransaction = sendExchangePayableTransaction,
-            sendExchangeCoinTransaction = sendExchangeCoinTransaction,
-            onShowSnackBar = onShowSnackBar,
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        WalletCoinBox(
-            modifier = modifier,
-            coinPrice = coinPrice,
-            navigateToCoinDetail = navigateToCoinDetail,
-            changePercent = changePercent,
-            changePrice = changePrice,
-        )
-        Spacer(modifier = Modifier.height(30.dp))
-        Text(text = stringResource(R.string.recent_transaction_history))
         Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier =
+                modifier
+                    .padding(horizontal = 20.dp)
+                    .verticalScroll(state = scrollState)
+                    .background(color = Color.White)
+                    .statusBarsPadding()
+                    .navigationBarsPadding(),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            repeat(coinHistory.size) { index ->
-                val item = coinHistory[index]
-                val isSell =
-                    item.toUser?.let {
-                        it.userId == userId
-                    } ?: false
-                val product = item.tradeType.split(" ").first()
-                val originalDateTime = LocalDateTime.parse(item.createdAt)
-                val dateOnly = originalDateTime.toLocalDate()
-                TransactionHistoryBox(
-                    modifier = modifier,
-                    date = dateOnly.toString(),
-                    isSell = isSell,
-                    product = product,
-                    price = item.amount.toDouble(),
-                )
+            Spacer(modifier = Modifier.height(10.dp))
+            WalletCardBox(
+                modifier = modifier,
+                userName = userName,
+                userCoin = userCoin,
+                sendExchangePayableTransaction = sendExchangePayableTransaction,
+                sendExchangeCoinTransaction = sendExchangeCoinTransaction,
+                onShowSnackBar = onShowSnackBar,
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            WalletCoinBox(
+                modifier = modifier,
+                coinPrice = coinPrice,
+                navigateToCoinDetail = navigateToCoinDetail,
+                changePercent = changePercent,
+                changePrice = changePrice,
+            )
+            Spacer(modifier = Modifier.height(30.dp))
+            Text(text = stringResource(R.string.recent_transaction_history))
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                repeat(coinHistory.size) { index ->
+                    val item = coinHistory[index]
+                    val isSell =
+                        item.toUser?.let {
+                            it.userId == userId
+                        } ?: false
+                    val product = item.tradeType.split(" ").first()
+                    val originalDateTime = LocalDateTime.parse(item.createdAt)
+                    val dateOnly = originalDateTime.toLocalDate()
+                    TransactionHistoryBox(
+                        modifier = modifier,
+                        date = dateOnly.toString(),
+                        isSell = isSell,
+                        product = product,
+                        price = item.amount.toDouble(),
+                    )
+                }
             }
+            Spacer(modifier = Modifier.height(100.dp))
         }
-        Spacer(modifier = Modifier.height(100.dp))
     }
 }
 
 @Composable
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = true)
 fun WalletScreenPreview() {
     SemonemoTheme {
-        Scaffold { innerPadding ->
-            WalletScreen(
-                modifier = Modifier.padding(innerPadding),
-                coinHistory = listOf(CoinHistory()),
-            )
-        }
+        WalletScreen(
+            coinHistory = listOf(CoinHistory()),
+        )
     }
 }

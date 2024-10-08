@@ -123,6 +123,7 @@ fun PromptAssetScreen(
         listOf(
             "사람",
             "동물",
+            "기타"
         )
     var selectedStyle by remember { mutableStateOf("실사") }
     var selectedType by remember { mutableStateOf("사람") }
