@@ -41,7 +41,7 @@ fun RenderImageRow(
                     Image(
                         bitmap = selectedPictures[index].asImageBitmap(),
                         contentDescription = null,
-                        contentScale = ContentScale.Fit,
+                        contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize(),
                     )
                 }
@@ -65,7 +65,7 @@ fun RenderImage(
             Image(
                 bitmap = selectedPictures[index].asImageBitmap(),
                 contentDescription = null,
-                contentScale = ContentScale.Fit,
+                contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize(),
             )
         }

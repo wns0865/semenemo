@@ -10,6 +10,7 @@ import androidx.camera.core.ImageProxy
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -162,8 +163,8 @@ fun CameraScreen(
     Surface(
         modifier =
             modifier
-                .fillMaxSize()
-                .background(color = GunMetal),
+                .fillMaxSize(),
+        color = GunMetal,
     ) {
         Column(
             modifier =
@@ -177,12 +178,13 @@ fun CameraScreen(
         ) {
             Spacer(modifier = Modifier.height(10.dp))
             TopAppBar(modifier = Modifier, onNavigationClick = popUpBackStack, iconColor = White)
+            Spacer(modifier = Modifier.height(5.dp))
             Box(
                 modifier =
                     if (frameType != FrameType.OneByFour) {
-                        Modifier.fillMaxWidth(0.8f).aspectRatio(4f / 6f)
+                        Modifier.fillMaxWidth().aspectRatio(3f / 4f)
                     } else {
-                        Modifier.fillMaxWidth(0.8f).aspectRatio(6f / 4f)
+                        Modifier.fillMaxWidth().aspectRatio(6.5f / 4f)
                     },
                 contentAlignment = Alignment.Center,
             ) {
@@ -194,7 +196,7 @@ fun CameraScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             Box(modifier = Modifier.fillMaxWidth().align(Alignment.Start).padding(start = 10.dp)) {
                 SingleChoiceSegmentedButtonRow {
                     options.forEachIndexed { index, label ->
@@ -267,7 +269,7 @@ fun CameraScreen(
                             .size(40.dp)
                             .background(shape = CircleShape, color = Gray03)
                             .padding(7.dp)
-                            .noRippleClickable {
+                            .clickable {
                                 controller.cameraSelector =
                                     if (controller.cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
                                         CameraSelector.DEFAULT_FRONT_CAMERA
