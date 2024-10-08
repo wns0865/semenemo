@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -74,9 +75,14 @@ fun AuctionCard(
                 imageModel = imageUrl,
                 contentScale = ContentScale.Crop,
                 modifier =
-                Modifier
+                    Modifier
                         .fillMaxWidth()
                         .weight(1f),
+                loading = {
+                    ImageLoadingProgress(
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                },
             )
             Spacer(modifier = Modifier.height(8.dp))
             Row(

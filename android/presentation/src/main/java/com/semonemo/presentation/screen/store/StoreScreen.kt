@@ -36,11 +36,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.semonemo.domain.model.FrameDetail
-import com.semonemo.domain.model.FrameInfo
-import com.semonemo.domain.model.NftData
 import com.semonemo.domain.model.SellAssetDetail
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.CustomStoreFAB
+import com.semonemo.presentation.component.ImageLoadingProgress
 import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.SectionFullViewButton
 import com.semonemo.presentation.component.SectionHeader
@@ -307,6 +306,11 @@ fun HotRecentFrame(
                         .urlToIpfs(),
                 contentScale = ContentScale.Fit,
                 modifier = Modifier.padding(vertical = 10.dp),
+                loading = {
+                    ImageLoadingProgress(
+                        modifier = Modifier,
+                    )
+                },
             )
         }
     }
@@ -316,18 +320,6 @@ fun HotRecentFrame(
 @Composable
 fun preview() {
     SemonemoTheme {
-        HotRecentFrame(
-            frame =
-                FrameDetail(
-                    nftInfo =
-                        FrameInfo(
-                            data =
-                                NftData(
-                                    title = "타이틀",
-                                    image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6oBX5xsX1CcZfshK5ibbUUJCd7-SpqLQF4g&s",
-                                ),
-                        ),
-                ),
-        )
+        StoreScreen()
     }
 }

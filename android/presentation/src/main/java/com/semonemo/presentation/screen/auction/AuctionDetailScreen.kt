@@ -32,6 +32,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.semonemo.presentation.BuildConfig
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.AuctionBidMessage
+import com.semonemo.presentation.component.ImageLoadingProgress
 import com.semonemo.presentation.screen.auction.subScreen.AuctionEndScreen
 import com.semonemo.presentation.screen.auction.subScreen.AuctionProgressScreen
 import com.semonemo.presentation.screen.auction.subScreen.AuctionReadyScreen
@@ -149,12 +150,15 @@ fun AuctionDetailScreen(
                     pagerState.animateScrollToPage(1)
                 }
             }
+
             AuctionStatus.END -> {
                 pagerState.animateScrollToPage(2)
             }
+
             AuctionStatus.CANCEL -> {
                 pagerState.animateScrollToPage(2)
             }
+
             else -> {}
         }
     }
@@ -165,7 +169,9 @@ fun AuctionDetailScreen(
                 if (viewModel.auctionStatus.value == AuctionStatus.PROGRESS) {
                     pagerState.animateScrollToPage(1)
                 }
-            } else -> {}
+            }
+
+            else -> {}
         }
     }
 
@@ -194,6 +200,11 @@ fun AuctionDetailScreen(
                     .height(360.dp)
                     .width(240.dp)
                     .align(Alignment.CenterHorizontally),
+            loading = {
+                ImageLoadingProgress(
+                    modifier = Modifier,
+                )
+            },
         )
         Spacer(modifier = modifier.height(20.dp))
 

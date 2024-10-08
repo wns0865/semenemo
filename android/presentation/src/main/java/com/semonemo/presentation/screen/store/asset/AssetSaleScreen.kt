@@ -62,6 +62,7 @@ import com.semonemo.domain.model.SellAsset
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.HashTag
 import com.semonemo.presentation.component.HashTagTextField
+import com.semonemo.presentation.component.ImageLoadingProgress
 import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.component.LongUnableButton
@@ -190,6 +191,11 @@ fun AssetSaleScreen(
                         GlideImage(
                             imageModel = selectedAsset,
                             contentScale = ContentScale.Crop,
+                            loading = {
+                                ImageLoadingProgress(
+                                    modifier = Modifier,
+                                )
+                            },
                         )
                     } else {
                         Column(
@@ -371,6 +377,11 @@ fun AssetSaleScreen(
                                         },
                                 imageModel = assets[index].imageUrl,
                                 contentScale = ContentScale.Crop,
+                                loading = {
+                                    ImageLoadingProgress(
+                                        modifier = Modifier,
+                                    )
+                                },
                             )
                         }
                     }

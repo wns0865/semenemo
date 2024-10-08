@@ -18,6 +18,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.semonemo.domain.model.myFrame.MyFrame
 import com.semonemo.presentation.BuildConfig
+import com.semonemo.presentation.component.ImageLoadingProgress
 import com.semonemo.presentation.theme.Gray03
 import com.semonemo.presentation.theme.White
 import com.semonemo.presentation.util.noRippleClickable
@@ -60,6 +61,11 @@ fun MyPageOwnedFrames(
                         },
                 imageModel = imgUrl,
                 contentScale = ContentScale.Inside,
+                loading = {
+                    ImageLoadingProgress(
+                        modifier = Modifier,
+                    )
+                },
             )
         }
     }
