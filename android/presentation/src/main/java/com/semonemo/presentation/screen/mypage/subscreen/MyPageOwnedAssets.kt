@@ -15,17 +15,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.semonemo.domain.model.Asset
+import com.semonemo.presentation.component.ImageLoadingProgress
 import com.semonemo.presentation.theme.Gray03
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
-fun MyPageOwnedAssets(modifier: Modifier, assetList: List<Asset>){
+fun MyPageOwnedAssets(
+    modifier: Modifier,
+    assetList: List<Asset>,
+) {
     LazyVerticalGrid(
         modifier =
-        modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(horizontal = 10.dp),
+            modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(horizontal = 10.dp),
         columns = GridCells.Fixed(3),
         state = rememberLazyGridState(),
     ) {
@@ -34,18 +38,23 @@ fun MyPageOwnedAssets(modifier: Modifier, assetList: List<Asset>){
 
             GlideImage(
                 modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .padding(8.dp)
-                    .clip(shape = RoundedCornerShape(10.dp))
-                    .border(
-                        width = 1.dp,
-                        shape = RoundedCornerShape(10.dp),
-                        color = Gray03,
-                    ),
+                    Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1f)
+                        .padding(8.dp)
+                        .clip(shape = RoundedCornerShape(10.dp))
+                        .border(
+                            width = 1.dp,
+                            shape = RoundedCornerShape(10.dp),
+                            color = Gray03,
+                        ),
                 imageModel = asset.imageUrl,
                 contentScale = ContentScale.Inside,
+                loading = {
+                    ImageLoadingProgress(
+                        modifier = Modifier,
+                    )
+                },
             )
         }
     }

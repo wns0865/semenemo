@@ -17,6 +17,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.semonemo.domain.model.FrameDetail
 import com.semonemo.presentation.BuildConfig
+import com.semonemo.presentation.component.ImageLoadingProgress
 import com.semonemo.presentation.theme.Gray03
 import com.semonemo.presentation.util.noRippleClickable
 import com.skydoves.landscapist.glide.GlideImage
@@ -57,6 +58,11 @@ fun MyPageSellFrames(
                         },
                 imageModel = imgUrl,
                 contentScale = ContentScale.Inside,
+                loading = {
+                    ImageLoadingProgress(
+                        modifier = Modifier,
+                    )
+                },
             )
         }
     }

@@ -74,9 +74,14 @@ fun AuctionCard(
                 imageModel = imageUrl,
                 contentScale = ContentScale.Crop,
                 modifier =
-                Modifier
+                    Modifier
                         .fillMaxWidth()
                         .weight(1f),
+                loading = {
+                    ImageLoadingProgress(
+                        modifier = Modifier,
+                    )
+                },
             )
             Spacer(modifier = Modifier.height(8.dp))
             Row(

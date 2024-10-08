@@ -58,6 +58,7 @@ import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BackButton
 import com.semonemo.presentation.component.CustomTab
 import com.semonemo.presentation.component.HashTag
+import com.semonemo.presentation.component.ImageLoadingProgress
 import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.SearchTextField
 import com.semonemo.presentation.component.SectionHeader
@@ -343,6 +344,11 @@ fun SearchSuccessScreen(
                         frame.nftInfo.data.image
                             .urlToIpfs(),
                     contentScale = ContentScale.Fit,
+                    loading = {
+                        ImageLoadingProgress(
+                            modifier = Modifier,
+                        )
+                    },
                 )
             }
         }
@@ -374,6 +380,11 @@ fun SearchSuccessScreen(
                             },
                     imageModel = asset.imageUrl.toUri(),
                     contentScale = ContentScale.Crop,
+                    loading = {
+                        ImageLoadingProgress(
+                            modifier = Modifier,
+                        )
+                    },
                 )
             }
         }
@@ -407,6 +418,11 @@ fun UserListItem(
             GlideImage(
                 imageModel = profileImgUrl?.toUri(),
                 contentScale = ContentScale.Crop,
+                loading = {
+                    ImageLoadingProgress(
+                        modifier = Modifier,
+                    )
+                },
             )
         }
         Spacer(modifier = Modifier.width(10.dp))

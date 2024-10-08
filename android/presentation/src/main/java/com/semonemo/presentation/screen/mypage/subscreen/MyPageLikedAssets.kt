@@ -15,8 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import com.semonemo.domain.model.Asset
 import com.semonemo.domain.model.SellAssetDetail
+import com.semonemo.presentation.component.ImageLoadingProgress
 import com.semonemo.presentation.theme.Gray03
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -54,6 +54,11 @@ fun MyPageLikedAssets(
                         },
                 imageModel = asset.imageUrl,
                 contentScale = ContentScale.Inside,
+                loading = {
+                    ImageLoadingProgress(
+                        modifier = Modifier,
+                    )
+                },
             )
         }
     }

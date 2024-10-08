@@ -37,6 +37,7 @@ import com.semonemo.domain.model.FrameDetail
 import com.semonemo.domain.model.SellAssetDetail
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.CustomStoreFAB
+import com.semonemo.presentation.component.ImageLoadingProgress
 import com.semonemo.presentation.component.LoadingDialog
 import com.semonemo.presentation.component.SectionFullViewButton
 import com.semonemo.presentation.component.SectionHeader
@@ -267,6 +268,11 @@ fun HotRecentFrame(
                 imageModel = imgUrl,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxWidth().weight(1f),
+                loading = {
+                    ImageLoadingProgress(
+                        modifier = Modifier,
+                    )
+                },
             )
         }
     }

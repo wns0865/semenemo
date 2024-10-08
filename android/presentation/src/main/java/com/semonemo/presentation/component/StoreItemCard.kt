@@ -72,6 +72,11 @@ fun StoreItemCard(
                     Modifier
                         .fillMaxWidth()
                         .weight(1f),
+                loading = {
+                    ImageLoadingProgress(
+                        modifier = Modifier,
+                    )
+                },
             )
             Spacer(modifier = Modifier.height(8.dp))
             Row(

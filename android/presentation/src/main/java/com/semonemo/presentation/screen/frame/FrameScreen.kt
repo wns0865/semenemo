@@ -1,6 +1,7 @@
 package com.semonemo.presentation.screen.frame
 
 import android.graphics.Bitmap
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -54,6 +55,7 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
@@ -65,6 +67,7 @@ import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BrushPalette
 import com.semonemo.presentation.component.ColorPalette
 import com.semonemo.presentation.component.CustomTab
+import com.semonemo.presentation.component.ImageLoadingProgress
 import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.component.TopAppBar
 import com.semonemo.presentation.screen.aiAsset.draw.AssetButtonList
@@ -305,6 +308,21 @@ fun FrameScreen(
                                         .clip(shape = RoundedCornerShape(10.dp))
                                         .background(color = WhiteGray)
                                         .clickable { overlayAssets.add(OverlayAsset(imageUrl = assets[index].imageUrl)) },
+                                loading = {
+                                    ImageLoadingProgress(
+                                        modifier = Modifier,
+                                    )
+                                },
+                                failure = {
+                                    Image(
+                                        painter =
+                                            painterResource(
+                                                id =
+                                                    R.drawable.ic_place_holder,
+                                            ),
+                                        contentDescription = null,
+                                    )
+                                },
                             )
                         }
                     }
@@ -707,6 +725,11 @@ fun ShowAssets(
                             .wrapContentSize(),
                     imageModel = asset.imageUrl,
                     contentScale = ContentScale.Fit,
+                    loading = {
+                        ImageLoadingProgress(
+                            modifier = Modifier,
+                        )
+                    },
                 )
                 // 삭제 버튼 (오른쪽 상단)
                 Box(
@@ -735,6 +758,11 @@ fun ShowAssets(
                         },
                 imageModel = asset.imageUrl,
                 contentScale = ContentScale.Inside,
+                loading = {
+                    ImageLoadingProgress(
+                        modifier = Modifier,
+                    )
+                },
             )
         }
     }
