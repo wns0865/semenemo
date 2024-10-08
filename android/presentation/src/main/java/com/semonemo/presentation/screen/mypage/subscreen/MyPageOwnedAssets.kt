@@ -1,5 +1,6 @@
 package com.semonemo.presentation.screen.mypage.subscreen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,16 +17,20 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.semonemo.domain.model.Asset
 import com.semonemo.presentation.theme.Gray03
+import com.semonemo.presentation.theme.White
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
-fun MyPageOwnedAssets(modifier: Modifier, assetList: List<Asset>){
+fun MyPageOwnedAssets(
+    modifier: Modifier,
+    assetList: List<Asset>,
+) {
     LazyVerticalGrid(
         modifier =
-        modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(horizontal = 10.dp),
+            modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(horizontal = 10.dp),
         columns = GridCells.Fixed(3),
         state = rememberLazyGridState(),
     ) {
@@ -34,16 +39,17 @@ fun MyPageOwnedAssets(modifier: Modifier, assetList: List<Asset>){
 
             GlideImage(
                 modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .padding(8.dp)
-                    .clip(shape = RoundedCornerShape(10.dp))
-                    .border(
-                        width = 1.dp,
-                        shape = RoundedCornerShape(10.dp),
-                        color = Gray03,
-                    ),
+                    Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1f)
+                        .padding(8.dp)
+                        .clip(shape = RoundedCornerShape(10.dp))
+                        .background(color = White.copy(alpha = 0.6f))
+                        .border(
+                            width = 1.dp,
+                            shape = RoundedCornerShape(10.dp),
+                            color = Gray03,
+                        ),
                 imageModel = asset.imageUrl,
                 contentScale = ContentScale.Inside,
             )

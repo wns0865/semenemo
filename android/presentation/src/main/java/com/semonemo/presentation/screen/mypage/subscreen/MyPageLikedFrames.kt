@@ -1,5 +1,6 @@
 package com.semonemo.presentation.screen.mypage.subscreen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.semonemo.domain.model.FrameDetail
 import com.semonemo.presentation.BuildConfig
 import com.semonemo.presentation.theme.Gray03
+import com.semonemo.presentation.theme.White
 import com.semonemo.presentation.util.noRippleClickable
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -47,6 +49,7 @@ fun MyPageLikedFrames(
                         .aspectRatio(1f)
                         .padding(8.dp)
                         .clip(shape = RoundedCornerShape(10.dp))
+                        .background(color = White.copy(alpha = 0.6f))
                         .border(
                             width = 1.dp,
                             shape = RoundedCornerShape(10.dp),
