@@ -67,9 +67,10 @@ fun WalletDialog(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Spacer(modifier = Modifier.weight(1f))
-                    Text(text = title, style = Typography.labelLarge.copy(fontSize = 20.sp))
+                    Text(text = title, style = Typography.labelLarge.copy(fontSize = 17.sp))
                     Spacer(modifier = Modifier.weight(1f))
                     CustomTextField(
+                        modifier = Modifier.height(50.dp),
                         placeholder = "0",
                         input = if (price.longValue != 0L) price.longValue.toString() else "",
                         onValueChange = {
