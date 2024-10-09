@@ -27,7 +27,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -80,7 +79,6 @@ import com.semonemo.presentation.theme.Gray03
 import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
-import com.semonemo.presentation.theme.WhiteGray
 import com.semonemo.presentation.util.noRippleClickable
 import com.semonemo.presentation.util.toAbsolutePath
 import com.skydoves.landscapist.glide.GlideImage
@@ -92,7 +90,7 @@ import java.io.File
 fun MyPageRoute(
     modifier: Modifier = Modifier,
     navigateToDetail: (Long, Boolean) -> Unit,
-    navigateToFollowList: (String, List<User>, List<User>) -> Unit,
+    navigateToFollowList: (String, List<User>, List<User>, Int) -> Unit,
     navigateToSetting: () -> Unit,
     navigateToAssetDetail: (Long) -> Unit,
     navigateToSaleFrameDetail: (Long) -> Unit,
@@ -153,7 +151,7 @@ fun HandleMyPageUi(
     modifier: Modifier = Modifier,
     uiState: MyPageUiState,
     navigateToDetail: (Long, Boolean) -> Unit,
-    navigateToFollowList: (String, List<User>, List<User>) -> Unit,
+    navigateToFollowList: (String, List<User>, List<User>, Int) -> Unit,
     navigateToSetting: () -> Unit,
     navigateToAssetDetail: (Long) -> Unit,
     navigateToSaleFrameDetail: (Long) -> Unit,
@@ -195,7 +193,7 @@ fun HandleMyPageUi(
 fun MyPageScreen(
     modifier: Modifier = Modifier,
     navigateToDetail: (Long, Boolean) -> Unit = { _, _ -> },
-    navigateToFollowList: (String, List<User>, List<User>) -> Unit = { _, _, _ -> },
+    navigateToFollowList: (String, List<User>, List<User>, Int) -> Unit = { _, _, _, _ -> },
     navigateToSetting: () -> Unit = {},
     navigateToAssetDetail: (Long) -> Unit = {},
     navigateToSaleFrameDetail: (Long) -> Unit = {},
@@ -289,7 +287,7 @@ fun MyPageScreen(
             )
 
             Spacer(modifier = Modifier.fillMaxHeight(0.04f))
-            Box{
+            Box {
                 GlideImage(
                     imageModel = profileImageUrl.toUri(),
                     contentScale = ContentScale.Crop,
@@ -355,7 +353,7 @@ fun MyPageScreen(
                             .wrapContentWidth()
                             .weight(1f)
                             .noRippleClickable {
-                                navigateToFollowList(nickname, follower, following)
+                                navigateToFollowList(nickname, follower, following, 0)
                             },
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
@@ -375,7 +373,7 @@ fun MyPageScreen(
                             .wrapContentWidth()
                             .weight(1f)
                             .noRippleClickable {
-                                navigateToFollowList(nickname, follower, following)
+                                navigateToFollowList(nickname, follower, following, 1)
                             },
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {

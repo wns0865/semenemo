@@ -298,12 +298,13 @@ fun MainNavHost(
                         ),
                     )
                 },
-                navigateToFollowList = { nickname, followerList, followingList ->
+                navigateToFollowList = { nickname, followerList, followingList, selectedTabIndex ->
                     navController.navigate(
                         ScreenDestinations.FollowList.createRoute(
                             nickname = nickname,
                             followerList = followerList,
                             followingList = followingList,
+                            selectedTabIndex = selectedTabIndex,
                         ),
                     )
                 },
@@ -343,6 +344,8 @@ fun MainNavHost(
                 navBackStackEntry.arguments?.getParcelableArrayList<User>("followerList")
             val followingList =
                 navBackStackEntry.arguments?.getParcelableArrayList<User>("followingList")
+            val selectedTabIndex =
+                navBackStackEntry.arguments?.getInt("selectedTabIndex") ?: 0
 
             FollowListScreen(
                 modifier = modifier,
@@ -353,6 +356,7 @@ fun MainNavHost(
                 },
                 followerList = followerList ?: emptyList(),
                 followingList = followingList ?: emptyList(),
+                selectedTabIndex = selectedTabIndex,
             )
         }
 
