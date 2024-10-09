@@ -83,6 +83,16 @@
 |:---:|:---:|
  |<img src="https://github.com/user-attachments/assets/d8242f8f-1738-4b08-8903-1528c43bb4a8" width=200 height=400/>|<img src="https://github.com/user-attachments/assets/327d8ce5-9f51-442f-9a53-08f0f1bc7cb2" width=200 height=400/>
 
+
+### 지갑
+
+
+|코인 충전|Payable 코인 환전|Aho 코인 환전|
+|:---:|:---:|:---:|
+| <img src="https://github.com/user-attachments/assets/1cb8888a-377b-4475-a29c-5d2e6ac9e6ec" width=200 height=400/> | <img src="https://github.com/user-attachments/assets/ef00aa1b-270c-46c3-bae8-c05b3fac4f50" width=200 height=400/> | <img src="https://github.com/user-attachments/assets/69ed4337-8cea-476c-a80b-762899affb5e" width=200 height=400/>
+
+
+
 ### 경매
 
 |경매 등록|경매 진행|
