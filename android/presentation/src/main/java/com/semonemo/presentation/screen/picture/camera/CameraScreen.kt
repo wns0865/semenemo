@@ -3,6 +3,7 @@ package com.semonemo.presentation.screen.picture.camera
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Matrix
+import android.media.MediaPlayer
 import androidx.activity.compose.BackHandler
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -51,7 +52,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.TopAppBar
@@ -151,11 +151,16 @@ fun CameraScreen(
     frameType: FrameType = FrameType.OneByOne,
     bitmaps: List<Bitmap> = listOf(),
 ) {
-    val lifecycleOwner = LocalLifecycleOwner.current
+    val takePicturePlayer =
+        remember {
+            MediaPlayer.create(context, R.raw.sound_take_picture)
+        }
+
     var selectedIndex by remember { mutableStateOf(0) }
     val (cnt, setCount) = remember { mutableStateOf(frameType.amount) }
     val options = listOf(3, 10)
-    var timerTime =
+
+    val timerTime =
         remember {
             mutableLongStateOf(options[selectedIndex] * 1000L)
         }
@@ -166,6 +171,7 @@ fun CameraScreen(
     DisposableEffect(Unit) {
         onDispose {
             controller.unbind()
+            takePicturePlayer.release()
         }
     }
 
@@ -289,6 +295,7 @@ fun CameraScreen(
                             onPhotoTaken = onTakePhoto,
                             onErrorSnackBar = onShowSnackBar,
                             amount = cnt,
+                            mediaPlayer = takePicturePlayer,
                         )
                         setCount(cnt - 1)
                     },
@@ -324,7 +331,11 @@ private fun takePhoto(
     onPhotoTaken: (Bitmap, Int) -> Unit,
     context: Context,
     onErrorSnackBar: (String) -> Unit,
+    mediaPlayer: MediaPlayer,
 ) {
+    if (!mediaPlayer.isPlaying) {
+        mediaPlayer.start()
+    }
     controller.takePicture(
         ContextCompat.getMainExecutor(context),
         object : ImageCapture.OnImageCapturedCallback() {
