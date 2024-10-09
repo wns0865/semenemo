@@ -249,7 +249,7 @@ fun MyPageScreen(
         ) {
             Spacer(modifier = Modifier.height(10.dp))
             TopAppBar(
-                modifier = Modifier.fillMaxHeight(0.045f),
+                modifier = Modifier.fillMaxHeight(0.055f),
                 title = {
                     NameWithBadge(
                         name = nickname,
