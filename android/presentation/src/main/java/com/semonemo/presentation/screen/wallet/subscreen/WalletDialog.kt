@@ -84,29 +84,10 @@ fun WalletDialog(
                         keyboardType = KeyboardType.Number,
                         onClearPressed = {
                             price.longValue = 0
-                        }
+                        },
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Row {
-                        Button(
-                            modifier =
-                                Modifier
-                                    .width(130.dp)
-                                    .height(40.dp),
-                            onClick = { onConfirm(price.value) },
-                            shape = RoundedCornerShape(10.dp),
-                            colors =
-                                ButtonDefaults.buttonColors(
-                                    contentColor = White,
-                                    containerColor = Gray01,
-                                ),
-                        ) {
-                            Text(
-                                text = onConfirmMessage,
-                                style = Typography.bodySmall.copy(fontSize = 14.sp),
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(10.dp))
                         Button(
                             modifier =
                                 Modifier
@@ -123,6 +104,25 @@ fun WalletDialog(
                         ) {
                             Text(
                                 text = onDismissMessage,
+                                style = Typography.bodySmall.copy(fontSize = 14.sp),
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Button(
+                            modifier =
+                                Modifier
+                                    .width(130.dp)
+                                    .height(40.dp),
+                            onClick = { onConfirm(price.value) },
+                            shape = RoundedCornerShape(10.dp),
+                            colors =
+                                ButtonDefaults.buttonColors(
+                                    contentColor = White,
+                                    containerColor = Gray01,
+                                ),
+                        ) {
+                            Text(
+                                text = onConfirmMessage,
                                 style = Typography.bodySmall.copy(fontSize = 14.sp),
                             )
                         }
