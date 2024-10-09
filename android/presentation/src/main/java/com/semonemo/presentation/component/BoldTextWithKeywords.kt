@@ -3,6 +3,7 @@ package com.semonemo.presentation.component
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -39,6 +40,7 @@ fun BoldTextWithKeywords(
     boldStyle: TextStyle, // 키워드에 적용될 스타일
     normalStyle: TextStyle, // 일반 텍스트에 적용될 스타일,
     alignStyle: TextAlign? = TextAlign.Start,
+    brushColor: Brush? = Main02,
 ) {
     val annotatedText =
         buildAnnotatedString {
@@ -64,7 +66,7 @@ fun BoldTextWithKeywords(
                         style =
                             SpanStyle(
                                 fontFamily = FontFamily(Font(R.font.pretendard_extrabold)),
-                                brush = if (brushFlag[index]) Main02 else null,
+                                brush = if (brushFlag[index]) brushColor else null,
                                 fontSize = boldStyle.fontSize,
                                 letterSpacing = boldStyle.letterSpacing,
                             ),

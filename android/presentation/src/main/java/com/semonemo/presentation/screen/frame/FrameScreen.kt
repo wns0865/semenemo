@@ -41,10 +41,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -92,10 +94,13 @@ import java.util.UUID
 data class OverlayAsset(
     val uuid: UUID = UUID.randomUUID(),
     var imageUrl: String,
-    var scale: Float = 1f,
+)
+
+data class AssetPosition(
     var offsetX: Float = 0f,
     var offsetY: Float = 0f,
-    val rotation: Float = 0f,
+    var rotation: Float = 0f,
+    var scale: Float = 0.5f,
 )
 
 @Composable
@@ -204,10 +209,7 @@ fun FrameScreen(
                 overlayAssets = overlayAssets,
                 backgroundColor = selectedColor,
                 onDeleteAsset = { asset ->
-                    val index = overlayAssets.indexOf(asset)
-                    if (index != -1) {
-                        overlayAssets[index] = overlayAssets[index].copy(imageUrl = "")
-                    }
+                    overlayAssets.remove(asset)
                 },
             )
             Spacer(modifier = Modifier.fillMaxHeight(0.05f))
@@ -341,7 +343,7 @@ fun FrameScreen(
 fun FramePreview(
     modifier: Modifier = Modifier,
     captureController: CaptureController,
-    overlayAssets: List<OverlayAsset>,
+    overlayAssets: SnapshotStateList<OverlayAsset>,
     frameType: FrameType,
     backgroundColor: Color? = null,
     backgroundBrush: Brush? = null,
@@ -661,47 +663,38 @@ fun FramePreview(
 
 @Composable
 fun ShowAssets(
-    overlayAssets: List<OverlayAsset>,
+    overlayAssets: SnapshotStateList<OverlayAsset>,
     onDeleteAsset: (OverlayAsset) -> Unit,
 ) {
     var selectedAssetId by remember { mutableStateOf<UUID?>(null) }
+    val assetPositions = remember { mutableStateMapOf<UUID, AssetPosition>() }
 
     overlayAssets.forEach { asset ->
-        var imageScale by remember { mutableFloatStateOf(0.5f) }
-        var imageOffsetX by remember { mutableFloatStateOf(asset.offsetX) }
-        var imageOffsetY by remember { mutableFloatStateOf(asset.offsetY) }
-        var imageRotation by remember { mutableFloatStateOf(asset.rotation) }
-        var assetSize by remember { mutableStateOf(IntSize.Zero) }
+        var position by remember(asset.uuid) { mutableStateOf(assetPositions.getOrPut(asset.uuid) { AssetPosition() }) }
 
-        val imageTransformableState =
-            rememberTransformableState { zoomChange, offsetChange, rotationChange ->
-                imageScale = (imageScale * zoomChange).coerceIn(0.1f, 5f)
-                imageRotation += rotationChange
+        val imageTransformableState = rememberTransformableState { zoomChange, offsetChange, rotationChange ->
+            position = position.copy(
+                scale = (position.scale * zoomChange).coerceIn(0.1f, 5f),
+                rotation = position.rotation + rotationChange,
+                offsetX = position.offsetX + offsetChange.x * position.scale,
+                offsetY = position.offsetY + offsetChange.y * position.scale
+            )
+            assetPositions[asset.uuid] = position
+        }
 
-                imageOffsetX += offsetChange.x * imageScale
-                imageOffsetY += offsetChange.y * imageScale
-
-                asset.offsetX = imageOffsetX
-                asset.offsetY = imageOffsetY
-            }
-
-        // 클릭 시 선택된 에셋으로 상태 업데이트
         val isSelected = selectedAssetId == asset.uuid
 
         val assetModifier =
             Modifier
                 .graphicsLayer(
-                    scaleX = imageScale,
-                    scaleY = imageScale,
-                    translationX = imageOffsetX,
-                    translationY = imageOffsetY,
-                    rotationZ = imageRotation,
-                ).transformable(
-                    state = imageTransformableState,
-                ).onSizeChanged { assetSize = it }
+                    scaleX = position.scale,
+                    scaleY = position.scale,
+                    translationX = position.offsetX,
+                    translationY = position.offsetY,
+                    rotationZ = position.rotation,
+                ).transformable(state = imageTransformableState)
                 .noRippleClickable {
-                    selectedAssetId =
-                        if (selectedAssetId == asset.uuid) null else asset.uuid
+                    selectedAssetId = if (selectedAssetId == asset.uuid) null else asset.uuid
                 }
 
         // 선택된 에셋에만 border와 버튼 표시
@@ -709,54 +702,52 @@ fun ShowAssets(
             Box(
                 modifier =
                     assetModifier
-                        .size(assetSize.width.dp, assetSize.height.dp)
+                        .wrapContentSize()
+                        .aspectRatio(1f)
                         .border(width = 2.dp, color = GunMetal),
             ) {
-                if (asset.imageUrl.isNotEmpty()) {
-                    GlideImage(
-                        modifier =
-                            Modifier
-                                .wrapContentSize(),
-                        imageModel = asset.imageUrl,
-                        contentScale = ContentScale.Fit,
-                        loading = {
-                            ImageLoadingProgress(
-                                modifier = Modifier,
-                            )
-                        },
+                GlideImage(
+                    modifier =
+                        Modifier
+                            .wrapContentSize()
+                            .aspectRatio(1f),
+                    imageModel = asset.imageUrl,
+                    contentScale = ContentScale.Fit,
+                    loading = {
+                        ImageLoadingProgress(modifier = Modifier)
+                    },
+                )
+                // 삭제 버튼 (오른쪽 상단)
+                Box(
+                    modifier =
+                        Modifier
+                            .size(40.dp)
+                            .align(Alignment.TopEnd)
+                            .background(WhiteGray, shape = CircleShape)
+                            .noRippleClickable {
+                                onDeleteAsset(asset)
+                                selectedAssetId = null
+                                assetPositions.remove(asset.uuid)
+                            },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Delete Asset",
+                        tint = GunMetal,
                     )
-                    // 삭제 버튼 (오른쪽 상단)
-                    Box(
-                        modifier =
-                            Modifier
-                                .size(40.dp)
-                                .align(Alignment.TopEnd)
-                                .background(WhiteGray, shape = CircleShape)
-                                .noRippleClickable { onDeleteAsset(asset) },
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Delete Asset",
-                            tint = GunMetal,
-                        )
-                    }
                 }
             }
         } else {
             GlideImage(
                 modifier =
                     assetModifier
-                        .noRippleClickable {
-                            selectedAssetId =
-                                if (selectedAssetId == asset.uuid) null else asset.uuid
-                        },
+                        .wrapContentSize()
+                        .aspectRatio(1f),
                 imageModel = asset.imageUrl,
-                contentScale = ContentScale.Inside,
+                contentScale = ContentScale.Fit,
                 loading = {
-                    ImageLoadingProgress(
-                        modifier = Modifier,
-                    )
+                    ImageLoadingProgress(modifier = Modifier)
                 },
             )
         }

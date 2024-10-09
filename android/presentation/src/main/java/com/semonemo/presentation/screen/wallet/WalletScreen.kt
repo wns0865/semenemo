@@ -186,9 +186,8 @@ fun WalletScreen(
                     .background(color = Color.White)
                     .statusBarsPadding()
                     .navigationBarsPadding(),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(15.dp))
             WalletCardBox(
                 modifier = modifier,
                 userName = userName,
@@ -198,7 +197,7 @@ fun WalletScreen(
                 onShowSnackBar = onShowSnackBar,
                 buyCoin = buyCoin,
             )
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(15.dp))
             WalletCoinBox(
                 modifier = modifier,
                 coinPrice = coinPrice,
@@ -206,11 +205,12 @@ fun WalletScreen(
                 changePercent = changePercent,
                 changePrice = changePrice,
             )
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(50.dp))
             Text(
                 text = stringResource(R.string.recent_transaction_history),
-                style = Typography.bodyMedium.copy(fontSize = 20.sp),
+                style = Typography.bodyMedium.copy(fontSize = 23.sp),
             )
+            Spacer(modifier = Modifier.height(15.dp))
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -222,6 +222,7 @@ fun WalletScreen(
                             it.userId == userId
                         } ?: false
                     val product = item.tradeType.split(" ").first()
+                    val isAuction = item.tradeType.split(" ").last().contains("경매")
                     val originalDateTime = LocalDateTime.parse(item.createdAt)
                     val dateOnly = originalDateTime.toLocalDate()
                     TransactionHistoryBox(
@@ -230,6 +231,7 @@ fun WalletScreen(
                         isSell = isSell,
                         product = product,
                         price = item.amount.toDouble(),
+                        isAuction = isAuction,
                     )
                 }
             }

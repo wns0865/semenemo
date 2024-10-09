@@ -101,25 +101,6 @@ fun CustomDialog(
                                 Modifier
                                     .width(130.dp)
                                     .height(40.dp),
-                            onClick = onConfirm,
-                            shape = RoundedCornerShape(10.dp),
-                            colors =
-                                ButtonDefaults.buttonColors(
-                                    contentColor = White,
-                                    containerColor = Gray01,
-                                ),
-                        ) {
-                            Text(
-                                text = onConfirmMessage,
-                                style = Typography.bodySmall.copy(fontSize = 14.sp),
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Button(
-                            modifier =
-                                Modifier
-                                    .width(130.dp)
-                                    .height(40.dp),
                             border = BorderStroke(width = (1.5).dp, color = Gray01),
                             shape = RoundedCornerShape(10.dp),
                             onClick = onDismiss,
@@ -131,6 +112,25 @@ fun CustomDialog(
                         ) {
                             Text(
                                 text = onDismissMessage,
+                                style = Typography.bodySmall.copy(fontSize = 14.sp),
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Button(
+                            modifier =
+                                Modifier
+                                    .width(130.dp)
+                                    .height(40.dp),
+                            onClick = onConfirm,
+                            shape = RoundedCornerShape(10.dp),
+                            colors =
+                                ButtonDefaults.buttonColors(
+                                    contentColor = White,
+                                    containerColor = Gray01,
+                                ),
+                        ) {
+                            Text(
+                                text = onConfirmMessage,
                                 style = Typography.bodySmall.copy(fontSize = 14.sp),
                             )
                         }

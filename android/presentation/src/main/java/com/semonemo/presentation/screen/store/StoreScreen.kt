@@ -194,7 +194,10 @@ fun StoreScreen(
                 LazyRow {
                     items(hotFrames.size) { index ->
                         val frame = hotFrames[index]
-                        HotRecentFrame(frame = frame)
+                        HotRecentFrame(
+                            frame = frame,
+                            navigateToFrameDetail = navigateToFrameDetail,
+                        )
                     }
                 }
             }
@@ -290,13 +293,15 @@ fun StoreScreen(
 fun HotRecentFrame(
     modifier: Modifier = Modifier,
     frame: FrameDetail = FrameDetail(),
+    navigateToFrameDetail: (Long) -> Unit = {},
 ) {
     Card(
         modifier =
             modifier
                 .width(200.dp)
                 .padding(horizontal = 10.dp)
-                .aspectRatio(3f / 4f),
+                .aspectRatio(3f / 4f)
+                .clickable { navigateToFrameDetail(frame.marketId) },
         shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = White),

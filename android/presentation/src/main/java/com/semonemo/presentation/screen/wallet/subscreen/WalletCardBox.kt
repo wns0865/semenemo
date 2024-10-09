@@ -1,31 +1,28 @@
 package com.semonemo.presentation.screen.wallet.subscreen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,10 +32,10 @@ import com.semonemo.domain.model.Coin
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BoldTextWithKeywords
 import com.semonemo.presentation.screen.wallet.BootPaymentScreen
+import com.semonemo.presentation.theme.Gray03
+import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.theme.Main02
-import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
-import com.semonemo.presentation.theme.White
 import com.semonemo.presentation.util.noRippleClickable
 import java.util.Locale
 
@@ -65,19 +62,19 @@ fun WalletCardBox(
         remember {
             mutableStateOf(false)
         }
-    var isPay =
+    val isPay =
         remember {
             mutableStateOf(false)
         }
 
-    var amount =
+    val amount =
         remember {
-            mutableStateOf(0L)
+            mutableLongStateOf(0L)
         }
 
-    var price =
+    val price =
         remember {
-            mutableStateOf(100L)
+            mutableLongStateOf(100L)
         }
 
     if (isPay.value) {
@@ -97,9 +94,9 @@ fun WalletCardBox(
 
     if (showExchangeCoinPayable) { // coin -> payable
         WalletDialog(
-            title = "보유 코인을 환전하시겠습니까?",
+            title = "보유 코인을 페이로 환전하시겠습니까?",
             onDismissMessage = "취소",
-            onConfirmMessage = "변경",
+            onConfirmMessage = "환전",
             onConfirm = {
                 if (userCoin.coinBalance < it) {
                     onShowSnackBar("잔여코인이 부족합니다")
@@ -114,14 +111,14 @@ fun WalletCardBox(
         )
     }
 
-    if (showExchangePayableCoin) { // coin -> payable
+    if (showExchangePayableCoin) { // payable -> coin
         WalletDialog(
-            title = "코인을 충전하시겠습니까?",
+            title = "보유 페이를 코인으로 환전하시겠습니까?",
             onDismissMessage = "취소",
-            onConfirmMessage = "변경",
+            onConfirmMessage = "환전",
             onConfirm = { it ->
                 if (userCoin.payableBalance < it) {
-                    onShowSnackBar("잔여코인이 부족합니다")
+                    onShowSnackBar("잔여 페이가 부족합니다")
                 } else {
                     sendExchangeCoinTransaction(it.toString())
                 }
@@ -153,210 +150,143 @@ fun WalletCardBox(
         modifier =
             modifier
                 .fillMaxWidth()
-                .wrapContentHeight(),
+                .height(180.dp)
+                .background(brush = Main02, shape = RoundedCornerShape(10.dp)),
     ) {
-        Row(
+        Column(
             modifier =
-                modifier
+                Modifier
                     .fillMaxWidth()
-                    .matchParentSize(),
-            horizontalArrangement = Arrangement.End,
-        ) {
-            Card(
-                modifier =
-                    Modifier
-                        .fillMaxWidth(0.3f)
-                        .fillMaxHeight(),
-                shape = RoundedCornerShape(10.dp),
-                elevation = CardDefaults.cardElevation(2.dp),
-            ) {
-                Column(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .fillMaxSize()
-                            .padding(start = 30.dp)
-                            .background(brush = Main02)
-                            .padding(vertical = 10.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(5.dp),
-                ) {
-                    Spacer(modifier = Modifier.weight(1f))
-                    Column(
-                        modifier =
-                            Modifier
-                                .wrapContentSize()
-                                .noRippleClickable { setShowExchangeCoinPayable(true) },
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Image(
-                            modifier =
-                                Modifier
-                                    .size(20.dp),
-                            painter = painterResource(id = R.drawable.ic_coin_exchange),
-                            contentDescription = null,
-                        )
-                        Spacer(modifier = Modifier.height(5.dp))
-                        Text(
-                            text = stringResource(id = R.string.exchange),
-                            style = Typography.labelMedium.copy(color = White),
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.weight(1f))
-                    HorizontalDivider(
-                        modifier =
-                            Modifier
-                                .width(50.dp)
-                                .height(0.5.dp),
-                        color = White,
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    Column(
-                        modifier = Modifier.wrapContentSize().noRippleClickable { },
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Image(
-                            modifier =
-                                Modifier
-                                    .size(20.dp)
-                                    .noRippleClickable {
-                                        setShowBuyCoin(true)
-                                        // setShowExchangePayableCoin(true)
-                                    },
-                            painter = painterResource(id = R.drawable.ic_coin_plus),
-                            contentDescription = null,
-                        )
-                        Spacer(modifier = Modifier.height(5.dp))
-                        Text(
-                            text = stringResource(id = R.string.recharge),
-                            style = Typography.labelMedium.copy(color = White),
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.weight(1f))
-                }
-            }
-        }
-
-        Card(
-            modifier =
-                modifier
-                    .fillMaxWidth(0.8f)
-                    .height(150.dp),
-            shape = RoundedCornerShape(10.dp),
-            elevation = CardDefaults.cardElevation(2.dp),
+                    .wrapContentSize()
+                    .padding(vertical = 12.dp, horizontal = 10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Box(
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .background(color = White)
-                        .padding(10.dp),
-                contentAlignment = Alignment.TopCenter,
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.CenterStart,
             ) {
-                Column(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                            .padding(top = 10.dp),
+                Row(
+                    modifier = Modifier.wrapContentSize(),
+                    verticalAlignment = Alignment.Top,
                 ) {
-                    BoldTextWithKeywords(
-                        modifier = Modifier.padding(start = 5.dp),
-                        fullText = "$userName 님의 지갑",
-                        keywords = listOf(userName),
-                        brushFlag = listOf(true),
-                        boldStyle = Typography.titleSmall.copy(fontSize = 20.sp),
-                        normalStyle = Typography.labelLarge.copy(fontSize = 20.sp),
+                    Icon(
+                        modifier = Modifier.size(24.dp),
+                        painter = painterResource(id = R.drawable.img_money),
+                        contentDescription = "wallet_money",
+                        tint = Color.Unspecified,
                     )
-                    Spacer(modifier = Modifier.weight(1f))
+                    Spacer(modifier = Modifier.width(5.dp))
                     Column(
-                        modifier =
-                            Modifier
-                                .wrapContentHeight()
-                                .padding(bottom = 10.dp),
+                        modifier = Modifier.wrapContentSize(),
+                        horizontalAlignment = Alignment.Start,
                     ) {
+                        BoldTextWithKeywords(
+                            fullText = "$userName 님의 지갑",
+                            keywords = listOf(userName),
+                            brushFlag = listOf(true),
+                            boldStyle = Typography.titleSmall.copy(fontSize = 20.sp),
+                            normalStyle =
+                                Typography.labelLarge.copy(
+                                    fontSize = 20.sp,
+                                    color = Color.White,
+                                ),
+                            brushColor = Main01,
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
                         Row(
+                            modifier = Modifier.wrapContentSize(),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(5.dp),
                         ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_color_sene_coin),
-                                contentDescription = "",
-                            )
                             Text(
-                                text =
-                                    String.format(
-                                        Locale.KOREAN,
-                                        "%,.0f",
-                                        userCoin.payableBalance.toDouble(),
-                                    ),
-                                style = Typography.bodyLarge,
-                                fontSize = 20.sp,
+                                text = "현재 환전 가능한 코인이",
+                                style = Typography.labelSmall.copy(fontSize = 10.sp),
+                                color = Gray03,
                             )
-
-                            Text(
-                                text = "${stringResource(R.string.coin_unit_name)}(Pay)",
-                                style = Typography.labelMedium,
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(5.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(5.dp),
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_color_sene_coin),
-                                contentDescription = "",
-                            )
+                            Spacer(modifier = Modifier.width(3.dp))
                             Text(
                                 text =
                                     String.format(
                                         Locale.KOREAN,
                                         "%,.0f",
                                         userCoin.coinBalance.toDouble(),
-                                    ),
-                                style = Typography.bodyLarge,
-                                fontSize = 20.sp,
+                                    ) + stringResource(R.string.coin_unit_name),
+                                style = Typography.bodySmall.copy(fontSize = 10.sp),
+                                color = Color.White,
                             )
-
+                            Spacer(modifier = Modifier.width(3.dp))
                             Text(
-                                text = stringResource(R.string.coin_unit_name),
-                                style = Typography.labelMedium,
+                                text = "있어요",
+                                style = Typography.labelSmall.copy(fontSize = 10.sp),
+                                color = Gray03,
                             )
                         }
                     }
                 }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Image(
-                        modifier =
-                            Modifier
-                                .padding(10.dp)
-                                .size(90.dp),
-                        painter = painterResource(id = R.drawable.img_money),
-                        contentDescription = null,
-                    )
-                }
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Row(
+                modifier = Modifier.wrapContentSize(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text =
+                        String.format(
+                            Locale.KOREAN,
+                            "%,.0f",
+                            userCoin.payableBalance.toDouble(),
+                        ),
+                    style = Typography.titleSmall.copy(fontSize = 28.sp),
+                    color = Color.White,
+                )
+                Spacer(modifier = Modifier.width(5.dp))
+                Text(
+                    text = "${stringResource(R.string.coin_unit_name)}(Pay)",
+                    style = Typography.labelMedium,
+                    color = Color.White,
+                )
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Row(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 35.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    modifier = Modifier.noRippleClickable { setShowExchangeCoinPayable(true) },
+                    text = "페이로 환전",
+                    style = Typography.labelSmall.copy(fontSize = 12.sp),
+                    color = Color.White,
+                )
+                VerticalDivider(modifier = Modifier.height(11.dp))
+                Text(
+                    modifier = Modifier.noRippleClickable { setShowExchangePayableCoin(true) },
+                    text = "코인으로 환전",
+                    style = Typography.labelSmall.copy(fontSize = 12.sp),
+                    color = Color.White,
+                )
+                VerticalDivider(modifier = Modifier.height(11.dp))
+                Text(
+                    modifier = Modifier.noRippleClickable { setShowBuyCoin(true) },
+                    text = "충전하기",
+                    style = Typography.labelSmall.copy(fontSize = 12.sp),
+                    color = Color.White,
+                )
             }
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
-fun Preview() {
-    SemonemoTheme {
-        WalletCardBox(
-            userName = "짜이한",
-            userCoin = Coin(),
-            onShowSnackBar = {},
-            sendExchangePayableTransaction = {},
-            sendExchangeCoinTransaction = {},
-        )
-    }
+fun WalletPreview() {
+    WalletCardBox(
+        userName = "짜이한",
+        userCoin = Coin(coinBalance = 1000, payableBalance = 100000),
+        onShowSnackBar = {},
+        sendExchangePayableTransaction = {},
+        sendExchangeCoinTransaction = {},
+    )
 }
