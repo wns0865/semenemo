@@ -106,8 +106,6 @@ fun AuctionReadyScreen(
                         viewModel.joinAuction()
                     },
                 )
-            } else if (true) {
-
             } else {
                 LongUnableButton(
                     modifier =

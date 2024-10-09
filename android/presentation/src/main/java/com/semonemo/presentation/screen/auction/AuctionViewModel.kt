@@ -9,8 +9,11 @@ import com.semonemo.domain.model.Auction
 import com.semonemo.domain.repository.AuctionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,12 +27,13 @@ class AuctionViewModel
     ) : ViewModel() {
         private val _uiEvent = MutableSharedFlow<AuctionUiEvent>()
         val uiEvent = _uiEvent.asSharedFlow()
-
+        private val _uiState = MutableStateFlow(AuctionUiState())
+        val uiState = _uiState.asStateFlow()
         var shortAuctionList = mutableStateOf<List<Auction>>(listOf())
             private set
 
         init {
-            loadShortAuction()
+//            loadShortAuction()
         }
 
         fun loadShortAuction() {
@@ -42,7 +46,21 @@ class AuctionViewModel
 
                         is ApiResponse.Success -> {
                             Log.d(TAG, "loadShortAuction: ${response.data}")
-                            shortAuctionList.value = response.data
+                            val allAuctionList = response.data
+                            _uiState.update { it ->
+                                it.copy(
+                                    readyAuctionList = allAuctionList.filter { AuctionStatus.valueOf(it.status) == AuctionStatus.READY },
+                                    progressAuctionList =
+                                        allAuctionList.filter {
+                                            AuctionStatus.valueOf(
+                                                it.status,
+                                            ) == AuctionStatus.PROGRESS
+                                        },
+                                    endAuctionList = allAuctionList.filter { AuctionStatus.valueOf(it.status) == AuctionStatus.END },
+                                    cancelAuctionList = allAuctionList.filter { AuctionStatus.valueOf(it.status) == AuctionStatus.CANCEL },
+                                )
+                            }
+//                            shortAuctionList.value = response.data
                         }
                     }
                 }
