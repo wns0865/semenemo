@@ -426,7 +426,7 @@ fun AuctionDetailScreen(
         HorizontalPager(
             modifier = modifier.fillMaxWidth(),
             state = pagerState,
-            userScrollEnabled = true, // TODO : 테스트 후 false
+            userScrollEnabled = false, // TODO : 테스트 후 false
         ) { page ->
             when (AuctionStatus.entries[page]) {
                 AuctionStatus.READY ->

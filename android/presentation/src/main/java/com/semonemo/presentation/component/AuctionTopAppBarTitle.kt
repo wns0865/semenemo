@@ -36,7 +36,6 @@ fun AuctionTopAppBarTitle(
                 keywords = listOf(String.format("%03d번", viewModel.userAnonym))
             }
         }
-        // TODO
         AuctionStatus.END -> {
             if (viewModel.result.value?.winner == viewModel.userId) {
                 fullText = "축하합니다. 프레임을 낙찰했습니다!"

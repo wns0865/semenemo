@@ -72,8 +72,6 @@ fun AuctionCancelScreen(
                     popUpBackStack()
                 },
             )
-
-            // 추가적인 UI 요소 (예: 로딩 애니메이션 등)
         }
     }
 }
