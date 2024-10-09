@@ -115,7 +115,7 @@ fun MomentScreen(
                         .wrapContentHeight()
                         .statusBarsPadding()
                         .navigationBarsPadding()
-                        .padding(horizontal = 17.dp, vertical = 30.dp),
+                        .padding(horizontal = 17.dp, vertical = 20.dp),
             ) {
                 Column(
                     modifier =
