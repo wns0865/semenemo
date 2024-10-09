@@ -4,8 +4,12 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature android:name="android.hardware.camera"
-        android:required="false"/>
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
 
     <application
         android:name=".core.SemoNemoApplication"
@@ -18,9 +22,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Semonemo"
         android:usesCleartextTraffic="true"
-        tools:targetApi="31"
         tools:replace="android:dataExtractionRules"
-        >
+        tools:targetApi="31">
         <activity
             android:name="com.semonemo.presentation.MainActivity"
             android:exported="true">

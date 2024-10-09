@@ -13,6 +13,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,12 +27,12 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -75,9 +76,11 @@ import com.semonemo.presentation.screen.mypage.subscreen.MyPageOwnedAssets
 import com.semonemo.presentation.screen.mypage.subscreen.MyPageOwnedFrames
 import com.semonemo.presentation.screen.mypage.subscreen.MyPageSellFrames
 import com.semonemo.presentation.theme.Blue3
+import com.semonemo.presentation.theme.Gray03
 import com.semonemo.presentation.theme.Main01
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
+import com.semonemo.presentation.theme.WhiteGray
 import com.semonemo.presentation.util.noRippleClickable
 import com.semonemo.presentation.util.toAbsolutePath
 import com.skydoves.landscapist.glide.GlideImage
@@ -171,7 +174,6 @@ fun HandleMyPageUi(
                 nickname = uiState.nickname,
                 profileImageUrl = uiState.profileImageUrl,
                 amount = uiState.amount,
-                volume = uiState.volume,
                 follower = uiState.follower,
                 following = uiState.following,
                 updateProfileImage = updateProfileImage,
@@ -200,7 +202,6 @@ fun MyPageScreen(
     nickname: String = "짜이한",
     profileImageUrl: String = "",
     amount: Int = 0,
-    volume: Int = 0,
     follower: List<User> = emptyList(),
     following: List<User> = emptyList(),
     updateProfileImage: (Uri) -> Unit = {},
@@ -288,13 +289,14 @@ fun MyPageScreen(
             )
 
             Spacer(modifier = Modifier.fillMaxHeight(0.04f))
-            Box {
+            Box{
                 GlideImage(
                     imageModel = profileImageUrl.toUri(),
                     contentScale = ContentScale.Crop,
                     modifier =
                         Modifier
                             .size(120.dp)
+                            .border(width = 1.5.dp, color = Gray03, shape = CircleShape)
                             .clip(shape = CircleShape),
                     loading = {
                         ImageLoadingProgress(
@@ -323,14 +325,13 @@ fun MyPageScreen(
                     )
                 }
             }
-
             Spacer(modifier = Modifier.fillMaxHeight(0.07f))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Spacer(modifier = Modifier.weight(0.4f))
+                Spacer(modifier = Modifier.weight(1f))
                 Column(
                     modifier =
                         Modifier
@@ -339,29 +340,12 @@ fun MyPageScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
-                        text = "$amount",
+                        text = "${frameList.size}",
                         style = Typography.bodyLarge,
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = "보유중",
-                        style = Typography.labelSmall.copy(fontSize = 13.sp),
-                    )
-                }
-                Column(
-                    modifier =
-                        Modifier
-                            .wrapContentWidth()
-                            .weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text(
-                        text = "$volume",
-                        style = Typography.bodyLarge,
-                    )
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = "거래량",
                         style = Typography.labelSmall.copy(fontSize = 13.sp),
                     )
                 }
@@ -405,9 +389,9 @@ fun MyPageScreen(
                         style = Typography.labelSmall.copy(fontSize = 13.sp),
                     )
                 }
-                Spacer(modifier = Modifier.weight(0.4f))
+                Spacer(modifier = Modifier.weight(1f))
             }
-            Spacer(modifier = Modifier.fillMaxHeight(0.1f))
+            Spacer(modifier = Modifier.fillMaxHeight(0.07f))
             CustomTab(
                 tabList = tabs,
                 selectedIndex = selectedIndex.intValue,
@@ -523,6 +507,7 @@ fun MyPageScreen(
                     }
                 }
             }
+            Spacer(modifier = Modifier.fillMaxHeight(0.07f))
         }
     }
 }

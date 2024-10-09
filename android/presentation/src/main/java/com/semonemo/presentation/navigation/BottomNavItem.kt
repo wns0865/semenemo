@@ -26,8 +26,8 @@ sealed class BottomNavItem(
 
     data object Wallet : BottomNavItem(
         title = R.string.wallet_title,
-        icon = R.drawable.ic_bot_nav_outline_coin,
-        iconSelected = R.drawable.ic_bot_nav_fill_coin,
+        icon = R.drawable.ic_bot_nav_outline_wallet,
+        iconSelected = R.drawable.ic_bot_nav_fill_wallet,
         route = ScreenDestinations.Wallet.route,
     )
 

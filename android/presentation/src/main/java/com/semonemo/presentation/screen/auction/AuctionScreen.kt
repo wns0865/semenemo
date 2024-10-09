@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,24 +27,38 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.CustomAuctionFAB
 import com.semonemo.presentation.component.SectionHeader
-import com.semonemo.presentation.screen.auction.subScreen.LongAuctionReadScreen
-import com.semonemo.presentation.screen.auction.subScreen.ShortAuctionReadScreen
+import com.semonemo.presentation.screen.auction.subScreen.AuctionReadScreen
+import com.semonemo.presentation.theme.Gray02
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.util.noRippleClickable
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun AuctionScreen(
     modifier: Modifier = Modifier,
     viewModel: AuctionViewModel = hiltViewModel(),
+    onShowError: (String) -> Unit = {},
     navigateToAuctionDetail: (Long) -> Unit = {},
     navigateToAuctionRegister: () -> Unit = {},
 ) {
+    val auctionUiState = viewModel.uiState.collectAsStateWithLifecycle().value
+    val verticalScrollState = rememberScrollState()
+
     LaunchedEffect(Unit) {
         viewModel.loadShortAuction()
+    }
+
+    LaunchedEffect(viewModel.uiEvent) {
+        viewModel.uiEvent.collectLatest { event ->
+            when (event) {
+                is AuctionUiEvent.Error -> onShowError(event.errorMessage)
+            }
+        }
     }
 
     Surface(
@@ -56,14 +72,18 @@ fun AuctionScreen(
                 Modifier
                     .fillMaxSize()
                     .statusBarsPadding()
-                    .navigationBarsPadding(),
+                    .navigationBarsPadding()
+                    .verticalScroll(state = verticalScrollState),
         ) {
-            Spacer(modifier = Modifier.height(30.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                SectionHeader(text = stringResource(R.string.in_progress_short_action))
+                SectionHeader(
+                    modifier = Modifier.padding(10.dp),
+                    text = stringResource(R.string.auction_progress_header),
+                )
                 Box(
                     modifier =
                         Modifier
@@ -73,7 +93,7 @@ fun AuctionScreen(
                             ),
                 ) {
                     Row(
-                        modifier = Modifier,
+                        modifier = Modifier.padding(end = 5.dp),
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -94,13 +114,108 @@ fun AuctionScreen(
                 }
             }
 
-            ShortAuctionReadScreen(
-                viewModel = viewModel,
-                navigateToAuctionDetail = navigateToAuctionDetail,
+            if (auctionUiState.progressAuctionList.isEmpty()) {
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(100.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "현재 진행중 경매가 없어요! 🥲",
+                        style = Typography.labelLarge,
+                        color = Gray02,
+                    )
+                }
+            } else {
+                AuctionReadScreen(
+                    auctionDataList = auctionUiState.progressAuctionList,
+                    navigateToAuctionDetail = navigateToAuctionDetail,
+                )
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            // 준비된 경매
+            SectionHeader(
+                modifier = Modifier.padding(10.dp),
+                text = stringResource(R.string.auction_ready_header),
             )
-            Spacer(modifier = Modifier.height(30.dp))
-            SectionHeader(text = stringResource(R.string.in_progress_long_action))
-            LongAuctionReadScreen()
+            if (auctionUiState.readyAuctionList.isEmpty()) {
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(100.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "현재 준비된 경매가 없어요! 🥲",
+                        style = Typography.labelLarge,
+                        color = Gray02,
+                    )
+                }
+            } else {
+                AuctionReadScreen(
+                    auctionDataList = auctionUiState.readyAuctionList,
+                    navigateToAuctionDetail = navigateToAuctionDetail,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+            // 종료된 경매
+            SectionHeader(
+                modifier = Modifier.padding(10.dp),
+                text = stringResource(R.string.auction_end_header),
+            )
+            if (auctionUiState.endAuctionList.isEmpty()) {
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(100.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "현재 종료된 경매가 없어요! 🥲",
+                        style = Typography.labelLarge,
+                        color = Gray02,
+                    )
+                }
+            } else {
+                AuctionReadScreen(
+                    auctionDataList = auctionUiState.endAuctionList,
+                    navigateToAuctionDetail = navigateToAuctionDetail,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+            // 유찰된 경매
+            SectionHeader(
+                modifier = Modifier.padding(10.dp),
+                text = stringResource(R.string.auction_cancel_header),
+            )
+            if (auctionUiState.cancelAuctionList.isEmpty()) {
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(100.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "현재 유찰된 경매가 없어요! 🥲",
+                        style = Typography.labelLarge,
+                        color = Gray02,
+                    )
+                }
+            } else {
+                AuctionReadScreen(
+                    auctionDataList = auctionUiState.cancelAuctionList,
+                    navigateToAuctionDetail = navigateToAuctionDetail,
+                )
+            }
+            Spacer(modifier = Modifier.height(100.dp))
+            // 여기 아래에 진행 예정인 것 넣으면 됨.
         }
         CustomAuctionFAB(
             modifier = modifier,

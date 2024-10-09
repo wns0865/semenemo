@@ -63,6 +63,7 @@ import com.semonemo.presentation.component.PenPalette
 import com.semonemo.presentation.component.TopAppBar
 import com.semonemo.presentation.theme.Gray02
 import com.semonemo.presentation.theme.GunMetal
+import com.semonemo.presentation.theme.Orange
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.White
@@ -174,9 +175,10 @@ fun DrawAssetScreen(
     val colors =
         listOf(
             Color.Black,
-            Color.White,
             Color.Red,
+            Orange,
             Color.Yellow,
+            Color.Green,
             Color.Blue,
             Color.Magenta,
         )
@@ -476,7 +478,7 @@ fun DrawAssetScreen(
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(30.dp))
             LongBlackButton(
                 icon = null,
                 text = stringResource(R.string.draw_done),

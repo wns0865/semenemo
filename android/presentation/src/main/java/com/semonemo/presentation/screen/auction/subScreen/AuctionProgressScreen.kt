@@ -40,7 +40,7 @@ fun AuctionProgressScreen(
             Column(
                 modifier = Modifier.weight(1f),
             ) {
-                CustomAuctionProgressBar(endTime = adjustEndTime ?: viewModel.endTime.value)
+                CustomAuctionProgressBar(auctionStatus = viewModel.auctionStatus.value, endTime = adjustEndTime ?: viewModel.endTime.value)
                 Spacer(modifier = Modifier.height(10.dp))
                 BidInfo(
                     bidLogList = viewModel.auctionBidLog.value,
@@ -91,6 +91,7 @@ fun AuctionProgressScreen(
             Spacer(modifier = Modifier.height(10.dp))
             CustomNoRippleButton(
                 text = "입찰하기",
+                enabled = viewModel.validateUserBid.value,
                 onClick = {
                     scope.launch {
                         viewModel.stompSession.value?.let { session ->

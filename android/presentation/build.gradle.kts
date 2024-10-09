@@ -21,13 +21,37 @@ android {
         buildConfigField("String", "CHAIN_NAME", properties["CHAIN_NAME"] as String)
         buildConfigField("String", "RPC_URLS", properties["RPC_URLS"] as String)
         buildConfigField("String", "SEVER_URL", properties["SEVER_URL"] as String)
-        buildConfigField("String", "METAMASK_PACKAGE_NAME", properties["METAMASK_PACKAGE_NAME"] as String)
-        buildConfigField("String", "METAMASK_PLAY_STORE_PATH", properties["METAMASK_PLAY_STORE_PATH"] as String)
+        buildConfigField(
+            "String",
+            "METAMASK_PACKAGE_NAME",
+            properties["METAMASK_PACKAGE_NAME"] as String,
+        )
+        buildConfigField(
+            "String",
+            "METAMASK_PLAY_STORE_PATH",
+            properties["METAMASK_PLAY_STORE_PATH"] as String,
+        )
         buildConfigField("String", "CONTRACT_ADDRESS", properties["CONTRACT_ADDRESS"] as String)
-        buildConfigField("String", "NFT_CONTRACT_ADDRESS", properties["NFT_CONTRACT_ADDRESS"] as String)
-        buildConfigField("String", "COIN_CONTRACT_ADDRESS", properties["COIN_CONTRACT_ADDRESS"] as String)
-        buildConfigField("String", "SYSTEM_CONTRACT_ADDRESS", properties["SYSTEM_CONTRACT_ADDRESS"] as String)
+        buildConfigField(
+            "String",
+            "NFT_CONTRACT_ADDRESS",
+            properties["NFT_CONTRACT_ADDRESS"] as String,
+        )
+        buildConfigField(
+            "String",
+            "COIN_CONTRACT_ADDRESS",
+            properties["COIN_CONTRACT_ADDRESS"] as String,
+        )
+        buildConfigField(
+            "String",
+            "SYSTEM_CONTRACT_ADDRESS",
+            properties["SYSTEM_CONTRACT_ADDRESS"] as String,
+        )
         buildConfigField("String", "IPFS_READ_URL", properties["IPFS_READ_URL"] as String)
+        buildConfigField("String", "BOOTPAY_API_KEY", properties["BOOTPAY_API_KEY"] as String)
+        buildConfigField("String", "USER_NAME", properties["USER_NAME"] as String)
+        buildConfigField("String", "USER_EMAIL", properties["USER_EMAIL"] as String)
+        buildConfigField("String", "USER_PHONE", properties["USER_PHONE"] as String)
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -144,4 +168,7 @@ dependencies {
 
     //
     implementation(libs.accompanist.systemuicontroller)
+
+    // bootpay
+    implementation(libs.bootpay)
 }

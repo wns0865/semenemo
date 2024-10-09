@@ -11,6 +11,7 @@ import com.semonemo.domain.model.CoinHistory
 import com.semonemo.domain.model.CoinRate
 import com.semonemo.domain.model.WeeklyCoin
 import com.semonemo.domain.repository.CoinRepository
+import com.semonemo.domain.request.BuyCoinRequest
 import com.semonemo.domain.request.ExchangePayableRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -110,5 +111,27 @@ class CoinRepositoryImpl
         override suspend fun getWeeklyCoin(): Flow<ApiResponse<List<WeeklyCoin>>> =
             flow {
                 emit(emitApiResponse(apiResponse = { api.getWeeklyCoin() }, default = listOf()))
+            }
+
+        override suspend fun buyCoin(amount: Long): Flow<ApiResponse<Coin>> =
+            flow {
+                val response =
+                    emitApiResponse(
+                        apiResponse = { api.buyCoin(request = BuyCoinRequest(amount)) },
+                        default = GetBalanceResponse(),
+                    )
+                when (response) {
+                    is ApiResponse.Error -> emit(response)
+                    is ApiResponse.Success ->
+                        emit(
+                            ApiResponse.Success(
+                                data =
+                                    Coin(
+                                        coinBalance = response.data.coinBalance,
+                                        payableBalance = response.data.payableBalance,
+                                    ),
+                            ),
+                        )
+                }
             }
     }

@@ -13,7 +13,7 @@ sealed class PaintingStyle(
         override val model: String,
     ) : PaintingStyle(title, prompt, negativePrompt, model) {
         data object People : Realistic(
-            prompt = "best quality, masterpiece, 8k, intricate, high detail, (extremely detailed face), (extremely detailed hands), (extremely detailed hair), ultra high res, (photorealistic:1.4), 1girl",
+            prompt = "best quality, masterpiece, 8k, intricate, high detail, (extremely detailed face), (extremely detailed hands), (extremely detailed hair), ultra high res, (photorealistic:1.4), human",
             negativePrompt = "cartoon, painting, illustration, (worst quality, low quality, normal quality:2), ugly, BadDream, (UnrealisticDream:1.2), (nsfw:1.5), (naked:1.5), (nude:1.5), bad-artist, bad-artist-anime, bad_prompt_version2, badhandv4, EasyNegative, ng_deepnegative_v1_75t",
             model = "majicmixRealistic_v7.safetensors [7c819b6d13]",
         )
@@ -22,6 +22,12 @@ sealed class PaintingStyle(
             prompt = "best quality, masterpiece, 8k, intricate, high detail, ultra high res, (photorealistic:1.4), animal",
             negativePrompt = "cartoon, painting, illustration, (worst quality, low quality, normal quality:2), BadDream, (UnrealisticDream:1.2), (nsfw:1.5), (naked:1.5), (nude:1.5), bad-artist, bad-artist-anime, bad_prompt_version2, badhandv4, EasyNegative, ng_deepnegative_v1_75t",
             model = "dreamshaper_8.safetensors [879db523c3]",
+        )
+
+        data object Ect : Realistic(
+            prompt = "best quality, masterpiece, 8k, intricate, high detail, (extremely detailed face), (extremely detailed hands), (extremely detailed hair), ultra high res, (photorealistic:1.4), not human, not animal",
+            negativePrompt = "cartoon, painting, illustration, (worst quality, low quality, normal quality:2), ugly, BadDream, (UnrealisticDream:1.2), (nsfw:1.5), (naked:1.5), (nude:1.5), bad-artist, bad-artist-anime, bad_prompt_version2, badhandv4, EasyNegative, ng_deepnegative_v1_75t",
+            model = "majicmixRealistic_v7.safetensors [7c819b6d13]",
         )
     }
 
@@ -37,7 +43,7 @@ sealed class PaintingStyle(
             model,
         ) {
         data object People : Anime(
-            prompt = "est quality, masterpiece , ultra high res, 1girl",
+            prompt = "est quality, masterpiece , ultra high res, human",
             negativePrompt =
                 "(worst quality, low quality, normal quality:2), ugly, BadDream, (UnrealisticDream:1.2), (nsfw:1.5), (naked:1.5), (nude:1.5), bad-artist, bad-artist-anime, bad_prompt_version2, badhandv4, EasyNegative, ng_deepnegative_v1_75t",
         )
@@ -45,6 +51,12 @@ sealed class PaintingStyle(
         data object Animal : Anime(
             prompt = "best quality, masterpiece , ultra high res, animal",
             negativePrompt = "(worst quality, low quality, normal quality:2), ugly, BadDream, (UnrealisticDream:1.2), (nsfw:1.5), (naked:1.5), (nude:1.5), bad-artist, bad-artist-anime, bad_prompt_version2, badhandv4, EasyNegative, ng_deepnegative_v1_75t",
+        )
+
+        data object Ect : Anime(
+            prompt = "est quality, masterpiece , ultra high res, not human, not animal",
+            negativePrompt =
+                "(worst quality, low quality, normal quality:2), ugly, BadDream, (UnrealisticDream:1.2), (nsfw:1.5), (naked:1.5), (nude:1.5), bad-artist, bad-artist-anime, bad_prompt_version2, badhandv4, EasyNegative, ng_deepnegative_v1_75t",
         )
     }
 
@@ -60,13 +72,19 @@ sealed class PaintingStyle(
             model,
         ) {
         data object People : Cartoon(
-            prompt = "best quality, masterpiece , ultra high res, 1girl",
+            prompt = "best quality, masterpiece , ultra high res, human",
             negativePrompt = "(worst quality, low quality, normal quality:2), ugly, BadDream, (UnrealisticDream:1.2), (nsfw:1.5), (naked:1.5), (nude:1.5), bad-artist, bad-artist-anime, bad_prompt_version2, badhandv4, EasyNegative, ng_deepnegative_v1_75t",
         )
 
         data object Animal : Cartoon(
-            prompt = "best quality, masterpiece , ultra high res, animal, dog",
+            prompt = "best quality, masterpiece , ultra high res, animal",
             negativePrompt = "(worst quality, low quality, normal quality:2), ugly, BadDream, (UnrealisticDream:1.2), (nsfw:1.5), (naked:1.5), (nude:1.5), bad-artist, bad-artist-anime, bad_prompt_version2, badhandv4, EasyNegative, ng_deepnegative_v1_75t",
+        )
+
+        data object Ect : Cartoon(
+            prompt = "est quality, masterpiece , ultra high res, not human, not animal",
+            negativePrompt =
+                "(worst quality, low quality, normal quality:2), ugly, BadDream, (UnrealisticDream:1.2), (nsfw:1.5), (naked:1.5), (nude:1.5), bad-artist, bad-artist-anime, bad_prompt_version2, badhandv4, EasyNegative, ng_deepnegative_v1_75t",
         )
     }
 
