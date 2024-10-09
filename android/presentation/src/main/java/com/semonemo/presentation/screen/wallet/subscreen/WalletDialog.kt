@@ -67,9 +67,10 @@ fun WalletDialog(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Spacer(modifier = Modifier.weight(1f))
-                    Text(text = title, style = Typography.labelLarge.copy(fontSize = 20.sp))
+                    Text(text = title, style = Typography.labelLarge.copy(fontSize = 17.sp))
                     Spacer(modifier = Modifier.weight(1f))
                     CustomTextField(
+                        modifier = Modifier.height(50.dp),
                         placeholder = "0",
                         input = if (price.longValue != 0L) price.longValue.toString() else "",
                         onValueChange = {
@@ -84,29 +85,10 @@ fun WalletDialog(
                         keyboardType = KeyboardType.Number,
                         onClearPressed = {
                             price.longValue = 0
-                        }
+                        },
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Row {
-                        Button(
-                            modifier =
-                                Modifier
-                                    .width(130.dp)
-                                    .height(40.dp),
-                            onClick = { onConfirm(price.value) },
-                            shape = RoundedCornerShape(10.dp),
-                            colors =
-                                ButtonDefaults.buttonColors(
-                                    contentColor = White,
-                                    containerColor = Gray01,
-                                ),
-                        ) {
-                            Text(
-                                text = onConfirmMessage,
-                                style = Typography.bodySmall.copy(fontSize = 14.sp),
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(10.dp))
                         Button(
                             modifier =
                                 Modifier
@@ -123,6 +105,25 @@ fun WalletDialog(
                         ) {
                             Text(
                                 text = onDismissMessage,
+                                style = Typography.bodySmall.copy(fontSize = 14.sp),
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Button(
+                            modifier =
+                                Modifier
+                                    .width(130.dp)
+                                    .height(40.dp),
+                            onClick = { onConfirm(price.value) },
+                            shape = RoundedCornerShape(10.dp),
+                            colors =
+                                ButtonDefaults.buttonColors(
+                                    contentColor = White,
+                                    containerColor = Gray01,
+                                ),
+                        ) {
+                            Text(
+                                text = onConfirmMessage,
                                 style = Typography.bodySmall.copy(fontSize = 14.sp),
                             )
                         }
