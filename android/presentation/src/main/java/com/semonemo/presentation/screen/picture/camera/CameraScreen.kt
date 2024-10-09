@@ -334,6 +334,9 @@ private fun takePhoto(
                     Matrix().apply {
                         postRotate(image.imageInfo.rotationDegrees.toFloat())
                     }
+                if (controller.cameraSelector == CameraSelector.DEFAULT_FRONT_CAMERA) {
+                    matrix.postScale(-1f, 1f)
+                }
                 val rotatedBitmap =
                     Bitmap.createBitmap(
                         image.toBitmap(),
@@ -344,6 +347,7 @@ private fun takePhoto(
                         matrix,
                         true,
                     )
+
                 onPhotoTaken(rotatedBitmap, amount)
             }
 
