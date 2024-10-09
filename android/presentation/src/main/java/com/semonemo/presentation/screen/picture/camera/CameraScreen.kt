@@ -155,6 +155,10 @@ fun CameraScreen(
         remember {
             MediaPlayer.create(context, R.raw.sound_take_picture)
         }
+    val timerTickSoundPlayer =
+        remember {
+            MediaPlayer.create(context, R.raw.clock_time)
+        }
 
     var selectedIndex by remember { mutableStateOf(0) }
     val (cnt, setCount) = remember { mutableStateOf(frameType.amount) }
@@ -172,6 +176,7 @@ fun CameraScreen(
         onDispose {
             controller.unbind()
             takePicturePlayer.release()
+            timerTickSoundPlayer.release()
         }
     }
 
@@ -299,6 +304,7 @@ fun CameraScreen(
                         )
                         setCount(cnt - 1)
                     },
+                    timerTickSound = timerTickSoundPlayer,
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Icon(
