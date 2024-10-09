@@ -28,12 +28,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.semonemo.domain.model.Coin
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.BoldTextWithKeywords
+import com.semonemo.presentation.screen.wallet.BootPaymentScreen
 import com.semonemo.presentation.theme.Main02
+import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.White
 import com.semonemo.presentation.util.noRippleClickable
@@ -47,6 +50,7 @@ fun WalletCardBox(
     onShowSnackBar: (String) -> Unit,
     sendExchangePayableTransaction: (String) -> Unit,
     sendExchangeCoinTransaction: (String) -> Unit,
+    buyCoin: (Long) -> Unit = {},
 ) {
     val (showExchangeCoinPayable, setShowExchangeCoinPayable) =
         remember {
@@ -57,7 +61,41 @@ fun WalletCardBox(
             mutableStateOf(false)
         }
 
-    if (showExchangeCoinPayable) {
+    val (showBuyCoin, setShowBuyCoin) =
+        remember {
+            mutableStateOf(false)
+        }
+    var isPay =
+        remember {
+            mutableStateOf(false)
+        }
+
+    var amount =
+        remember {
+            mutableStateOf(0L)
+        }
+
+    var price =
+        remember {
+            mutableStateOf(100L)
+        }
+
+    if (isPay.value) {
+        BootPaymentScreen(
+            coinAmount = amount.value,
+            price = price.value,
+            onSuccess = {
+                isPay.value = false
+                buyCoin(amount.value)
+            },
+            onClose = {
+                isPay.value = false
+            },
+        ) {
+        }
+    }
+
+    if (showExchangeCoinPayable) { // coin -> payable
         WalletDialog(
             title = "보유 코인을 환전하시겠습니까?",
             onDismissMessage = "취소",
@@ -76,12 +114,12 @@ fun WalletCardBox(
         )
     }
 
-    if (showExchangePayableCoin) {
+    if (showExchangePayableCoin) { // coin -> payable
         WalletDialog(
-            title = "지불 가능한 코인을 환전하시겠습니까?",
+            title = "코인을 충전하시겠습니까?",
             onDismissMessage = "취소",
             onConfirmMessage = "변경",
-            onConfirm = {
+            onConfirm = { it ->
                 if (userCoin.payableBalance < it) {
                     onShowSnackBar("잔여코인이 부족합니다")
                 } else {
@@ -91,6 +129,22 @@ fun WalletCardBox(
             },
             onDismiss = {
                 setShowExchangePayableCoin(false)
+            },
+        )
+    }
+
+    if (showBuyCoin) {
+        WalletDialog(
+            title = "코인을 충전하시겠습니까?",
+            onDismissMessage = "취소",
+            onConfirmMessage = "충전",
+            onConfirm = {
+                amount.value = it
+                isPay.value = true
+                setShowBuyCoin(false)
+            },
+            onDismiss = {
+                setShowBuyCoin(false)
             },
         )
     }
@@ -166,7 +220,10 @@ fun WalletCardBox(
                             modifier =
                                 Modifier
                                     .size(20.dp)
-                                    .noRippleClickable { setShowExchangePayableCoin(true) },
+                                    .noRippleClickable {
+                                        setShowBuyCoin(true)
+                                        // setShowExchangePayableCoin(true)
+                                    },
                             painter = painterResource(id = R.drawable.ic_coin_plus),
                             contentDescription = null,
                         )
@@ -287,5 +344,19 @@ fun WalletCardBox(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Preview() {
+    SemonemoTheme {
+        WalletCardBox(
+            userName = "짜이한",
+            userCoin = Coin(),
+            onShowSnackBar = {},
+            sendExchangePayableTransaction = {},
+            sendExchangeCoinTransaction = {},
+        )
     }
 }
