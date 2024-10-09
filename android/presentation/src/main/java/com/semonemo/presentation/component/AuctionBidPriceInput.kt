@@ -41,7 +41,7 @@ fun AuctionBidPriceInput(
             Modifier
                 .fillMaxWidth()
                 .background(WhiteGray, RoundedCornerShape(8.dp))
-                .padding(horizontal = 8.dp, vertical = 4.dp),
+                .padding(horizontal = 8.dp, vertical = 0.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
@@ -69,7 +69,7 @@ fun AuctionBidPriceInput(
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = String.format("%,d ${stringResource(id = R.string.coin_price_unit)}", finalPrice),
-                fontSize = 28.sp,
+                fontSize = 24.sp,
                 style =
                     Typography.bodyMedium.copy(
                         fontFeatureSettings = "tnum",

@@ -33,29 +33,29 @@ fun CustomNoRippleButton(
     enabled: Boolean = true,
     backgroundColor: Color = Red,
     contentColor: Color = White,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     val background = if (enabled) backgroundColor else WhiteGray
     val content = if (enabled) contentColor else Gray03
 
     Box(
         contentAlignment = Alignment.Center,
-        modifier = modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .background(color = background, shape = RoundedCornerShape(10.dp))
-            .clickable(
-                enabled = true,
-                onClick = onClick,
-                indication = null,  // 리플 효과 제거
-                interactionSource = remember { MutableInteractionSource() }
-            )
-            .padding(16.dp)
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .background(color = background, shape = RoundedCornerShape(10.dp))
+                .clickable(
+                    enabled = true, // TODO : 테스트 후 enabled
+                    onClick = onClick,
+                    indication = null, // 리플 효과 제거
+                    interactionSource = remember { MutableInteractionSource() },
+                ).padding(16.dp),
     ) {
         Text(
             text = text,
             style = Typography.bodyMedium,
-            color = content
+            color = content,
         )
     }
 }
@@ -73,7 +73,7 @@ fun ButtonWithDynamicState() {
         onClick = {
             // 버튼 클릭 시 상태 변경
             isEnabled = !isEnabled
-        }
+        },
     )
 }
 

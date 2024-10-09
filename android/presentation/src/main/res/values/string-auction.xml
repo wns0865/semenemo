@@ -22,6 +22,7 @@
     <string name="auction_start_button_title">경매 시작</string>
     <string name="user_ready_button_title">READY</string>
     <string name="user_start_button_title">START</string>
+    <string name="auction_leave_button_title">경매 나가기</string>
 
     <string name="short_auction_register_title">단기 경매</string>
     <string name="long_auction_register_title">장기 경매</string>

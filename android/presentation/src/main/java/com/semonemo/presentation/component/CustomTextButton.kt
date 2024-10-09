@@ -29,7 +29,7 @@ fun CustomTextButton(
             text = stringResource(id = R.string.auction_bid_give_up_button),
             color = color,
             style = Typography.bodyMedium,
-            fontSize = 16.sp,
+            fontSize = 12.sp,
         )
     }
 }

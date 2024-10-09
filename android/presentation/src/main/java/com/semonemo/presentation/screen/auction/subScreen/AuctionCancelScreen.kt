@@ -25,19 +25,18 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.semonemo.presentation.R
-import com.semonemo.presentation.component.BoldTextWithKeywords
 import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.screen.auction.AuctionDetailViewModel
 import com.semonemo.presentation.theme.Typography
 
 @Preview(showBackground = true)
 @Composable
-fun AuctionEndScreen(
+fun AuctionCancelScreen(
     modifier: Modifier = Modifier,
     viewModel: AuctionDetailViewModel = hiltViewModel(),
     popUpBackStack: () -> Unit = {},
 ) {
-    val auctionEndAnimation by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.auction_end))
+    val auctionCancelAnimation by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.auction_cancel))
 
     Surface(modifier = modifier.fillMaxSize()) {
         Column(
@@ -46,7 +45,7 @@ fun AuctionEndScreen(
         ) {
             Spacer(modifier = Modifier.height(20.dp))
             LottieAnimation(
-                composition = auctionEndAnimation,
+                composition = auctionCancelAnimation,
                 restartOnPlay = true,
                 iterations = LottieConstants.IterateForever,
                 contentScale = ContentScale.Fit,
@@ -57,29 +56,12 @@ fun AuctionEndScreen(
             )
             Spacer(modifier = Modifier.weight(1f))
             Text(
-                text = "경매 종료",
+                text = "경매 유찰",
                 fontSize = 24.sp,
                 style = Typography.bodyMedium,
             )
             Spacer(modifier = Modifier.height(10.dp))
-            BoldTextWithKeywords(
-                modifier = Modifier,
-                fullText = "낙찰자 : ${viewModel.result.value?.anonym ?: "없음"}",
-                keywords = listOf("${viewModel.result.value?.anonym ?: "없음"}"),
-                brushFlag = listOf(false),
-                boldStyle = Typography.bodyMedium.copy(fontSize = 16.sp),
-                normalStyle = Typography.labelMedium.copy(fontSize = 16.sp),
-            )
-            Spacer(modifier = Modifier.height(5.dp))
-            BoldTextWithKeywords(
-                modifier = Modifier,
-                fullText = "낙찰가 : ${viewModel.result.value?.finalPrice ?: "없음"}",
-                keywords = listOf("${viewModel.result.value?.finalPrice ?: "없음"}"),
-                brushFlag = listOf(false),
-                boldStyle = Typography.bodyMedium.copy(fontSize = 16.sp),
-                normalStyle = Typography.labelMedium.copy(fontSize = 16.sp),
-            )
-            Spacer(modifier = Modifier.height(20.dp))
+
             LongBlackButton(
                 modifier =
                     Modifier

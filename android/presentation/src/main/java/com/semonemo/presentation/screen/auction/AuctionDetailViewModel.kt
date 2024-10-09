@@ -11,7 +11,10 @@ import com.semonemo.domain.datasource.AuthDataSource
 import com.semonemo.domain.model.ApiResponse
 import com.semonemo.domain.model.AuctionBidLog
 import com.semonemo.domain.repository.AuctionRepository
+import com.semonemo.domain.repository.CoinRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -29,6 +32,7 @@ class AuctionDetailViewModel
     @Inject
     constructor(
         private val auctionRepository: AuctionRepository,
+        private val coinRepository: CoinRepository,
         private val saveStateHandle: SavedStateHandle,
         private val authDataSource: AuthDataSource,
     ) : ViewModel() {
@@ -39,6 +43,10 @@ class AuctionDetailViewModel
         // 유저 상태 관리
         var userStatus = mutableStateOf(UserStatus.NOT_READY)
             private set
+
+        // 항상 새로운 메세지 관리
+        var bidMessageJob: Job? = null
+        var participationMessageJob: Job? = null
 
         // 입찰 관찰자
         var observedBidMessage = mutableStateOf(false)
@@ -60,7 +68,9 @@ class AuctionDetailViewModel
         var registerId: Long = 0L // 경매 등록자 ID
         var userAnonym: Int = 0 // 유저 익명 번호
             private set
-        var nftImageUrl = mutableStateOf("")
+        var userCoinBalance = mutableLongStateOf(0L) // 유저 코인 잔액
+            private set
+        var nftImageUrl = mutableStateOf("") // 프레임 이미지
         var anonym = mutableIntStateOf(1) // 익명 번호
             private set
         var participant = mutableIntStateOf(0) // 참여자 수
@@ -95,6 +105,7 @@ class AuctionDetailViewModel
             initWebSocketManager()
             initStompSession()
             loadAuctionDetail()
+            loadUserCoinBalance()
         }
 
         fun initWebSocketManager() {
@@ -129,6 +140,22 @@ class AuctionDetailViewModel
                             registerId = response.data.registerId
                             auctionStatus.value = AuctionStatus.valueOf(response.data.status)
                             Log.d(TAG, "loadAuctionDetail: registerId : $registerId")
+                        }
+                    }
+                }
+            }
+        }
+
+        fun loadUserCoinBalance() {
+            viewModelScope.launch {
+                coinRepository.getBalance().collectLatest { response ->
+                    when (response) {
+                        is ApiResponse.Error -> {
+                            _uiEvent.emit(AuctionUiEvent.Error(response.errorMessage))
+                        }
+
+                        is ApiResponse.Success -> {
+                            userCoinBalance.longValue = response.data.payableBalance
                         }
                     }
                 }
@@ -232,20 +259,25 @@ class AuctionDetailViewModel
         /** 경매 종료 메세지 */
         fun updateEndMessage(endMessage: EndMessage) {
             result.value = endMessage
-            auctionStatus.value = AuctionStatus.END
+            if (endMessage.winner == null) {
+                auctionStatus.value = AuctionStatus.CANCEL
+            } else {
+                auctionStatus.value = AuctionStatus.END
+            }
         }
 
         /** user가 입찰했으면 메세지 출력 */
         fun observeBidMessage(bidMessage: BidMessage) {
             bid.value = bidMessage
             topUserId.longValue = bidMessage.userId
-
             observedBidSubmit.value = bidMessage.userId == userId
-//            viewModelScope.launch {
-//                observedBidMessage.value = true
-//                delay(2000L)
-//                observedBidMessage.value = false
-//            }
+            bidMessageJob?.cancel()
+            bidMessageJob =
+                viewModelScope.launch {
+                    observedBidMessage.value = true
+                    delay(2000L)
+                    observedBidMessage.value = false
+                }
         }
 
         /**
