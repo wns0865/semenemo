@@ -30,7 +30,6 @@ import com.semonemo.presentation.navigation.ScreenDestinations
 import com.semonemo.presentation.screen.aiAsset.AiAssetScreen
 import com.semonemo.presentation.screen.aiAsset.AssetDoneRoute
 import com.semonemo.presentation.screen.aiAsset.draw.DrawAssetRoute
-import com.semonemo.presentation.screen.aiAsset.prompt.PromptAssetScreen
 import com.semonemo.presentation.screen.aiAsset.prompt.PromptRoute
 import com.semonemo.presentation.screen.auction.AuctionDetailScreen
 import com.semonemo.presentation.screen.auction.AuctionScreen
@@ -436,7 +435,7 @@ fun MainNavHost(
                 modifier = modifier,
                 navigateToDone = { navController.navigate(ScreenDestinations.AssetDone.createRoute(it)) },
                 popUpBackStack = navController::popBackStack,
-                onErrorSnackBar = onShowErrorSnackBar
+                onErrorSnackBar = onShowErrorSnackBar,
             )
         }
 
@@ -467,6 +466,7 @@ fun MainNavHost(
                 auctionId = it.arguments?.getLong("auctionId") ?: -1L,
                 registerId = it.arguments?.getLong("registerId") ?: -1L,
                 popUpBackStack = navController::popBackStack,
+                onShowSnackBar = onShowErrorSnackBar,
             )
         }
 

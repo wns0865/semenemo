@@ -45,7 +45,7 @@ fun CustomNoRippleButton(
             .wrapContentHeight()
             .background(color = background, shape = RoundedCornerShape(10.dp))
             .clickable(
-                enabled = enabled,
+                enabled = true,
                 onClick = onClick,
                 indication = null,  // 리플 효과 제거
                 interactionSource = remember { MutableInteractionSource() }

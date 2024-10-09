@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="in_progress_short_action">💥 진행 중인 단기 경매</string>
+    <string name="auction_progress_header">💥 진행중 경매</string>
+    <string name="auction_ready_header">⌛ 예정된 경매</string>
+    <string name="auction_end_header">🎖 낙찰된 경매</string>
+    <string name="auction_cancel_header">🎣 유찰된 경매</string>
     <string name="in_progress_long_action">진행 중인 장기 경매"</string>
     <string name="reload_label">새로고침</string>
 

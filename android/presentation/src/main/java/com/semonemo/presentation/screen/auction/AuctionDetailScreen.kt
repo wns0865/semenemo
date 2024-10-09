@@ -52,6 +52,7 @@ import com.semonemo.presentation.screen.auction.subScreen.AuctionReadyScreen
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Typography
 import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 private const val TAG = "AuctionDetailScreen"
@@ -59,15 +60,12 @@ private const val TAG = "AuctionDetailScreen"
 // 경매 상태 관리
 enum class AuctionStatus(
     val page: Int,
-    val text: String = "",
 ) {
     READY(0),
     PROGRESS(1),
     END(2),
     CANCEL(3),
 }
-
-fun parseAuctionStatus(status: String): AuctionStatus = AuctionStatus.valueOf(status)
 
 // 유저 상태 관리
 enum class UserStatus {
@@ -91,6 +89,7 @@ fun AuctionDetailScreen(
     registerId: Long = 0L,
     popUpBackStack: () -> Unit = {},
     viewModel: AuctionDetailViewModel = hiltViewModel(),
+    onShowSnackBar: (String) -> Unit = {},
 ) {
     val pagerState = rememberPagerState(pageCount = { AuctionStatus.entries.size })
     val ipfsUrl = BuildConfig.IPFS_READ_URL
@@ -128,6 +127,14 @@ fun AuctionDetailScreen(
         )
     }
 
+    LaunchedEffect(viewModel.uiEvent) {
+        viewModel.uiEvent.collectLatest { event ->
+            when (event) {
+                is AuctionUiEvent.Error -> onShowSnackBar(event.errorMessage)
+            }
+        }
+    }
+
     LaunchedEffect(auctionId) {
         // 세션이 초기화되지 않았을 때만 연결
         if (stompSession.value == null) {
@@ -148,6 +155,7 @@ fun AuctionDetailScreen(
                     onAuctionStart = {
                         viewModel.updateStartMessage(it)
                         viewModel.updateBidPriceUnit()
+                        viewModel.validateUserBid()
                     },
                 )
             }
@@ -161,6 +169,7 @@ fun AuctionDetailScreen(
                         viewModel.adjustClear()
                         viewModel.updateBidPriceUnit()
                         viewModel.observeBidMessage(it)
+                        viewModel.validateUserBid()
                     },
                 )
             }
@@ -221,26 +230,45 @@ fun AuctionDetailScreen(
                     pagerState.scrollToPage(AuctionStatus.PROGRESS.page)
                 }
             }
+
             UserStatus.IN_PROGRESS -> {
                 if (viewModel.auctionStatus.value == AuctionStatus.PROGRESS) {
                     Log.d(TAG, "AuctionDetailScreen: 중간 이동")
-                    Log.d(TAG, "auctionTest4: ")
                     pagerState.scrollToPage(AuctionStatus.PROGRESS.page)
                 }
             }
 
             else -> {
-                Log.d(TAG, "auctionTest5: ")
                 Log.d(TAG, "AuctionDetailScreen: 여기로 오다뇨")
             }
         }
     }
 
     // 사운드 재생을 위한 LaunchedEffect 추가
-    LaunchedEffect(viewModel.observedBidMessage.value) {
-        if (viewModel.observedBidMessage.value) {
+    LaunchedEffect(viewModel.bid.value) {
+        if (viewModel.userStatus.value == UserStatus.IN_PROGRESS) {
             // MediaPlayer 초기화
-            val mediaPlayer = MediaPlayer.create(context, R.raw.sound_bid_effect)
+            val mediaPlayer = MediaPlayer.create(context, R.raw.auction_bid_sound)
+            mediaPlayer.start()
+            // 사운드 재생 완료 후 리소스 해제
+            mediaPlayer.setOnCompletionListener {
+                mediaPlayer.release()
+            }
+        }
+    }
+
+    // 경매 상태에 따른 사운드
+    LaunchedEffect(viewModel.auctionStatus.value) {
+        if (viewModel.auctionStatus.value == AuctionStatus.PROGRESS) { // 경매 시작
+            // MediaPlayer 초기화
+            val mediaPlayer = MediaPlayer.create(context, R.raw.auction_start_sound)
+            mediaPlayer.start()
+            // 사운드 재생 완료 후 리소스 해제
+            mediaPlayer.setOnCompletionListener {
+                mediaPlayer.release()
+            }
+        } else if (viewModel.auctionStatus.value == AuctionStatus.END) {
+            val mediaPlayer = MediaPlayer.create(context, R.raw.auction_end_sound)
             mediaPlayer.start()
             // 사운드 재생 완료 후 리소스 해제
             mediaPlayer.setOnCompletionListener {
@@ -354,7 +382,6 @@ fun AuctionDetailScreen(
     // Composable이 사라질 때 leaveAuction() 호출
     DisposableEffect(Unit) {
         onDispose {
-            Log.d(TAG, "Composable is being disposed. Calling leaveAuction()")
             viewModel.leaveAuction()
         }
     }

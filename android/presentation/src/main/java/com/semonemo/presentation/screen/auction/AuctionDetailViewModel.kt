@@ -12,7 +12,6 @@ import com.semonemo.domain.model.ApiResponse
 import com.semonemo.domain.model.AuctionBidLog
 import com.semonemo.domain.repository.AuctionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -55,7 +54,9 @@ class AuctionDetailViewModel
         var auctionId = saveStateHandle["auctionId"] ?: -1L // 경매 번호
             private set
 
-        var userId: Long = 0L // 유저 ID
+        var validateUserBid = mutableStateOf(true)
+
+        var userId: Long = -1L // 유저 ID
         var registerId: Long = 0L // 경매 등록자 ID
         var userAnonym: Int = 0 // 유저 익명 번호
             private set
@@ -70,13 +71,17 @@ class AuctionDetailViewModel
             private set
         var topPrice = mutableLongStateOf(0L) // 상위 입찰가
             private set
+        var topUserId = mutableLongStateOf(-1L) // 상위 입찰자
+            private set
+
         var myPercentage = mutableIntStateOf(0) // 입력 퍼센트
             private set
         var myBidPrice = mutableLongStateOf(0L) // 입력 입찰 금액
             private set
         var endTime = mutableStateOf(LocalDateTime.now().plusSeconds(15)) // 종료 시간
             private set
-
+        var bid = mutableStateOf<BidMessage?>(null) // 입찰
+            private set
         var result = mutableStateOf<EndMessage?>(null) // 경매 결과 (종료 시)
             private set
         private val _uiEvent = MutableSharedFlow<AuctionUiEvent>()
@@ -84,7 +89,7 @@ class AuctionDetailViewModel
 
         init {
             viewModelScope.launch {
-                userId = authDataSource.getUserId()?.toLong() ?: 0L
+                userId = authDataSource.getUserId()?.toLong() ?: -1L
                 Log.d(TAG, "userId: $userId")
             }
             initWebSocketManager()
@@ -122,7 +127,7 @@ class AuctionDetailViewModel
                             nftImageUrl.value = response.data.nftImageUrl
                             participant.intValue = response.data.participants
                             registerId = response.data.registerId
-                            auctionStatus.value = parseAuctionStatus(response.data.status)
+                            auctionStatus.value = AuctionStatus.valueOf(response.data.status)
                             Log.d(TAG, "loadAuctionDetail: registerId : $registerId")
                         }
                     }
@@ -171,14 +176,11 @@ class AuctionDetailViewModel
                         }
 
                         is ApiResponse.Success -> {
-                            Log.d(TAG, "auctionTest1: ${response.data}")
                             userAnonym = response.data.anonym
                             auctionBidLog.value = response.data.bidLogs
                             if (auctionStatus.value == AuctionStatus.READY) {
-                                Log.d(TAG, "auctionTest2: ")
                                 userStatus.value = UserStatus.READY
                             } else if (auctionStatus.value == AuctionStatus.PROGRESS) {
-                                Log.d(TAG, "auctionTest3: ")
                                 userStatus.value = UserStatus.IN_PROGRESS
                             }
                         }
@@ -213,6 +215,7 @@ class AuctionDetailViewModel
         /** 경매 시작 메세지 */
         fun updateStartMessage(startMessage: StartMessage) {
             topPrice.longValue = startMessage.currentBid
+            endTime.value = startMessage.endTime
             auctionStatus.value = AuctionStatus.PROGRESS
         }
 
@@ -222,7 +225,7 @@ class AuctionDetailViewModel
 
         /** log10을 통해 10%의 입찰 단가를 계산 */
         fun updateBidPriceUnit() {
-            val unit = log10(topPrice.longValue.toDouble()).toInt() - 1
+            val unit = maxOf(log10(topPrice.longValue.toDouble()).toInt() - 1, 0)
             bidPriceUnit.longValue = 10.0.pow(unit).toLong()
         }
 
@@ -234,12 +237,15 @@ class AuctionDetailViewModel
 
         /** user가 입찰했으면 메세지 출력 */
         fun observeBidMessage(bidMessage: BidMessage) {
+            bid.value = bidMessage
+            topUserId.longValue = bidMessage.userId
+
             observedBidSubmit.value = bidMessage.userId == userId
-            viewModelScope.launch {
-                observedBidMessage.value = true
-                delay(2000L)
-                observedBidMessage.value = false
-            }
+//            viewModelScope.launch {
+//                observedBidMessage.value = true
+//                delay(2000L)
+//                observedBidMessage.value = false
+//            }
         }
 
         /**
@@ -271,10 +277,12 @@ class AuctionDetailViewModel
             myPercentage.intValue += percentage
         }
 
-        fun exitBidLog(bidLog: AuctionBidLog) {
-            auctionBidLog.value -= bidLog
-        }
-
         fun validateUserBid() {
+            Log.d(TAG, "validateUserBid: userId : $userId | registerId : $registerId | topUserId : ${topUserId.longValue} ")
+            if (registerId != userId && topUserId.longValue != userId) {
+                validateUserBid.value = true
+            } else {
+                validateUserBid.value = false
+            }
         }
     }
