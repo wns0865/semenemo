@@ -222,6 +222,7 @@ fun WalletScreen(
                             it.userId == userId
                         } ?: false
                     val product = item.tradeType.split(" ").first()
+                    val isAuction = item.tradeType.split(" ").last().contains("경매")
                     val originalDateTime = LocalDateTime.parse(item.createdAt)
                     val dateOnly = originalDateTime.toLocalDate()
                     TransactionHistoryBox(
@@ -230,6 +231,7 @@ fun WalletScreen(
                         isSell = isSell,
                         product = product,
                         price = item.amount.toDouble(),
+                        isAuction = isAuction,
                     )
                 }
             }
