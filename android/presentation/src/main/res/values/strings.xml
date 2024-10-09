@@ -8,5 +8,6 @@
     <string name="recharge">충전</string>
     <string name="sell">판매</string>
     <string name="buy">구매</string>
+    <string name="auction">경매</string>
     <string name="load_asset_purchase">에셋을 구매중이에요!</string>
 </resources>
