@@ -1,16 +1,11 @@
 package com.semonemo.presentation.screen.store.frame
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -416,7 +411,7 @@ fun FrameSaleScreen(
                         Modifier
                             .fillMaxWidth()
                             .height(48.dp),
-                    price = price.toString(),
+                    price = price,
                     onPriceChange = { newPrice ->
                         price =
                             if (newPrice.isEmpty()) {
@@ -470,56 +465,43 @@ fun FrameSaleScreen(
                         selectedIndex = selectedIndex,
                         onTabSelected = { tab -> selectedIndex = tab },
                     )
-                    AnimatedContent(
-                        targetState = selectedIndex,
-                        transitionSpec = {
-                            (slideInHorizontally { width -> width } + fadeIn())
-                                .togetherWith(
-                                    slideOutHorizontally { width -> -width } + fadeOut(),
-                                ).using(
-                                    SizeTransform(clip = false),
-                                )
-                        },
-                        label = "",
-                    ) { targetIndex ->
-                        LazyVerticalGrid(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight()
-                                    .padding(horizontal = 20.dp, vertical = 20.dp),
-                            columns = GridCells.Fixed(4),
-                            state = rememberLazyGridState(),
-                        ) {
-                            val frameList = frames.filter { it.frameType == (selectedIndex + 1) }
-                            items(frameList.size) { index ->
-                                val frame = frameList[index]
-                                GlideImage(
-                                    imageModel =
-                                        frame.nftInfo.data.image
-                                            .urlToIpfs(),
-                                    contentScale = ContentScale.Fit,
-                                    modifier =
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .aspectRatio(1f)
-                                            .padding(8.dp)
-                                            .clip(shape = RoundedCornerShape(10.dp))
-                                            .border(
-                                                width = 1.dp,
-                                                shape = RoundedCornerShape(10.dp),
-                                                color = Gray03,
-                                            ).noRippleClickable {
-                                                showBottomSheet = false
-                                                selectFrame(frame)
-                                            },
-                                    loading = {
-                                        ImageLoadingProgress(
-                                            modifier = Modifier,
-                                        )
-                                    },
-                                )
-                            }
+                    LazyVerticalGrid(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .padding(horizontal = 20.dp, vertical = 20.dp),
+                        columns = GridCells.Fixed(4),
+                        state = rememberLazyGridState(),
+                    ) {
+                        val frameList = frames.filter { it.frameType == (selectedIndex + 1) }
+                        items(frameList.size) { index ->
+                            val frame = frameList[index]
+                            GlideImage(
+                                imageModel =
+                                    frame.nftInfo.data.image
+                                        .urlToIpfs(),
+                                contentScale = ContentScale.Fit,
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .aspectRatio(1f)
+                                        .padding(8.dp)
+                                        .clip(shape = RoundedCornerShape(10.dp))
+                                        .border(
+                                            width = 1.dp,
+                                            shape = RoundedCornerShape(10.dp),
+                                            color = Gray03,
+                                        ).noRippleClickable {
+                                            showBottomSheet = false
+                                            selectFrame(frame)
+                                        },
+                                loading = {
+                                    ImageLoadingProgress(
+                                        modifier = Modifier,
+                                    )
+                                },
+                            )
                         }
                     }
                     Spacer(modifier = Modifier.height(20.dp))

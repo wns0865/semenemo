@@ -2,9 +2,17 @@ package com.semonemo.presentation.screen.auction
 
 import android.media.MediaPlayer
 import android.util.Log
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.with
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +23,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Icon
@@ -28,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -37,21 +47,27 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.semonemo.presentation.BuildConfig
 import com.semonemo.presentation.R
 import com.semonemo.presentation.component.AuctionBidMessage
 import com.semonemo.presentation.component.AuctionTopAppBarTitle
 import com.semonemo.presentation.component.CustomDialog
 import com.semonemo.presentation.component.CustomTextButton
+import com.semonemo.presentation.component.ImageLoadingProgress
 import com.semonemo.presentation.component.TopAppBar
 import com.semonemo.presentation.component.TopAppBarNavigationType
-import com.semonemo.presentation.component.ImageLoadingProgress
+import com.semonemo.presentation.screen.auction.subScreen.AuctionCancelScreen
 import com.semonemo.presentation.screen.auction.subScreen.AuctionEndScreen
 import com.semonemo.presentation.screen.auction.subScreen.AuctionProgressScreen
 import com.semonemo.presentation.screen.auction.subScreen.AuctionReadyScreen
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Typography
 import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 private const val TAG = "AuctionDetailScreen"
@@ -65,8 +81,6 @@ enum class AuctionStatus(
     END(2),
     CANCEL(3),
 }
-
-fun parseAuctionStatus(status: String): AuctionStatus = AuctionStatus.valueOf(status)
 
 // 유저 상태 관리
 enum class UserStatus {
@@ -84,12 +98,14 @@ enum class ParticipationStatus {
 
 @Preview
 @Composable
+@OptIn(ExperimentalAnimationApi::class)
 fun AuctionDetailScreen(
     modifier: Modifier = Modifier,
     auctionId: Long = 0L,
     registerId: Long = 0L,
     popUpBackStack: () -> Unit = {},
     viewModel: AuctionDetailViewModel = hiltViewModel(),
+    onShowSnackBar: (String) -> Unit = {},
 ) {
     val pagerState = rememberPagerState(pageCount = { AuctionStatus.entries.size })
     val ipfsUrl = BuildConfig.IPFS_READ_URL
@@ -101,6 +117,12 @@ fun AuctionDetailScreen(
     val stompSession = viewModel.stompSession
 
     var showDialog by remember { mutableStateOf(false) }
+    val auctionCongratulationsAnimation by rememberLottieComposition(
+        spec =
+            LottieCompositionSpec.RawRes(
+                R.raw.auction_congratulations,
+            ),
+    )
 
     @Composable
     fun showCustomDialog(
@@ -127,6 +149,14 @@ fun AuctionDetailScreen(
         )
     }
 
+    LaunchedEffect(viewModel.uiEvent) {
+        viewModel.uiEvent.collectLatest { event ->
+            when (event) {
+                is AuctionUiEvent.Error -> onShowSnackBar(event.errorMessage)
+            }
+        }
+    }
+
     LaunchedEffect(auctionId) {
         // 세션이 초기화되지 않았을 때만 연결
         if (stompSession.value == null) {
@@ -147,6 +177,7 @@ fun AuctionDetailScreen(
                     onAuctionStart = {
                         viewModel.updateStartMessage(it)
                         viewModel.updateBidPriceUnit()
+                        viewModel.validateUserBid()
                     },
                 )
             }
@@ -160,6 +191,7 @@ fun AuctionDetailScreen(
                         viewModel.adjustClear()
                         viewModel.updateBidPriceUnit()
                         viewModel.observeBidMessage(it)
+                        viewModel.validateUserBid()
                     },
                 )
             }
@@ -192,11 +224,12 @@ fun AuctionDetailScreen(
             }
         }
     }
-
+    // 경매 상태에 따른 유저 플로우
     LaunchedEffect(viewModel.auctionStatus.value) {
         when (viewModel.auctionStatus.value) {
             AuctionStatus.PROGRESS -> { // 경매 시작 | 유저 준비
                 if (viewModel.userStatus.value == UserStatus.READY) {
+                    viewModel.userStatus.value = UserStatus.IN_PROGRESS
                     pagerState.scrollToPage(AuctionStatus.PROGRESS.page)
                 }
             }
@@ -212,24 +245,54 @@ fun AuctionDetailScreen(
             else -> {}
         }
     }
-
+    // 유저 상태에 따른 유저 플로우
     LaunchedEffect(viewModel.userStatus.value) {
         when (viewModel.userStatus.value) {
             UserStatus.READY -> {
                 if (viewModel.auctionStatus.value == AuctionStatus.PROGRESS) {
+                    viewModel.userStatus.value = UserStatus.IN_PROGRESS
                     pagerState.scrollToPage(AuctionStatus.PROGRESS.page)
                 }
             }
 
-            else -> {}
+            UserStatus.IN_PROGRESS -> {
+                if (viewModel.auctionStatus.value == AuctionStatus.PROGRESS) {
+                    Log.d(TAG, "AuctionDetailScreen: 중간 이동")
+                    pagerState.scrollToPage(AuctionStatus.PROGRESS.page)
+                }
+            }
+
+            else -> {
+                Log.d(TAG, "AuctionDetailScreen: 여기로 오다뇨")
+            }
         }
     }
 
     // 사운드 재생을 위한 LaunchedEffect 추가
-    LaunchedEffect(viewModel.observedBidMessage.value) {
-        if (viewModel.observedBidMessage.value) {
+    LaunchedEffect(viewModel.bid.value) {
+        if (viewModel.userStatus.value == UserStatus.IN_PROGRESS) {
             // MediaPlayer 초기화
-            val mediaPlayer = MediaPlayer.create(context, R.raw.sound_bid_effect)
+            val mediaPlayer = MediaPlayer.create(context, R.raw.auction_bid_sound)
+            mediaPlayer.start()
+            // 사운드 재생 완료 후 리소스 해제
+            mediaPlayer.setOnCompletionListener {
+                mediaPlayer.release()
+            }
+        }
+    }
+
+    // 경매 상태에 따른 사운드
+    LaunchedEffect(viewModel.auctionStatus.value) {
+        if (viewModel.auctionStatus.value == AuctionStatus.PROGRESS) { // 경매 시작
+            // MediaPlayer 초기화
+            val mediaPlayer = MediaPlayer.create(context, R.raw.auction_start_sound)
+            mediaPlayer.start()
+            // 사운드 재생 완료 후 리소스 해제
+            mediaPlayer.setOnCompletionListener {
+                mediaPlayer.release()
+            }
+        } else if (viewModel.auctionStatus.value == AuctionStatus.END || viewModel.auctionStatus.value == AuctionStatus.CANCEL) {
+            val mediaPlayer = MediaPlayer.create(context, R.raw.auction_end_sound)
             mediaPlayer.start()
             // 사운드 재생 완료 후 리소스 해제
             mediaPlayer.setOnCompletionListener {
@@ -263,8 +326,8 @@ fun AuctionDetailScreen(
             contentScale = ContentScale.Fit,
             modifier =
                 modifier
-                    .height(300.dp)
-                    .width(200.dp)
+                    .height(270.dp)
+                    .width(180.dp)
                     .align(Alignment.CenterHorizontally),
             loading = {
                 ImageLoadingProgress(
@@ -280,28 +343,90 @@ fun AuctionDetailScreen(
                     .fillMaxWidth()
                     .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_auction_human),
-                contentDescription = "participant",
-                tint = Color.Unspecified,
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = String.format("%,d", viewModel.participant.value),
-                fontSize = 20.sp,
-                style =
-                    Typography.bodyMedium.copy(
-                        fontFeatureSettings = "tnum",
-                        color = GunMetal,
-                    ),
-            )
+            Row(
+                modifier = Modifier,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_auction_human),
+                    contentDescription = "participant",
+                    tint = Color.Unspecified,
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+
+                // AnimatedContent를 사용하여 숫자 전환 애니메이션 적용
+                AnimatedContent(
+                    targetState = viewModel.participant.value,
+                    transitionSpec = {
+                        // 숫자가 증가하는 경우 아래에서 위로 이동
+                        if (targetState > initialState) {
+                            slideInVertically(
+                                animationSpec = tween(300),
+                                initialOffsetY = { height -> height },
+                            ) + fadeIn(animationSpec = tween(300)) with
+                                slideOutVertically(
+                                    animationSpec = tween(300),
+                                    targetOffsetY = { height -> -height },
+                                ) + fadeOut(animationSpec = tween(300))
+                        } else {
+                            // 숫자가 감소하는 경우 위에서 아래로 이동
+                            slideInVertically(
+                                animationSpec = tween(300),
+                                initialOffsetY = { height -> -height },
+                            ) + fadeIn(animationSpec = tween(300)) with
+                                slideOutVertically(
+                                    animationSpec = tween(300),
+                                    targetOffsetY = { height -> height },
+                                ) + fadeOut(animationSpec = tween(300))
+                        }.using(
+                            SizeTransform(clip = false),
+                        )
+                    },
+                ) { animatedParticipantCount ->
+                    Text(
+                        text = "${String.format("%,d", animatedParticipantCount)}",
+                        fontSize = 20.sp,
+                        style =
+                            Typography.titleMedium.copy(
+                                fontFeatureSettings = "tnum",
+                                color = GunMetal,
+                            ),
+                    )
+                }
+                Text(
+                    text = " 명",
+                    fontSize = 20.sp,
+                    style = Typography.labelMedium.copy(color = GunMetal),
+                )
+            }
+            Row(modifier = Modifier.wrapContentWidth()) {
+                Text(
+                    text = "보유 PAY : ",
+                    fontSize = 20.sp,
+                    style =
+                        Typography.labelMedium.copy(
+                            color = GunMetal,
+                        ),
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = String.format("%,d", viewModel.userCoinBalance.longValue),
+                    fontSize = 20.sp,
+                    style =
+                        Typography.titleMedium.copy(
+                            fontFeatureSettings = "tnum",
+                            color = GunMetal,
+                        ),
+                )
+            }
         }
 
         HorizontalPager(
             modifier = modifier.fillMaxWidth(),
             state = pagerState,
-            userScrollEnabled = true,
+            userScrollEnabled = false, // TODO : 테스트 후 false
         ) { page ->
             when (AuctionStatus.entries[page]) {
                 AuctionStatus.READY ->
@@ -316,11 +441,41 @@ fun AuctionDetailScreen(
                         viewModel = viewModel,
                     )
 
-                AuctionStatus.END -> AuctionEndScreen(modifier = modifier, viewModel = viewModel)
-                AuctionStatus.CANCEL -> AuctionEndScreen(modifier = modifier, viewModel = viewModel)
+                AuctionStatus.END ->
+                    AuctionEndScreen(
+                        modifier = modifier,
+                        viewModel = viewModel,
+                        popUpBackStack = popUpBackStack,
+                    )
+
+                AuctionStatus.CANCEL ->
+                    AuctionCancelScreen(
+                        modifier = modifier,
+                        viewModel = viewModel,
+                        popUpBackStack = popUpBackStack,
+                    )
             }
         }
     }
+    if (viewModel.auctionStatus.value == AuctionStatus.END && viewModel.result.value?.winner == viewModel.userId) {
+        Box(
+            modifier = modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopCenter,
+        ) {
+            LottieAnimation(
+                composition = auctionCongratulationsAnimation,
+                restartOnPlay = true,
+                iterations = LottieConstants.IterateForever,
+                contentScale = ContentScale.Fit,
+                modifier =
+                    Modifier
+                        .fillMaxSize(1.0f)
+                        .scale(1.2f)
+                        .padding(bottom = 250.dp),
+            )
+        }
+    }
+
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.TopCenter,
@@ -333,7 +488,7 @@ fun AuctionDetailScreen(
             AuctionBidMessage(
                 modifier = Modifier.padding(top = 250.dp), // 화면 위에서 조금 아래로 내림
                 icon = R.drawable.ic_color_sene_coin,
-                bidPrice = viewModel.topPrice.longValue + viewModel.myBidPrice.longValue,
+                bidPrice = viewModel.topPrice.longValue,
                 anonym = viewModel.anonym.intValue,
                 user = viewModel.observedBidSubmit.value,
             )
@@ -343,7 +498,6 @@ fun AuctionDetailScreen(
     // Composable이 사라질 때 leaveAuction() 호출
     DisposableEffect(Unit) {
         onDispose {
-            Log.d(TAG, "Composable is being disposed. Calling leaveAuction()")
             viewModel.leaveAuction()
         }
     }

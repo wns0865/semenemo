@@ -2,7 +2,6 @@ package com.semonemo.presentation.screen.frame
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -33,7 +33,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -151,7 +150,6 @@ fun FrameDoneContent(
         bitmap = uiState.bitmap,
         updateContent = updateContent,
         updateTitle = updateTitle,
-        tags = uiState.tags,
         addTags = addTags,
         deleteTags = deleteTags,
     )
@@ -178,21 +176,21 @@ fun FrameDoneScreen(
     onClick: (File) -> Unit = {},
     updateTitle: (String) -> Unit = {},
     updateContent: (String) -> Unit = {},
-    tags: List<String> = listOf(),
     addTags: (String) -> Unit = {},
     deleteTags: (String) -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
     val focusManager = LocalFocusManager.current
+    val tags = remember { mutableStateListOf<String>() }
     var title by remember { mutableStateOf("") }
     var script by remember { mutableStateOf("") }
-    val context = LocalContext.current
+
     Surface(
         modifier =
             modifier
                 .fillMaxSize()
                 .verticalScroll(state = scrollState),
-        color = Color.White
+        color = Color.White,
     ) {
         Column(
             modifier =
@@ -240,12 +238,17 @@ fun FrameDoneScreen(
                 modifier = Modifier.fillMaxWidth(0.88f),
                 onTagAddAction = { keyword ->
                     if (keyword.isNotBlank()) {
-                        addTags(keyword)
+                        if (!tags.contains(keyword)) {
+                            tags.add(keyword)
+                            addTags(keyword)
+                        }
                     }
                 },
                 focusManager = focusManager,
             )
-            Spacer(modifier = Modifier.height(12.dp))
+            if (tags.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(10.dp))
+            }
             LazyRow(
                 modifier = Modifier.fillMaxWidth(0.88f),
                 horizontalArrangement = Arrangement.spacedBy(7.dp),
@@ -254,7 +257,10 @@ fun FrameDoneScreen(
                         HashTag(
                             keyword = tags[index],
                             isEdit = true,
-                            onCloseClicked = { deleteTags(tags[index]) },
+                            onCloseClicked = {
+                                deleteTags(tags[index])
+                                tags.remove(it)
+                            },
                         )
                     }
                 },
@@ -311,8 +317,6 @@ fun FrameDoneScreen(
 @Composable
 fun FrameDoneScreenPreview() {
     SemonemoTheme {
-        FrameDoneScreen(
-            tags = listOf("아이유", "이재한"),
-        )
+        FrameDoneScreen()
     }
 }

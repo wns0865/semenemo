@@ -118,13 +118,9 @@ fun CoinScreen(
                 .background(brush = Main01),
     ) {
         Column(
-            modifier =
-                Modifier
-                    .wrapContentHeight()
-                    .statusBarsPadding()
-                    .navigationBarsPadding()
-                    .padding(horizontal = 17.dp, vertical = 30.dp),
+            modifier = Modifier.fillMaxSize(),
         ) {
+            Spacer(modifier = Modifier.height(10.dp))
             TopAppBar(modifier = Modifier, title = {
                 Image(
                     painter = painterResource(id = R.drawable.ic_color_sene_coin),
@@ -133,61 +129,70 @@ fun CoinScreen(
                 Spacer(modifier = Modifier.width(5.dp))
                 Text(text = stringResource(id = R.string.coin_name))
             }, onNavigationClick = popUpBackStack)
-            Spacer(modifier = Modifier.height(50.dp))
-            Row(modifier = Modifier, verticalAlignment = Alignment.Bottom) {
-                Text(
-                    text = String.format(Locale.KOREAN, "%,.0f", coinPrice),
-                    style = Typography.titleMedium,
-                )
-                Spacer(modifier = Modifier.width(3.dp))
-                Text(
-                    text = stringResource(id = R.string.coin_unit_name),
-                    style = Typography.labelLarge,
-                )
-            }
-            Spacer(modifier = Modifier.height(10.dp))
+            Column(
+                modifier =
+                Modifier
+                    .wrapContentHeight()
+                    .statusBarsPadding()
+                    .navigationBarsPadding()
+                    .padding(horizontal = 17.dp, vertical = 30.dp),
+            ) {
+                Spacer(modifier = Modifier.height(50.dp))
+                Row(modifier = Modifier, verticalAlignment = Alignment.Bottom) {
+                    Text(
+                        text = String.format(Locale.KOREAN, "%,.0f", coinPrice),
+                        style = Typography.titleMedium,
+                    )
+                    Spacer(modifier = Modifier.width(3.dp))
+                    Text(
+                        text = stringResource(id = R.string.coin_unit_name),
+                        style = Typography.labelLarge,
+                    )
+                }
+                Spacer(modifier = Modifier.height(10.dp))
 
-            Row(modifier = Modifier, verticalAlignment = Alignment.Bottom) {
-                val (icon, color) =
-                    if (coinChanged > 0) {
-                        Pair(R.drawable.ic_arrow_up, Red)
-                    } else {
-                        Pair(R.drawable.ic_arrow_down, Color.Blue)
-                    }
+                Row(modifier = Modifier, verticalAlignment = Alignment.Bottom) {
+                    val (icon, color) =
+                        if (coinChanged > 0) {
+                            Pair(R.drawable.ic_arrow_up, Red)
+                        } else {
+                            Pair(R.drawable.ic_arrow_down, Color.Blue)
+                        }
 
-                Icon(
-                    modifier = Modifier.size(20.dp),
-                    painter = painterResource(id = icon),
-                    contentDescription = null,
-                    tint = color,
-                )
-                Text(
-                    text =
+                    Icon(
+                        modifier = Modifier.size(20.dp),
+                        painter = painterResource(id = icon),
+                        contentDescription = null,
+                        tint = color,
+                    )
+                    Text(
+                        text =
                         "어제보다, " +
-                            String.format(
-                                Locale.KOREAN,
-                                "%,.0f ",
-                                coinPrice * coinChanged * 0.01,
-                            ),
-                    style = Typography.bodySmall.copy(color = color),
-                )
+                                String.format(
+                                    Locale.KOREAN,
+                                    "%,.0f ",
+                                    coinPrice * coinChanged * 0.01,
+                                ),
+                        style = Typography.bodySmall.copy(color = color),
+                    )
 
-                Text(
-                    text = "  ($coinChanged%)",
-                    style = Typography.bodySmall.copy(fontSize = 13.sp, color = color),
+                    Text(
+                        text = "  ($coinChanged%)",
+                        style = Typography.bodySmall.copy(fontSize = 13.sp, color = color),
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+                CustomCoinChart(
+                    modifier = Modifier.weight(1f),
+                    lowPrice = weeklyCoin.map { it.lowestPrice },
+                    highPrice = weeklyCoin.map { it.highestPrice },
+                    averagePrice = weeklyCoin.map { it.averagePrice.toLong() },
+                    date = weeklyCoin.map { it.date },
+                    lineColor = listOf(Color.Red, Color.Blue, ProgressGreen),
+                    columnColor = listOf(ProgressGreen),
                 )
             }
-
-            Spacer(modifier = Modifier.height(20.dp))
-            CustomCoinChart(
-                modifier = Modifier.weight(1f),
-                lowPrice = weeklyCoin.map { it.lowestPrice },
-                highPrice = weeklyCoin.map { it.highestPrice },
-                averagePrice = weeklyCoin.map { it.averagePrice.toLong() },
-                date = weeklyCoin.map { it.date },
-                lineColor = listOf(Color.Red, Color.Blue, ProgressGreen),
-                columnColor = listOf(ProgressGreen),
-            )
         }
     }
 }

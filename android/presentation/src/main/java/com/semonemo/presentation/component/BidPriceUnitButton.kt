@@ -1,6 +1,5 @@
 package com.semonemo.presentation.component
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,7 +16,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.semonemo.presentation.R
-import com.semonemo.presentation.theme.Gray01
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.White
@@ -30,11 +28,11 @@ fun BidPriceUnitButton(
     onClick: () -> Unit = {},
 ) {
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().padding(2.dp),
         onClick = onClick,
         color = White,
         shape = RoundedCornerShape(10.dp),
-        border = BorderStroke(1.dp, Gray01),
+        shadowElevation = 2.dp,
     ) {
         Box(
             modifier = Modifier.padding(8.dp),
@@ -58,7 +56,7 @@ fun BidPriceUnitButton(
                     style =
                         Typography.labelMedium.copy(
                             fontFeatureSettings = "tnum",
-                            fontSize = 12.sp,
+                            fontSize = 10.sp,
                         ),
                 )
             }

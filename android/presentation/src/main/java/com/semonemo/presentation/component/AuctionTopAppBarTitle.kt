@@ -26,26 +26,35 @@ fun AuctionTopAppBarTitle(
                 keywords = listOf(String.format("%03d번", viewModel.userAnonym))
             }
         }
+
         AuctionStatus.PROGRESS -> {
             if (viewModel.userStatus.value == UserStatus.NOT_READY) {
                 fullText = "경매가 진행중 입니다."
             }
-            if (viewModel.userStatus.value == UserStatus.READY) {
+            if (viewModel.userStatus.value == UserStatus.IN_PROGRESS) {
                 fullText = String.format("%03d번", viewModel.userAnonym) + "님, 경매를 참여합니다."
                 keywords = listOf(String.format("%03d번", viewModel.userAnonym))
             }
         }
         AuctionStatus.END -> {
-            fullText = "경매가 종료되었습니다."
+            if (viewModel.result.value?.winner == viewModel.userId) {
+                fullText = "축하합니다. 프레임을 낙찰했습니다!"
+                keywords = listOf("축하", "프레임", "낙찰")
+            } else {
+                fullText = "경매가 종료되었습니다."
+            }
         }
-        else -> {}
+
+        AuctionStatus.CANCEL -> {
+            fullText = "경매가 유찰되었습니다!"
+        }
     }
 
     BoldTextWithKeywords(
-        modifier = Modifier,
+        modifier = modifier,
         fullText = fullText,
         keywords = keywords,
-        brushFlag = listOf(false),
+        brushFlag = listOf(false, false, false),
         boldStyle = Typography.titleMedium.copy(fontSize = 16.sp),
         normalStyle = Typography.bodyMedium.copy(fontSize = 16.sp),
     )

@@ -1,5 +1,6 @@
 package com.semonemo.presentation.screen.picture.camera.subscreen
 
+import android.media.MediaPlayer
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -45,6 +46,7 @@ fun CircularCountdownTimer(
     countdownColor: Color = GunMetal,
     backgroundColor: Color = WhiteGray,
     onTimerEnd: () -> Unit = {},
+    timerTickSound: MediaPlayer,
 ) {
     var timeLeft by remember { mutableStateOf(totalTime) }
     var running by remember { mutableStateOf(false) }
@@ -61,11 +63,17 @@ fun CircularCountdownTimer(
         if (running && timeLeft > 0) {
             delay(1000L)
             timeLeft -= 1000L
+            if (timerTickSound.isPlaying.not()) {
+                timerTickSound.start()
+            }
         } else if (timeLeft == 0L) {
             delay(1000L)
             onTimerEnd()
             timeLeft = totalTime
             running = false
+            if (timerTickSound.isPlaying) {
+                timerTickSound.pause()
+            }
         }
     }
 

@@ -46,14 +46,12 @@ fun ScriptTextField(
     Box(modifier = modifier.fillMaxWidth()) {
         OutlinedTextField(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = height.dp),
+            Modifier
+                .fillMaxWidth()
+                .heightIn(min = height.dp),
             value = value,
             onValueChange = {
-                if (it.isNotEmpty()) {
-                    onValueChange(it)
-                }
+                onValueChange(it)
             },
             textStyle = Typography.labelSmall.copy(fontSize = fontSize.sp),
             placeholder = {

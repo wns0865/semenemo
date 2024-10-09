@@ -11,7 +11,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -32,12 +32,12 @@ import com.semonemo.presentation.theme.WhiteGray
 fun PriceTextField(
     modifier: Modifier = Modifier,
     onPriceChange: (String) -> Unit,
-    price: String,
+    price: Long,
 ) {
     Box(modifier = modifier) {
         OutlinedTextField(
             modifier = modifier.fillMaxWidth(),
-            value = price,
+            value = if (price == 0L) "" else price.toString(),
             onValueChange = { newValue ->
                 // 숫자만 허용
                 if (newValue.all { it.isDigit() }) {
@@ -81,17 +81,20 @@ fun PriceTextField(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PriceTextFieldPreview() {
-    var price by remember { mutableStateOf("") }
+    var price by remember { mutableLongStateOf(0L) }
 
     PriceTextField(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .height(48.dp)
-                .padding(10.dp),
+                .height(50.dp),
         price = price,
         onPriceChange = { newPrice ->
-            price = newPrice
+            price = if (newPrice.isEmpty()) {
+                0L
+            } else {
+                newPrice.toLong()
+            }
         },
     )
 }

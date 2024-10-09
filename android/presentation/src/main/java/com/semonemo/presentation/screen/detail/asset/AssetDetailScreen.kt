@@ -1,6 +1,5 @@
 package com.semonemo.presentation.screen.detail.asset
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -10,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,6 +24,7 @@ import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -191,13 +192,14 @@ fun AssetDetailScreen(
     Surface(
         modifier =
             modifier
-                .fillMaxSize()
-                .background(color = Color.White),
+                .fillMaxSize(),
+        color = Color.White,
     ) {
         Column(
             modifier =
                 Modifier
                     .fillMaxSize()
+                    .background(color = Color.White)
                     .statusBarsPadding()
                     .navigationBarsPadding(),
         ) {
@@ -209,8 +211,8 @@ fun AssetDetailScreen(
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
+                Spacer(modifier = Modifier.fillMaxHeight(0.015f))
                 GlideImage(
                     imageModel = assetUrl.toUri(),
                     contentScale = ContentScale.Fit,
@@ -219,8 +221,12 @@ fun AssetDetailScreen(
                             .fillMaxWidth(0.8f)
                             .padding(horizontal = 20.dp)
                             .aspectRatio(1f)
-                            .background(color = WhiteGray, shape = RoundedCornerShape(10.dp)),
+                            .background(
+                                color = WhiteGray.copy(alpha = 0.7f),
+                                shape = RoundedCornerShape(10.dp),
+                            ),
                 )
+                Spacer(modifier = Modifier.fillMaxHeight(0.025f))
                 LazyRow(
                     modifier =
                         Modifier
@@ -236,6 +242,7 @@ fun AssetDetailScreen(
                         }
                     },
                 )
+                Spacer(modifier = Modifier.fillMaxHeight(0.05f))
                 Row(
                     modifier =
                         Modifier
@@ -265,33 +272,32 @@ fun AssetDetailScreen(
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(10.dp))
-                Row(
+                Spacer(modifier = Modifier.height(20.dp))
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 15.dp),
+                    color = WhiteGray,
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+                Box(
                     modifier =
                         Modifier
-                            .align(Alignment.Start)
-                            .padding(horizontal = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                            .fillMaxWidth()
+                            .padding(start = 15.dp),
+                    contentAlignment = Alignment.CenterStart,
                 ) {
-                    Image(
-                        modifier = Modifier.size(30.dp),
-                        painter = painterResource(id = R.drawable.img_fm_artist),
-                        contentDescription = "",
-                    )
-
-                    Text(text = "관련 작품", style = Typography.bodyLarge)
+                    Text(text = "해당 제작자의 다른 작품", style = Typography.bodyLarge)
                 }
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.height(15.dp))
                 if (creatorAssets.isEmpty()) {
                     Box(
                         modifier =
                             Modifier
                                 .fillMaxWidth()
-                                .height(150.dp),
+                                .weight(1f),
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
-                            text = "현재 판매 중인 에셋이 없어요! 🥲",
+                            text = "판매 중인 다른 에셋이 없어요",
                             style = Typography.labelLarge,
                             color = Gray02,
                         )
@@ -301,16 +307,15 @@ fun AssetDetailScreen(
                         modifier =
                             modifier
                                 .fillMaxWidth()
-                                .height(150.dp)
+                                .weight(1f)
                                 .padding(horizontal = 10.dp),
-                        rows = GridCells.Fixed(1),
+                        rows = GridCells.Fixed(2),
                         verticalArrangement = Arrangement.Center,
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         state = rememberLazyGridState(),
                     ) {
                         items(creatorAssets.size) { index ->
                             val asset = creatorAssets[index]
-
                             GlideImage(
                                 modifier =
                                     Modifier
@@ -331,7 +336,6 @@ fun AssetDetailScreen(
                         }
                     }
                 }
-                Spacer(modifier = Modifier.weight(1f))
                 Row(
                     modifier = Modifier.align(Alignment.Start),
                     verticalAlignment = Alignment.Bottom,
@@ -396,7 +400,7 @@ fun AssetDetailScreen(
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(0.dp))
+                Spacer(modifier = Modifier.height(10.dp))
             }
         }
     }

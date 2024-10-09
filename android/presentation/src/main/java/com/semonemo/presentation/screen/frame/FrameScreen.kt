@@ -1,6 +1,7 @@
 package com.semonemo.presentation.screen.frame
 
 import android.graphics.Bitmap
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -40,10 +41,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -64,26 +67,19 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.semonemo.domain.model.Asset
 import com.semonemo.presentation.R
-import com.semonemo.presentation.component.BrushPalette
 import com.semonemo.presentation.component.ColorPalette
 import com.semonemo.presentation.component.CustomTab
 import com.semonemo.presentation.component.ImageLoadingProgress
 import com.semonemo.presentation.component.LongBlackButton
 import com.semonemo.presentation.component.TopAppBar
 import com.semonemo.presentation.screen.aiAsset.draw.AssetButtonList
-import com.semonemo.presentation.theme.BlackGradient
-import com.semonemo.presentation.theme.BlueGradient
 import com.semonemo.presentation.theme.FrameBlue
+import com.semonemo.presentation.theme.FrameGreen
 import com.semonemo.presentation.theme.FrameOrange
 import com.semonemo.presentation.theme.FramePink
 import com.semonemo.presentation.theme.FramePurple
 import com.semonemo.presentation.theme.Gray01
-import com.semonemo.presentation.theme.Gray02
-import com.semonemo.presentation.theme.GreenGradient
 import com.semonemo.presentation.theme.GunMetal
-import com.semonemo.presentation.theme.PinkGradient
-import com.semonemo.presentation.theme.PurpleGradient
-import com.semonemo.presentation.theme.Rainbow
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.WhiteGray
@@ -97,11 +93,14 @@ import java.util.UUID
 
 data class OverlayAsset(
     val uuid: UUID = UUID.randomUUID(),
-    val imageUrl: String,
-    var scale: Float = 1f,
+    var imageUrl: String,
+)
+
+data class AssetPosition(
     var offsetX: Float = 0f,
     var offsetY: Float = 0f,
-    val rotation: Float = 0f,
+    var rotation: Float = 0f,
+    var scale: Float = 0.5f,
 )
 
 @Composable
@@ -135,6 +134,9 @@ fun FrameScreen(
     onErrorSnackBar: (String) -> Unit = {},
     assets: List<Asset> = listOf(),
 ) {
+    BackHandler {
+        popBackStack()
+    }
     val captureController = rememberCaptureController()
     val scope = rememberCoroutineScope()
     val tabs =
@@ -149,31 +151,31 @@ fun FrameScreen(
             stringResource(R.string.frame_one_by_four),
             stringResource(R.string.frame_two_by_two),
         )
-    val colors =
+    val frameColors =
         listOf(
             Color.Black,
+            Color.White,
             FramePink,
             FrameOrange,
+            FrameGreen,
             FrameBlue,
             FramePurple,
-            Gray01,
         )
-    val brushes =
+    val deepColors =
         listOf(
-            BlackGradient,
-            PinkGradient,
-            GreenGradient,
-            PurpleGradient,
-            BlueGradient,
-            Rainbow,
+            Color.Red,
+            Color.Green,
+            Color.Cyan,
+            Color.Blue,
+            Color.Magenta,
+            Gray01,
         )
 
     var frameType by remember { mutableStateOf(FrameType.OneByOne) }
     var selectedIndex by remember { mutableIntStateOf(0) }
     var selectedBtn by remember { mutableStateOf("1x1") }
     var selectedColor by remember { mutableStateOf<Color?>(Color.Black) }
-    var selectedBrush by remember { mutableStateOf<Brush?>(null) }
-    var overlayAssets = remember { mutableStateListOf<OverlayAsset>() }
+    val overlayAssets = remember { mutableStateListOf<OverlayAsset>() }
 
     Surface(
         modifier =
@@ -206,9 +208,8 @@ fun FrameScreen(
                 captureController = captureController,
                 overlayAssets = overlayAssets,
                 backgroundColor = selectedColor,
-                backgroundBrush = selectedBrush,
-                onDeleteAsset = {
-                    overlayAssets.remove(it)
+                onDeleteAsset = { asset ->
+                    overlayAssets.remove(asset)
                 },
             )
             Spacer(modifier = Modifier.fillMaxHeight(0.05f))
@@ -251,38 +252,25 @@ fun FrameScreen(
                                 .padding(horizontal = 24.dp),
                         horizontalAlignment = Alignment.Start,
                     ) {
-                        Spacer(modifier = Modifier.fillMaxHeight(0.06f))
-                        Text(
-                            modifier = Modifier.padding(start = 4.dp),
-                            text = "단색",
-                            style = Typography.bodySmall.copy(fontSize = 15.sp),
-                        )
-                        Spacer(modifier = Modifier.fillMaxHeight(0.03f))
+                        Spacer(modifier = Modifier.fillMaxHeight(0.07f))
                         ColorPalette(
-                            colors = colors,
+                            colors = frameColors,
                             circleSize = 35,
                             selectedColor = selectedColor,
                             onColorSelected = {
                                 selectedColor = it
-                                selectedBrush = null
+                            },
+                        )
+                        Spacer(modifier = Modifier.height(15.dp))
+                        ColorPalette(
+                            colors = deepColors,
+                            circleSize = 35,
+                            selectedColor = selectedColor,
+                            onColorSelected = {
+                                selectedColor = it
                             },
                         )
                         Spacer(modifier = Modifier.fillMaxHeight(0.13f))
-                        Text(
-                            modifier = Modifier.padding(start = 4.dp),
-                            text = "그라데이션",
-                            style = Typography.bodySmall.copy(fontSize = 15.sp),
-                        )
-                        Spacer(modifier = Modifier.fillMaxHeight(0.03f))
-                        BrushPalette(
-                            brushes = brushes,
-                            circleSize = 35,
-                            selectedBrush = selectedBrush,
-                            onBrushSelected = {
-                                selectedBrush = it
-                                selectedColor = null
-                            },
-                        )
                     }
                 }
 
@@ -355,7 +343,7 @@ fun FrameScreen(
 fun FramePreview(
     modifier: Modifier = Modifier,
     captureController: CaptureController,
-    overlayAssets: List<OverlayAsset>,
+    overlayAssets: SnapshotStateList<OverlayAsset>,
     frameType: FrameType,
     backgroundColor: Color? = null,
     backgroundBrush: Brush? = null,
@@ -422,59 +410,67 @@ fun FramePreview(
                     modifier =
                         Modifier
                             .fillMaxWidth(0.6f)
-                            .height(345.dp)
-                            .capturable(captureController)
-                            .onSizeChanged { contentSize = it },
+                            .wrapContentHeight()
+                            .capturable(captureController),
+                    contentAlignment = Alignment.Center,
                 ) {
-                    Column(
+                    Box(
                         modifier =
                             Modifier
-                                .fillMaxWidth(),
+                                .fillMaxWidth()
+                                .height(345.dp)
+                                .onSizeChanged { contentSize = it },
                     ) {
-                        Box(
+                        Column(
                             modifier =
                                 Modifier
-                                    .fillMaxWidth()
-                                    .height(5.dp)
-                                    .then(backgroundModifier),
-                        )
-                        Row(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight(),
+                                    .fillMaxWidth(),
                         ) {
                             Box(
                                 modifier =
                                     Modifier
-                                        .width(5.dp)
-                                        .height(280.dp)
+                                        .fillMaxWidth()
+                                        .height(5.dp)
                                         .then(backgroundModifier),
                             )
-                            Spacer(modifier = Modifier.weight(1f))
+                            Row(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .wrapContentHeight(),
+                            ) {
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .width(5.dp)
+                                            .height(280.dp)
+                                            .then(backgroundModifier),
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .width(5.dp)
+                                            .height(280.dp)
+                                            .then(backgroundModifier),
+                                )
+                            }
                             Box(
                                 modifier =
                                     Modifier
-                                        .width(5.dp)
-                                        .height(280.dp)
+                                        .fillMaxWidth()
+                                        .height(60.dp)
                                         .then(backgroundModifier),
                             )
                         }
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .height(60.dp)
-                                    .then(backgroundModifier),
-                        )
                     }
-                    if (overlayAssets.isNotEmpty()) {
-                        ShowAssets(
-                            overlayAssets = overlayAssets,
-                            parentSize = parentSize,
-                            contentSize = contentSize,
-                            onDeleteAsset = onDeleteAsset,
-                        )
+                    Box(modifier = Modifier.height(345.dp)) {
+                        if (overlayAssets.isNotEmpty()) {
+                            ShowAssets(
+                                overlayAssets = overlayAssets,
+                                onDeleteAsset = onDeleteAsset,
+                            )
+                        }
                     }
                 }
             }
@@ -485,129 +481,36 @@ fun FramePreview(
                     modifier =
                         Modifier
                             .fillMaxWidth(0.6f)
-                            .height(344.dp)
-                            .capturable(captureController)
-                            .onSizeChanged { contentSize = it },
+                            .wrapContentHeight()
+                            .capturable(captureController),
+                    contentAlignment = Alignment.Center,
                 ) {
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .height(5.dp)
-                                    .then(backgroundModifier),
-                        )
-                        Row(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight(),
-                        ) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .height(344.dp)
+                                .onSizeChanged { contentSize = it },
+                    ) {
+                        Column(modifier = Modifier.fillMaxWidth()) {
                             Box(
                                 modifier =
                                     Modifier
-                                        .width(5.dp)
-                                        .height(137.dp)
+                                        .fillMaxWidth()
+                                        .height(5.dp)
                                         .then(backgroundModifier),
                             )
-                            Spacer(modifier = Modifier.weight(1f))
-                            Box(
+                            Row(
                                 modifier =
                                     Modifier
-                                        .width(5.dp)
-                                        .height(137.dp)
-                                        .then(backgroundModifier),
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            Box(
-                                modifier =
-                                    Modifier
-                                        .width(5.dp)
-                                        .height(137.dp)
-                                        .then(backgroundModifier),
-                            )
-                        }
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .height(5.dp)
-                                    .then(backgroundModifier),
-                        )
-                        Row(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight(),
-                        ) {
-                            Box(
-                                modifier =
-                                    Modifier
-                                        .width(5.dp)
-                                        .height(137.dp)
-                                        .then(backgroundModifier),
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            Box(
-                                modifier =
-                                    Modifier
-                                        .width(5.dp)
-                                        .height(137.dp)
-                                        .then(backgroundModifier),
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            Box(
-                                modifier =
-                                    Modifier
-                                        .width(5.dp)
-                                        .height(137.dp)
-                                        .then(backgroundModifier),
-                            )
-                        }
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .height(60.dp)
-                                    .then(backgroundModifier),
-                        )
-                    }
-                    if (overlayAssets.isNotEmpty()) {
-                        ShowAssets(
-                            overlayAssets = overlayAssets,
-                            parentSize = parentSize,
-                            contentSize = contentSize,
-                            onDeleteAsset = onDeleteAsset,
-                        )
-                    }
-                }
-            }
-
-            FrameType.OneByFour -> {
-                // 1x4 그리드 레이아웃
-                Box(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth(0.3f)
-                            .height(365.dp)
-                            .capturable(captureController)
-                            .onSizeChanged { contentSize = it },
-                ) {
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .height(5.dp)
-                                    .then(backgroundModifier),
-                        )
-                        repeat(4) {
-                            Row(modifier = Modifier.fillMaxWidth()) {
+                                        .fillMaxWidth()
+                                        .wrapContentHeight(),
+                            ) {
                                 Box(
                                     modifier =
                                         Modifier
                                             .width(5.dp)
-                                            .height(75.dp)
+                                            .height(137.dp)
                                             .then(backgroundModifier),
                                 )
                                 Spacer(modifier = Modifier.weight(1f))
@@ -615,7 +518,15 @@ fun FramePreview(
                                     modifier =
                                         Modifier
                                             .width(5.dp)
-                                            .height(75.dp)
+                                            .height(137.dp)
+                                            .then(backgroundModifier),
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .width(5.dp)
+                                            .height(137.dp)
                                             .then(backgroundModifier),
                                 )
                             }
@@ -626,22 +537,123 @@ fun FramePreview(
                                         .height(5.dp)
                                         .then(backgroundModifier),
                             )
+                            Row(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .wrapContentHeight(),
+                            ) {
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .width(5.dp)
+                                            .height(137.dp)
+                                            .then(backgroundModifier),
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .width(5.dp)
+                                            .height(137.dp)
+                                            .then(backgroundModifier),
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .width(5.dp)
+                                            .height(137.dp)
+                                            .then(backgroundModifier),
+                                )
+                            }
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(60.dp)
+                                        .then(backgroundModifier),
+                            )
                         }
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .height(40.dp)
-                                    .then(backgroundModifier),
-                        )
                     }
-                    if (overlayAssets.isNotEmpty()) {
-                        ShowAssets(
-                            overlayAssets = overlayAssets,
-                            parentSize = parentSize,
-                            contentSize = contentSize,
-                            onDeleteAsset = onDeleteAsset,
-                        )
+                    Box(modifier = Modifier.height(344.dp)) {
+                        if (overlayAssets.isNotEmpty()) {
+                            ShowAssets(
+                                overlayAssets = overlayAssets,
+                                onDeleteAsset = onDeleteAsset,
+                            )
+                        }
+                    }
+                }
+            }
+
+            FrameType.OneByFour -> {
+                // 1x4 그리드 레이아웃
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth(0.3f)
+                            .wrapContentHeight()
+                            .capturable(captureController),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .height(365.dp)
+                                .onSizeChanged { contentSize = it },
+                    ) {
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(5.dp)
+                                        .then(backgroundModifier),
+                            )
+                            repeat(4) {
+                                Row(modifier = Modifier.fillMaxWidth()) {
+                                    Box(
+                                        modifier =
+                                            Modifier
+                                                .width(5.dp)
+                                                .height(75.dp)
+                                                .then(backgroundModifier),
+                                    )
+                                    Spacer(modifier = Modifier.weight(1f))
+                                    Box(
+                                        modifier =
+                                            Modifier
+                                                .width(5.dp)
+                                                .height(75.dp)
+                                                .then(backgroundModifier),
+                                    )
+                                }
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .height(5.dp)
+                                            .then(backgroundModifier),
+                                )
+                            }
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(40.dp)
+                                        .then(backgroundModifier),
+                            )
+                        }
+                    }
+                    Box(modifier = Modifier.height(365.dp)) {
+                        if (overlayAssets.isNotEmpty()) {
+                            ShowAssets(
+                                overlayAssets = overlayAssets,
+                                onDeleteAsset = onDeleteAsset,
+                            )
+                        }
                     }
                 }
             }
@@ -651,64 +663,38 @@ fun FramePreview(
 
 @Composable
 fun ShowAssets(
-    overlayAssets: List<OverlayAsset>,
-    parentSize: IntSize,
-    contentSize: IntSize,
+    overlayAssets: SnapshotStateList<OverlayAsset>,
     onDeleteAsset: (OverlayAsset) -> Unit,
 ) {
     var selectedAssetId by remember { mutableStateOf<UUID?>(null) }
+    val assetPositions = remember { mutableStateMapOf<UUID, AssetPosition>() }
 
     overlayAssets.forEach { asset ->
-        var imageScale by remember { mutableFloatStateOf(0.5f) }
-        var imageOffsetX by remember { mutableFloatStateOf(asset.offsetX) }
-        var imageOffsetY by remember { mutableFloatStateOf(asset.offsetY) }
-        var imageRotation by remember { mutableFloatStateOf(asset.rotation) }
-        var assetSize by remember { mutableStateOf(IntSize.Zero) }
+        var position by remember(asset.uuid) { mutableStateOf(assetPositions.getOrPut(asset.uuid) { AssetPosition() }) }
 
-        val imageTransformableState =
-            rememberTransformableState { zoomChange, offsetChange, rotationChange ->
-                imageScale = (imageScale * zoomChange).coerceIn(0.25f, 3f)
-                imageRotation += rotationChange
+        val imageTransformableState = rememberTransformableState { zoomChange, offsetChange, rotationChange ->
+            position = position.copy(
+                scale = (position.scale * zoomChange).coerceIn(0.1f, 5f),
+                rotation = position.rotation + rotationChange,
+                offsetX = position.offsetX + offsetChange.x * position.scale,
+                offsetY = position.offsetY + offsetChange.y * position.scale
+            )
+            assetPositions[asset.uuid] = position
+        }
 
-                imageOffsetX += offsetChange.x * imageScale
-                imageOffsetY += offsetChange.y * imageScale
-
-//                val newOffsetX = imageOffsetX + offsetChange.x * imageScale
-//                val newOffsetY = imageOffsetY + offsetChange.y * imageScale
-//
-//                val maxOffsetX = (parentSize.width - assetSize.width * imageScale)
-//                val maxOffsetY = (contentSize.height - assetSize.height * imageScale)
-
-                // 최소값과 최대값을 안전하게 계산
-//                val minX = -maxOffsetX.coerceAtLeast(0f)
-//                val maxX = maxOffsetX.coerceAtLeast(0f)
-//                val minY = -maxOffsetY.coerceAtLeast(0f)
-//                val maxY = maxOffsetY.coerceAtLeast(0f)
-
-//                imageOffsetX = newOffsetX.coerceIn(minX, maxX)
-//                imageOffsetY = newOffsetY.coerceIn(minY, maxY)
-
-                asset.offsetX = imageOffsetX
-                asset.offsetY = imageOffsetY
-            }
-
-        // 클릭 시 선택된 에셋으로 상태 업데이트
         val isSelected = selectedAssetId == asset.uuid
 
         val assetModifier =
             Modifier
                 .graphicsLayer(
-                    scaleX = imageScale,
-                    scaleY = imageScale,
-                    translationX = imageOffsetX,
-                    translationY = imageOffsetY,
-                    rotationZ = imageRotation,
-                ).transformable(
-                    state = imageTransformableState,
-                ).onSizeChanged { assetSize = it }
+                    scaleX = position.scale,
+                    scaleY = position.scale,
+                    translationX = position.offsetX,
+                    translationY = position.offsetY,
+                    rotationZ = position.rotation,
+                ).transformable(state = imageTransformableState)
                 .noRippleClickable {
-                    selectedAssetId =
-                        if (selectedAssetId == asset.uuid) null else asset.uuid
+                    selectedAssetId = if (selectedAssetId == asset.uuid) null else asset.uuid
                 }
 
         // 선택된 에셋에만 border와 버튼 표시
@@ -717,28 +703,32 @@ fun ShowAssets(
                 modifier =
                     assetModifier
                         .wrapContentSize()
-                        .border(2.dp, Gray02),
+                        .aspectRatio(1f)
+                        .border(width = 2.dp, color = GunMetal),
             ) {
                 GlideImage(
                     modifier =
                         Modifier
-                            .wrapContentSize(),
+                            .wrapContentSize()
+                            .aspectRatio(1f),
                     imageModel = asset.imageUrl,
                     contentScale = ContentScale.Fit,
                     loading = {
-                        ImageLoadingProgress(
-                            modifier = Modifier,
-                        )
+                        ImageLoadingProgress(modifier = Modifier)
                     },
                 )
                 // 삭제 버튼 (오른쪽 상단)
                 Box(
                     modifier =
                         Modifier
-                            .size(30.dp)
+                            .size(40.dp)
                             .align(Alignment.TopEnd)
                             .background(WhiteGray, shape = CircleShape)
-                            .noRippleClickable { onDeleteAsset(asset) },
+                            .noRippleClickable {
+                                onDeleteAsset(asset)
+                                selectedAssetId = null
+                                assetPositions.remove(asset.uuid)
+                            },
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
@@ -752,16 +742,12 @@ fun ShowAssets(
             GlideImage(
                 modifier =
                     assetModifier
-                        .noRippleClickable {
-                            selectedAssetId =
-                                if (selectedAssetId == asset.uuid) null else asset.uuid
-                        },
+                        .wrapContentSize()
+                        .aspectRatio(1f),
                 imageModel = asset.imageUrl,
-                contentScale = ContentScale.Inside,
+                contentScale = ContentScale.Fit,
                 loading = {
-                    ImageLoadingProgress(
-                        modifier = Modifier,
-                    )
+                    ImageLoadingProgress(modifier = Modifier)
                 },
             )
         }
