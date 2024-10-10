@@ -445,13 +445,11 @@ fun MainNavHost(
         composable(
             route = ScreenDestinations.Detail.route,
             arguments = ScreenDestinations.Detail.arguments,
-        ) { navBackStackEntry ->
-            val userId = navBackStackEntry.arguments?.getLong("userId")
+        ) {
             DetailRoute(
                 modifier = modifier,
                 onShowSnackBar = onShowErrorSnackBar,
                 popUpBackStack = navController::popBackStack,
-                userId = userId ?: -1,
             )
         }
 
