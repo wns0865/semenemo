@@ -310,11 +310,6 @@ class AuctionDetailViewModel
         }
 
         fun validateUserBid() {
-            Log.d(TAG, "validateUserBid: userId : $userId | registerId : $registerId | topUserId : ${topUserId.longValue} ")
-            if (registerId != userId && topUserId.longValue != userId) {
-                validateUserBid.value = true
-            } else {
-                validateUserBid.value = false
-            }
+            validateUserBid.value = registerId != userId && topUserId.longValue != userId
         }
     }
