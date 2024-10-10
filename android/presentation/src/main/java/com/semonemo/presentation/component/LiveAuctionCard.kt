@@ -37,6 +37,8 @@ import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.White
 import com.semonemo.presentation.util.noRippleClickable
 import com.skydoves.landscapist.glide.GlideImage
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 private const val TAG = "LiveAuctionCard"
 
@@ -50,6 +52,7 @@ fun LiveAuctionCard(
     participants: Int,
     startPrice: Long,
     currentBid: Long,
+    finalPrice: Long,
     startTime: String?,
     endTime: String?,
     onClick: (Long) -> Unit = {},
@@ -85,9 +88,24 @@ fun LiveAuctionCard(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     // LiveAnimation
+                    val dateTimFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
                     if (auctionStatus == AuctionStatus.PROGRESS) {
                         LiveAnimation()
+                    } else if (auctionStatus == AuctionStatus.READY) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(4.dp),
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_auction_time),
+                                contentDescription = "auction_time",
+                                tint = Color.Unspecified,
+                                modifier = Modifier.size(20.dp),
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            CustomCountdownTimer(deadline = LocalDateTime.parse(startTime, dateTimFormat))
+                        }
                     } else {
                         Spacer(
                             modifier =
@@ -102,14 +120,16 @@ fun LiveAuctionCard(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(4.dp),
                     ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_auction_human),
-                            contentDescription = "Viewers",
-                            tint = Color.Unspecified,
-                            modifier = Modifier.size(20.dp),
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text("$participants", color = GunMetal)
+                        if (auctionStatus == AuctionStatus.READY || auctionStatus == AuctionStatus.PROGRESS) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_auction_human),
+                                contentDescription = "Viewers",
+                                tint = Color.Unspecified,
+                                modifier = Modifier.size(20.dp),
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("$participants", color = GunMetal)
+                        }
                     }
                 }
                 Spacer(modifier = Modifier.height(4.dp))
@@ -128,28 +148,14 @@ fun LiveAuctionCard(
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
-                // Bottom row
                 Row(
-                    modifier = Modifier.fillMaxWidth().height(40.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(40.dp),
+                    horizontalArrangement = Arrangement.End,
                 ) {
-                    // Likes
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(4.dp),
-                    ) {
-//                    Icon(
-//                        painter = painterResource(id = R.drawable.ic_toggle_heart_on),
-//                        contentDescription = "Likes",
-//                        tint = Red,
-//                        modifier = Modifier.size(20.dp),
-//                    )
-//                    Spacer(modifier = Modifier.width(4.dp))
-//                    Text("$likeCount", color = GunMetal)
-                    }
-
                     // Price
-
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(4.dp),
@@ -161,11 +167,17 @@ fun LiveAuctionCard(
                             modifier = Modifier.size(20.dp),
                         )
                         Spacer(modifier = Modifier.width(4.dp))
+                        val previewPrice =
+                            when (auctionStatus) {
+                                AuctionStatus.READY, AuctionStatus.CANCEL -> startPrice
+                                AuctionStatus.PROGRESS -> currentBid
+                                AuctionStatus.END -> finalPrice
+                            }
                         Text(
                             text =
                                 String.format(
                                     "%,d ${stringResource(id = R.string.coin_price_unit)}",
-                                    currentBid,
+                                    previewPrice,
                                 ),
                             color = GunMetal,
                             fontSize = 18.sp,
@@ -191,7 +203,7 @@ fun LiveAuctionCard(
                         if (auctionStatus == AuctionStatus.END) {
                             String.format(
                                 "%,d ${stringResource(id = R.string.coin_price_unit)}\n낙찰",
-                                currentBid,
+                                finalPrice,
                             )
                         } else {
                             "경매 유찰"
