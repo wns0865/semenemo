@@ -89,6 +89,13 @@ fun LiveAuctionCard(
                 ) {
                     // LiveAnimation
                     val dateTimFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                    val deadLine : LocalDateTime
+                    if(startTime != null) {
+                        deadLine = LocalDateTime.parse(startTime, dateTimFormat)
+                    } else {
+                        deadLine = LocalDateTime.now().plusDays(1)
+                    }
+
 
                     if (auctionStatus == AuctionStatus.PROGRESS) {
                         LiveAnimation()
@@ -104,7 +111,7 @@ fun LiveAuctionCard(
                                 modifier = Modifier.size(20.dp),
                             )
                             Spacer(modifier = Modifier.width(4.dp))
-                            CustomCountdownTimer(deadline = LocalDateTime.parse(startTime, dateTimFormat))
+                            CustomCountdownTimer(deadline = deadLine)
                         }
                     } else {
                         Spacer(
