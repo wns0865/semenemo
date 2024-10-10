@@ -89,7 +89,7 @@ import java.io.File
 @Composable
 fun MyPageRoute(
     modifier: Modifier = Modifier,
-    navigateToDetail: (Long, Boolean) -> Unit,
+    navigateToDetail: (Long) -> Unit,
     navigateToFollowList: (String, List<User>, List<User>, Int) -> Unit,
     navigateToSetting: () -> Unit,
     navigateToAssetDetail: (Long) -> Unit,
@@ -150,7 +150,7 @@ fun HandleMyPageEvent(
 fun HandleMyPageUi(
     modifier: Modifier = Modifier,
     uiState: MyPageUiState,
-    navigateToDetail: (Long, Boolean) -> Unit,
+    navigateToDetail: (Long) -> Unit,
     navigateToFollowList: (String, List<User>, List<User>, Int) -> Unit,
     navigateToSetting: () -> Unit,
     navigateToAssetDetail: (Long) -> Unit,
@@ -171,7 +171,6 @@ fun HandleMyPageUi(
                 navigateToAssetDetail = navigateToAssetDetail,
                 nickname = uiState.nickname,
                 profileImageUrl = uiState.profileImageUrl,
-                amount = uiState.amount,
                 follower = uiState.follower,
                 following = uiState.following,
                 updateProfileImage = updateProfileImage,
@@ -192,14 +191,13 @@ fun HandleMyPageUi(
 @Composable
 fun MyPageScreen(
     modifier: Modifier = Modifier,
-    navigateToDetail: (Long, Boolean) -> Unit = { _, _ -> },
+    navigateToDetail: (Long) -> Unit = {},
     navigateToFollowList: (String, List<User>, List<User>, Int) -> Unit = { _, _, _, _ -> },
     navigateToSetting: () -> Unit = {},
     navigateToAssetDetail: (Long) -> Unit = {},
     navigateToSaleFrameDetail: (Long) -> Unit = {},
     nickname: String = "짜이한",
     profileImageUrl: String = "",
-    amount: Int = 0,
     follower: List<User> = emptyList(),
     following: List<User> = emptyList(),
     updateProfileImage: (Uri) -> Unit = {},
@@ -415,7 +413,12 @@ fun MyPageScreen(
             ) { targetIndex ->
                 when (targetIndex) {
                     0 -> {
-                        Column(modifier = Modifier.fillMaxWidth()) {
+                        Column(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 60.dp),
+                        ) {
                             Box(
                                 modifier =
                                     Modifier
@@ -455,12 +458,20 @@ fun MyPageScreen(
 
                     1 -> {
                         // 애셋
-                        MyPageOwnedAssets(modifier = Modifier, assetList = assetList)
+                        MyPageOwnedAssets(
+                            modifier = Modifier.padding(bottom = 60.dp),
+                            assetList = assetList,
+                        )
                     }
 
                     2 -> {
                         // 찜
-                        Column(modifier = Modifier.fillMaxWidth()) {
+                        Column(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 60.dp),
+                        ) {
                             Box(
                                 modifier =
                                     Modifier
@@ -505,7 +516,6 @@ fun MyPageScreen(
                     }
                 }
             }
-            Spacer(modifier = Modifier.fillMaxHeight(0.07f))
         }
     }
 }
