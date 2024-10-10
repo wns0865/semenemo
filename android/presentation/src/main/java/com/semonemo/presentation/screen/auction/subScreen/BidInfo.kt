@@ -36,7 +36,6 @@ fun BidInfo(
         val fontSize = 14
 
         // 입찰 기록이 있을 때 입찰자 목록 표시
-
         // 상위 입찰자 표시
         // bidAmount 기준으로 내림차순 정렬
         val sortedBidLog = bidLogList.sortedByDescending { it.bidAmount }
@@ -127,7 +126,7 @@ fun BidInfo(
                             .height(itemHeight),
                 ) {
                     Text(
-                        text = String.format("%03d번", bidder.anonym),
+                        text = String.format("%03d번", bidder.anonym) + if (userId == bidder.userId) String.format(" (MY)") else "",
                         fontSize = fontSize.sp, // 기본 텍스트 크기
                         style =
                             Typography.labelMedium.copy(
@@ -168,15 +167,16 @@ fun BidInfoPreview_NoBids() {
 fun BidInfoPreview_WithBids() {
     val sampleBidLogs =
         listOf(
-            AuctionBidLog(anonym = 101, bidAmount = 15000),
-            AuctionBidLog(anonym = 102, bidAmount = 12000),
-            AuctionBidLog(anonym = 103, bidAmount = 11000),
-            AuctionBidLog(anonym = 103, bidAmount = 10000),
-            AuctionBidLog(anonym = 124, bidAmount = 8000),
-            AuctionBidLog(anonym = 753, bidAmount = 7000),
+            AuctionBidLog(userId = 1L, anonym = 101, bidAmount = 15000),
+            AuctionBidLog(userId = 2L, anonym = 102, bidAmount = 12000),
+            AuctionBidLog(userId = 3L, anonym = 103, bidAmount = 11000),
+            AuctionBidLog(userId = 4L, anonym = 103, bidAmount = 10000),
+            AuctionBidLog(userId = 1L, anonym = 101, bidAmount = 8000),
+            AuctionBidLog(userId = 6L, anonym = 753, bidAmount = 7000),
         )
     BidInfo(
         bidLogList = sampleBidLogs,
         startPrice = 10000, // 예시 기준가
+        userId = 1L,
     )
 }

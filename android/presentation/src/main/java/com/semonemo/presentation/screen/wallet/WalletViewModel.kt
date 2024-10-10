@@ -159,4 +159,30 @@ class WalletViewModel
                     }
             }
         }
+
+        fun buyCoin(amount: Long) {
+            viewModelScope.launch {
+                coinRepository
+                    .buyCoin(amount)
+                    .onStart {
+                        _uiState.update {
+                            it.copy(isLoading = true)
+                        }
+                    }.onCompletion {
+                        _uiState.update { it.copy(isLoading = false) }
+                    }.collectLatest { response ->
+                        when (response) {
+                            is ApiResponse.Error -> _uiEvent.emit(WalletUiEvent.Error(response.errorMessage))
+                            is ApiResponse.Success -> {
+                                _uiEvent.emit(WalletUiEvent.PaySuccess(message = "충전에 성공했습니다."))
+                                _uiState.update {
+                                    it.copy(
+                                        userCoin = response.data,
+                                    )
+                                }
+                            }
+                        }
+                    }
+            }
+        }
     }

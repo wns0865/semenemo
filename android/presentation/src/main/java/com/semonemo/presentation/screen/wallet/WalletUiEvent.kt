@@ -9,4 +9,9 @@ sealed interface WalletUiEvent {
     data class Error(
         val errorMessage: String,
     ) : WalletUiEvent
+
+    @Immutable
+    data class PaySuccess(
+        val message: String,
+    ) : WalletUiEvent
 }

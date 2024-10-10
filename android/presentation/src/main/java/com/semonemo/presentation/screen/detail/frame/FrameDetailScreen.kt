@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,14 +19,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -64,6 +65,7 @@ import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.Red
 import com.semonemo.presentation.theme.SemonemoTheme
 import com.semonemo.presentation.theme.Typography
+import com.semonemo.presentation.theme.WhiteGray
 import com.semonemo.presentation.util.noRippleClickable
 import com.semonemo.presentation.util.urlToIpfs
 import com.skydoves.landscapist.glide.GlideImage
@@ -186,7 +188,6 @@ fun FrameDetailScreen(
     navigateToDetail: (Long) -> Unit = {},
     canPurchase: Boolean = false,
 ) {
-    val scrollState = rememberScrollState()
     val (expanded, isExpanded) =
         remember {
             mutableStateOf(false)
@@ -194,17 +195,17 @@ fun FrameDetailScreen(
     val maxLines = 2
     Surface(
         modifier =
-            Modifier
-                .fillMaxSize()
-                .background(color = Color.White)
-                .verticalScroll(state = scrollState),
+        Modifier
+            .fillMaxSize(),
+        color = Color.White,
     ) {
         Column(
             modifier =
-                Modifier
-                    .fillMaxSize()
-                    .statusBarsPadding()
-                    .navigationBarsPadding(),
+            Modifier
+                .fillMaxSize()
+                .background(color = Color.White)
+                .statusBarsPadding()
+                .navigationBarsPadding(),
         ) {
             Spacer(modifier = Modifier.height(10.dp))
             TopAppBar(
@@ -218,17 +219,23 @@ fun FrameDetailScreen(
             Column(
                 modifier =
                     modifier
+                        .wrapContentSize()
                         .padding(horizontal = 15.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
                 GlideImage(
                     imageModel = frameUrl.toUri(),
                     contentScale = ContentScale.Fit,
                     modifier =
                         Modifier
-                            .padding(horizontal = 20.dp)
-                            .size(width = 265.dp, height = 365.dp),
+                            .fillMaxWidth(0.7f)
+                            .aspectRatio(3f / 4f)
+                            .padding(horizontal = 20.dp),
+                    loading = {
+                        ImageLoadingProgress(
+                            modifier = Modifier,
+                        )
+                    },
                 )
                 LazyRow(
                     modifier =
@@ -244,6 +251,7 @@ fun FrameDetailScreen(
                         }
                     },
                 )
+                Spacer(modifier = Modifier.fillMaxHeight(0.05f))
                 Row(
                     modifier = Modifier.align(Alignment.Start),
                     verticalAlignment = Alignment.CenterVertically,
@@ -272,7 +280,6 @@ fun FrameDetailScreen(
                             )
                         },
                     )
-
                     if (hasBadge) {
                         NameWithBadge(
                             name = nickname,
@@ -285,6 +292,7 @@ fun FrameDetailScreen(
                         )
                     }
                 }
+                Spacer(modifier = Modifier.fillMaxHeight(0.035f))
                 Row(modifier = Modifier) {
                     Text(
                         modifier =
@@ -296,31 +304,26 @@ fun FrameDetailScreen(
                         overflow = TextOverflow.Ellipsis,
                     )
                 }
-                Row(
-                    modifier =
-                        Modifier
-                            .align(Alignment.Start),
-                    verticalAlignment = Alignment.CenterVertically,
+                Spacer(modifier = Modifier.height(20.dp))
+                HorizontalDivider(color = WhiteGray)
+                Spacer(modifier = Modifier.height(20.dp))
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.CenterStart,
                 ) {
-                    Image(
-                        modifier = Modifier.size(30.dp),
-                        painter = painterResource(id = R.drawable.img_fm_artist),
-                        contentDescription = "",
-                    )
-
-                    Text(text = "관련 작품", style = Typography.bodyLarge)
+                    Text(text = "해당 제작자의 다른 작품", style = Typography.bodyLarge)
                 }
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.fillMaxHeight(0.05f))
                 if (creatorFrames.isEmpty()) {
                     Box(
                         modifier =
                             Modifier
                                 .fillMaxWidth()
-                                .height(150.dp),
+                                .weight(1f),
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
-                            text = "현재 판매 중인 프레임이 없어요! 🥲",
+                            text = "판매 중인 다른 프레임이 없어요",
                             style = Typography.labelLarge,
                             color = Gray02,
                         )
@@ -330,9 +333,9 @@ fun FrameDetailScreen(
                         modifier =
                             modifier
                                 .fillMaxWidth()
-                                .height(150.dp)
+                                .weight(1f)
                                 .padding(horizontal = 10.dp),
-                        rows = GridCells.Fixed(1),
+                        rows = GridCells.Fixed(2),
                         verticalArrangement = Arrangement.Center,
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         state = rememberLazyGridState(),
@@ -358,11 +361,15 @@ fun FrameDetailScreen(
                                     frame.nftInfo.data.image
                                         .urlToIpfs(),
                                 contentScale = ContentScale.Inside,
+                                loading = {
+                                    ImageLoadingProgress(
+                                        modifier = Modifier,
+                                    )
+                                },
                             )
                         }
                     }
                 }
-                Spacer(modifier = Modifier.height(10.dp))
                 Row(
                     modifier = Modifier.align(Alignment.Start),
                     verticalAlignment = Alignment.Bottom,
@@ -426,7 +433,7 @@ fun FrameDetailScreen(
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(5.dp))
+                Spacer(modifier = Modifier.height(10.dp))
             }
         }
     }

@@ -18,6 +18,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.semonemo.presentation.screen.auction.AuctionStatus
 import com.semonemo.presentation.theme.GunMetal
 import com.semonemo.presentation.theme.ProgressGreen
 import com.semonemo.presentation.theme.ProgressRed
@@ -32,6 +33,7 @@ import kotlin.math.max
 @Composable
 fun CustomAuctionProgressBar(
     modifier: Modifier = Modifier,
+    auctionStatus: AuctionStatus = AuctionStatus.READY,
     initialTime: Float = 15f, // 초기 시간 설정 (초 단위)
     endTime: LocalDateTime = LocalDateTime.now().plusSeconds(15),
 ) {
@@ -52,11 +54,13 @@ fun CustomAuctionProgressBar(
         }
 
     LaunchedEffect(endTimeMillis) {
-        while (timeLeft > 0) {
-            val currentTimeMillis = System.currentTimeMillis()
-            val updatedTime = max(0f, (endTimeMillis - currentTimeMillis) / 1000f)
-            timeLeft = updatedTime
-            delay(100L) // 0.1초마다 업데이트
+        if(auctionStatus == AuctionStatus.PROGRESS) {
+            while (timeLeft > 0) {
+                val currentTimeMillis = System.currentTimeMillis()
+                val updatedTime = max(0f, (endTimeMillis - currentTimeMillis) / 1000f)
+                timeLeft = updatedTime
+                delay(100L) // 0.1초마다 업데이트
+            }
         }
     }
 

@@ -30,6 +30,7 @@ import com.semonemo.presentation.screen.wallet.ProductInfo
 import com.semonemo.presentation.theme.Blue1
 import com.semonemo.presentation.theme.Blue2
 import com.semonemo.presentation.theme.Blue3
+import com.semonemo.presentation.theme.Blue4
 import com.semonemo.presentation.theme.Gray02
 import com.semonemo.presentation.theme.Typography
 import com.semonemo.presentation.theme.White
@@ -42,9 +43,10 @@ fun TransactionHistoryBox(
     date: String = "2024.09.09",
     price: Double = +100000.0,
     product: String = "프레임",
+    isAuction: Boolean = false,
 ) {
     val productInfo =
-        if (product.contains("코인")) {
+        if (product.contains("코인")) { //코인
             if (isSell) {
                 ProductInfo(
                     stringResource(R.string.exchange),
@@ -58,8 +60,14 @@ fun TransactionHistoryBox(
                     color = Blue3,
                 )
             }
-        } else if (product.contains("NFT")) {
-            if (isSell) {
+        } else if (product.contains("NFT")) { // 프레임
+            if (isAuction) {
+                ProductInfo(
+                    stringResource(id = R.string.auction),
+                    R.drawable.ic_fab_auction_click,
+                    color = Blue4,
+                )
+            } else if (isSell) {
                 ProductInfo(
                     stringResource(R.string.sell),
                     R.drawable.ic_fab_frame,
@@ -72,7 +80,7 @@ fun TransactionHistoryBox(
                     color = Blue2,
                 )
             }
-        } else {
+        } else { // 에셋
             if (isSell) {
                 ProductInfo(
                     stringResource(R.string.sell),
